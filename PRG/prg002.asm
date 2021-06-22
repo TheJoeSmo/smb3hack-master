@@ -366,20 +366,18 @@ ObjectGroup01_Attributes4:
 	; Object group $01 (i.e. objects starting at ID $24) pattern index starts
 	; These are used for all states except "normal"
 
-OG1_POff .func (\1 - ObjectGroup01_PatternSets)
-
 	.org ObjectGroup_PatternStarts	; <-- help enforce this table *here*
 ObjectGroup01_PatternStarts:
 	; Index by object group relative index (ObjGroupRel_Idx)
-	.byte OG1_POff(ObjP24), OG1_POff(ObjP25), OG1_POff(ObjP26), OG1_POff(ObjP27)
-	.byte OG1_POff(ObjP28), OG1_POff(ObjP29), OG1_POff(ObjP2A), OG1_POff(ObjP2B)
-	.byte OG1_POff(ObjP2C), OG1_POff(ObjP2D), OG1_POff(ObjP2E), OG1_POff(ObjP2F)
-	.byte OG1_POff(ObjP30), OG1_POff(ObjP31), OG1_POff(ObjP32), OG1_POff(ObjP33)
-	.byte OG1_POff(ObjP34), OG1_POff(ObjP35), OG1_POff(ObjP36), OG1_POff(ObjP37)
-	.byte OG1_POff(ObjP38), OG1_POff(ObjP39), OG1_POff(ObjP3A), OG1_POff(ObjP3B)
-	.byte OG1_POff(ObjP3C), OG1_POff(ObjP3D), OG1_POff(ObjP3E), OG1_POff(ObjP3F)
-	.byte OG1_POff(ObjP40), OG1_POff(ObjP41), OG1_POff(ObjP42), OG1_POff(ObjP43)
-	.byte OG1_POff(ObjP44), OG1_POff(ObjP45), OG1_POff(ObjP46), OG1_POff(ObjP47)
+    .byte ObjP24 - ObjectGroup01_PatternSets, ObjP25 - ObjectGroup01_PatternSets, ObjP26 - ObjectGroup01_PatternSets, ObjP27 - ObjectGroup01_PatternSets
+    .byte ObjP28 - ObjectGroup01_PatternSets, ObjP29 - ObjectGroup01_PatternSets, ObjP2A - ObjectGroup01_PatternSets, ObjP2B - ObjectGroup01_PatternSets
+    .byte ObjP2C - ObjectGroup01_PatternSets, ObjP2D - ObjectGroup01_PatternSets, ObjP2E - ObjectGroup01_PatternSets, ObjP2F - ObjectGroup01_PatternSets
+    .byte ObjP30 - ObjectGroup01_PatternSets, ObjP31 - ObjectGroup01_PatternSets, ObjP32 - ObjectGroup01_PatternSets, ObjP33 - ObjectGroup01_PatternSets
+    .byte ObjP34 - ObjectGroup01_PatternSets, ObjP35 - ObjectGroup01_PatternSets, ObjP36 - ObjectGroup01_PatternSets, ObjP37 - ObjectGroup01_PatternSets
+    .byte ObjP38 - ObjectGroup01_PatternSets, ObjP39 - ObjectGroup01_PatternSets, ObjP3A - ObjectGroup01_PatternSets, ObjP3B - ObjectGroup01_PatternSets
+    .byte ObjP3C - ObjectGroup01_PatternSets, ObjP3D - ObjectGroup01_PatternSets, ObjP3E - ObjectGroup01_PatternSets, ObjP3F - ObjectGroup01_PatternSets
+    .byte ObjP40 - ObjectGroup01_PatternSets, ObjP41 - ObjectGroup01_PatternSets, ObjP42 - ObjectGroup01_PatternSets, ObjP43 - ObjectGroup01_PatternSets
+    .byte ObjP44 - ObjectGroup01_PatternSets, ObjP45 - ObjectGroup01_PatternSets, ObjP46 - ObjectGroup01_PatternSets, ObjP47 - ObjectGroup01_PatternSets
 
 
 	; Object group $01 (i.e. objects starting at ID $24) pattern sets
