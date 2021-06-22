@@ -3108,10 +3108,6 @@ LEVEL3_VSCROLL_LOCKED	= %01000000	; Locks either high (0) or low ($EF) depending
 ; Sets Level_PipeNotExit
 LEVEL3_PIPENOTEXIT	= %10000000
 
-
-; BG pattern bank index
-LEVEL4_BGBANK_INDEX	.func (\1 & %00011111)
-
 ; Level initial action
 LEVEL4_INITACT_NOTHING	= %00000000	; Do nothing
 LEVEL4_INITACT_SLIDE	= %00100000	; Start level sliding (if able by power-up)

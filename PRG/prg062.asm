@@ -4407,7 +4407,7 @@ Tile_Mem_ClearB:	; $9734
 
 
 	; Array of bank selections by Level_BG_Page1_2 
-	; What LEVEL4_BGBANK_INDEX references
+	; What LEVEL4 BGBANK INDEX references
 Level_BG_Pages1:
 	.byte $00	;  0 Not Used
 	.byte $08	;  1 Plains
