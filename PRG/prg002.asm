@@ -983,14 +983,13 @@ PCDI03	.byte $01, $E1, $7A, $08, $79, $00	; Pipeway Controller Index 3	FIXME Res
 PCDI04	.byte $00, $4C, $35, $08, $66, $00	; Pipeway Controller Index 4
 PCDI05	.byte $01, $E8, $55, $81, $66, $00	; Pipeway Controller Index 5
 
-PCDO .func ((\1 - PipewayCtlr_Dest) / 2)	; The offsets 
 PipewayCtlr_Dest_Offset:
-	.byte PCDO(PCDI00)
-	.byte PCDO(PCDI01)
-	.byte PCDO(PCDI02)
-	.byte PCDO(PCDI03)
-	.byte PCDO(PCDI04)
-	.byte PCDO(PCDI05)
+	.byte (PCDI00 - PipewayCtlr_Dest) / 2
+	.byte (PCDI01 - PipewayCtlr_Dest) / 2
+	.byte (PCDI02 - PipewayCtlr_Dest) / 2
+	.byte (PCDI03 - PipewayCtlr_Dest) / 2
+	.byte (PCDI04 - PipewayCtlr_Dest) / 2
+	.byte (PCDI05 - PipewayCtlr_Dest) / 2
 
 Pipeway_MusInvert:	.byte $00, $18
 
