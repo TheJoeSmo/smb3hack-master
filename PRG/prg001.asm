@@ -375,20 +375,18 @@ ObjectGroup00_Attributes4:
 	; Object group $00 (i.e. objects starting at ID $00) pattern index starts
 	; These are used for all states except "normal"
 
-OG0_POff .func (\1 - ObjectGroup00_PatternSets)
-
 	.org ObjectGroup_PatternStarts	; <-- help enforce this table *here*
 ObjectGroup00_PatternStarts:
 	; Index by object group relative index (ObjGroupRel_Idx)
-	.byte OG0_POff(ObjP00), OG0_POff(ObjP01), OG0_POff(ObjP02), OG0_POff(ObjP03)
-	.byte OG0_POff(ObjP04), OG0_POff(ObjP05), OG0_POff(ObjP06), OG0_POff(ObjP07)
-	.byte OG0_POff(ObjP08), OG0_POff(ObjP09), OG0_POff(ObjP0A), OG0_POff(ObjP0B)
-	.byte OG0_POff(ObjP0C), OG0_POff(ObjP0D), OG0_POff(ObjP0E), OG0_POff(ObjP0F)
-	.byte OG0_POff(ObjP10), OG0_POff(ObjP11), OG0_POff(ObjP12), OG0_POff(ObjP13)
-	.byte OG0_POff(ObjP14), OG0_POff(ObjP15), OG0_POff(ObjP16), OG0_POff(ObjP17)
-	.byte OG0_POff(ObjP18), OG0_POff(ObjP19), OG0_POff(ObjP1A), OG0_POff(ObjP1B)
-	.byte OG0_POff(ObjP1C), OG0_POff(ObjP1D), OG0_POff(ObjP1E), OG0_POff(ObjP1F)
-	.byte OG0_POff(ObjP20), OG0_POff(ObjP21), OG0_POff(ObjP22), OG0_POff(ObjP23)
+    .byte ObjP00 - ObjectGroup00_PatternSets, ObjP01 - ObjectGroup00_PatternSets, ObjP02 - ObjectGroup00_PatternSets, ObjP03 - ObjectGroup00_PatternSets
+    .byte ObjP04 - ObjectGroup00_PatternSets, ObjP05 - ObjectGroup00_PatternSets, ObjP06 - ObjectGroup00_PatternSets, ObjP07 - ObjectGroup00_PatternSets
+    .byte ObjP08 - ObjectGroup00_PatternSets, ObjP09 - ObjectGroup00_PatternSets, ObjP0A - ObjectGroup00_PatternSets, ObjP0B - ObjectGroup00_PatternSets
+    .byte ObjP0C - ObjectGroup00_PatternSets, ObjP0D - ObjectGroup00_PatternSets, ObjP0E - ObjectGroup00_PatternSets, ObjP0F - ObjectGroup00_PatternSets
+    .byte ObjP10 - ObjectGroup00_PatternSets, ObjP11 - ObjectGroup00_PatternSets, ObjP12 - ObjectGroup00_PatternSets, ObjP13 - ObjectGroup00_PatternSets
+    .byte ObjP14 - ObjectGroup00_PatternSets, ObjP15 - ObjectGroup00_PatternSets, ObjP16 - ObjectGroup00_PatternSets, ObjP17 - ObjectGroup00_PatternSets
+    .byte ObjP18 - ObjectGroup00_PatternSets, ObjP19 - ObjectGroup00_PatternSets, ObjP1A - ObjectGroup00_PatternSets, ObjP1B - ObjectGroup00_PatternSets
+    .byte ObjP1C - ObjectGroup00_PatternSets, ObjP1D - ObjectGroup00_PatternSets, ObjP1E - ObjectGroup00_PatternSets, ObjP1F - ObjectGroup00_PatternSets
+    .byte ObjP20 - ObjectGroup00_PatternSets, ObjP21 - ObjectGroup00_PatternSets, ObjP22 - ObjectGroup00_PatternSets, ObjP23 - ObjectGroup00_PatternSets
 
 	; Object group $00 (i.e. objects starting at ID $00) pattern sets
 	; Note that each "frame" is made up of two tile starts, so there's
