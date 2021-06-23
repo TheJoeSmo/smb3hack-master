@@ -2382,8 +2382,8 @@ WagYVel_NotRabbit:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; 4th value is for muck swim start
-SwimSpeedStart:	.byte PLAYER_SWIMSTART_YVEL,	PLAYER_SWIMSTART_YVEL / 3,	PLAYER_SWIMSTART_YVEL * 3, -$1E
-SwimSpeedDelta:	.byte PLAYER_SWIM_YVEL, 		PLAYER_SWIM_YVEL / 3, 		PLAYER_SWIM_YVEL * 3, $1E
+SwimSpeedStart:	.byte PLAYER_SWIMSTART_YVEL,	<(PLAYER_SWIMSTART_YVEL / 3),	<(PLAYER_SWIMSTART_YVEL * 3), -$1E
+SwimSpeedDelta:	.byte PLAYER_SWIM_YVEL, 		<(PLAYER_SWIM_YVEL / 3), 		<(PLAYER_SWIM_YVEL * 3), $1E
 
 Player_SwimV:
 	LDA Pad_Input		 
