@@ -181,26 +181,25 @@ AND7F:	; This seems like a ridiculous subroutine!
 	AND #$7f
 	RTS		 ; Return
 
-MSHO .func \1-Sound_Map_LUT	; "Map Sound Header Offset"
+; "Map Sound Header Offset"
 Sound_Map_LUT:
 	; These are offsets from here to the respective SFX data headers
-	.byte MSHO(SndMapH_Entrance),	MSHO(SndMapH_Move)
-	.byte MSHO(SndMapH_Enter),	MSHO(SndMapH_Flip)
-	.byte MSHO(SndMapH_Bonus),	MSHO(SndMapH_Unused)
-	.byte MSHO(SndMapH_Unused),	MSHO(SndMapH_Deny)
+	.byte SndMapH_Entrance - Sound_Map_LUT,	SndMapH_Move - Sound_Map_LUT
+	.byte SndMapH_Enter - Sound_Map_LUT,	SndMapH_Flip - Sound_Map_LUT
+	.byte SndMapH_Bonus - Sound_Map_LUT,	SndMapH_Unused - Sound_Map_LUT
+	.byte SndMapH_Unused - Sound_Map_LUT,	SndMapH_Deny - Sound_Map_LUT
 
 
-MSO .func \1-SndMap_Data
 	;	Offset1, Offset2
 	; Offset1 specifies a first track played on Square 1 at 50% duty cycle
 	; Offset2 specifies a second track played on Square 2 at 25% duty cycle, only used by the level entry sound...
-SndMapH_Entrance:	.byte MSO(SndMap_Data_WEnt),	$00 ; $01: World begin starry entrance sound
-SndMapH_Move:		.byte MSO(SndMap_Data_Move),	$00 ; $02: Path move
-SndMapH_Enter:		.byte MSO(SndMap_Data_Entr),	MSO(SndMap_Data_Entr2) ; $04: Enter level
-SndMapH_Flip:		.byte MSO(SndMap_Data_Flip),	$00 ; $08: Flip inventory
-SndMapH_Bonus:		.byte MSO(SndMap_Data_Bonus),	$00 ; $10: Bonus appears
-SndMapH_Deny:		.byte MSO(SndMap_Data_Deny), 	$00 ; $80: Denied
-SndMapH_Unused:		.byte MSO(SndMap_Data_Unused),	$00 ; $20/$40: ?? unused ?
+SndMapH_Entrance:	.byte SndMap_Data_WEnt - SndMap_Data,	$00 ; $01: World begin starry entrance sound
+SndMapH_Move:		.byte SndMap_Data_Move - SndMap_Data,	$00 ; $02: Path move
+SndMapH_Enter:		.byte SndMap_Data_Entr - SndMap_Data,	SndMap_Data_Entr2 - SndMap_Data ; $04: Enter level
+SndMapH_Flip:		.byte SndMap_Data_Flip - SndMap_Data,	$00 ; $08: Flip inventory
+SndMapH_Bonus:		.byte SndMap_Data_Bonus - SndMap_Data,	$00 ; $10: Bonus appears
+SndMapH_Deny:		.byte SndMap_Data_Deny - SndMap_Data, 	$00 ; $80: Denied
+SndMapH_Unused:		.byte SndMap_Data_Unused - SndMap_Data,	$00 ; $20/$40: ?? unused ?
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
