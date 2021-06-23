@@ -3741,8 +3741,7 @@ PRGROM_Change_C000:	; $FFD1
 	
 		
 	; ASSEMBLER BOUNDARY CHECK, END OF $FFFA
-.Bound_FFFA:	BoundCheck .Bound_FFFA, $FFFA, PRG063: Vector space
-
+	.pad $FFFA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; VECTORS
 ; Must appear at $FFFA

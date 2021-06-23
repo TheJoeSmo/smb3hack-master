@@ -528,7 +528,7 @@ PAD_RIGHT	= $01
 	Sound_Map_Off:		.ds 1	; Current "offset" within a map sound effect
 
 	; ASSEMBLER BOUNDARY CHECK, END OF ZERO PAGE PRE CONTEXT @ $74
-.BoundZP_PreCtx:	BoundCheck .BoundZP_PreCtx, $74, Zero Page
+	.pad $74
 
 	; NOTE: $75 - $F3 are context specific; see contexts below
 
@@ -552,8 +552,7 @@ PAD_RIGHT	= $01
 	PPU_CTL1_Copy:		.ds 1	; Holds PPU_CTL1 register data 
 
 	; ASSEMBLER BOUNDARY CHECK, END OF ZERO PAGE @ $100
-.BoundZP:	BoundCheck .BoundZP, $100, Zero Page
-
+	.pad $100
 ; NOTE: CONTEXT -- Page 0 RAM changes meaning depending on the "context", i.e. what state
 ; of the game we're currently in!  This means that variables are defined with overlapping
 ; addresses, and care must be taken to use the correct labels depending on the code!
@@ -614,8 +613,7 @@ PAD_RIGHT	= $01
 	Title_WorldEnd:		.ds 1	; Debug menu world end index; Triggers world end sequence for given world
 	
 	; ASSEMBLER BOUNDARY CHECK, END OF CONTEXT @ $F5
-.BoundZP_Title:	BoundCheck .BoundZP_Title, $F5, Zero Page Title Screen Context
-
+	.pad $F5
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: WORLD MAP CONTEXT
@@ -747,8 +745,7 @@ PAD_RIGHT	= $01
 				.ds 7	; $ED-$F3 unused
 
 	; ASSEMBLER BOUNDARY CHECK, END OF CONTEXT @ $F4
-.BoundZP_Map:	BoundCheck .BoundZP_Map, $F4, Zero Page World Map Context
-
+	.pad $F4
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: BONUS GAME CONTEXT (see PRG022 for lots more info)
@@ -769,8 +766,7 @@ PAD_RIGHT	= $01
 				.ds 41	; $CB-$F3 unused
 
 	; ASSEMBLER BOUNDARY CHECK, END OF CONTEXT @ $F4
-.BoundZP_Bonus:	BoundCheck .BoundZP_Bonus, $F4, Zero Page Bonus Context
-
+	.pad $F4
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: 2P VS CONTEXT
@@ -783,8 +779,7 @@ PAD_RIGHT	= $01
 				.ds 125	; $77-$F3 unused
 
 	; ASSEMBLER BOUNDARY CHECK, END OF CONTEXT @ $F4
-.BoundZP_Vs:	BoundCheck .BoundZP_Vs, $F4, Zero Page 2P Vs Context
-
+	.pad $F4
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: GAMEPLAY CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -898,8 +893,7 @@ PLAYERSUIT_LAST		= PLAYERSUIT_HAMMER	; Marker for "last" suit (Debug cycler need
 	Player_OldSuit:		.ds 1	; Player's previous power-up, to support new transition effect
 
 	; ASSEMBLER BOUNDARY CHECK, END OF CONTEXT @ $F4
-.BoundZP_Game:	BoundCheck .BoundZP_Game, $F4, Zero Page Gameplay Context
-
+	.pad $F4
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $1xx LOW STACK VARIABLES
@@ -955,8 +949,7 @@ SPR_HFLIP	= %01000000
 SPR_VFLIP	= %10000000
 
 	; ASSEMBLER BOUNDARY CHECK, END OF SPRITE RAM
-.Bound_SprRAM:	BoundCheck .Bound_SprRAM, $0300, Sprite RAM
-
+	.pad $0300
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $03xx RAM (Largely graphics updating / control)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1079,8 +1072,7 @@ UPDATERASTER_32PIXSHOWSPR= $80	; If NOT set, hides sprites that fall beneath the
 	Level_PauseSelect:		.ds 1	; PAUSE Menu selection
 	
 	; ASSEMBLER BOUNDARY CHECK, END OF $03xx
-.Bound_0300:	BoundCheck .Bound_0300, $0400, $03xx
-
+	.pad $0400
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $04xx WORLD MAP CONTEXT
@@ -1128,8 +1120,7 @@ UPDATERASTER_32PIXSHOWSPR= $80	; If NOT set, hides sprites that fall beneath the
 	Map_SprRAMOffDistr:	.ds 1	; A free running counter on the map only which distributes Sprite_RAM offsets to ensure visibility
 
 	; ASSEMBLER BOUNDARY CHECK, CONTEXT END OF $04D0
-.BoundW8D_04D0:	BoundCheck .BoundW8D_04D0, $04D0, $04xx range World Map Entrance Transition context
-
+	.pad $04D0
 	.base $0444
 	; Entrance transition; overlaps with above
 	; NOTE: Memory is cleared from here to +$1C, $460
@@ -1154,8 +1145,7 @@ UPDATERASTER_32PIXSHOWSPR= $80	; If NOT set, hides sprites that fall beneath the
 	Map_EntTran_InitValIdx:	.ds 1	; Selects an index of values to initialize by
 	
 	; ASSEMBLER BOUNDARY CHECK, CONTEXT END OF $04D0
-.BoundET_04D0:	BoundCheck .BoundET_04D0, $04D0, $04xx range World Map Entrance Transition context
-
+	.pad $04D0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $04xx BONUS GAME CONTEXT (see PRG022 for lots more info)
@@ -1289,8 +1279,7 @@ BONUS_UNUSED_2RETURN	= 7	; MAY have been Koopa Troopa's "Prize" Game...
 	; $0444-$04CF unused in this context
 
 	; ASSEMBLER BOUNDARY CHECK, CONTEXT END OF $04D0
-.BoundBonus_04D0:	BoundCheck .BoundBonus_04D0, $04D0, $04xx range Bonus context
-
+	.pad $04D0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $04xx GAMEPLAY CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1416,8 +1405,7 @@ SOBJ_ALBABOMB	= $19	; Albatoss's bomb!
 	Player_DebugNoHitFlag:	.ds 1	; DEBUG: When set, disables getting hurt
 
 	; ASSEMBLER BOUNDARY CHECK, CONTEXT END OF $04D0
-.BoundGame_04D0:	BoundCheck .BoundGame_04D0, $04D0, $04xx range Bonus context
-
+	.pad $04D0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $04xx RAM SOUND/MUSIC ENGINE
@@ -1601,8 +1589,7 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 	Music_Sq1TrkOff:	.ds 1	; Offset of square wave 1 track in currently playing index
 
 	; ASSEMBLER BOUNDARY CHECK, CONTEXT END OF $04D0
-.BoundSound_0500:	BoundCheck .BoundSound_0500, $0500, $04xx Sound Engine
-
+	.pad $0500
 
 
 ; NOTE: CONTEXT -- RAM in the $500-$5FF range changes meaning depending on the "context", i.e. what
@@ -1638,8 +1625,7 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 	; $0525-$05FF unused
 
 	; ASSEMBLER BOUNDARY CHECK, END OF $0600
-.BoundTS_0600:	BoundCheck .BoundTS_0600, $0600, $05xx Title Screen context
-
+	.pad $0600
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $5xx MAP CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1689,8 +1675,7 @@ MAPOBJ_TOTAL		= $09	; Total POSSIBLE map objects
 	Map_Objects_Itm:	.ds 9	; $7956-$795D, "Item given by" map objects
 
 	; ASSEMBLER BOUNDARY CHECK, END OF $0600
-.BoundM_0600:	BoundCheck .BoundM_0600, $0600, $05xx World Map context
-
+	.pad $0600
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $5xx BONUS GAME CONTEXT (see PRG022 for lots more info)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1704,8 +1689,7 @@ MAPOBJ_TOTAL		= $09	; Total POSSIBLE map objects
 	; $05E9-$05FF unused
 
 	; ASSEMBLER BOUNDARY CHECK, END OF $0600
-.BoundBonus_0600:	BoundCheck .BoundBonus_0600, $0600, $05xx World Map context
-
+	.pad $0600
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $5xx GAMEPLAY CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1996,8 +1980,7 @@ ASCONFIG_HDISABLE	= $80	; Disables horizontal auto scroll coordinate adjustment 
 	Player_DigSand:			.ds 1	; Player sand digging; counts to zero
 
 	; ASSEMBLER BOUNDARY CHECK, END OF $0600
-.BoundGame_0600:	BoundCheck .BoundGame_0600, $0600, $05xx Gameplay context
-
+	.pad $0600
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $06xx RAM
@@ -2126,8 +2109,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 	Objects_StompDisable:	.ds 8	; Disable stomping of object for one frame
 
 	; ASSEMBLER BOUNDARY CHECK, END OF $0700
-.Bound_0700:	BoundCheck .Bound_0700, $0700, $06xx RAM
-
+	.pad $0700
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $07xx RAM
@@ -2364,8 +2346,7 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 	Sound_Unused7FF:	.ds 1	; Cleared once, never used otherwise
 
 	; ASSEMBLER BOUNDARY CHECK, END OF $0800
-.Bound_0800:	BoundCheck .Bound_0800, $0800, $07xx RAM
-
+	.pad $0800
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $68xx SRAM for 2P Vs ONLY
@@ -2566,8 +2547,7 @@ VSOBJID_KICKEDBLOCK	= 11	; Kicked block (from [?] block match)
 	Vs_SpawnCnt:		.ds 1	; Spawn counter; increments and triggers spawning
 
 	; ASSEMBLER BOUNDARY CHECK, 2P VS END OF $7950
-.Bound_7950:	BoundCheck .Bound_7950, $7950, 2P VS RAM
-
+	.pad $7950
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $6000-$7FFF MMC3 SRAM
@@ -2986,8 +2966,7 @@ MCOMP_SECRET	= %00100000	; Bit 5 - Level Completed (secret/alternate exit)
 	SaveData_Index:		.ds 1	; Active save slot
 
 	; ASSEMBLER BOUNDARY CHECK, END OF $7E00
-.Bound_7E00:	BoundCheck .Bound_7E00, $7E00, MMC3 SRAM
-	
+	.pad $7E00	
 	; SAVE DATA
 	.base $7E00
 
@@ -2995,8 +2974,7 @@ MCOMP_SECRET	= %00100000	; Bit 5 - Level Completed (secret/alternate exit)
 	SaveData:	.ds 512
 
 	; ASSEMBLER BOUNDARY CHECK, END OF $8000
-.Bound_8000:	BoundCheck .Bound_8000, $8000, MMC3 SRAM
-
+	.pad $8000
 	.ende
 	
 
