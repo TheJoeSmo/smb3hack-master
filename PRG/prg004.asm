@@ -359,20 +359,18 @@ ObjectGroup03_KillAction:
 	; Object group $03 (i.e. objects starting at ID $6C) pattern index starts
 	; These are used for all states except "normal"
 
-OG3_POff .func (\1 - ObjectGroup03_PatternSets)
-
 	.org ObjectGroup_PatternStarts	; <-- help enforce this table *here*
 ObjectGroup03_PatternStarts:
 	; Index by object group relative index (ObjGroupRel_Idx)
-	.byte OG3_POff(ObjP6C), OG3_POff(ObjP6D), OG3_POff(ObjP6E), OG3_POff(ObjP6F)
-	.byte OG3_POff(ObjP70), OG3_POff(ObjP71), OG3_POff(ObjP72), OG3_POff(ObjP73)
-	.byte OG3_POff(ObjP74), OG3_POff(ObjP75), OG3_POff(ObjP76), OG3_POff(ObjP77)
-	.byte OG3_POff(ObjP78), OG3_POff(ObjP79), OG3_POff(ObjP7A), OG3_POff(ObjP7B)
-	.byte OG3_POff(ObjP7C), OG3_POff(ObjP7D), OG3_POff(ObjP7E), OG3_POff(ObjP7F)
-	.byte OG3_POff(ObjP80), OG3_POff(ObjP81), OG3_POff(ObjP82), OG3_POff(ObjP83)
-	.byte OG3_POff(ObjP84), OG3_POff(ObjP85), OG3_POff(ObjP86), OG3_POff(ObjP87)
-	.byte OG3_POff(ObjP88), OG3_POff(ObjP89), OG3_POff(ObjP8A), OG3_POff(ObjP8B)
-	.byte OG3_POff(ObjP8C), OG3_POff(ObjP8D), OG3_POff(ObjP8E), OG3_POff(ObjP8F)
+	.byte ObjP6C - ObjectGroup03_PatternSets, ObjP6D - ObjectGroup03_PatternSets, ObjP6E - ObjectGroup03_PatternSets, ObjP6F - ObjectGroup03_PatternSets
+	.byte ObjP70 - ObjectGroup03_PatternSets, ObjP71 - ObjectGroup03_PatternSets, ObjP72 - ObjectGroup03_PatternSets, ObjP73 - ObjectGroup03_PatternSets
+	.byte ObjP74 - ObjectGroup03_PatternSets, ObjP75 - ObjectGroup03_PatternSets, ObjP76 - ObjectGroup03_PatternSets, ObjP77 - ObjectGroup03_PatternSets
+	.byte ObjP78 - ObjectGroup03_PatternSets, ObjP79 - ObjectGroup03_PatternSets, ObjP7A - ObjectGroup03_PatternSets, ObjP7B - ObjectGroup03_PatternSets
+	.byte ObjP7C - ObjectGroup03_PatternSets, ObjP7D - ObjectGroup03_PatternSets, ObjP7E - ObjectGroup03_PatternSets, ObjP7F - ObjectGroup03_PatternSets
+	.byte ObjP80 - ObjectGroup03_PatternSets, ObjP81 - ObjectGroup03_PatternSets, ObjP82 - ObjectGroup03_PatternSets, ObjP83 - ObjectGroup03_PatternSets
+	.byte ObjP84 - ObjectGroup03_PatternSets, ObjP85 - ObjectGroup03_PatternSets, ObjP86 - ObjectGroup03_PatternSets, ObjP87 - ObjectGroup03_PatternSets
+	.byte ObjP88 - ObjectGroup03_PatternSets, ObjP89 - ObjectGroup03_PatternSets, ObjP8A - ObjectGroup03_PatternSets, ObjP8B - ObjectGroup03_PatternSets
+	.byte ObjP8C - ObjectGroup03_PatternSets, ObjP8D - ObjectGroup03_PatternSets, ObjP8E - ObjectGroup03_PatternSets, ObjP8F - ObjectGroup03_PatternSets
 
 
 	; Object group $03 (i.e. objects starting at ID $6C) pattern sets
