@@ -1,6 +1,6 @@
-; For more info about DCC6502, e-mail veilleux@ameth.org
+; For more info about DCC6502, e-mail veilleux@ameth.base
 ;
-; FILENAME: prg031.bin, File Size: 8191, ORG: $E000
+; FILENAME: prg031.bin, File Size: 8191,.base: $E000
 ;     -> NES mode enabled
 ;---------------------------------------------------------------------------
 
@@ -764,7 +764,7 @@ PRG063_E559:
 	JMP PRG063_E535	
 
 PRG063_E571:
-	; Value was not $ff, forget it...
+	; Value was not $ff, .baseet it...
 	DEC Music_Sq2TrkOff	; Music_Sq2TrkOff--
 
 PRG063_E574:
@@ -3747,7 +3747,7 @@ PRGROM_Change_C000:	; $FFD1
 ; VECTORS
 ; Must appear at $FFFA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $FFFA
+	.base $FFFA
 Vector_Table:
 	.word IntNMI   	; $FFFA - NMI Interrupt (VBlank)
 	.word IntReset	; $FFFC - Reset Interrupt (boot up)
