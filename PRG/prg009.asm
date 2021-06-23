@@ -5020,16 +5020,15 @@ AScroll_VelAccel:	.byte $00, $01, -$01, -$01
 
 	; This points to the starting offset into AScroll_MovementLoop
 	; Indexed by (Level_AScrlLoopSel - 2), next value up is terminating value
-ASML	.func \1 - AScroll_MovementLoop
 AScroll_MovementLoopStart:
-	.byte ASML(ASML_0)		; 0 (Level_AScrlLoopSel = 2)
-	.byte ASML(ASML_Battleship)	; 1 (Level_AScrlLoopSel = 3) Battleship uses as the "idle" at the end of its scrolling
-	.byte ASML(ASML_Airship)	; 2 (Level_AScrlLoopSel = 4) Airship/Coin Ship uses this as the "idle" at the end of its scrolling
-	.byte ASML(ASML_3)		; 3 (Level_AScrlLoopSel = 5)
-	.byte ASML(ASML_4)		; 4 (Level_AScrlLoopSel = 6)
-	.byte ASML(ASML_5)		; 5 (Level_AScrlLoopSel = 7)
-	.byte ASML(ASML_6)		; 6 (Level_AScrlLoopSel = 8)
-	.byte ASML(ASML_Terminator)	; Terminator
+	.byte ASML_0 - AScroll_MovementLoop		; 0 (Level_AScrlLoopSel = 2)
+	.byte ASML_Battleship - AScroll_MovementLoop	; 1 (Level_AScrlLoopSel = 3) Battleship uses as the "idle" at the end of its scrolling
+	.byte ASML_Airship - AScroll_MovementLoop	; 2 (Level_AScrlLoopSel = 4) Airship/Coin Ship uses this as the "idle" at the end of its scrolling
+	.byte ASML_3 - AScroll_MovementLoop		; 3 (Level_AScrlLoopSel = 5)
+	.byte ASML_4 - AScroll_MovementLoop		; 4 (Level_AScrlLoopSel = 6)
+	.byte ASML_5 - AScroll_MovementLoop		; 5 (Level_AScrlLoopSel = 7)
+	.byte ASML_6 - AScroll_MovementLoop		; 6 (Level_AScrlLoopSel = 8)
+	.byte ASML_Terminator - AScroll_MovementLoop	; Terminator
 
 	.byte $00
 
