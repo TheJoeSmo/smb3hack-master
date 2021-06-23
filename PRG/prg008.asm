@@ -4601,16 +4601,15 @@ Level_ActionTiles_Range:
 	.byte (LATP_End - LATP_ASwitchR)
 
 	; Offset fix applied to the selected "action tile" set
-LATR_Off .func (\1 - LATR_GNote)
 Level_ActionTiles_OffFix:
 	; Tiles activated anytime
-	.byte LATR_Off(LATR_GNote), LATR_Off(LATR_HNote), LATR_Off(LATR_Notes)
+	.byte LATR_GNote - LATR_GNote, LATR_HNote - LATR_GNote, LATR_Notes - LATR_GNote
 
 	; Tiles activated only when Player is moving upward
-	.byte LATR_Off(LATR_Woodblocks), LATR_Off(LATR_QBlocks), LATR_Off(LATR_InvisCoin), LATR_Off(LATR_InvisNote)
+	.byte LATR_Woodblocks - LATR_GNote, LATR_QBlocks - LATR_GNote, LATR_InvisCoin - LATR_GNote, LATR_InvisNote - LATR_GNote
 
-	.byte LATR_Off(LATR_ASwitch)
-	.byte LATR_Off(LATR_ASwitchR)
+	.byte LATR_ASwitch - LATR_GNote
+	.byte LATR_ASwitchR - LATR_GNote
 
 	; This defines the base tile index for "action tiles", tiles which, when the
 	; Player hits them right, causes something to happen...
