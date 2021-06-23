@@ -3259,14 +3259,11 @@ TileUpdAttr_MergeAndShift:
 	RTS
 
 
-	; Change Fence Rotation Command offset
-FROT_BCOff .func \1 - Chng_FenceRot1
-
 	; Get initial offset to proper set of commands to be used
 FROT_Offsets:
-	.byte FROT_BCOff(Chng_FenceRot1)	; Fence rotation 1
-	.byte FROT_BCOff(Chng_FenceRot2)	; Fence rotation 2
-	.byte FROT_BCOff(Chng_FenceRot3)	; Fence rotation 3
+	.byte Chng_FenceRot1 - Chng_FenceRot1	; Fence rotation 1
+	.byte Chng_FenceRot2 - Chng_FenceRot1	; Fence rotation 2
+	.byte Chng_FenceRot3 - Chng_FenceRot1	; Fence rotation 3
 
 Chng_FenceRot1:
 	.byte $00, $00, $06, $0A, $30, $30, $30, $30, $0B
