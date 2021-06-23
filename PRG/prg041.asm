@@ -667,7 +667,7 @@ BowserJr_DrawHead:
 	JSR Object_ShakeAndCalcSprite
 
 	LDA Temp_Var4
-	AND #~SPR_PAL3
+	AND #<~SPR_PAL3
 	ORA #SPR_PAL1
 	STA Temp_Var4
 
@@ -1383,7 +1383,7 @@ BigBoo_TimerRunning:
 	BNE BigBoo_NotWavingYet
 	
 	LDA PatTable_BankSel
-	AND #~2
+	AND #<~2
 	STA PatTable_BankSel
 	
 	

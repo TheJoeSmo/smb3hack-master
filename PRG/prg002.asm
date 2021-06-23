@@ -3187,7 +3187,7 @@ PRG002_AF69:
 PRG002_AF72:
 	; Sets attributes and mirrors piranha sprites
 	LDA Temp_Var3	; Get object attributes
-	AND #~(SPR_HFLIP | $03)	 ; Keep everything except the horizontal flip and the palette select
+	AND #<~(SPR_HFLIP | $03)	 ; Keep everything except the horizontal flip and the palette select
 	ORA #SPR_PAL1	 ; Force palette select 1
 	STA Sprite_RAM+$02,Y	 ; Set attributes
 	ORA #SPR_HFLIP
@@ -3201,7 +3201,7 @@ PRG002_AF72:
 
 	; Piranha needs his body mirrored
 	LDA Sprite_RAM+$0A,Y
-	AND #~SPR_HFLIP
+	AND #<~SPR_HFLIP
 	STA Sprite_RAM+$0A,Y
 	ORA #SPR_HFLIP
 	STA Sprite_RAM+$0E,Y
@@ -3773,7 +3773,7 @@ PRG002_B272:
 	LDY Object_SprRAM,X
 	
 	LDA Sprite_RAM+$02,Y
-	AND #~SPR_PAL3
+	AND #<~SPR_PAL3
 	ORA #SPR_PAL1
 	STA Sprite_RAM+$02,Y
 	STA Sprite_RAM+$06,Y
@@ -4100,7 +4100,7 @@ LogPlat_Draw:
 
 	; Do not preserve the H/V flip bits (SB: Just HFLIP ... ok?)
 	LDA Temp_Var3
-	AND #~SPR_HFLIP
+	AND #<~SPR_HFLIP
 	STA Temp_Var3
 
 	LDA Counter_1
@@ -5742,7 +5742,7 @@ EndLevelCard_Draw:
 	TAX		 ; Frame -> 'X'
 
 	LDA Sprite_RAM+$02,Y
-	AND #~(SPR_HFLIP | $03)	 	; Keep all attributes except horizontal flip and palette select
+	AND #<~(SPR_HFLIP | $03)	 	; Keep all attributes except horizontal flip and palette select
 	ORA #SPR_PAL2
 	STA Sprite_RAM+$02,Y	 ; Set attributes
 	STA Sprite_RAM+$06,Y	 ; Set attributes

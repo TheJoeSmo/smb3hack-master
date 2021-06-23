@@ -2546,7 +2546,7 @@ PRG062_8DF4:
 	; Clearing start so it's not immediately handled
 	LDX Player_Current
 	LDA Controller1Press,X
-	AND #~PAD_START
+	AND #<~PAD_START
 	STA Controller1Press,X
 
 Game_ContinuePause:
@@ -6438,7 +6438,7 @@ Input_ReverseUpDown:
 	STA Temp_Var1	; -> Temp_Var1
 
 	PLA		; Restore input (Pad_Input or Pad_Holding)
-	AND #~(PAD_UP | PAD_DOWN)
+	AND #<~(PAD_UP | PAD_DOWN)
 	ORA Temp_Var1
 	RTS
 

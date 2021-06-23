@@ -3632,7 +3632,7 @@ Scroll_ToVRAM_Apply:
 
 	; Do increment by 1
 	LDA PPU_CTL1_Copy
-	AND #~$04
+	AND #<~$04
 	STA PPU_CTL1
 
 PRG026_B3AC:
@@ -3690,7 +3690,7 @@ TileChng_VRAMCommit:
 
 	; Switch to +1 increment mode
 	LDA PPU_CTL1_Copy
-	AND #~$04
+	AND #<~$04
 	STA PPU_CTL1
 
 	LDA TileChng_VRAM_L	; Get VRAM low address

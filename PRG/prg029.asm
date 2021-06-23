@@ -333,7 +333,7 @@ PRG029_CF1E:
 	; So the "right half" sprites must mirror the "left half"
 
 	LDA Sprite_RAM+$0E,X
-	AND #~SPR_HFLIP	 	; Keep all attributes EXCEPT horizontal flip
+	AND #<~SPR_HFLIP	 	; Keep all attributes EXCEPT horizontal flip
 	STA Sprite_RAM+$02,X
 	STA Sprite_RAM+$0E,X
 	ORA #SPR_HFLIP	 	; Force horizontal flip

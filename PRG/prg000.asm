@@ -2924,7 +2924,7 @@ PRG000_CD46:
 	TAY		 ; Y = 0 to 3, by counter
 
 	LDA Objects_FlipBits,X
-	AND #~SPR_HFLIP		; Keep all FlipBits except horizontal flips
+	AND #<~SPR_HFLIP		; Keep all FlipBits except horizontal flips
 	ORA ObjShell_AnimFlipBits,Y	 
 	STA Objects_FlipBits,X	 ; Apply flip as appropriate
 
@@ -4075,7 +4075,7 @@ PRG000_D301:
 
 	; Cancel the "Squish" sound, use the "kick" sound instead!
 	LDA Sound_QPlayer
-	AND #~SND_PLAYERSWIM
+	AND #<~SND_PLAYERSWIM
 	ORA #SND_PLAYERKICK
 	STA Sound_QPlayer
 
@@ -4191,7 +4191,7 @@ PRG000_D382:
 	JSR Level_ObjCalcXDiffs
 
 	LDA Objects_FlipBits,X
-	AND #~SPR_HFLIP	 ; Clear horizontal flip
+	AND #<~SPR_HFLIP	 ; Clear horizontal flip
 	DEY		 
 	BEQ PRG000_D399
 	ORA #SPR_HFLIP	 ; Set horizontal flip

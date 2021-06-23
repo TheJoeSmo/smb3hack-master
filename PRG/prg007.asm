@@ -768,7 +768,7 @@ PRG007_A30B:
 
 	; Hammer only -- boost X velocity by Player
 	ADD Player_XVel
-	AND #~1		; Make it even in any case so the checks don't fail
+	AND #<~1		; Make it even in any case so the checks don't fail
 
 PProj_NoHammerAdj:
 	STA PlayerProj_XVel,X	 ; Store Projectile X velocity

@@ -3117,7 +3117,7 @@ Boo_NoDanceMove:
 
 	LDY Temp_Var6		 ; Y = Temp_Var6 (Sprite_RAM offset)
 	
-	AND #~(SPR_HFLIP | SPR_VFLIP)	; Clear any flip bits
+	AND #<~(SPR_HFLIP | SPR_VFLIP)	; Clear any flip bits
 	ORA #$81
 	STA Sprite_RAM+$99,Y	
 	ADD #2

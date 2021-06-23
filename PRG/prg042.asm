@@ -816,7 +816,7 @@ BJrW3_ExitSpinOut:
 
 	; Don't play the woosh sound
 	LDA SndCur_Level2
-	AND #~SND_LEVELAIRSHIP
+	AND #<~SND_LEVELAIRSHIP
 	STA SndCur_Level2
 
 	LDA #0
@@ -1111,7 +1111,7 @@ BJrW6_DropBobomb:
 
 BJrW6_BombXLT224:
 	ADD #16
-	AND #~15		; Align to tile
+	AND #<~15		; Align to tile
 
 	STA Objects_X,X
 	LDA Objects_XHi,Y
@@ -1532,7 +1532,7 @@ BJrW4_SwoopRight:
 
 	; Don't play the woosh sound
 	LDA SndCur_Level2
-	AND #~SND_LEVELAIRSHIP
+	AND #<~SND_LEVELAIRSHIP
 	STA SndCur_Level2
 
 	; Whoosh
@@ -1578,7 +1578,7 @@ BJrW4_SwoopLeft:
 
 	; Don't play the woosh sound
 	LDA SndCur_Level2
-	AND #~SND_LEVELAIRSHIP
+	AND #<~SND_LEVELAIRSHIP
 	STA SndCur_Level2
 
 	; Whoosh
@@ -2500,7 +2500,7 @@ Petey_Walk:
 	AND #$80
 	STA Temp_Var1
 	LDA Objects_Frame,X
-	AND #~$80
+	AND #<~$80
 	ORA Temp_Var1
 	STA Objects_Frame,X
 	
@@ -2512,7 +2512,7 @@ Petey_Walk:
 	BEQ Petey_NotOnGroundW
 	
 	; Clear on-ground bit so default behavior doesn't occur!
-	AND #~$04
+	AND #<~$04
 	STA Objects_DetStat,X
 	
 	; On ground; hop a little, change frames
@@ -2548,7 +2548,7 @@ Petey_MovingUpward:
 	BEQ Petey_NotOnGroundJ
 
 	; Clear on-ground bit so default behavior doesn't occur!
-	AND #~$04
+	AND #<~$04
 	STA Objects_DetStat,X
 	
 	; On ground; JUMP!
@@ -2568,7 +2568,7 @@ Petey_Fly:
 
 	; Clear on ground bit always
 	LDA Objects_DetStat,X
-	AND #~$04
+	AND #<~$04
 	STA Objects_DetStat,X
 
 	LDA Counter_1
@@ -3639,7 +3639,7 @@ Wart_StillHurting:
 ObjNorm_Wart42:
 
 	LDA Objects_FlipBits,X
-	AND #~SPR_VFLIP
+	AND #<~SPR_VFLIP
 	STA Objects_FlipBits,X
 
 	LDA Objects_State,X
@@ -3992,7 +3992,7 @@ Wart_Upward:
 	STA Objects_Var5,X
 	
 	LDA Objects_SprAttr,X
-	AND #~SPR_BEHINDBG
+	AND #<~SPR_BEHINDBG
 	STA Objects_SprAttr,X
 	
 
@@ -4977,7 +4977,7 @@ Bleck_CheckLow:
 
 	; Bleck is too low trying to move down, reverse direction
 	LDA Objects_Var1,X
-	AND #~%00000010			; Set to move down
+	AND #<~%00000010			; Set to move down
 	STA Objects_Var1,X
 
 Bleck_NotOORVert:
@@ -5014,7 +5014,7 @@ Bleck_CheckRight:
 
 	; Bleck is too Left trying to move down, reverse direction
 	LDA Objects_Var1,X
-	AND #~%00000001			; Set to move left
+	AND #<~%00000001			; Set to move left
 	STA Objects_Var1,X
 
 Bleck_NotOORHorz:

@@ -863,7 +863,7 @@ Map_W8DarknessFill:
 
 	; Use horizontal updates
 	LDA PPU_CTL1_Copy
-	AND #~$04
+	AND #<~$04
 	STA PPU_CTL1
 
 	LDY #$02	 ; Y = $02

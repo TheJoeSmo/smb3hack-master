@@ -78,7 +78,7 @@ ObjFrozen_NotFlickering:
 	; Set all 6 sprites...
 ObjFrozen_SetPal0_Loop:
 	LDA Sprite_RAM+$02,Y	; Get current attributes
-	AND #~SPR_PAL3			; Clear any palette bits (set palette 0)
+	AND #<~SPR_PAL3			; Clear any palette bits (set palette 0)
 	STA Sprite_RAM+$02,Y	; Set new attributes
 	
 	INY
@@ -492,7 +492,7 @@ Object_32PP_BumpCheck:
 	
 	; No longer on 32PP floor...
 	LDA Objects_DetStat,X
-	AND #~$80
+	AND #<~$80
 	STA Objects_DetStat,X
 	
 Object_32PP_NoBumpChk:

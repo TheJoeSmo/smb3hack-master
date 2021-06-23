@@ -876,7 +876,7 @@ PRG008_A6DA:
 	BEQ PRG008_A6E5	 	; If Player is NOT sliding down slope, jump to PRG008_A6E5
 
 	LDA Pad_Input
-	AND #~PAD_B
+	AND #<~PAD_B
 	STA Pad_Input		; Otherwise, disable 'B' button
 
 PRG008_A6E5:
@@ -885,7 +885,7 @@ PRG008_A6E5:
 	;BNE PRG008_A6F2	 	; If first object is not "Toad and the King" (i.e. we're in the end of world castle), jump to PRG008_A6F2
 
 	;LDA Pad_Holding
-	;AND #~(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
+	;AND #<~(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
 	;STA Pad_Holding	; Otherwise, disable all directional inputs
 
 ;PRG008_A6F2:
@@ -1022,7 +1022,7 @@ PRG008_A77E:
 	STA Player_XVel
 	STA Pad_Input
 
-	;AND #~PAD_A
+	;AND #<~PAD_A
 	;STA Pad_Input	; ?? it's still zero?
 
 	; Player_LowClearance = 1 (Player is in a "low clearance" situation!)
@@ -1137,13 +1137,13 @@ PRG008_A7F1:
 	STY Player_YVel ; Update Player_YVel
 
 	LDA Pad_Input
-	AND #~PAD_A
+	AND #<~PAD_A
 	STA Pad_Input	 ; Strip out 'A' button press
 
 	LDA Pad_Holding
 	TAY		 ; Y = Pad_Holding
 
-	AND #~PAD_UP
+	AND #<~PAD_UP
 	STA Pad_Holding ; Strip out 'Up'
 
 	TYA		 ; A = original Pad_Holding
@@ -6678,7 +6678,7 @@ PRG008_BE31:
 
 	; Don't register 'A' button
 	;LDA Pad_Input
-	;AND #~PAD_A
+	;AND #<~PAD_A
 	;STA Pad_Input
 
 ;PRG008_BE76:

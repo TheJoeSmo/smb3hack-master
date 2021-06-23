@@ -894,7 +894,7 @@ PRG009_A555:
 	; Player is moving downard
 
 	LDA Vs_PlayerY,X	; Get Player Y
-	AND #~%00000111		; Align to nearest 8
+	AND #<~%00000111		; Align to nearest 8
 	ADD Vs_PlayerYOff,X	; Apply Y offset
 	STA Vs_PlayerY,X	; -> Player Y
 
@@ -3482,7 +3482,7 @@ PRG009_B1E3:
 
 	; Mirror object
 	LDA Sprite_RAM+$02,Y
-	AND #~SPR_HFLIP
+	AND #<~SPR_HFLIP
 	STA Sprite_RAM+$02,Y
 	ORA #SPR_HFLIP
 	STA Sprite_RAM+$06,Y

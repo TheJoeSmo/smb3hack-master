@@ -187,7 +187,7 @@ SObj_PrioSpecObj_OffChk:
 	; Otherwise, need to flag it so it can spawn again!
 	LDY SpecialObj_Var1,X		; Get Var1 value (index into Level_ObjectsSpawned)
 	LDA Level_ObjectsSpawned,Y
-	AND #~$80	
+	AND #<~$80	
 	STA Level_ObjectsSpawned,Y	; Mark object as not spawned
 
 	JMP SpecialObj_Remove	 ; Jump to SpecialObj_Remove
@@ -1956,7 +1956,7 @@ SpecialObj_Remove:
 	; Priority special objects need to flag so it can spawn again!
 	LDY SpecialObj_Var1,X		; Get Var1 value (index into Level_ObjectsSpawned)
 	LDA Level_ObjectsSpawned,Y
-	AND #~$80	
+	AND #<~$80	
 	STA Level_ObjectsSpawned,Y	; Mark object as not spawned
 
 SObj_NotPriority:

@@ -2650,7 +2650,7 @@ BMUP_TooLow:
 Bowser_TargetPlayer:
 	LDA Player_X
 	ADD #12
-	AND #~$1F
+	AND #<~$1F
 	STA Objects_X,X
 
 	LDA #0
@@ -2826,7 +2826,7 @@ Bowser_BurnPoof:
 Bowser_TargetPlayer2:
 	LDA Player_X
 	ADD #24
-	AND #~$3F
+	AND #<~$3F
 	STA Objects_X,X
 
 	LDA #0

@@ -2928,7 +2928,7 @@ PProj_NoXVelAccel:
 	
 	; Reverse direction!
 	LDA PlayerProj_Var2,X
-	AND #~1
+	AND #<~1
 	STA PlayerProj_Var2,X
 
 	JMP PProj_BoomerangYVel
