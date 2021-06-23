@@ -3627,20 +3627,20 @@ PLAYER_TOPWALKSPEED	= $18	; Highest X velocity considered as Player "walking"
 PLAYER_TOPRUNSPEED	= $28	; Highest X velocity when Player runs
 PLAYER_TOPPOWERSPEED	= $38	; Highest X velocity hit when Player is at full "power"
 PLAYER_MAXSPEED		= $40	; Player's maximum speed
-PLAYER_JUMP		= -$38	; Player's root Y velocity for jumping (further adjusted a bit by Player_SpeedJumpInc)
+PLAYER_JUMP		= <-$38	; Player's root Y velocity for jumping (further adjusted a bit by Player_SpeedJumpInc)
 PLAYER_TAILWAG_YVEL	= $10	; The Y velocity that the tail wag attempts to lock you at
-PLAYER_FLY_YVEL		= -$18	; The Y velocity the Player flies at
+PLAYER_FLY_YVEL		= <-$18	; The Y velocity the Player flies at
 
-PLAYER_SWIMSTART_YVEL	= -$20	; The Y velocity the Player starts swimming at (or applied when sinking too fast)
+PLAYER_SWIMSTART_YVEL	= <-$20	; The Y velocity the Player starts swimming at (or applied when sinking too fast)
 PLAYER_SWIM_YVEL	= $20	; The swim Y velocity the rest of the time
-PLAYER_PENGUIN_MAXYVEL	= -$20
+PLAYER_PENGUIN_MAXYVEL	= <-$20
 
 ; Applies only to objects following Object_Move's standard movements, but most write their own physics
 OBJECT_FALL		= $03
 OBJECT_FALLINWATER	= $01
 OBJECT_MAXFALL		= $40
 OBJECT_MAXFALLINWATER	= $10
-OBJECT_MAXWATERUPWARD	= -$18
+OBJECT_MAXWATERUPWARD	= <-$18
 OBJECT_FALLRATE		= $03
 OBJECT_FALLRATEINWATER	= $01
 
