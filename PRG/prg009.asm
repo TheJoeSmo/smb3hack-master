@@ -3223,20 +3223,19 @@ Vs_ObjectPalette:
 
 
 	; Base sprite pattern for objects
-Vs_PatIdx:	.func \1 - Vs_ObjPatterns
 Vs_ObjectBasePatIndex:
-	.byte Vs_PatIdx(Vs_PatSpiny)	; Spiny
-	.byte Vs_PatIdx(Vs_PatSpiny)
-	.byte Vs_PatIdx(Vs_PatSStep)	; Sidestepper
-	.byte Vs_PatIdx(Vs_PatFFly)	; Fighter Fly
-	.byte Vs_PatIdx(Vs_PatFBall)	; Horizontal Fireball
-	.byte Vs_PatIdx(Vs_PatFBall)	; Game Ender Fireball
-	.byte Vs_PatIdx(Vs_PatFBall)	; Fountain Fireball 
-	.byte Vs_PatIdx(Vs_PatCoin)	; Coin
-	.byte Vs_PatIdx(Vs_PatMush)	; Mushroom card
-	.byte Vs_PatIdx(Vs_PatFlower)	; Flower card
-	.byte Vs_PatIdx(Vs_PatStar)	; Star card
-	.byte Vs_PatIdx(Vs_PatKBlock)	; Kicked block (from [?] block match)
+	.byte Vs_PatSpiny - Vs_ObjPatterns	; Spiny
+	.byte Vs_PatSpiny - Vs_ObjPatterns
+	.byte Vs_PatSStep - Vs_ObjPatterns	; Sidestepper
+	.byte Vs_PatFFly - Vs_ObjPatterns	; Fighter Fly
+	.byte Vs_PatFBall - Vs_ObjPatterns	; Horizontal Fireball
+	.byte Vs_PatFBall - Vs_ObjPatterns	; Game Ender Fireball
+	.byte Vs_PatFBall - Vs_ObjPatterns	; Fountain Fireball 
+	.byte Vs_PatCoin - Vs_ObjPatterns	; Coin
+	.byte Vs_PatMush - Vs_ObjPatterns	; Mushroom card
+	.byte Vs_PatFlower - Vs_ObjPatterns	; Flower card
+	.byte Vs_PatStar - Vs_ObjPatterns	; Star card
+	.byte Vs_PatKBlock - Vs_ObjPatterns	; Kicked block (from [?] block match)
 
 	; 0 = Sprites unchanged 
 	; 1 = Mirror both on odd frame
@@ -3315,7 +3314,7 @@ PRG009_B122:
 	LDA Vs_FireballBaseAnimCnt,Y
 	STA Vs_ObjectAnimCnt,X
 
-	LDX #Vs_PatIdx(Vs_PatFBall2)	 ; Fireball base pattern index
+	LDX #Vs_PatFBall2 - Vs_ObjPatterns	 ; Fireball base pattern index
 	LDA #SPR_PAL3	 ; Fireball palette
 
 	JMP PRG009_B13F	 ; Jump to PRG009_B13F
@@ -3381,7 +3380,7 @@ PRG009_B15D:
 	INC <Temp_Var4
 
 	; Alternate flipped Spiny pattern index
-	LDA #Vs_PatIdx(Vs_PatSpinyFlip)
+	LDA #Vs_PatSpinyFlip - Vs_ObjPatterns
 	STA <Temp_Var2
 
 PRG009_B17E:
