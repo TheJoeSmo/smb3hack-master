@@ -2794,10 +2794,10 @@ PRG024_B782:
 
 
 
-EndLevelDef	.macro
-	.word \1	; Level pointer
-	.byte (\2 << 7) | \3	; YHi and tileset
-	.byte (\4 << 4) | (\5)	; Start and End Scroll
+	.macro EndLevelDef _1, _2, _3, _4, _5
+	.word _1	; Level pointer
+	.byte (_2 << 7) | _3	; YHi and tileset
+	.byte (_4 << 4) | (_5)	; Start and End Scroll
 	.endm
 
 Ending_Levels:

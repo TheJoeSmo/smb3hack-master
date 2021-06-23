@@ -2934,10 +2934,10 @@ PRG043_D7DE:
 ; entries when Player is within range of it.  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-ALMList	.macro
-	.byte \1	; Alternate tileset
-	.word \2	; Alternate layout
-	.word \3	; Alternate objects
+	.macro ALMList _1, _2, _3
+	.byte _1	; Alternate tileset
+	.word _2	; Alternate layout
+	.word _3	; Alternate objects
 	.endm
 
 AltLvlMod_List:

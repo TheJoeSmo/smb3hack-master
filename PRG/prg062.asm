@@ -114,47 +114,47 @@ Video_Upd_Table: ; $803E
 
 	; NOTE!! If you want to edit the status bar, you should also sync up
 	; with the "flip" data in PRG026 as noted below...
-StatusBar	.macro
+	.macro StatusBar _1
 
 	; Sync next three with PRG026 Flip_TopBarCards
-	vaddr \1 + $00
+	vaddr _1 + $00
 	.byte $02, $FC, $A0		; Upper left corner
 
-	vaddr \1 + $02
+	vaddr _1 + $02
 	.byte VU_REPEAT | $12, $A1	; Bar across the top
 
-	vaddr \1 + $14
+	vaddr _1 + $14
 	.byte $0C, $A2, $A0, $A1, $A1, $A3, $A1, $A1, $A3, $A1, $A1, $A2, $FC	; top of card slots
 
 	; Sync this with PRG026 Flip_MidTStatCards
-	vaddr \1 + $20
+	vaddr _1 + $20
 	.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF, $EF, $EF, $EF, $EF, $EF, $3C	; |WORLD  >>>>>>[P] $  | |  | |  | |  | |
 	.byte $3D, $FE, $EC, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
 	; Discrepency --------^  (Pattern is ... $FE, $F0 ... in PRG026 status bar graphics)
 
 	; Sync this with PRG026 Flip_MidBStatCards
-	vaddr \1 + $40
+	vaddr _1 + $40
 	; Discrepency --------v  (Pattern is ... $FE, $FE ... in PRG030 status bar)  Unimportant; inserts <M> which is replaced anyway
 	.byte $20, $FC, $A6, $FE, $FE, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
 	.byte $FE, $ED, $F0, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
 	; Discrepency --------^  (Pattern is ... $F4, $F0 ... in PRG030 status bar graphics)
 
 	; Sync next three with PRG026 Flip_BottomBarCards
-	vaddr \1 + $60
+	vaddr _1 + $60
 	.byte $02, $FC, $A8	; Lower corner
 
-	vaddr \1 + $62
+	vaddr _1 + $62
 	.byte VU_REPEAT | $12, $A4	; Bottom bar
 
-	vaddr \1 + $74
+	vaddr _1 + $74
 	.byte $0C, $A5, $A8, $A4, $A4, $A9, $A4, $A4, $A9, $A4, $A4, $A5, $FC	; lower corner and card bottoms
 
 	; End PRG026 sync
 
-	vaddr \1 + $80
+	vaddr _1 + $80
 	.byte VU_REPEAT | $20, $FC	; black space
 
-	vaddr \1 + $A0
+	vaddr _1 + $A0
 	.byte VU_REPEAT | $20, $FC	; black space
 
 	; Terminator
@@ -5190,16 +5190,16 @@ LevelLoad_ByTileset:
 
 ; RegEx S&R:
 ; LDA LL_ShapeDef.*\n.*AND #\$0f.*\n.*STA <Temp_Var(.)		 ; .*
-; LDA LL_ShapeDef\n\tAND #$0f\n\tSTA <Temp_Var\1		 ; Temp_Var\1 = lower 4 bits of LL_ShapeDef
+; LDA LL_ShapeDef\n\tAND #$0f\n\tSTA <Temp_Var_1		 ; Temp_Var_1 = lower 4 bits of LL_ShapeDef
 
 ; LDA LL_ShapeDef.*\n.*AND #\$0f.*\n.*TAX		 ; .*
 ; LDA LL_ShapeDef\n\tAND #$0f\n\tTAX		 ; X = lower 4 bits of LL_ShapeDef
 
 ; LDA <Temp_Var(.).*\n.*STA <Temp_Var(.)		 ; .*
-; LDA <Temp_Var\1\n\tSTA <Temp_Var\2		 ; Temp_Var\2 = Temp_Var\1
+; LDA <Temp_Var_1\n\tSTA <Temp_Var\2		 ; Temp_Var\2 = Temp_Var_1
 
 ; DEC <Temp_Var(.)		 ; .*
-; DEC <Temp_Var\1		 ; Temp_Var\1--
+; DEC <Temp_Var_1		 ; Temp_Var_1--
 
 ; LDA <Map_Tile_AddrL.*\n.*STA <Temp_Var1.*\n.*LDA <Map_Tile_AddrH.*\n.*STA <Temp_Var2.*
 ;; Backup Map_Tile_AddrL/H into Temp_Var1/2\n\tLDA <Map_Tile_AddrL\n\tSTA <Temp_Var1\n\tLDA <Map_Tile_AddrH\n\tSTA <Temp_Var2

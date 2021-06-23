@@ -5168,12 +5168,12 @@ OIAC_NotDone:
 	RTS
 
 
-ArenaDest	.macro
-	.byte \1	; Tileset
-	.word \2	; Layout
-	.word \3	; Object
-	.byte \4	; Jct Y (mods the screen we're on)
-	.byte \5	; Jct X (mods the screen we're on)
+	.macro ArenaDest _1, _2, _3, _4, _5
+	.byte _1	; Tileset
+	.word _2	; Layout
+	.word _3	; Object
+	.byte _4	; Jct Y (mods the screen we're on)
+	.byte _5	; Jct X (mods the screen we're on)
 	.byte 0		; Reserved (pads to 8 bytes)
 	.endm
 
