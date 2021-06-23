@@ -132,8 +132,6 @@ MusSeg .macro
    .endm	; Square 2 cannot be disabled and always starts at offset $00
 
 
-M12ASH .func \1-Music_Set1_Set2A_Headers	; "Music Set 1/2A Segment Header Offset"
-
 	; SB: Refactored to use .word pointers so we can have more headers...
 	; Each "index" of music is tied to a header of a "segment" of music.  Some segments are
 	; reused where repetitious musical notes exist.  The segment headers are apparently not
@@ -499,7 +497,6 @@ Music_Set2B_Bank:
 
 
 
-M2CSH .func \1-Music_Set2C_Headers	; "Music Set 3 Segment Header Offset"
 
 
 	; Each "index" of music is tied to a header of a "segment" of music.  Some segments are
