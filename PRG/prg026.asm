@@ -361,50 +361,47 @@ Flip_END:
 InvGBuf_By_Open:	; Points to two different graphics buffer data blocks depending on Inventory_Open
 	.word Flip_Video_Data_Closing, Flip_Video_Data_Opening
 
-FVDC .func \1-Flip_Video_Data_Closing
-FVDO .func \1-Flip_Video_Data_Opening
-
 Flip_Video_Offsets:
 	; Offsets into Flip_Video_Data_Closing
-	.byte FVDC(Flip_TopBarMid)	;  0: Draw top bar (at middle)
-	.byte FVDC(Flip_BotBarMid)	;  1: Draw bottom bar (at middle)
-	.byte FVDC(Flip_EraseTopBarMid)	;  2: Erase top bar (at middle)
-	.byte FVDC(Flip_EraseBotBarMid)	;  3: Erase bottom bar (at middle)
-	.byte FVDC(Flip_MidTStatCards)	;  4: Draw top middle row of normal status bar/cards
-	.byte FVDC(Flip_MidBStatCards)	;  5: Draw bottom middle row of normal status bar/cards
-	.byte FVDC(Flip_TopBarCards)	;  6: Draw top bar (at top)
-	.byte FVDC(Flip_BottomBarCards)	;  7: Draw bottom bar (at bottom)
+	.byte Flip_TopBarMid - Flip_Video_Data_Closing	;  0: Draw top bar (at middle)
+	.byte Flip_BotBarMid - Flip_Video_Data_Closing	;  1: Draw bottom bar (at middle)
+	.byte Flip_EraseTopBarMid - Flip_Video_Data_Closing	;  2: Erase top bar (at middle)
+	.byte Flip_EraseBotBarMid - Flip_Video_Data_Closing	;  3: Erase bottom bar (at middle)
+	.byte Flip_MidTStatCards - Flip_Video_Data_Closing	;  4: Draw top middle row of normal status bar/cards
+	.byte Flip_MidBStatCards - Flip_Video_Data_Closing	;  5: Draw bottom middle row of normal status bar/cards
+	.byte Flip_TopBarCards - Flip_Video_Data_Closing	;  6: Draw top bar (at top)
+	.byte Flip_BottomBarCards - Flip_Video_Data_Closing	;  7: Draw bottom bar (at bottom)
 
 	; Offsets into Flip_Video_Data_Opening (note reuse of Closing data)
-	.byte FVDO(Flip_TopBarMid)	;  8: Draw top bar (at middle)
-	.byte FVDO(Flip_BotBarMid)	;  9: Draw bottom bar (at middle)
-	.byte FVDO(Flip_EraseTopBarMid)	; 10: Erase top bar (at middle)
-	.byte FVDO(Flip_EraseBotBarMid)	; 11: Erase bottom bar (at middle)
-	.byte FVDO(Flip_MidTItems)	; 12: Draw top middle row of inventory
-	.byte FVDO(Flip_MidBItems)	; 13: Draw bottom middle row of inventory
-	.byte FVDO(Flip_TopBarInv)	; 14: Draw top bar (at top)
-	.byte FVDO(Flip_BottomBarInv)	; 15: Draw bottom bar (at bottom)
+	.byte Flip_TopBarMid - Flip_Video_Data_Opening	;  8: Draw top bar (at middle)
+	.byte Flip_BotBarMid - Flip_Video_Data_Opening	;  9: Draw bottom bar (at middle)
+	.byte Flip_EraseTopBarMid - Flip_Video_Data_Opening	; 10: Erase top bar (at middle)
+	.byte Flip_EraseBotBarMid - Flip_Video_Data_Opening	; 11: Erase bottom bar (at middle)
+	.byte Flip_MidTItems - Flip_Video_Data_Opening	; 12: Draw top middle row of inventory
+	.byte Flip_MidBItems - Flip_Video_Data_Opening	; 13: Draw bottom middle row of inventory
+	.byte Flip_TopBarInv - Flip_Video_Data_Opening	; 14: Draw top bar (at top)
+	.byte Flip_BottomBarInv - Flip_Video_Data_Opening	; 15: Draw bottom bar (at bottom)
 
 Flip_Video_Ends:
 	; Ending data addresses per offset into Flip_Video_Data_Closing (when to stop copying!)
-	.byte FVDC(Flip_BotBarMid)	; 0
-	.byte FVDC(Flip_EraseTopBarMid)	; 1
-	.byte FVDC(Flip_EraseBotBarMid)	; 2
-	.byte FVDC(Flip_TopBarCards)	; 3
-	.byte FVDC(Flip_MidBStatCards)	; 4
-	.byte FVDC(Flip_BottomBarCards)	; 5
-	.byte FVDC(Flip_MidTStatCards)	; 6
-	.byte FVDC(Flip_END)		; 7
+	.byte Flip_BotBarMid - Flip_Video_Data_Closing	; 0
+	.byte Flip_EraseTopBarMid - Flip_Video_Data_Closing	; 1
+	.byte Flip_EraseBotBarMid - Flip_Video_Data_Closing	; 2
+	.byte Flip_TopBarCards - Flip_Video_Data_Closing	; 3
+	.byte Flip_MidBStatCards - Flip_Video_Data_Closing	; 4
+	.byte Flip_BottomBarCards - Flip_Video_Data_Closing	; 5
+	.byte Flip_MidTStatCards - Flip_Video_Data_Closing	; 6
+	.byte Flip_END - Flip_Video_Data_Closing		; 7
 
 	; Ending data addresses per offset into Flip_Video_Data_Opening (when to stop copying!)
-	.byte FVDO(Flip_BotBarMid)	; 8
-	.byte FVDO(Flip_EraseTopBarMid)	; 9
-	.byte FVDO(Flip_EraseBotBarMid)	; 10
-	.byte FVDO(Flip_TopBarCards)	; 11
-	.byte FVDO(Flip_MidBItems)	; 12
-	.byte FVDO(Flip_BottomBarInv)	; 13
-	.byte FVDO(Flip_MidTItems)	; 14
-	.byte FVDO(Flip_TopBarMid)	; 15
+	.byte Flip_BotBarMid - Flip_Video_Data_Opening	; 8
+	.byte Flip_EraseTopBarMid - Flip_Video_Data_Opening	; 9
+	.byte Flip_EraseBotBarMid - Flip_Video_Data_Opening	; 10
+	.byte Flip_TopBarCards - Flip_Video_Data_Opening	; 11
+	.byte Flip_MidBItems - Flip_Video_Data_Opening	; 12
+	.byte Flip_BottomBarInv - Flip_Video_Data_Opening	; 13
+	.byte Flip_MidTItems - Flip_Video_Data_Opening	; 14
+	.byte Flip_TopBarMid - Flip_Video_Data_Opening	; 15
 
 InvFlip_TileLayout_Sel:
 	; Based on Inventory_Open
