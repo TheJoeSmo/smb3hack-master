@@ -106,7 +106,7 @@ LevelLoad_TS4_TS12:
 	; TILE4_SKY_STOPGEN tile, and instead just put TILE4_SKY...
 	
 	LDY #6	; Offsets passed alternate layout/object pointers, second header byte
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #LEVEL3_VERTICAL
 	PHP	; Save status
 
@@ -330,7 +330,7 @@ LoadLevel_PlatformPuller:
 
 	LDY TileAddr_Off 	 ; Y = TileAddr_Off
 	LDA LL_PlatformPuller,X	 ; Get platform puller thingy tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	RTS		 ; Return
 
 
@@ -346,12 +346,12 @@ LoadLevel_LongWoodBlock:
 
 	LDY TileAddr_Off
 	LDA #TILE4_LONGWOOD_L	 ; Long wooden block left
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JMP PRG017_A53C	 	 ; Jump to PRG017_A53C
 
 PRG017_A538:
 	LDA #TILE4_LONGWOOD_M	 ; Long wooden block middle
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG017_A53C:
 	JSR LoadLevel_NextColumn ; Next column
@@ -359,7 +359,7 @@ PRG017_A53C:
 	BNE PRG017_A538	 	 ; While X > 0, loop!
 
 	LDA #TILE4_LONGWOOD_R	 ; Long wooden block right
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	RTS		 ; Return
 
 
@@ -395,7 +395,7 @@ SMB2Ground_TopBot_Loop:
 
 SMB2Ground_Inner_Loop:
 	LDA SMB2Ground_Tiles,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Next column
 
@@ -457,12 +457,12 @@ PRG017_A568:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 	
 	LDA LL_BigWoodBlocks,X	 ; Get left edge tile 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JMP PRG017_A57F	 	; Jump to PRG017_A57F
  
 PRG017_A57A:
 	LDA LL_BigWoodBlocks+4,X ; Get middle tile 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG017_A57F:
 	JSR LoadLevel_NextColumn ; Next column 
@@ -470,7 +470,7 @@ PRG017_A57F:
 	BNE PRG017_A57A	 	 ; While Temp_Var3 > 0, loop
  
 	LDA LL_BigWoodBlocks+8,X ; Get right edge tile 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Go to next row by adding 16
 	LDA TileAddr_Off 
@@ -513,7 +513,7 @@ LoadLevel_LittleBushRun17:
 
 PRG017_A5B8:
 	LDA #TILE4_LITTLEBUSH
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEX		 	; X-- (Width decrement)
 	BPL PRG017_A5B8	 	; While X >= 0, loop!
@@ -529,7 +529,7 @@ PRG017_A5B8:
 	LDX Temp_Var3		 ; X = Temp_Var3
 PRG017_A5CE:
 	LDA #TILE12_SNOWY_M	 ; Snow block middle
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEX		 	; X--
 	BPL PRG017_A5CE		; While X >= 0, loop!
@@ -551,12 +551,12 @@ LoadLevel_BushBunch:
 	LDY TileAddr_Off ; Y = TileAddr_Off
 
 	LDA #TILE4_BUSHBUNCH_L	; Left tile of bush bunch
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JMP PRG017_A5EE	 	; Jump to PRG017_A5EE
 
 PRG017_A5EA:
 	LDA #TILE4_BUSHBUNCH_M	 ; Middle tile of bush bunch
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG017_A5EE:
 	JSR LoadLevel_NextColumn ; Next column
@@ -564,7 +564,7 @@ PRG017_A5EE:
 	BNE PRG017_A5EA	 	; While Temp_Var3 > 0, loop!
 
 	LDA #TILE4_BUSHBUNCH_R	 ; Right tile of bush bunch
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	RTS		 ; Return
 
 
@@ -614,18 +614,18 @@ PRG017_A61B:
 	; The upper-left corner MUST be sky, or else we do nothing!
 	; This builds the platform down until it no longer detects sky
 
-	LDA [Map_Tile_AddrL],Y	; Get tile here
+	LDA (Map_Tile_AddrL),Y	; Get tile here
 	CMP #TILE4_SKY	 	; Is this sky?
 	BNE PRG017_A64E	 	; If not, jump to PRG017_A64E (RTS)
 
 	LDA LL_BigBlock_Left,X	 ; Get left edge tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JMP PRG017_A638	 	; Jump to PRG017_A638
 
 PRG017_A633:
 	LDA LL_BigBlock_Middle,X ; Get middle tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG017_A638:
 	JSR LoadLevel_NextColumn ; Next column
@@ -633,7 +633,7 @@ PRG017_A638:
 	BNE PRG017_A633	 	; While Temp_Var3 > 0, loop!
 
 	LDA LL_BigBlock_Right,X	 ; Get right tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LL17_ReturnTileAndNextRow	 ; Return to beginning, then go to next row
 
@@ -676,12 +676,12 @@ PRG017_A669:
 
 	LDA LL_LongCloud,X	 ; Get left edge tile
 
-	STA [Map_Tile_AddrL],Y	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	; Store into tile mem
 	JMP PRG017_A67A	 	; Jump to PRG017_A67A
 
 PRG017_A675:
 	LDA LL_LongCloud+2,X	 ; Get middle tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG017_A67A:
 	JSR LoadLevel_NextColumn ; Next column
@@ -689,7 +689,7 @@ PRG017_A67A:
 	BNE PRG017_A675	 	; While Temp_Var4 > 0, loop!
 
 	LDA LL_LongCloud+4,X	 ; Get right tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LL17_ReturnTileAndNextRow	 ; Return to beginning, then go to next row
 
@@ -727,7 +727,7 @@ LoadLevel_IceBlocks:
 
 PRG017_A6A6:
 	LDA LL_IceBlocks,X	 ; Get appropriate ice block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEC Temp_Var3		 ; Temp_Var3-- (width decrement)
 	BPL PRG017_A6A6	 	; While Temp_Var3 >= 0, loop!
@@ -764,11 +764,11 @@ PRG017_A6CB:
 
 PRG017_A6CF:
 	LDA LL_LargeIceBlock,X	 ; Get left tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 
 	LDA LL_LargeIceBlock+2,X ; Get right tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 
 	DEC Temp_Var4		 ; Temp_Var4-- (width decrement)
@@ -810,12 +810,12 @@ PRG017_A706:
 	STA Temp_Var4		 ; Temp_Var4 = Temp_Var3
 
 	LDA LL_Cloud17,X	 ; Get left edge tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JMP PRG017_A717	 	 ; Jump to PRG017_A717
 
 PRG017_A712:
 	LDA LL_Cloud17+2,X	 ; Get middle tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG017_A717:
 	JSR LoadLevel_NextColumn ; Next column
@@ -823,7 +823,7 @@ PRG017_A717:
 	BNE PRG017_A712	 	 ; While Temp_Var4 > 0, loop!
 
 	LDA LL_Cloud17+4,X	 ; Get right edge tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LL17_ReturnTileAndNextRow	 ; Return to beginning, then go to next row
 	INX		 	; X++
@@ -842,7 +842,7 @@ PRG017_A717:
 LoadLevel_LilCloud:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 	LDA #TILE4_LILCLOUD	 ; Little cloud tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	RTS		 ; Return
 
 
@@ -855,10 +855,10 @@ LoadLevel_LilCloud:
 LoadLevel_WideCloud:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 	LDA #TILE4_BGCLOUD_L	 ; Get left cloud tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	LDA #TILE4_BGCLOUD_R	 ; Get right cloud tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	RTS		 ; Return
 
 
@@ -883,17 +883,17 @@ PRG017_A74E:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA LL_SuspensionCables,X	; Get proper cable connector
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 	JMP PRG017_A764	 		; Jump to PRG017_A764
 
 PRG017_A759:
-	LDA [Map_Tile_AddrL],Y	 	; Get tile here
+	LDA (Map_Tile_AddrL),Y	 	; Get tile here
 	CMP #TILE4_SKY
 	BNE PRG017_A772			; If not sky, jump to PRG017_A772 (RTS)
 
 	LDA LL_SuspensionCables+2,X	 ; Get proper cable tile 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG017_A764:
 
@@ -921,12 +921,12 @@ LoadLevel_FatTrunk:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 PRG017_A776:
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get tile here
 	CMP #TILE4_SKY	
 	BNE PRG017_A78E	 	; If tile is not sky, jump to PRG017_A78E (RTS)
 
 	LDA #TILE4_FATTRUNK	; Fat trunk tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Jump to next row by adding 16 to offset
 	TYA	
@@ -952,7 +952,7 @@ LoadLevel_Muncher17:
 	LDY TileAddr_Off	 	; Y = TileAddr_Off
 PRG017_A795:
 	LDA #TILE4_MUNCHER	 	; Muncher
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 	JSR LoadLevel_NextColumn	; Next column
 	DEX		 ; X--
 	CPX #$ff	
@@ -965,7 +965,7 @@ PRG017_A795:
 	; and advance the Level_LayPtr_Addr pointer...
 LoadLevel_GetLayoutByte:
 	LDY #$00	 		; Y = 0
-	LDA [Level_LayPtr_AddrL],Y	; Get another byte from layout
+	LDA (Level_LayPtr_AddrL),Y	; Get another byte from layout
 	TAX		 		; -> 'X'
 
 	LDA Level_LayPtr_AddrL
@@ -1011,18 +1011,18 @@ LoadLevel_LargeMushPlat:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE4_GREENBLOCK_UL
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 
 LLMushPlat:
 	LDA #TILE4_GREENBLOCK_UM	 ; Get appropriate tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEC Temp_Var3		 ; Temp_Var3--
 	BPL LLMushPlat	 	; While Temp_Var3 >= 0, loop!
 
 	LDA #TILE4_GREENBLOCK_UR
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 
 	RTS		 ; Return
@@ -1049,7 +1049,7 @@ LoadLevel_SkyVert:
 
 LLSky_Loop:
 	LDA #TILE4_SKY	 ; Get appropriate tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LL17_ReturnTileAndNextRow ; Next row
 	DEC Temp_Var3		 ; Temp_Var3--
 	BPL LLSky_Loop	 	; While Temp_Var3 >= 0, loop!
@@ -1085,7 +1085,7 @@ LLBBlack_TopBot_Loop:
 
 LLBBlack_Inner_Loop:
 	LDA #TILE4_BGBLACK
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Next column
 

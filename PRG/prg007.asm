@@ -112,7 +112,7 @@ SpecTile_Not32PP:
 	ORA Temp_Var5
 	TAY	; -> 'Y'
 
-	LDA [Temp_Var1],Y	; Get the tile here
+	LDA (Temp_Var1),Y	; Get the tile here
 
 	CMP #TILEA_BLOCKBUMP_CLEAR
 	BNE PRG007_A070	 ; If this is not a bumped block tile, jump to PRG007_A070
@@ -286,7 +286,7 @@ PRG007_A0DE:
 	LDY #$00
 	STY Temp_Var6
 
-	LDA [Temp_Var1],Y	 ; Get tile here
+	LDA (Temp_Var1),Y	 ; Get tile here
 
 	CMP #TILE2_DONUTLIFT
 	BNE PRG007_A113	 ; If this is not donut lift tile, jump to PRG007_A113
@@ -1122,7 +1122,7 @@ PRG007_A8BF:
 	TAY		 ; Y = this offset
 
 PRG007_A8F0:
-	LDA [Temp_Var1],Y ; Get the tile the bubble detects
+	LDA (Temp_Var1),Y ; Get the tile the bubble detects
 
 	PHA		 ; Save it
 

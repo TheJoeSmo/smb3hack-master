@@ -218,7 +218,7 @@ LoadLevel_Generator_TS68:
 	.word LoadLevel_BlockRun		; 21 - Run of bouncing wood blocks
 	.word LoadLevel_BlockRun		; 22 - Run of coins
 	.word LoadLevel_VGroundPipeRun		; 23 - Vertical ground pipe 1 (alt level)
-	.word LoadLevel_VGroundPipeRun		; 24 - Vertical ground pipe 2 (Big [?] area)
+	.word LoadLevel_VGroundPipeRun		; 24 - Vertical ground pipe 2 (Big (?) area)
 	.word LoadLevel_VGroundPipeRun		; 25 - Vertical ground pipe 3 (no entrance)
 	.word LoadLevel_VCeilingPipeRun		; 26 - Vertical ceiling pipe 1 (alt level)
 	.word LoadLevel_VCeilingPipeRun		; 27 - Vertical ceiling pipe 2 (no entrance)
@@ -351,7 +351,7 @@ LoadLevel_SceneryVPipe:
 
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get tile here
 	CMP #TILE8_SCENPIPE_ENDVL
 	BNE PRG018_A59F	 	; If tile is not the end of a scenery pipe vertical left, jump to PRG018_A59F
 
@@ -362,10 +362,10 @@ PRG018_A59F:
 	LDA #TILE8_SCENPIPE_ENDVL	; Keep it the same
 
 PRG018_A5A1:
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	INY			 ; Y++
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get tile here
 
 	CMP #TILE8_SCENPIPE_ENDVR
 	BNE PRG018_A5AF	 	; If tile is not the end of a scenery pipe vertical right, jump to PRG018_A5AF
@@ -377,17 +377,17 @@ PRG018_A5AF:
 	LDA #TILE8_SCENPIPE_ENDVR	; Keep it the same
 
 PRG018_A5B1:
-	STA [Map_Tile_AddrL],Y	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	; Store into tile mem
 	JMP PRG018_A5C1	 	; Jump to PRG018_A5C1
 
 PRG018_A5B6:
 	JSR LL_SceneryVPipe_CheckCrossL	 ; Check for pipe crossing (left)
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	INY		 	; Y++
 
 	JSR LL_SceneryVPipe_CheckCrossR	 ; Check for pipe crossing (i)
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG018_A5C1:
 
@@ -398,12 +398,12 @@ PRG018_A5C1:
 	BNE PRG018_A5B6	 	; While Temp_Var3 > 0, loop
 
 	LDA #TILE8_SCENPIPE_ENDVL
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	INY		 	; Y++
 
 	LDA #TILE8_SCENPIPE_ENDVR
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
@@ -411,7 +411,7 @@ PRG018_A5C1:
 	; If pipe left side crosses another pipe, use the crossing tile!
 LL_SceneryVPipe_CheckCrossL:
 	LDX #(LL_SceneryVPipe_CrossChk_End - LL_SceneryVPipe_CrossChk - 1)
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get tile here
 PRG018_A5E3:
 	CMP LL_SceneryVPipe_CrossChk,X	 
 	BEQ PRG018_A5F0	 	; If this tile is one of the ones in the list, jump to PRG018_A5F0
@@ -431,7 +431,7 @@ PRG018_A5F3:
 	; If pipe right side crosses another pipe, use the crossing tile!
 LL_SceneryVPipe_CheckCrossR:
 	LDX #(LL_SceneryVPipe_CrossChk_End - LL_SceneryVPipe_CrossChk - 1)
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get tile here
 PRG018_A5F8:
 	CMP LL_SceneryVPipe_CrossChk,X	 
 	BEQ PRG018_A605	 	; If this tile is one of the ones in the list, jump to PRG018_A5F0
@@ -473,13 +473,13 @@ PRG018_A618:
 	STA Temp_Var4		 ; Temp_Var4 = Temp_Var3 (width copy)
 
 	LDA LL_SceneryHPipe_End,X	 ; Store pipe end
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JMP PRG018_A62C	 	; Jump to PRG018_A62C
 
 PRG018_A627:
 	JSR LL_SceneryHPipe_CheckCross	; Check for crossing tiles while building pipe
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG018_A62C:
 	INY		 ; Next column; this is OK for vertical levels, nowhere to the right
@@ -511,7 +511,7 @@ LL_SceneryHPipe_CrossB:	.byte TILE8_SCENPIPE_HB_VLC, TILE8_SCENPIPE_HB_VRC, TILE
 
 LL_SceneryHPipe_CheckCross:
 	LDX #(LL_SceneryHPipe_CrossChk_End - LL_SceneryHPipe_CrossChk - 1)
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get tile here
 PRG018_A655:
 	CMP LL_SceneryHPipe_CrossChk,X	; Is thie tile one of the standard vertical pipe tiles?
 	BEQ PRG018_A665	 	; If so, jump to PRG018_A665
@@ -561,13 +561,13 @@ PRG018_A680:
 
 PRG018_A687:
 	JSR LL_SceneryHPipe_CheckCross
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	INY		 	; Next column; this is OK for vertical levels, nowhere to the right
 	DEC Temp_Var4		 ; Temp_Var4-- (width decrement)
 	BNE PRG018_A687	 	; While Temp_Var4 > 0, loop!
 
 	LDA LL_SceneryHPipe_End,X	 ; Get pipe end
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 	; Go to next row by adding 16
 	LDA TileAddr_Off
@@ -600,23 +600,23 @@ LoadLevel_BGVPipe:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE8_BGPIPE_ENDVL	 ; BG pipe end vertical left
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	INY		 	; Next column; this is OK for vertical levels, nowhere to the right
 
 	LDA #TILE8_BGPIPE_ENDVR	 ; BG pipe end vertical right
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JMP PRG018_A6CB	 	; Jump to PRG018_A6CB
 
 PRG018_A6C2:
 	LDA #TILE8_BGPIPE_VL	; BG pipe middle vertical left
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	INY		 	; Next column; this is OK for vertical levels, nowhere to the right
 
 	LDA #TILE8_BGPIPE_VR	; BG pipe middle vertical right
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG018_A6CB:
 
@@ -627,12 +627,12 @@ PRG018_A6CB:
 	BNE PRG018_A6C2	 ; While X > 0, loop!
 
 	LDA #TILE8_BGPIPE_ENDVL	 ; BG pipe end vertical left
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	INY		 	; Next column; this is OK for vertical levels, nowhere to the right
 
 	LDA #TILE8_BGPIPE_ENDVR	 ; BG pipe end vertical right
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
@@ -651,13 +651,13 @@ LoadLevel_BGVMinipipe:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE8_BGPIPE_MVT	; BG minipipe vertical top
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JMP PRG018_A6FC	 ; $A6F5 
 
 PRG018_A6F8:
 	LDA #TILE8_BGPIPE_MVM	; BG minipipe vertical middle
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG018_A6FC:
 
@@ -673,7 +673,7 @@ PRG018_A6FC:
 	BNE PRG018_A6F8	 ; While X > 0, loop!
 
 	LDA #TILE8_BGPIPE_MVB	; BG minipipe vertical bottom
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
@@ -702,12 +702,12 @@ PRG018_A71C:
 	STA Temp_Var4		 ; Temp_Var4 = Temp_Var3
 
 	LDA LL_BGPipeHEnd,X	 ; BG pipe vertical end
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JMP PRG018_A730	 ; $A728 
 
 PRG018_A72B:
 	LDA LL_BGPipeHMid,X	 ; BG pipe vertical middle
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG018_A730:
 	INY		 	; Next column; this is OK for vertical levels, nowhere to the right
@@ -751,7 +751,7 @@ PRG018_A753:
 
 PRG018_A75A:
 	LDA LL_BGPipeHMid,X	 ; BG pipe vertical middle
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	INY		 	; Next column; this is OK for vertical levels, nowhere to the right
 
@@ -759,7 +759,7 @@ PRG018_A75A:
 	BNE PRG018_A75A	 	; While Temp_Var4 > 0, loop!
 
 	LDA LL_BGPipeHEnd,X	 ; BG pipe vertical end
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Go to next row by adding 16
 	LDA TileAddr_Off
@@ -790,13 +790,13 @@ LoadLevel_BGHMinipipe:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE8_BGPIPE_MHL	 ; BG Minipipe horizontal left
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JMP PRG018_A792	 	; Jump to PRG018_A792
 
 PRG018_A78E:
 	LDA #TILE8_BGPIPE_MHM	 ; BG Minipipe horizontal middle
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG018_A792:
 	INY		 	; Next column; this is OK for vertical levels, nowhere to the right
@@ -805,7 +805,7 @@ PRG018_A792:
 	BNE PRG018_A78E	 ; While X > 0, loop
 
 	LDA #TILE8_BGPIPE_MHR	 ; BG Minipipe horizontal right
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
@@ -824,13 +824,13 @@ LoadLevel_HMinipipe:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE8_MINIPIPE_HL	; Minipipe horizontal left
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JMP PRG018_A7AF	 	; Jump to PRG018_A7AF
 
 PRG018_A7AB:
 	LDA #TILE8_MINIPIPE_HM	; Minipipe horizontal middle
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG018_A7AF:
 	INY		 	; Next column; this is OK for vertical levels, nowhere to the right
@@ -839,7 +839,7 @@ PRG018_A7AF:
 	BNE PRG018_A7AB	 ; While X > 0, loop
 
 	LDA #TILE8_MINIPIPE_HR	; Minipipe horizontal right
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
@@ -858,13 +858,13 @@ LoadLevel_VMinipipe:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE8_MINIPIPE_VT	; Minipipe top
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JMP LLVMP_RowEnd	 	; Jump to PRG018_A7AF
 
 LLVMP_MidSection:
 	LDA #TILE8_MINIPIPE_VM	; Minipipe vertical middle
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 LLVMP_RowEnd:
 	JSR LL18_NextRow	; Next row
@@ -873,7 +873,7 @@ LLVMP_RowEnd:
 	BNE LLVMP_MidSection	 ; While X > 0, loop
 
 	LDA #TILE8_MINIPIPE_VB	; Minipipe vertical bottom
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
@@ -905,13 +905,13 @@ LoadLevel_UnderwaterScenery:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA LL_UnderwaterScenery,X 	; Get top tile
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 	JMP PRG018_A7DE	 		; Jump to PRG018_A7DE
 
 PRG018_A7D9:
 	LDA LL_UnderwaterScenery+2,X	; Get mid tile
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 PRG018_A7DE:
 
@@ -946,23 +946,23 @@ LoadLevel_PipeElbows:
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
 	LDA LL_PipeElbows,X	 ; Get upper left tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	INY		 	; Next column; this is OK for vertical levels, nowhere to the right
 
 	LDA LL_PipeElbows+4,X	 ; Get upper right tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Go to next row by adding 16
 	JSR LL18_NextRow
 
 	LDA LL_PipeElbows+8,X	 ; Get lower left tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Next column
 
 	LDA LL_PipeElbows+12,X	 ; Get lower right tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
@@ -997,7 +997,7 @@ PRG018_A833:
 
 PRG018_A83D:
 	LDA LL_Spikes,X	 	; Get spike tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Next column
 
@@ -1048,7 +1048,7 @@ PRG018_A868:
 
 PRG018_A86C:
 	LDA #TILE6_WATER	; Water
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -1101,7 +1101,7 @@ PRG018_A8A4:
 
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get tile here
 	CMP #TILE6_ORANGEBLK_UL
 	BLT PRG018_A8B5	 	; If tile is less than the orange block's tiles, jump to PRG018_A8B5
 
@@ -1116,7 +1116,7 @@ PRG018_A8BB:
 	LDA LL_GrayMiddle,X	 ; Middle gray block
 
 PRG018_A8BE:
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Next column
 	DEC Temp_Var4		 ; Temp_Var4-- (width decrement)
@@ -1124,7 +1124,7 @@ PRG018_A8BE:
 
 	LDA LL_GrayRight,X	 ; Right gray block
 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Restore Map_Tile_Addr from backup
 	LDA Temp_Var1
@@ -1161,7 +1161,7 @@ LL_OrangeRight:	.byte TILE6_ORANGEBLK_UR, TILE6_ORANGEBLK_LR
 LoadLevel_OrangeBlock:
 	; Get byte from layout data
 	LDY #$00	 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Temp_Var4
 
 	; Level_LayPtr_Addr++
@@ -1197,14 +1197,14 @@ PRG018_A922:
 	LDA LL_OrangeMiddle,X	 ; Get middle tile
 
 PRG018_A925:
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 
 	DEC Temp_Var5		 ; Temp_Var5-- (width decrement)
 	BNE PRG018_A922	 	; While Temp_Var5 >= 0, loop
 
 	LDA LL_OrangeRight,X	 ; Get right tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Restore Map_Tile_Addr from backup
 	LDA Temp_Var1
@@ -1243,7 +1243,7 @@ LoadLevel_UnderwaterCirclesH:
 
 PRG018_A98C:
 	LDA #TILE6_UNDERWATERCIRCLE
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -1260,7 +1260,7 @@ PRG018_A98C:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_WaterFill:
 	LDY #$00
-	LDA [Level_LayPtr_AddrL],Y	; Get another byte from layout data
+	LDA (Level_LayPtr_AddrL),Y	; Get another byte from layout data
 	STA Temp_Var3		 	; Store into Temp_Var3
 
 	; Level_LayPtr_Addr++
@@ -1287,7 +1287,7 @@ LoadLevel_WaterFill:
  
 PRG018_A9BE:
 	LDA #TILE6_WATERTOP	; Top of water tile 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -1301,7 +1301,7 @@ PRG018_A9CD:
 	LDX Temp_Var3		 ; X = Temp_Var3 
 PRG018_A9CF:
 	LDA #TILE6_WATER	; Water tile 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn	 ; Next column
 
 	DEX		 ; X-- 
@@ -1340,12 +1340,12 @@ LoadLevel_ArrowLifts:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA LL_ArrowLifts,X	 ; Get arrow lift left tile 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	INY		 ; Next column; this is OK for vertical levels, nowhere to the right
 
 	LDA LL_ArrowLifts+4,X	 ; Get arrow lift right tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
@@ -1380,7 +1380,7 @@ LoadLevel_LargeWater:
 	LDX #$ef	 	; X = $EF
 PRG018_AA3A:
 	LDA #TILE6_WATERTOP	; Top of water
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -1392,7 +1392,7 @@ PRG018_AA3A:
 
 PRG018_AA49:
 	LDA #TILE6_WATER	 ; Water tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn	 ; Next column
 	DEX		 ; X--
 	CPX #$ff
@@ -1440,7 +1440,7 @@ LoadLevel_ActionSwitchR:
 	LDA #TILE8_EXSWITCHR
 
 	LDY TileAddr_Off ; Y = TileAddr_Off
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 
 	RTS		 ; Return
@@ -1469,13 +1469,13 @@ LoadLevel_TopManiacZapper18:
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
 	LDA LL_TMZ_Top18,X
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 LL_TMZ_Loop18:
 	JSR LoadLevel_TileMemNextRow	; Next row
 
 	LDA LL_TMZ_Mid18,X
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 	DEC Temp_Var3		 ; Temp_Var3--
 	BPL LL_TMZ_Loop18	 	; While Temp_Var3 >= 0, loop...

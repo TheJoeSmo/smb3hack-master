@@ -5654,7 +5654,7 @@ PRG009_BDDB:
 	ORA Temp_Var9
 	TAY	; -> 'Y'
 
-	LDA [Temp_Var1],Y	; Get tile
+	LDA (Temp_Var1),Y	; Get tile
 	STA Temp_Var1		; -> Temp_Var1
 
 	LDY Level_TilesetIdx		; Y = level tileset index

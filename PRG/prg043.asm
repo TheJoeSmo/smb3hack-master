@@ -2685,7 +2685,7 @@ SObj_CheckHitSolid:
 	ORA Temp_Var3
 	TAY
 
-	LDA [Temp_Var1],Y ; Get the tile here
+	LDA (Temp_Var1),Y ; Get the tile here
 	PHA		 ; Save it
 
 	ASL A

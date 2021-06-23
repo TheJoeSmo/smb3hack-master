@@ -109,7 +109,7 @@ LevelLoad_TS2:
 	; always popular (e.g. in the World 1 fortress)
 
 	LDY #6	; Offsets passed alternate layout/object pointers, second header byte
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #LEVEL3_VERTICAL
 	PHP	; Save status
 
@@ -367,7 +367,7 @@ LoadLevel_ShadowBGBrick:
 
 PRG021_A565:
 	LDA LL_ShadowBrick,X	 ; Get BGBRICK shadow tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEC Temp_Var3		 ; Temp_Var3--
 	BPL PRG021_A565	 	; While Temp_Var3 >= 0, loop!
@@ -419,14 +419,14 @@ PRG021_A58B:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE2_WINDOWTOP	 ; Top of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JMP PRG021_A5A0	 	; Jump to PRG021_A5A0
 
 	; Loop for all middle sections of window
 PRG021_A59C:
 	LDA #TILE2_WINDOWMID	 ; Middle of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG021_A5A0:
 
@@ -437,7 +437,7 @@ PRG021_A5A0:
 	BNE PRG021_A59C	 	; While Temp_Var3 > 0, loop!
 
 	LDA #TILE2_WINDOWBOT	 ; Bottom of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Restore Map_Tile_Addr from backup
 	LDA Temp_Var1
@@ -498,7 +498,7 @@ LoadLevel_WindowVeryShort:
 	LDY TileAddr_Off	; Y = TileAddr_Off
 PRG021_A5F2:
 	LDA #TILE2_WINDOWMID	; Middle of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	LDX #$03	 	; X = 3 (windows are gapped by 3)
 	LDY TileAddr_Off	; Y = TileAddr_Off
@@ -533,13 +533,13 @@ LoadLevel_HangingGlobes:
 
 PRG014_A613:
 	LDA #TILE2_HANGGLOBE_GLOBE	 ; Hanging globe thing
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 	JMP PRG021_A61E	 ; Jump to PRG021_A61E
 
 PRG021_A61A:
 	LDA #TILE2_HANGGLOBE_CABLE	; Hanging globe thing's cable
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 PRG021_A61E:
 	TYA
@@ -550,7 +550,7 @@ PRG021_A61E:
 	BNE PRG021_A61A		; While Y <> 16 (end of its range), loop
 
 	LDA #TILE2_HANGGLOBE_TOP ; Ceiling connector of globe thing
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	LDX #$03	 	; X = 3 (gap by 3)
 	LDY TileAddr_Off 	; Y = TileAddr_Off
@@ -596,7 +596,7 @@ PRG021_A67B:
 
 PRG021_A67F:
 	LDA LL_DiamondBrick,X	 ; Get appropriate tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEC Temp_Var5		 ; Temp_Var5-- (width decrement)
 
@@ -614,7 +614,7 @@ PRG021_A67F:
 	; byte from the layout stream and preparing the Map_Tile_Addr backup
 LL21_InitLongRun:
 	LDY #$00	 ; Y = 0
-	LDA [Level_LayPtr_AddrL],Y	 ; Get another byte from layout
+	LDA (Level_LayPtr_AddrL),Y	 ; Get another byte from layout
 	STA Temp_Var3		 	; Store into Temp_Var3
 
 	; Level_LayPtr_Addr++
@@ -675,7 +675,7 @@ PRG021_A6DB:
 	LDX Temp_Var4		 ; X = Temp_Var4 (with of run)
 PRG021_A6DD:
 	LDA Temp_Var5
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEX		 	 ; X--
 	BPL PRG021_A6DD	 	 ; While X >= 0, loop!
@@ -720,7 +720,7 @@ PRG021_A6F7:
 
 PRG021_A701:
 	LDA LL_Spike,X	 	 ; Get appropriate spike tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEC Temp_Var4		 ; Temp_Var4--
 	BPL PRG021_A701	 	; While Temp_Var4 >= 0, loop!
@@ -750,7 +750,7 @@ PRG021_A720:
 	LDX Temp_Var3		 	; X = Temp_Var3
 PRG021_A722:
 	LDA #TILE2_BGBRICK_SHADOW2	; Shadow tile
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 	JSR LoadLevel_NextColumn	; Next column
 	DEX		 		; X--
 	BPL PRG021_A722	 		; While X >= 0, loop!
@@ -773,7 +773,7 @@ LL21_Background:
 LoadLevel21_Background:
 	LDY #$00	 	; Y = 0 
 
-	LDA [Level_LayPtr_AddrL],Y	 ; Get byte from layout data
+	LDA (Level_LayPtr_AddrL),Y	 ; Get byte from layout data
 	STA Temp_Var3		 	; Store into Temp_Var3
 
 	; Level_LayPtr_Addr++
@@ -813,7 +813,7 @@ PRG021_A762:
 
 PRG021_A769:
 	LDA LL21_Background,X	 ; Get appropriate background tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 
 	DEC Temp_Var5		 ; Temp_Var5-- (width decrement)
@@ -863,7 +863,7 @@ PRG021_A795:
 LoadLevel_RotoDisc:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 	LDA #TILE2_ROTODISCBLOCK ; Roto disc's block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	RTS		 ; Return
 
 
@@ -875,7 +875,7 @@ LoadLevel_RotoDisc:
 LoadLevel_Candle:
 	LDY TileAddr_Off	; Y = TileAddr_Off
 	LDA #TILE2_CANDLE	; Hot foot's candle
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	RTS		 ; Return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -904,7 +904,7 @@ LL_FenceFlip_Loop:
 
 LL_FenceFlip_InnerLoop:
 	TXA	 ; Get fence tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	
 	JSR LoadLevel_NextColumn	; Next column
 	
@@ -947,7 +947,7 @@ LoadLevel_EndDoor:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 PRG021_A7CF:
 	LDA LL_EndDoor,X	 ; Get this tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	INY		 	; Y++ (next column, NOT PROTECTED AGAINST SCREEN EDGE!)
 	INX		 	; X++ (next door tile)
 
@@ -975,18 +975,18 @@ LoadLevel_GlobeManual:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE2_HANGGLOBE_TOP ; Ceiling connector of globe thing
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 	JSR LoadLevel_TileMemNextRow		; Go to next row
 
 	LDA #TILE2_HANGGLOBE_CABLE	; Hanging globe thing's cable
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 	LDX #1	; Use globe chain
 	JSR LLGlobeManual_Enter
 
 	LDA #TILE2_HANGGLOBE_GLOBE ; Globe thing
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 	RTS
 	
@@ -1015,13 +1015,13 @@ LoadLevel_TopManiacZapper:
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
 	LDA LL_TMZ_Top,X
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 LL_TMZ_Loop:
 	JSR LoadLevel_TileMemNextRow	; Next row
 
 	LDA LL_TMZ_Mid,X
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 	DEC Temp_Var3		 ; Temp_Var3--
 	BPL LL_TMZ_Loop	 	; While Temp_Var3 >= 0, loop...

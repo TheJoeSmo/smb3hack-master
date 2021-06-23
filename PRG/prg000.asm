@@ -1042,7 +1042,7 @@ PRG000_C5EC:
 	BEQ Object_WorldDetect_SlopeNoRev	; If object is NOT under reverse gravity, jump to Object_WorldDetect_SlopeNoRev
 
 	; SB: Reverse gravity slope calculation
-	LDA [Level_GndLUT_L],Y
+	LDA (Level_GndLUT_L),Y
 	LSR A
 	LSR A
 	LSR A
@@ -1060,7 +1060,7 @@ PRG000_C5EC:
 	BGE PRG000_C65D	 ; Otherwise, jump to PRG000_C65D
 	
 Object_WorldDetect_SlopeNoRev:
-	LDA [Level_GndLUT_L],Y
+	LDA (Level_GndLUT_L),Y
  
 	AND #$0f	
 	STA Temp_Var2	 ; Lower 4 bits of slope (the "floor" slope height) -> Temp_Var2
@@ -1453,7 +1453,7 @@ PRG000_C736:
 
 	SUB Tile_AttrTable,Y	; Subtract the root tile value
 	TAY		 	; -> 'Y'
-	LDA [Temp_Var3],Y	; Get slope value
+	LDA (Temp_Var3),Y	; Get slope value
 	STA Level_Tile_Slope	; -> Level_Tile_Slope
 
 	LDX SlotIndexBackup	; Restore X as object slot index
@@ -1665,7 +1665,7 @@ ODT_Manual_Entry:
 	TAY		 	; -> 'Y'
 
 PRG000_C82A:
-	LDA [Temp_Var1],Y	; Get tile
+	LDA (Temp_Var1),Y	; Get tile
  
 	JSR DoSubstTileAndAttr	 ; Substitute tile if P-Switch is active
 
@@ -4239,7 +4239,7 @@ ObjState_Initializing_Call:
 	STA Temp_Var1
 	LDA ObjectGroup_InitJumpTable+1,Y
 	STA Temp_Var2
-	JMP [Temp_Var1]	 ; Dynamically jump to object's init routine 
+	JMP (Temp_Var1)	 ; Dynamically jump to object's init routine 
 
 	; Set object's palette value
 ; $D3BC
@@ -4473,7 +4473,7 @@ Object_DoNormal:
 	STA Temp_Var1
 	LDA ObjectGroup_NormalJumpTable+1,Y
 	STA Temp_Var2
-	JMP [Temp_Var1]	 ; Dynamically jump to object's "normal" routine 
+	JMP (Temp_Var1)	 ; Dynamically jump to object's "normal" routine 
 
 
 Object_DoHaltedAction:
@@ -5714,7 +5714,7 @@ Object_DoCollision:
 	STA Temp_Var1	
 	LDA ObjectGroup_CollideJumpTable+1,Y
 	STA Temp_Var2	
-	JMP [Temp_Var1]	 ; Jump to the acquired address!
+	JMP (Temp_Var1)	 ; Jump to the acquired address!
 
 
 ; $D9D3
@@ -6297,7 +6297,7 @@ PRG000_DC91:
 
 	PLA		 ; Restore 'A' (tile index)
 
-	STA [Temp_Var1],Y ; Change tile as appropriate
+	STA (Temp_Var1),Y ; Change tile as appropriate
 
 	RTS		 ; Return
 

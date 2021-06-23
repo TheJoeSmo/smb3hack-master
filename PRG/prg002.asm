@@ -1029,31 +1029,31 @@ PRG002_AF2F:
 
 	; Set Map X Hi
 	LDY #0
-	LDA [Temp_Var3],Y	; Get appropriate Map X Hi value
+	LDA (Temp_Var3),Y	; Get appropriate Map X Hi value
 	JSR PipewyCtl_GetLowerValue
 	STA Map_Entered_XHi,X	 ; Set as Map X High
 
 	; Set Map X
 	INY
-	LDA [Temp_Var3],Y
+	LDA (Temp_Var3),Y
 	JSR PipewyCtl_GetUpperValue
 	STA Map_Entered_X,X
 
 	; Set Map Y
 	INY
-	LDA [Temp_Var3],Y
+	LDA (Temp_Var3),Y
 	JSR PipewyCtl_GetUpperValue
 	STA Map_Entered_Y,X
 
 	; Map X Scroll value -> Temp_Var5
 	INY
-	LDA [Temp_Var3],Y
+	LDA (Temp_Var3),Y
 	JSR PipewyCtl_GetUpperValue
 	STA Temp_Var5		 ; -> 'Y'
 
 	; Set DESTINATION world
 	INY
-	LDA [Temp_Var3],Y	; Get target world
+	LDA (Temp_Var3),Y	; Get target world
 	JSR PipewyCtl_GetLowerValue
 	STA Map_Previous_World,X	; Set Player's target world
 	STA World_Num
@@ -4004,7 +4004,7 @@ Toad_DoToadText:
 PRG002_B451:
 
 	LDY #$00	 	; Y = 0
-	LDA [Temp_Var1],Y	; Get character here
+	LDA (Temp_Var1),Y	; Get character here
 	TAY		 	; -> 'Y'
 	CPY #$FE
 	BEQ PRG002_B468	 	; If this is a "space", jump to PRG002_B468

@@ -631,7 +631,7 @@ Level_InitAction_Do30:
 	LDA #$00
 	STA Level_InitAction	; Level_InitAction = 0 (same memory gets used as Player_Slide after this!)
 
-	JMP [Temp_Var1]		; Jump appropriately...
+	JMP (Temp_Var1)		; Jump appropriately...
 
 
 LevelInit_StartSliding:
@@ -1875,7 +1875,7 @@ ActSw_NotInit:
 	.word ActSw_RaisePipe		; 6 - Raise Pipe 4
 	.word ActSw_Brighten		; 7 - Brighten room (used with darkness controller)
 	.word ActSw_StartSandFill	; 8 - Set of all sand traps
-	.word ActSw_InfiniteQ		; 9 - Infinite [?]
+	.word ActSw_InfiniteQ		; 9 - Infinite (?)
 	.word ActSw_ReverseGrav		; 10 - Flip everyone's gravity
 	.word ActSw_OnOff			; 11 - Flip the on/off blocks
 

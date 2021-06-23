@@ -179,7 +179,7 @@ LoadLevel_Generator_TS1:
 	.word LoadLevel_BlockRun		; 21 - Run of bouncing wood blocks
 	.word LoadLevel_BlockRun		; 22 - Run of coins
 	.word LoadLevel_VGroundPipeRun		; 23 - Vertical ground pipe 1 (alt level)
-	.word LoadLevel_VGroundPipeRun		; 24 - Vertical ground pipe 2 (Big [?] area)
+	.word LoadLevel_VGroundPipeRun		; 24 - Vertical ground pipe 2 (Big (?) area)
 	.word LoadLevel_VGroundPipeRun		; 25 - Vertical ground pipe 3 (no entrance)
 	.word LoadLevel_VCeilingPipeRun		; 26 - Vertical ceiling pipe 1 (alt level)
 	.word LoadLevel_VCeilingPipeRun		; 27 - Vertical ceiling pipe 2 (no entrance)
@@ -292,14 +292,14 @@ LoadLevel_BGHauntPillar:
 
 	; Place top of pillar
 	LDA #TILE1_HAUNTPILLART
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 	JSR LoadLevel_TileMemNextRow
 
 BGHauntPillar_Loop:
 	; Place mid tiles of pillar
 	LDA #TILE1_HAUNTPILLARM
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 	JSR LoadLevel_TileMemNextRow
 
@@ -308,7 +308,7 @@ BGHauntPillar_Loop:
 
 	; Store bottom of pillar
 	LDA #TILE1_HAUNTPILLARB
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 	RTS		 ; Return
 
@@ -376,7 +376,7 @@ LLM15_SeTTile:
 
 PRG015_A6DD:
 	LDA Temp_Var5
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEX		 	 ; X--
 	BPL PRG015_A6DD	 	 ; While X >= 0, loop!

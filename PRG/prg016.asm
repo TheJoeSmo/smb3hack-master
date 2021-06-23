@@ -187,7 +187,7 @@ LoadLevel_Generator_TS3:
 	.word LoadLevel_BlockRun		; 21 - Run of bouncing wood blocks
 	.word LoadLevel_BlockRun		; 22 - Run of coins
 	.word LoadLevel_VGroundPipeRun		; 23 - Vertical ground pipe 1 (alt level)
-	.word LoadLevel_VGroundPipeRun		; 24 - Vertical ground pipe 2 (Big [?] area)
+	.word LoadLevel_VGroundPipeRun		; 24 - Vertical ground pipe 2 (Big (?) area)
 	.word LoadLevel_VGroundPipeRun		; 25 - Vertical ground pipe 3 (no entrance)
 	.word LoadLevel_VCeilingPipeRun		; 26 - Vertical ceiling pipe 1 (alt level)
 	.word LoadLevel_VCeilingPipeRun		; 27 - Vertical ceiling pipe 2 (no entrance)

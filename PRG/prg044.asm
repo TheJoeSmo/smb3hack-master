@@ -340,7 +340,7 @@ LoadLevel_DelfinoBlock:
 		
 	LDY #$00	 ; Y = 0
 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
 
 	; Level_LayPtr_Addr += 1
@@ -393,13 +393,13 @@ Delfino_Block_DoRow:
 
 	; Left edge
 	LDA LL_DBlock_UL,X	 ; Get brick tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 
 	; Middle
 Delfino_WidthLoop:
 	LDA LL_DBlock_UM,X	 ; Get brick tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
@@ -408,7 +408,7 @@ Delfino_WidthLoop:
 
 	; Right edge
 	LDA LL_DBlock_UR,X	 ; Get brick tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 	
 	JMP LL44_ReturnTileAndNextRow	; Next row / return column
@@ -439,7 +439,7 @@ LoadLevel_DelfinoAwnWins:
 	; Loop windows 
 DAW_Loop:
 	LDA #TILE7_BGAWN_WTOP	; Top of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Go to next column
 	JSR LoadLevel_NextColumn ; Go to next column
@@ -455,25 +455,25 @@ DAW_Loop:
 
 	; Left awning
 	LDA #TILE7_BGAWNING_L	; Top of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Loop awning
 DAW_Loop2:
 	JSR LoadLevel_NextColumn ; Go to next column
 
 	LDA #TILE7_BGAWNING_WM	; Awning/window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 
 	LDA #TILE7_BGAWNING_M	; Awning
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	DEC Temp_Var3		 ; Temp_Var3--
 	BPL DAW_Loop2	 	; While Temp_Var3 >= 0, loop...
 
 	; Right awning
 	LDA #TILE7_BGAWNING_R	; Top of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 
 
@@ -510,7 +510,7 @@ DAWs_RowLoop:
 
 DAWs_Loop:
 	LDA DelfinoWins,X	; Window tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	LDA #4
 	STA Temp_Var4
@@ -561,7 +561,7 @@ DAR_RowLoop:
 
 	; First, left roof tile
 	LDA #TILE7_BGROOF_L		
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 
 	; Mid loop
@@ -569,7 +569,7 @@ DAR_RowLoop:
 DAR_InnerLoop:
 	; Do mid tiles
 	LDA #TILE7_BGROOF_M
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 
 	DEX
@@ -577,7 +577,7 @@ DAR_InnerLoop:
 
 	; Last, right roof tile
 	LDA #TILE7_BGROOF_R		
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Next mid cycle is two more
 	INC Temp_Var4
@@ -615,11 +615,11 @@ DARBG_RowLoop:
 
 	; First, left roof tile
 	LDA #TILE7_BGROOF_BL
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 
 	LDA #TILE7_BGROOF_BM
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 
@@ -654,14 +654,14 @@ DAT_RowLoop:
 
 	; First, left roof tile
 	LDA #TILE7_BGTREE
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 
 	DEC Temp_Var3
 	BPL DAT_RowLoop
 
 	LDA #TILE7_BGTREE_ROOT
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
@@ -686,29 +686,29 @@ LoadLevel_DelfinoPalmTree:
 
 	; Palm tree upper
 	LDA #TILE7_PALM_UL
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 	LDA #TILE7_PALM_UR
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 
 	; Palm tree lower
 	LDA #TILE7_PALM_LL
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 	LDA #TILE7_PALM_LR
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 
 DAPT_RowLoop:
 
 	LDA #TILE7_PALM_TL
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 	LDA #TILE7_PALM_TR
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 
@@ -775,7 +775,7 @@ LoadLevel_NBBlock:
 		
 	LDY #$00	 ; Y = 0
 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
 	STA Temp_Var5
 
@@ -835,22 +835,22 @@ NBBlock_TopLoop:
 
 NBBlock_BotLoop:
 	LDA NBBlock_Tiles+4,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 
 	LDA NBBlock_Tiles+5,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 
 	LDA NBBlock_Tiles+6,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 
 	DEC Temp_Var3
 	BPL NBBlock_BotLoop
 
 	LDA NBBlock_Tiles+7,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 
 	RTS
@@ -858,12 +858,12 @@ NBBlock_BotLoop:
 NBBlock_PutIfNoSky:
 	STA Temp_Var6
 	
-	LDA [Map_Tile_AddrL],Y
+	LDA (Map_Tile_AddrL),Y
 	CMP #TILE7_SKY
 	BNE NBTL_NoSky
 	
 	LDA Temp_Var6
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	
 NBTL_NoSky:
 	JMP LoadLevel_NextColumn ; Go to next column
@@ -885,7 +885,7 @@ LoadLevel_NBBlock_VEdge:
 
 	LDY #$00	 ; Y = 0
 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
 
 	; Level_LayPtr_Addr += 1
@@ -907,7 +907,7 @@ LoadLevel_NBBlock_VEdge:
 NBBVE_Loop:
 
 	LDA Temp_Var4
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_TileMemNextRow	; Next row
 
 	DEC Temp_Var3
@@ -931,7 +931,7 @@ LoadLevel_DelfinoGround:
 	TAX		; X = relative index
 
 	LDY #0
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
 
 	; Level_LayPtr_Addr += 1
@@ -960,7 +960,7 @@ DelfinoGround_RowLoop:
 
 DelfinoGround_WidthLoop:
 	LDA #TILE7_GROUND
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
@@ -1005,7 +1005,7 @@ DelfinoCasino_RowLoop:
 
 DelfinoCasino_WidthLoop:
 	LDA DelfinoCasino_Tiles,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	INX
 
 	JSR LoadLevel_NextColumn ; Go to next column
@@ -1134,7 +1134,7 @@ DelfinoSlots_SlotLoop:
 
 DelfinoSlots_WidthLoop:
 	LDA DelfinoSlots_Tiles,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	INX
 
 	JSR LoadLevel_NextColumn ; Go to next column
@@ -1187,7 +1187,7 @@ Delfino_PipeVRun:
 
 Delfino_PipeVRun_Loop:
 	LDA Delfino_PipeVRun_Tiles,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LL44_ReturnTileAndNextRow ; Go to next column
 
@@ -1224,7 +1224,7 @@ Delfino_PipeHRun:
 
 Delfino_PipeHRun_Loop:
 	LDA Delfino_PipeHRun_Tiles,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
@@ -1249,7 +1249,7 @@ LoadLevel_DelfinoPipeC:
 	LDY TileAddr_Off ; Y = TileAddr_Off
 
 	LDA DelfinoPipeC_Tiles,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS
 	

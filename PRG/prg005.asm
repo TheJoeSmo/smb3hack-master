@@ -3582,7 +3582,7 @@ PRG005_B0AE:
 
 	LDY #$00	 ; Y = 0
 
-	LDA [Temp_Var1],Y ; Get the tile here
+	LDA (Temp_Var1),Y ; Get the tile here
 	PHA		 ; Save it
 
 	ASL A

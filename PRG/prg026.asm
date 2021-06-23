@@ -460,7 +460,7 @@ Inventory_DoFlipVideoUpd:
 
 	; Copy all of the video update data into the Graphics_Buffer
 PRG026_A2E4:
-	LDA [Temp_Var15],Y	; Get next byte 
+	LDA (Temp_Var15),Y	; Get next byte 
 	STA Graphics_Buffer,X	; Store it into the buffer
 	INX		 	; X++
 	INY		 	; Y++
@@ -615,7 +615,7 @@ PRG026_A37D:
 	; but in a single row of 8x8s, it's two at a time :)
 	LDX Temp_Var13		; X = Temp_Var13 (offset into the graphics buffer)
 PRG026_A37F:
-	LDA [Temp_Var15],Y	; Get next tile for this power-up
+	LDA (Temp_Var15),Y	; Get next tile for this power-up
 	STA Graphics_Buffer,X	; Store it into the graphics buffer
 	INX		 	; X++
 	INY		 	; Y++
@@ -1122,7 +1122,7 @@ PRG026_A6D2:
 	PHA		 	; Save 'A' (map tile minus TILE_ROCKBREAKH, either 0 or 1)
 	TAX		 	; X = A
 	LDA RockBreak_Replace,X	; Get the tile number that replaces this rock
-	STA [Map_Tile_AddrL],Y	; Store it in place!
+	STA (Map_Tile_AddrL),Y	; Store it in place!
 
 	; "Poof" where the rock sits
 	TYA
@@ -3439,18 +3439,18 @@ Video_Misc_Updates_None:
 Video_Misc_Updates:
 
 	LDY #$00	 	; Y = 0
-	LDA [Video_Upd_AddrL],Y	; Get byte
+	LDA (Video_Upd_AddrL),Y	; Get byte
 	BEQ Video_Misc_Updates_None	 	; If 0, jump to PRG026_B292 (RTS)
 
 	LDX PPU_STAT	 	; Flush video
 
 	STA PPU_VRAM_ADDR	; Store byte into video address high
 	INY		 	; Y++
-	LDA [Video_Upd_AddrL],Y	; Get next byte
+	LDA (Video_Upd_AddrL),Y	; Get next byte
 	STA PPU_VRAM_ADDR	; Store byte into video address low
 
 	INY		 	; Y++
-	LDA [Video_Upd_AddrL],Y	; Get next byte...
+	LDA (Video_Upd_AddrL),Y	; Get next byte...
 
 	ASL A		 	; Its uppermost bit dictates whether to use horizontal (1B) or vertical (32B) advancement
 	PHA		 	; Save A
@@ -3483,7 +3483,7 @@ PRG026_B2C1:
 	BCS PRG026_B2C4	 ; If carry set, jump to PRG026_B2C4
 	INY		 ; Y++
 PRG026_B2C4:
-	LDA [Video_Upd_AddrL],Y	; Get next byte
+	LDA (Video_Upd_AddrL),Y	; Get next byte
 	STA PPU_VRAM_DATA	; Store into PPU
 	DEX		 	; X--
 	BNE PRG026_B2C1	 	; While X <> 0, loop! 
@@ -3873,14 +3873,14 @@ PRG026_B4F5:
 LevelLoad_CopyObjectList:
 	LDY #$00	 ; Y = 0
 
-	LDA [Level_ObjPtr_AddrL],Y	; Get first byte from object layout data
+	LDA (Level_ObjPtr_AddrL),Y	; Get first byte from object layout data
 	STA Level_Objects,Y	 	; Copy to beginning of Level_Objects array
 
 PRG026_B506:
 
 	; Next byte is ID of object (or $FF to terminate the list)
 	INY
-	LDA [Level_ObjPtr_AddrL],Y
+	LDA (Level_ObjPtr_AddrL),Y
 	STA Level_Objects,Y
 
 	CMP #$ff	 
@@ -3888,12 +3888,12 @@ PRG026_B506:
 
 	; Copy in start column of object
 	INY		 
-	LDA [Level_ObjPtr_AddrL],Y
+	LDA (Level_ObjPtr_AddrL),Y
 	STA Level_Objects,Y
 
 	; Copy in start row of object
 	INY
-	LDA [Level_ObjPtr_AddrL],Y
+	LDA (Level_ObjPtr_AddrL),Y
 	STA Level_Objects,Y
 
 	JMP PRG026_B506		; Loop!

@@ -399,36 +399,36 @@ SndMus_LoadNext_Cont:
 	TAY
 
 	; Get and store rest lookup base index for this segment in Music_RestH_Base
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_RestH_Base	
 
 	; Get and store the base address into [Music_Base_H][Music_Base_L]
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_Base_L
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_Base_H
 
 	; Get and store triangle track offset
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_TriTrkPos
 
 	; Get and store square 1 track offset
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_Sq1TrkOff
 
 	; Set and store noise track offset
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_NseTrkPos
 	STA Music_NseStart	; Retain starting position for possible restoration later
 
 	; Set and store DMC track offset
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_PCMTrkPos
 	STA Music_PCMStart	; Retain starting position for possible restoration later
@@ -547,36 +547,36 @@ SndMus2A_LoadNext:
 	TAY
 
 	; Get and store rest lookup base index for this segment in Music_RestH_Base
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_RestH_Base	
 
 	; Get and store the base address into [Music_Base_H][Music_Base_L]
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_Base_L
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_Base_H
 
 	; Get and store triangle track offset
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_TriTrkPos
 
 	; Get and store square 1 track offset
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_Sq1TrkOff
 
 	; Set and store noise track offset
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_NseTrkPos
 	STA Music_NseStart	; Retain starting position for possible restoration later
 
 	; Set and store DMC track offset
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Music_PCMTrkPos
 	STA Music_PCMStart	; Retain starting position for possible restoration later
@@ -636,7 +636,7 @@ PRG063_E4CD:
 
 	INC Music_Sq2TrkOff	; Music_Sq2TrkOff++
 
-	LDA [Music_Base_L],Y	; Get next byte from music segment data
+	LDA (Music_Base_L),Y	; Get next byte from music segment data
 	BEQ Music_EndSegment 	; If byte is zero, jump to Music_EndSegment
 	BPL Music_Sq2NoteOn	; If byte is $01 - $7f, jump to Music_Sq2NoteOn
 	BNE PRG063_E51E	 	; $80 - $ff, jump to PRG063_E51E
@@ -725,7 +725,7 @@ PRG063_E535:
 
 	INC Music_Sq2TrkOff	 ; Music_Sq2TrkOff++
 
-	LDA [Music_Base_L],Y	; Get next byte from music segment data
+	LDA (Music_Base_L),Y	; Get next byte from music segment data
 
 Music_Sq2NoteOn:
 	TAX			 ; X = A (saving A)
@@ -754,7 +754,7 @@ PRG063_E559:
 
 	LDY Music_Sq2TrkOff	; Y = Music_Sq2TrkOff
 	INC Music_Sq2TrkOff	; Music_Sq2TrkOff++
-	LDA [Music_Base_L],Y	; Get next byte from music segment..
+	LDA (Music_Base_L),Y	; Get next byte from music segment..
 	CMP #$ff	 
 	BNE PRG063_E571	 	; If value is NOT $FF, jump to PRG063_E571
 
@@ -812,7 +812,7 @@ PRG063_E5B1:
 	; Rest is complete!
 	LDY Music_Sq1TrkOff	; Y = Music_Sq1TrkOff
 	INC Music_Sq1TrkOff	; Music_Sq1TrkOff++
-	LDA [Music_Base_L],Y	; Get next byte from music segment data
+	LDA (Music_Base_L),Y	; Get next byte from music segment data
 	BPL PRG063_E5DA	 	; If byte is $00 - $7f, jump to PRG063_E5DA 
 	CMP #$ff	
 	BNE PRG063_E5C5	 	; If not $ff, jump to PRG063_E5C5
@@ -833,7 +833,7 @@ PRG063_E5C5:
 PRG063_E5D2:
 	LDY Music_Sq1TrkOff	; Y = Music_Sq1TrkOff
 	INC Music_Sq1TrkOff	; Music_Sq1TrkOff++
-	LDA [Music_Base_L],Y	; Get next byte from music segment...
+	LDA (Music_Base_L),Y	; Get next byte from music segment...
 
 PRG063_E5DA:
 	TAY		 ; Y = A
@@ -875,7 +875,7 @@ PRG063_E60A:
 
 	LDY Music_Sq1TrkOff	; Y = Music_Sq1TrkOff
 	INC Music_Sq1TrkOff	; Music_Sq1TrkOff++
-	LDA [Music_Base_L],Y	; Get next byte from music segment
+	LDA (Music_Base_L),Y	; Get next byte from music segment
 	CMP #$ff	 
 	BNE PRG063_E622	 	; If byte > $ff, jump to PRG063_E622
 
@@ -943,7 +943,7 @@ Music_TriTrack:
 
 	LDY Music_TriTrkPos	; Y = Music_TriTrkPos
 	INC Music_TriTrkPos	; Music_TriTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte from triangle track
+	LDA (Music_Base_L),Y	; Get next byte from triangle track
 
 	BPL Music_TriNoteOn	; Byte $00 - $7f, jump to Music_TriNoteOn
 
@@ -957,7 +957,7 @@ Music_TriTrack:
 
 	LDY Music_TriTrkPos	; Y = Music_TriTrkPos
 	INC Music_TriTrkPos	; Music_TriTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte from music segment
+	LDA (Music_Base_L),Y	; Get next byte from music segment
 	BEQ PRG063_E6B4	 	; If $00 came up, jump to PRG063_E6B4
 
 Music_TriNoteOn:
@@ -1011,7 +1011,7 @@ Music_NseTrack:
 PRG063_E6C7:
 	LDY Music_NseTrkPos	; Y = Music_NseTrkPos
 	INC Music_NseTrkPos	; Music_NseTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte from music segment track
+	LDA (Music_Base_L),Y	; Get next byte from music segment track
 
 	BEQ PRG063_E700	 	; If next byte is $00, jump to PRG063_E700
 	BPL Music_NseNoteOn 	; $01 - $7f is note on, jump to Music_NseNoteOn
@@ -1023,7 +1023,7 @@ PRG063_E6C7:
 
 	LDY Music_NseTrkPos	; Y = Music_NseTrkPos
 	INC Music_NseTrkPos	; Music_NseTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte in music segment track
+	LDA (Music_Base_L),Y	; Get next byte in music segment track
 	BEQ PRG063_E700	 	; If byte $00 comes up, jump to PRG063_E700
 
 Music_NseNoteOn:
@@ -1071,7 +1071,7 @@ PRG063_E709:
 PRG063_E713:
 	LDY Music_PCMTrkPos	; Y = Music_PCMTrkPos
 	INC Music_PCMTrkPos	; Music_PCMTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte in music segment track
+	LDA (Music_Base_L),Y	; Get next byte in music segment track
 
 	BEQ PRG063_E741		; If next byte is $00, jump to PRG063_E741
 	BPL PRG063_E72F		; If byte is $01 - $7f, jump to PRG063_E72F
@@ -1081,7 +1081,7 @@ PRG063_E713:
 
 	LDY Music_PCMTrkPos	; Y = Music_PCMTrkPos
 	INC Music_PCMTrkPos	; Music_PCMTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte in music segment track
+	LDA (Music_Base_L),Y	; Get next byte in music segment track
 	BEQ PRG063_E741	 	; If next byte is $00, jump to PRG063_E741
 
 PRG063_E72F:
@@ -1183,7 +1183,7 @@ PRG063_E79E:
 
 PRG063_E7A8:
 	; In any case, current note length selects a value from the patch data...
-	LDA [Music_PatchAdrL],Y	
+	LDA (Music_PatchAdrL),Y	
 	RTS		 
 
 
@@ -2148,7 +2148,7 @@ IntIRQ:	 ; $F795 IRQ Interrupt (scanline from MMC3)
 	STA Temp_Var2
 
 	; Jump to the Reset instead...
-	JMP [Temp_Var1]
+	JMP (Temp_Var1)
 
 PRG063_F7B0:
 	LDA PAPU_MODCTL_Copy
@@ -3393,13 +3393,13 @@ DynJump:	; $FE99
 	; call that put us here at DynJump...
 
 	INY			; Need to increment Y (because the return address is at the last byte of the JSR)
-	LDA [Temp_Var1],Y	; Gets the byte here (address high)
+	LDA (Temp_Var1),Y	; Gets the byte here (address high)
 	STA Temp_Var3		; Stored into Temp_Var3
 	INY		 	; Y++
-	LDA [Temp_Var1],Y	; Gets the byte here (address low)
+	LDA (Temp_Var1),Y	; Gets the byte here (address low)
 	STA Temp_Var4		; Stores the byte into Temp_Var4
 	
-	JMP [Temp_Var3]	 	; Jump to [Temp_Var4][Temp_Var3]
+	JMP (Temp_Var3)	 	; Jump to [Temp_Var4][Temp_Var3]
 	
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3473,7 +3473,7 @@ ThunkJumpC:
 
 
 ThunkJump_Entry:
-	JMP [Thunk_Jump_L]		; There is no indirect JSR...
+	JMP (Thunk_Jump_L)		; There is no indirect JSR...
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Read_Joypads

@@ -104,7 +104,7 @@ ClearTS9_Tile:	.byte TILE9_BRICK_UM, TILE9_SKY
 
 LevelLoad_TS9:
 	LDY #6	; Offsets passed alternate layout/object pointers, second header byte
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	
 	LDY #0
 	AND #LEVEL3_VERTICAL
@@ -324,12 +324,12 @@ LoadLevel_LittleBlocks:
 
 PRG020_A526:
 	LDA #TILE9_THINHBLOCK_L	 ; Thin horizontal block left
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
 	LDA #TILE9_THINHBLOCK_R	 ; Thin horizontal block right
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -371,7 +371,7 @@ PRG020_A553:
 
 PRG020_A55A:
 	LDA LL_BigBlocks,X	 ; Get big block tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -434,7 +434,7 @@ PRG020_A5A6:
 
 PRG020_A5AD:
 	LDA LL_BiggerBlock,X	 ; Get big block tile 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -502,7 +502,7 @@ PRG020_A60B:
 
 PRG020_A612:
 	LDA LL_BiggestBlock,X	 ; Get big block tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -554,7 +554,7 @@ LoadLevel_LittleVBlocks:
 
 PRG020_A64A:
 	LDA #TILE9_THINVBLOCK_T	; Little block vertical top
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Go to next row by adding 16
 	TYA		 
@@ -565,7 +565,7 @@ PRG020_A64A:
 	STA Map_Tile_AddrH
 
 	LDA #TILE9_THINVBLOCK_B	; Little block vertical bottom
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	DEY		 ; Y-- (left one column)
 	TYA	
@@ -609,12 +609,12 @@ LoadLevel_SandBrickBotCrnrs:
 
 PRG020_A687:
 	LDA #TILE9_BRICK_LL	; Lower left of sand brick
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
 	LDA #TILE9_BRICK_LR	; Lower right of sand brick
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -657,7 +657,7 @@ PRG020_A6B4:
 PRG020_A6BB:
 	LDA LL_SandBrick,X	 ; Get sand brick tile
 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn	 ; Next column
 
 	INX		 ; X++ (next tile)
@@ -719,7 +719,7 @@ PRG020_A707:
 
 PRG020_A70E:
 	LDA LL_BigSandBrick,X	 ; Get sand brick tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -785,7 +785,7 @@ PRG020_A76C:
 
 PRG020_A773:
 	LDA LL_BiggerSandBrick,X	; Get sand brick tile 
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -836,7 +836,7 @@ LoadLevel_SandBrickRightDiags:
 
 PRG020_A7AB:
 	LDA #TILE9_BRICK_UR	 ; Sand brick upper right
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Go to next row by adding 16
 	TYA
@@ -847,7 +847,7 @@ PRG020_A7AB:
 	STA Map_Tile_AddrH
 
 	LDA #TILE9_BRICK_LR	 ; Sand brick lower right
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	DEY		 ; Y-- (previous column)
 	TYA		 
@@ -1197,7 +1197,7 @@ LoadLevel_ThinGround:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE9_THINGROUND_REDGE 	; Brick ruin right edge
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 
 	JSR LoadLevel_NextColumn	; Next column
 
@@ -1205,14 +1205,14 @@ LoadLevel_ThinGround:
 
 PRG020_A972:
 	LDA #TILE9_THINGROUND_BLUE	; blue colored thin ground
-	STA [Map_Tile_AddrL],Y	 	; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 	; Store into tile mem
 	JSR LoadLevel_NextColumn	 ; Next column
 
 	DEX		 ; X-- (width decrement)
 	BNE PRG020_A972	 ; While X > 0, loop!
 
 	LDA #TILE9_THINGROUND_LEDGE	; Brick ruin left edge
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	RTS		 ; Return
 
 
@@ -1230,13 +1230,13 @@ LoadLevel_DesertPillar:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE9_CHAIN_LEFT_PILLAR	; Right "pillar" tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JMP PRG020_A995	 ; Jump to PRG020_A995
 
 PRG020_A991:
 	LDA #TILE9_CHAIN_LEFT_PILLAR	; Left "pillar" tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG020_A995:
 	; Go to next row by adding 16
@@ -1279,7 +1279,7 @@ LoadLevel_MiscDesertTiles:
 
 PRG020_A9BC:
 	LDA LL20_MiscTiles,X	 ; Get misc tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Next column
 
@@ -1316,7 +1316,7 @@ PRG020_A9D1:
 
 PRG020_A9DB:
 	LDA LL_DesertChains,X	 ; Get chain tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Go to next row by adding 16
 	TYA
@@ -1347,7 +1347,7 @@ LoadLevel_SkyH_Unused:
 
 PRG020_A9F9:
 	LDA #TILE9_SKY
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -1417,7 +1417,7 @@ PRG020_AA1E:
 
 PRG020_AA22:
 	LDA #TILE9_PIPEWORKS_H	 ; Horizontal pipeworks tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Next column
 
@@ -1465,7 +1465,7 @@ PRG020_AA63:
 	LDX #16	 	; X = 16
 
 PRG020_AA65:
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get tile here
 	CMP #TILE9_PIPEWORKS_H
 	BNE PRG020_AA70	 	; If tile is not a horizontal pipeworks tile, jump to PRG020_AA70
 
@@ -1476,7 +1476,7 @@ PRG020_AA70:
 	LDA #TILE9_PIPEWORKS_V	 ; Pipeworks vertical tile
 
 PRG020_AA72:
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Go to next row by adding 16
 	TYA
@@ -1533,7 +1533,7 @@ LoadLevel_SkyV:
 
 PRG020_AAB6:
 	LDA #TILE9_SKY		; Sky tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	TYA
 	ADD #16
@@ -1562,7 +1562,7 @@ LoadLevel_SkyH:
 
 PRG020_AAD2:
 	LDA #TILE9_SKY		; Sky tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -1586,7 +1586,7 @@ LoadLevel_20UNK:
 
 PRG020_AAE6:
 	LDA #$f4	 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Go to next row by adding 16
 	TYA
@@ -1626,12 +1626,12 @@ PRG020_AB05:
 
 PRG020_AB0C:
 	LDA #TILE9_THINHBLOCK_L	; Small block left tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
 	LDA #TILE9_THINHBLOCK_R	 ; Small block right tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -1722,7 +1722,7 @@ PRG020_AB82:
 
 PRG020_AB89:
 	LDA LL_BigBlocks,X	 ; Get big block tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn	 ; Next column
 	INX		 	; X++
 	CPX #$04
@@ -1839,7 +1839,7 @@ PRG020_AC1D:
 
 PRG020_AC24:
 	LDA LL_BiggerBlock,X	 ; Get bigger block tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -1960,7 +1960,7 @@ PRG020_ACBD:
 
 PRG020_ACC4:
 	LDA LL_BiggestBlock,X	 ; Get biggest tile block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -2080,7 +2080,7 @@ LoadLevel_DesertTree:
 
 PRG020_AD64:
 	LDA LL_DesertTree,X	 ; Get tree top tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -2126,7 +2126,7 @@ PRG020_AD9C:
 
 PRG020_AD9E:
 	LDA #TILE9_TREE	 	; Tree trunk tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	TYA
 	ADD #16
@@ -2150,12 +2150,12 @@ LoadLevel_DesertCloud:
 	LDY TileAddr_Off
 
 	LDA #TILE9_CLOUD_L
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
 	LDA #TILE9_CLOUD_R
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
@@ -2178,7 +2178,7 @@ LoadLevel_BackgroundPyramid:
 PRG020_ADCC:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get tile here
 	CMP #TILE9_SKY
 	BNE PRG020_AE2F	 	; If tile is not sky, jump to PRG020_AE2F
 
@@ -2189,7 +2189,7 @@ PRG020_ADDA:
 	LDA #TILE9_PYRAMID	; Pyramid fill tile
 
 PRG020_ADDC:
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -2201,7 +2201,7 @@ PRG020_ADDC:
 
 PRG020_ADE8:
 	LDA #TILE9_PYRAMIDSH	; Shaded pyramid fill tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 
 	DEX		 ; X--
@@ -2209,7 +2209,7 @@ PRG020_ADE8:
 
 PRG020_ADF2:
 	LDA #TILE9_PYRAMIDSH_SLOPE	; Shaded pyramid slope tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Restore Map_Tile_Addr from backup
 	LDA Temp_Var1
@@ -2266,7 +2266,7 @@ LoadLevel_CannonPlatform:
 	LDY TileAddr_Off ; Y = TileAddr_Off
 
 	LDA #TILE9_CANNONTOP1	; Top of cannon
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Go to next row by adding 16
 	TYA
@@ -2277,7 +2277,7 @@ LoadLevel_CannonPlatform:
 	STA Map_Tile_AddrH
 
 	LDA #TILE9_CANNONTOP2	; Below top of cannon
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Go to next row by adding 16
 	TYA
@@ -2311,7 +2311,7 @@ PRG020_AE6E:
 
 PRG020_AE70:
 	LDA LL_CannonPlatform,X	 ; Get cannon platform block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -2350,7 +2350,7 @@ LoadLevel_PipeworkXtra:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA LL_PipeworkXtra,X	 ; Get Pipework extra tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
@@ -2368,7 +2368,7 @@ LoadLevel_PipeworksGround:
 	LDX #$01	 	; X = 1 (two rows of vertical)
 PRG020_AEA5:
 	LDA #TILE9_PIPEWORKS_V
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Go to next row by adding 16
 	TYA
@@ -2408,7 +2408,7 @@ PRG020_AED5:
 
 PRG020_AED8:
 	LDA LL_PipeworksGround,X ; Get pipeworks ground junction
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn	 ; Next column
 
@@ -2424,7 +2424,7 @@ PRG020_AED8:
 	; Also backup Map_Tile_AddrL/H into Temp_Var1/2
 LL20_GetLayoutByte_AndBackup:
 	LDY #$00	 
-	LDA [Level_LayPtr_AddrL],Y	; Get another byte from layout data
+	LDA (Level_LayPtr_AddrL),Y	; Get another byte from layout data
 	STA Temp_Var3		 	; Store it into Temp_Var3
 
 PRG020_AEEC:
@@ -2446,7 +2446,7 @@ PRG020_AEEC:
 	; Same as above, except Temp_Var5 instead of Temp_Var3
 LL20_GetLayoutByte_AndBackup2:
 	LDY #$00	 
-	LDA [Level_LayPtr_AddrL],Y	; Get another byte from layout data
+	LDA (Level_LayPtr_AddrL),Y	; Get another byte from layout data
 	STA Temp_Var5		 	; Store into Temp_Var5
 	JMP PRG020_AEEC			; Continue with LL20_GetLayoutByte_AndBackup
 
@@ -2480,7 +2480,7 @@ LL20_ReturnTileAndNextRow:
 LoadLevel_DiggableSand:
 	LDY #$00	 ; Y = 0
 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Temp_Var4		; Get next byte from layout -> Temp_Var4 (height of run)
 
 	; Level_LayPtr_Addr += 1
@@ -2509,7 +2509,7 @@ DigSand_WallRowLoop:
 
 DigSand_WallWidthLoop:
 	LDA #TILE9_DIGSAND	 ; Get sand tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Go to next column
 

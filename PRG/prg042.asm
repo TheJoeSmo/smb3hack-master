@@ -2214,7 +2214,7 @@ DelfinoSlots_MoveReel:
 	
 	LDY #0
 	
-	LDA [Temp_Var5], Y
+	LDA (Temp_Var5), Y
 	CMP #%11000000			; Bit 7 is "going to stop" and bit 6 is "stopped", which should happen at Y offset zero
 	BEQ ReelYUpdate_NoChange	; If this reel is already stopped, jump to ReelYUpdate_NoChange
 	
@@ -2227,20 +2227,20 @@ DelfinoSlots_MoveReel:
 Reel_NeedToStop:
 	; We've wrapped!
 	; Increment the index...
-	LDA [Temp_Var3], Y
+	LDA (Temp_Var3), Y
 	ADD #1				; Next index
 	AND #%00001111		; Lower bits hold the current index
 	TAY					; -> 'Y'
 	
 	; Use this to fetch the new reel images
-	LDA [Temp_Var1], Y	; Pre-shifted reel
+	LDA (Temp_Var1), Y	; Pre-shifted reel
 	ASL A
 	ASL A				; It's pre-shifted to bits 4-5, need to be in 6-7
 	STA Temp_Var8		; Reel image we're at -> Temp_Var8 (for top)
 	
 	INY		; Next image in reel
 	
-	LDA [Temp_Var1], Y
+	LDA (Temp_Var1), Y
 	ORA Temp_Var8		; Reel image coming up next -> Temp_Var9 (for bottom)
 	STA Temp_Var8		; Combine into Temp_Var8
 	
@@ -2250,10 +2250,10 @@ Reel_NeedToStop:
 	ORA Temp_Var8		; Merge in the image indexes
 
 	LDY #0
-	STA [Temp_Var3], Y	; Store into reel positions!
+	STA (Temp_Var3), Y	; Store into reel positions!
 	
 	; Check if we were supposed to stop
-	LDA [Temp_Var5], Y
+	LDA (Temp_Var5), Y
 	BPL DelfinoReel_NotStopping		; If bit 7 is not set, jump to DelfinoReel_NotStopping
 		
 	; We're stopping!
@@ -2265,7 +2265,7 @@ DelfinoReel_NotStopping:
 	LDA #0
 
 ReelYUpdate_NoChange:
-	STA [Temp_Var5], Y
+	STA (Temp_Var5), Y
 
 	RTS
 
@@ -2428,12 +2428,12 @@ ObjHit_DelfinoSlots42:
 	
 	LDY #0
 	
-	LDA [Temp_Var1], Y
+	LDA (Temp_Var1), Y
 	BMI DelfinoReel_AlreadyStop		; If reel already stopping/stopped, jump to DelfinoReel_AlreadyStop
 	
 	; Mark reel to stop
 	ORA #%10000000
-	STA [Temp_Var1], Y
+	STA (Temp_Var1), Y
 	
 	LDA #SND_PLAYERSWIM
 	STA Sound_QPlayer

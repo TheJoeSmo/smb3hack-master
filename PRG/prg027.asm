@@ -847,7 +847,7 @@ PRG027_ABAE:
 	LDA Temp_Var4
 	STA PPU_VRAM_ADDR
 
-	LDA [Temp_Var1],Y ; Get next character from letter body
+	LDA (Temp_Var1),Y ; Get next character from letter body
 
 	INY		 ; Y++ (next letter body character)
 
@@ -930,7 +930,7 @@ PRG027_WXBAE:
 	LDA Temp_Var4
 	STA PPU_VRAM_ADDR
 
-	LDA [Temp_Var1],Y ; Get next character from letter body
+	LDA (Temp_Var1),Y ; Get next character from letter body
 
 	INY		 ; Y++ (next letter body character)
 
@@ -1424,7 +1424,7 @@ Setup_PalData:
 	; Copy 32 bytes of data into Pal_Data
 	LDY #31	 ; Y = 31 (32 bytes total, a whole bg/sprite palette set)
 PRG027_B85E:
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	STA Pal_Data,Y	
 	DEY		 ; Y--
 	BPL PRG027_B85E	 ; While Y >= 0, loop
@@ -1444,7 +1444,7 @@ PRG027_B86D:
 
 	; Loop to copy the 16 BG colors to Pal_Data
 PRG027_B877:
-	LDA [Temp_Var1],Y	; Get byte of palette data
+	LDA (Temp_Var1),Y	; Get byte of palette data
 	STA Pal_Data,X	 	; Store it into Pal_Data
 	INY		 	; Y++
 	INX		 	; X++
@@ -1493,7 +1493,7 @@ SPD_NotDDComet:
 SPD_NotPComet:
 	; Loop to copy the 16 sprite colors to Pal_Data
 PRG027_B88A:
-	LDA [Temp_Var1],Y	; Get byte of palette data
+	LDA (Temp_Var1),Y	; Get byte of palette data
 	STA Pal_Data,X	 	; Store it into Pal_Data
 	INY		 	; Y++
 	INX		 	; X++
@@ -2252,7 +2252,7 @@ PRG027_A506:
 	TAY
 
 PRG027_A52D:
-	LDA [Temp_Var1],Y	 ; Get the tile at the Player Projectile 
+	LDA (Temp_Var1),Y	 ; Get the tile at the Player Projectile 
 	JSR DoSubstTileAndAttr	 ; Handle P-Switch changed tiles
 	PHA		 ; Save adjusted tile
 
@@ -2456,7 +2456,7 @@ PRG027_A5DC:
 	SUB Tile_AttrTable,Y
 	TAY		 ; Y = tile made relative to solid set
 
-	LDA [Temp_Var3],Y
+	LDA (Temp_Var3),Y
 	TAY		 ; Y = slope offset for this tile
 
 	LDA Slope_ObjectVel_Effect,Y
@@ -2496,7 +2496,7 @@ PRG027_A5DC:
 	BNE Fireball_SlopeChk_Rev	; If Player is under reverse gravity, jump to Fireball_SlopeChk_Rev
 
 	; Lower 4 bits of Slope_LUT (the "sloped floor height" component) -> Temp_Var2
-	LDA [Level_GndLUT_L],Y
+	LDA (Level_GndLUT_L),Y
 	AND #$0f
 	STA Temp_Var2
 
@@ -2522,7 +2522,7 @@ PRG027_A633:
 
 Fireball_SlopeChk_Rev:
 	; SB: Under reverse gravity, we use the "ceiling" component instead
-	LDA [Level_GndLUT_L],Y
+	LDA (Level_GndLUT_L),Y
 	LSR A
 	LSR A
 	LSR A

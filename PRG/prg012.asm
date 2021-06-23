@@ -222,10 +222,10 @@ PRG012_A462:
 PRG012_A496:
 	LDY #$00	 	; Y = 0
 PRG012_A498:
-	LDA [Temp_Var1],Y	; Get byte from tile layout
+	LDA (Temp_Var1),Y	; Get byte from tile layout
 	CMP #$ff	 
 	BEQ PRG012_A4C1	 	; If it's $FF (terminator), jump to PRG012_A4C1
-	STA [Map_Tile_AddrL],Y	; Copy byte to RAM copy of tiles
+	STA (Map_Tile_AddrL),Y	; Copy byte to RAM copy of tiles
 	
 	; SB: Special -- world zero locks
 	CMP #TILE_ROCKBREAKH
@@ -239,7 +239,7 @@ PRG012_A498:
 	
 	; Lock is unlocked; replace with path tile!
 	LDA #TILE_HORZPATH
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 	
 MRWC_NotUnlocked:
 	ASL Temp_Var3	; Next lock bit
@@ -359,7 +359,7 @@ MapCompletions_Cont:
 	INC Temp_Var3	; Temp_Var3++ (next index of Map_Completions)
 
 	; Check if we've advanced to a new screen (need to update base offset)
-	LDA [Temp_Var7],Y	; Getting value from ByScrCol
+	LDA (Temp_Var7),Y	; Getting value from ByScrCol
 	AND #$F0		; Checking screen only, ignoring column
 	CMP Temp_Var1
 	BEQ MapCompletions_SameScreen	; If we're still on the same screen, jump to MapCompletions_SameScreen
@@ -384,13 +384,13 @@ MapCompletions_SameScreen:
 
 	; First consider row coordinate -- note that "highest" point on map is "row 2"
 	; and our base pointer is at "row 1", so we take the row value and subtract $10
-	LDA [Temp_Var5],Y	; Get row/tileset value
+	LDA (Temp_Var5),Y	; Get row/tileset value
 	AND #$F0		; Row only
 	SUB #$10		; Fix row origin
 	STA Temp_Var4		; -> Temp_Var4
 
 	; Now consider column coordinate
-	LDA [Temp_Var7],Y	; Get column/screen value
+	LDA (Temp_Var7),Y	; Get column/screen value
 	AND #$0F		; Only want the column value, not screen
 	ORA Temp_Var4		; OR in the row offset
 	TAY			; -> 'Y'
@@ -402,7 +402,7 @@ MapCompletions_SameScreen:
 
 
 MapCompletion_CompleteTile:
-	LDA [Map_Tile_AddrL],Y	 ; Get this tile
+	LDA (Map_Tile_AddrL),Y	 ; Get this tile
 
 	STY Temp_Var4	 ; Y -> Temp_Var4
 	STA World_Map_Tile	 ; -> World_Map_Tile
@@ -434,7 +434,7 @@ PRG031_A556:
 
 PRG031_A581:
 	LDY Temp_Var4		 ; Y = Temp_Var4 (offset to tile)
-	STA [Map_Tile_AddrL],Y	 ; Set proper completion tile!
+	STA (Map_Tile_AddrL),Y	 ; Set proper completion tile!
 
 PRG012_A597:
 
@@ -521,7 +521,7 @@ PRG012_B10A:
 
 	LDX Player_Current
 	LDY World_Map_XHi,X
-	LDA [Temp_Var9],Y	; get initial index based on the current "screen" of the map the Player was on
+	LDA (Temp_Var9),Y	; get initial index based on the current "screen" of the map the Player was on
 	TAY		 	; Y = the aforementioned index
 
 	LDA #$00
@@ -532,7 +532,7 @@ PRG012_B10A:
 	; The index remains in the 'Y' register at completion
 	LDX Player_Current
 PRG012_B150:
-	LDA [Temp_Var1],Y	
+	LDA (Temp_Var1),Y	
 	AND #$f0	 	; Specifically only consider the "row" this specifies
 	CMP World_Map_Y,X	; Compare to the Player's Y position on the map
 	BEQ PRG012_B162	 	; If this byte matches your Y position on the map, jump to PRG012_B162
@@ -571,7 +571,7 @@ PRG012_B162:
 
 	; 'Y' was set by the last loop...
 PRG012_B17D:
-	CMP [Temp_Var3],Y	; See if this position matches
+	CMP (Temp_Var3),Y	; See if this position matches
 	BEQ PRG012_B18B	 	; If this matches, jump to PRG012_B18B
 	INY			; Y++
 	BNE PRG012_B17D	 	; While Y <> 0, loop!
@@ -593,7 +593,7 @@ PRG012_B18B:
 	BNE PRG012_B1A1	 	; If World_Num > 8 (World 9), jump to PRG012_B1A1
 
 	; World 9 bypass
-	LDA [Temp_Var1],Y	; Just goes to get the original value "type" ID, which in this case is world to enter
+	LDA (Temp_Var1),Y	; Just goes to get the original value "type" ID, which in this case is world to enter
 	AND #$0f
 
 	; Destination world is fed back out through Map_Warp_PrevWorld
@@ -704,7 +704,7 @@ Map_BonusTile_NotBonus:
 	DEX
 	BPL Map_BonusTile_CheckLoop
 	
-	LDA [Temp_Var1],Y	
+	LDA (Temp_Var1),Y	
 	AND #$0f	 	; Get "type" bits 
 	
 Map_BonusTile_OverrideTS:
@@ -729,11 +729,11 @@ Map_BonusTile_OverrideTS:
 PRG012_B1BB:
 
 	; Store address of object set into Level_ObjPtr_AddrL/H and Level_ObjPtrOrig_AddrL/H
-	LDA [Temp_Var5],Y	 
+	LDA (Temp_Var5),Y	 
 	STA Level_ObjPtr_AddrL
 	STA Level_ObjPtrOrig_AddrL	 
 	INY		 
-	LDA [Temp_Var5],Y	 
+	LDA (Temp_Var5),Y	 
 	STA Level_ObjPtr_AddrH		 
 	STA Level_ObjPtrOrig_AddrH	 
 
@@ -756,11 +756,11 @@ PRG012_B1DC:
 	STY Temp_Var16	 ; Keep index in Temp_Var16
 
 	; Store address of object set into Level_LayPtr_AddrL/H and Level_LayPtrOrig_AddrL/H
-	LDA [Temp_Var7],Y	 
+	LDA (Temp_Var7),Y	 
 	STA Level_LayPtr_AddrL		 
 	STA Level_LayPtrOrig_AddrL	 
 	INY		 
-	LDA [Temp_Var7],Y	 
+	LDA (Temp_Var7),Y	 
 	STA Level_LayPtr_AddrH		 
 	STA Level_LayPtrOrig_AddrH	 
 
@@ -1100,20 +1100,20 @@ PRG012_B384:
 	LDY Temp_Var16		 ; Index of level entered
 
 	; Set Bonus_GameType (always 1 in actual game)
-	LDA [Temp_Var5],Y
+	LDA (Temp_Var5),Y
 	STA Bonus_GameType
 
 	; Set Bonus_KTPrize (always irrelevant in actual game)
-	LDA [Temp_Var7],Y
+	LDA (Temp_Var7),Y
 	STA Bonus_KTPrize
 
 	INY		 ; Y++
 
 	; Set Bonus_GameHost (always 0 in actual game)
-	LDA [Temp_Var5],Y
+	LDA (Temp_Var5),Y
 	STA Bonus_GameHost
 
-	LDA [Temp_Var7],Y
+	LDA (Temp_Var7),Y
 	ASL A
 	TAY		 ; -> 'Y'
 	
@@ -1217,12 +1217,12 @@ Map_GetTile_ByWorld:
 	PHA
 	
 	; Get row -> Temp_Var10
-	LDA [Temp_Var5],Y
+	LDA (Temp_Var5),Y
 	AND #$F0
 	STA Temp_Var10
 	
 	; Get col, merge with row -> Temp_Var10, col high -> 'Y'
-	LDA [Temp_Var7],Y
+	LDA (Temp_Var7),Y
 	PHA
 	AND #$0F
 	ORA Temp_Var10
@@ -1243,7 +1243,7 @@ Map_GetTile_ByWorld:
 	STA Temp_Var12			; -> Temp_Var12
 	
 	LDY Temp_Var10			; Offset within map screen
-	LDA [Temp_Var11],Y		; Fetch it
+	LDA (Temp_Var11),Y		; Fetch it
 	STA Temp_Var10
 
 	PLA

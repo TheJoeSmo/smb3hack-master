@@ -454,7 +454,7 @@ LoadLevel_RectangleExt:
 
 LLExtect_2:
 	LDY #$00	 		; Y = 0
-	LDA [Level_LayPtr_AddrL],Y	; Get next byte
+	LDA (Level_LayPtr_AddrL),Y	; Get next byte
 	STA Temp_Var3		 	; Store into Temp_Var3 (width)
 
 	; Level_LayPtr_Addr++
@@ -552,14 +552,14 @@ LLExtect_EndFence:
 LLExtect_PlaceTile:
 	PHA	; Save tile
 
-	CMP [Map_Tile_AddrL],Y
+	CMP (Map_Tile_AddrL),Y
 	BEQ LLExtect_PlaceTile_Normal	; If placing the same tile, just stick with it
 	
 	
 	; Fortress tile check...
 	; If covering up an existing fence tile, use the "mid fence"
 	; TILE15_LINEBLK_UL >= x >= TILE15_LINEBLK_LR
-	LDA [Map_Tile_AddrL],Y
+	LDA (Map_Tile_AddrL),Y
 	CMP #TILE15_LINEBLK_UL
 	BLT LLExtect_PlaceTile_Normal
 	CMP #TILE15_LINEBLK_LR+1
@@ -572,7 +572,7 @@ LLExtect_PlaceTile:
 
 LLExtect_PlaceTile_Normal:
 	PLA
-	STA [Map_Tile_AddrL],Y	; Store tile
+	STA (Map_Tile_AddrL),Y	; Store tile
 
 	RTS
 	
@@ -635,7 +635,7 @@ LoadLevel_BGChain:
 	LDY TileAddr_Off	; Y = TileAddr_Off
 BGChainLoop:
 	LDA BGChain_Tiles,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	TXA
 	EOR #1
@@ -660,7 +660,7 @@ LoadLevel_BGChainTerminus:
 	LDA #TILE15_BGCHAINTERM
 
 	LDY TileAddr_Off ; Y = TileAddr_Off
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 
 	RTS		 ; Return	
@@ -680,14 +680,14 @@ LoadLevel_WoodRun:
 	LDX #TILE15_WOOD_L
 WoodPlanksLoop:
 	TXA
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	EOR #1
 	TAX
 
 	JSR LoadLevel_NextColumn
 
 	TXA
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	EOR #1
 	TAX
 
@@ -715,7 +715,7 @@ LoadLevel_Brick15:
 
 LL15_CommonRect:
 	LDY #0
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
 
 	; Level_LayPtr_Addr += 1
@@ -744,7 +744,7 @@ Brick15Ground_RowLoop:
 
 Brick15Ground_WidthLoop:
 	LDA LLGB15_Tiles,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
@@ -803,14 +803,14 @@ PRG045_A58B:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE15_WINDOW_TOP	 ; Top of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JMP PRG045_A5A0	 	; Jump to PRG045_A5A0
 
 	; Loop for all middle sections of window
 PRG045_A59C:
 	LDA #TILE15_WINDOW_MID	 ; Middle of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG045_A5A0:
 
@@ -821,7 +821,7 @@ PRG045_A5A0:
 	BNE PRG045_A59C	 	; While Temp_Var3 > 0, loop!
 
 	LDA #TILE15_WINDOW_MID	 ; Bottom of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Restore Map_Tile_Addr from backup
 	LDA Temp_Var1
@@ -896,7 +896,7 @@ PRG045_A6F7:
 
 PRG045_A701:
 	LDA LL_Spike45,X	 	 ; Get appropriate spike tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEC Temp_Var4		 ; Temp_Var4--
 	BPL PRG045_A701	 	; While Temp_Var4 >= 0, loop!
@@ -938,7 +938,7 @@ LLBGLines_Bottom:
 	LDA #TILE15_BGLINES_T
 
 LLBGLines_Top:
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	
 	JSR LoadLevel_TileMemNextRow ; Next column
 	
@@ -961,7 +961,7 @@ LoadLevel_GNWBrick:
 
 GNWBrick_Loop:
 	LDA #TILE15_GNWBRICK	 	 ; Get appropriate spike tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEC Temp_Var4		 ; Temp_Var4--
 	BPL GNWBrick_Loop	 	; While Temp_Var4 >= 0, loop!
@@ -981,7 +981,7 @@ LoadLevel_GNWBrickV:
 
 GNWBrick_LoopV:
 	LDA #TILE15_GNWBRICK	 	 ; Get appropriate spike tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_TileMemNextRow ; Next row
 	DEC Temp_Var4		 ; Temp_Var4--
 	BPL GNWBrick_LoopV	 	; While Temp_Var4 >= 0, loop!
@@ -1032,12 +1032,12 @@ LLBBP_BlockIt:
 	LDY TileAddr_Off ; Y = TileAddr_Off
 
 	TXA
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_TileMemNextRow
 	
 	TXA
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	RTS
 

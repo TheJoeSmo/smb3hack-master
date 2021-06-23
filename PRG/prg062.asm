@@ -530,7 +530,7 @@ IntReset_Part2:
 	; The following loop clears all of $6000 - $7FFF ... a lot of RAM!
 PRG062_8437:
 	LDA #$00	 	; A = 0
-	STA [Temp_Var1],Y	; Clear 
+	STA (Temp_Var1),Y	; Clear 
 	DEY			; Y--
 	BNE PRG062_8437	 	; While Y is not zero, loop (since Y started at 0, this does a full 256 bytes)
 
@@ -1399,11 +1399,11 @@ PRG062_88C8:
 	; Going to clear memory from $9D to $01
 	LDY #$9d	; Y = $9D
 PRG062_88E9:
-	STA [Temp_Var1],Y	; Clear this byte
+	STA (Temp_Var1),Y	; Clear this byte
 	DEY		 	; Y--
 	BNE PRG062_88E9	 	; While Y <> 0, loop!
 
-	STA [Temp_Var1],Y	; And address $00 is cleared too (though this is technically unnecessary)
+	STA (Temp_Var1),Y	; And address $00 is cleared too (though this is technically unnecessary)
 
 	LDA Map_Enter2PFlag
 	BEQ PRG062_891A	 	; If not entering 2P Vs mode, jump to PRG062_891A
@@ -1547,29 +1547,29 @@ PRG062_897B:
 	BNE LL_NoPCometSkip		; If Purple Comet is not active, jump to LL_NoPCometSkip
 
 	LDY #$08	; Y = 8 (check if we should start on alt for purple comet)
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #LEVEL5_PCOMET_STARTALT
 	BEQ LL_NoPCometSkip		; If this level doesn't start on alternate, jump to LL_NoPCometSkip
 
 	; Purple comet active and this level should start on its alternate!
 	LDY #$00	 ; Y = 0
 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	PHA
 	INY
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	PHA
 	INY		 
 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	PHA
 	INY		
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	PHA
 	INY		
 
 	LDY #$06	; Y = 6 (get tileset)
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #$0f	
 	STA Level_Tileset
 	JSR SetPages_ByTileset
@@ -2177,7 +2177,7 @@ PRG062_8B9A:
 ;	INC Temp_Var14		 ; Temp_Var14++ (tile pattern layout high, jump to next pattern)
 
 ;PRG062_8C9D:
-;	LDA [Temp_Var13],Y	 ; Get 8x8 pattern
+;	LDA (Temp_Var13),Y	 ; Get 8x8 pattern
 ;	STA Scroll_ColorStrip,X	 ; Store into strip
 
 ;	JSR BoxOut_SetThisBorderVRAM	; Set border VRAM
@@ -3922,7 +3922,7 @@ Fill_Tile_AttrTable_ByTileset:
 
 	LDY #$07		; Y = 7
 PRG062_952C:
-	LDA [Temp_Var1],Y	
+	LDA (Temp_Var1),Y	
 	STA Tile_AttrTable,Y	
 	DEY			; Y--
 	BPL PRG062_952C	 	; While Y >= 0, loop!
@@ -4202,13 +4202,13 @@ PRG062_962C:
 ;	STA Temp_Var14	
 
 ;	LDY Map_EntTran_TileOff
-;	LDA [Map_Tile_AddrL],Y	 ; Get the tile we're working on
+;	LDA (Map_Tile_AddrL),Y	 ; Get the tile we're working on
 
 ;	TAY		 
 ;	LDA Map_EntTran_Tile8x8
 ;	ADD Temp_Var14		
 ;	STA Temp_Var14		
-;	LDA [Temp_Var13],Y	 ; Get the specific 8x8 tile of the tile we're working on
+;	LDA (Temp_Var13),Y	 ; Get the specific 8x8 tile of the tile we're working on
 
 ;	STA Scroll_ColorStrip,X ; Store into the strip
 ;	RTS		 ; Return
@@ -4300,7 +4300,7 @@ PRG062_96D5:
 	LDX Temp_Var2	 ; X = current high byte of address in this case
 	CPX #$01	 ; If we've reached the $01xx bank...
 	BEQ PRG062_96DD	 ; ... skip the next line (don't clear the stack space!)
-	STA [Temp_Var1],Y	 ; Otherwise, clear this byte
+	STA (Temp_Var1),Y	 ; Otherwise, clear this byte
 PRG062_96DD:
 	DEY		 ; Y--
 	BNE PRG062_96D5	 ; While Y <> 0, loop around again (goes $00, $FF, $FE, ... back to $00) again
@@ -4540,7 +4540,7 @@ Level_FetchHeaderSize:
 
 	; Get the fourth byte of the header, keep lower 4 bits only (size)
 	LDY #4
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #$0F
 	TAY	; -> Keep it safe in 'Y'
 
@@ -4574,24 +4574,24 @@ LevelLoad:	; $97B7
 
 	; Get bytes 0-3 of layout data; pointers Level_AltLayout and Level_AltObjects
 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Level_AltLayout
 	INY
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Level_AltLayout+1
 	INY		 
 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Level_AltObjects
 	INY		
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Level_AltObjects+1
 	INY		
 
 	LDA Level_JctCtl	
 	BNE PRG062_980D	 ; If Level_JctCtl > 0, jump to PRG062_980D (skip setting vertical start position)
 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #%11100000
 	LSR A	
 	LSR A	
@@ -4617,7 +4617,7 @@ LevelLoad:	; $97B7
 PRG062_980D:
 
 	; Set the width of the level (in screens) from byte 4
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	PHA
 	AND #%00001111
 	STA Level_Width
@@ -4631,12 +4631,12 @@ PRG062_980D:
 	INY		 
 
 	; First 3 bits of byte 5 determine the palette select for tiles
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #%00000111
 	STA PalSel_Tile_Colors
 
 	; Next 2 bits select an object palette, root value 8
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #%00011000
 	LSR A		
 	LSR A		
@@ -4645,7 +4645,7 @@ PRG062_980D:
 	STA PalSel_Obj_Colors
 
 	; Next 2 bits sets Level_SelXStart (sets Player_X after level starts)
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #%01100000
 	LSR A		
 	LSR A		
@@ -4655,7 +4655,7 @@ PRG062_980D:
 	STA Level_SelXStart	 
 
 	; Finally, bit 7 sets Music_InvertEn (SB)
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #$80
 	ASL A
 	ROL A
@@ -4670,12 +4670,12 @@ PRG062_980D:
 	INY		 
 
 	; Bit 7 of byte 6 sets Level_PipeNotExit
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #$80	 
 	STA Level_PipeNotExit
 
 	; Bits 5-6 set Level_FreeVertScroll
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #%01100000
 	LSR A
 	LSR A
@@ -4707,7 +4707,7 @@ PRG062_985F:
 PRG062_9864:
 
 	; Bit 4 sets whether this level is a vertical one
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #%00010000
 	STA Level_7Vertical
 	BEQ PRG062_9893	 	; If not vertical, jump to PRG062_9893
@@ -4743,7 +4743,7 @@ PRG062_988E:
 PRG062_9893:
 
 	; Bits 0-3 set Level_AltTileset
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #$0f	
 	STA Level_AltTileset
 
@@ -4751,7 +4751,7 @@ PRG062_9893:
 	INY		; Y++	
 
 	; Bits 5-7 of byte 7 set Level_InitAction (sets an action to begin level, see Level_InitAction_JumpTable)
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #%11100000	 
 	LSR A		 
 	LSR A		 
@@ -4761,7 +4761,7 @@ PRG062_9893:
 	STA Level_InitAction
 
 	; Bits 0-4 set Level_BG_Page1_2 (an index to which pages of BG graphics should be loaded)
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #%00011111	 
 	STA Level_BG_Page1_2
 
@@ -4772,7 +4772,7 @@ PRG062_9893:
 	BNE PRG062_98C8	 ; If using a junction device, don't set the time; jump to PRG062_98C8
 
 	; Bits 6-7 of byte 8 select a time setting (0=300, 1=400, 2=200, 3=000 [unlimited])
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #%11000000	
 	CLC		
 	ROL A		
@@ -4805,7 +4805,7 @@ LLMEVI_NotDDComet:
 
 LLMEVI_NotPComet
 	; Bits 0-4 (SB) select a BGM
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	AND #%00011111
 	TAX
 	LDA GamePlay_BGM,X	; A = target music
@@ -4835,7 +4835,7 @@ PRG062_98DE:
 PRG062_98EE:
 	LDY #$00	 		; Y = 0 (beginning of post-header)
 
-	LDA [Level_LayPtr_AddrL],Y	; Get next byte
+	LDA (Level_LayPtr_AddrL),Y	; Get next byte
 	CMP #$ff	 		
 	BEQ PRG062_9934	 		; If $FF, jump to PRG062_9934 (RTS)
 
@@ -4843,11 +4843,11 @@ PRG062_98EE:
 	STA Temp_Var15			; Store byte into Temp_Var15
 
 	INY		 		; Y++
-	LDA [Level_LayPtr_AddrL],Y	; Get next byte
+	LDA (Level_LayPtr_AddrL),Y	; Get next byte
 	STA Temp_Var16		 	; Store into Temp_Var16
 
 	INY				; Y++
-	LDA [Level_LayPtr_AddrL],Y	; Get next byte
+	LDA (Level_LayPtr_AddrL),Y	; Get next byte
 	STA LL_ShapeDef	 		; Store into LL_ShapeDef
 
 	INY		 		; Y++
@@ -5616,15 +5616,15 @@ PRG062_9C1B:
 	LDX #$00	 	; X = 0
 PRG062_9C40:
 	LDY Temp_Var2		; Y = Temp_Var2 (screen relative column)
-	LDA [Temp_Var15],Y	; Get tile to display
+	LDA (Temp_Var15),Y	; Get tile to display
 	TAY		 	; Tile becomes offset 'Y'
 
 	; Store the top block for this tile
-	LDA [Temp_Var11],Y
+	LDA (Temp_Var11),Y
 	STA Scroll_PatStrip,X
 
 	; Store the bottom block for this tile
-	LDA [Temp_Var13],Y
+	LDA (Temp_Var13),Y
 	STA Scroll_PatStrip+1,X
 
 	LDA Temp_Var2
@@ -5700,7 +5700,7 @@ PRG062_9C8D:
 	AND #$0f	 	; Current screen-relative column
 	TAY		 	; Y = A (screen relative column)
 PRG062_9CA6:
-	LDA [Temp_Var15],Y	; Get next tile
+	LDA (Temp_Var15),Y	; Get next tile
 	AND #$c0	 	; Set attributes based on the "range" of the tile, like palette 0 for tiles 00-3f, palette 1 for tiles 40-7f, etc.
 	STA Scroll_ColorStrip,X	; Store this into the attribute strip
 	TYA		 	; A = Y (the tile offset)
@@ -5853,7 +5853,7 @@ VScroll_DoPatternAndAttrRow:
 
 PRG062_9D5A:
 	LDY Temp_Var9		 ; Y = current offset along row
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get tile here
 	STA Temp_Var11		 ; -> Temp_Var11
 
 	INC Temp_Var9		 ; Temp_Var9++ (next column)
@@ -5869,7 +5869,7 @@ PRG062_9D5A:
 	INC Temp_Var14		 ; Otherwise, Temp_Var14++ (next row of layout)
 
 PRG062_9D6F:
-	LDA [Temp_Var13],Y	 ; Get pattern of tile
+	LDA (Temp_Var13),Y	 ; Get pattern of tile
 	STA Scroll_PatStrip,X	 ; Store into pattern strip
 
 	INX		 ; X++ (next pattern strip byte)
@@ -5878,7 +5878,7 @@ PRG062_9D6F:
 	INC Temp_Var14
 	INC Temp_Var14
 
-	LDA [Temp_Var13],Y	 ; Get pattern of tile
+	LDA (Temp_Var13),Y	 ; Get pattern of tile
 	STA Scroll_PatStrip,X	 ; Store into pattern strip
 
 	INX		 ; X++ (next pattern strip byte)
@@ -6040,7 +6040,7 @@ TileLayout_GetBaseAddr:
 VScroll_TileQuads2Attrs:
 	LDX Temp_Var8		 ; X = Temp_Var8 (Scroll_AttrStrip offset)
 
-	LDA [Map_Tile_AddrL],Y	 ; Get the tile
+	LDA (Map_Tile_AddrL),Y	 ; Get the tile
 
 	; "Quadrant" bits (6 and 7) are pushed in as attribute bits
 	ASL A
@@ -6050,7 +6050,7 @@ VScroll_TileQuads2Attrs:
 
 	DEY		 ; Y--
 
-	LDA [Map_Tile_AddrL],Y	 ; Get the tile
+	LDA (Map_Tile_AddrL),Y	 ; Get the tile
 
 	; "Quadrant" bits (6 and 7) are pushed in as attribute bits
 	ASL A
@@ -6108,7 +6108,7 @@ Player_GetTileV:	; $9E3C
 	PLA		 ; Restore original value for Temp_Var13
 	STA Temp_Var13	 ; Store it
 
-	LDA [Map_Tile_AddrL],Y	 ; Get tile
+	LDA (Map_Tile_AddrL),Y	 ; Get tile
 	STA Level_Tile	 ; Store into Level_Tile
 
 	RTS		 ; Return
@@ -6210,7 +6210,7 @@ PRG062_9EC3:
 	STA Temp_Var12		 ; ... and copied into Temp_Var12
 
 	TAY		 	; Y = current offset
-	LDA [Map_Tile_AddrL],Y	; Get tile here
+	LDA (Map_Tile_AddrL),Y	; Get tile here
 	STA Level_Tile	; Store into Level_Tile
 
 	LDY Level_Tileset
@@ -6227,7 +6227,7 @@ PRG062_9EDB:
 	STA Temp_Var1		 ; Temp_Var1 = 0
 
 	LDY Temp_Var12		 ; Y = current offset in Tile Mem
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get tile here
 	STA Temp_Var2		 ; Store into Temp_Var2
 
 PGSAT_GetSlope:
@@ -6258,7 +6258,7 @@ PGSAT_GetSlope:
 	SUB Tile_AttrTable,Y	; Subtract the root tile value
 	TAY		 	; Y = result
 
-	LDA [Temp_Var3],Y		; Get value 
+	LDA (Temp_Var3),Y		; Get value 
 	STA Player_Slopes,X	; Store into Player_Slopes
 
 PRG062_9F0D:
@@ -6505,7 +6505,7 @@ Save_DataSlotOffsets:	.word SAVE_SLOT_SIZE*0, SAVE_SLOT_SIZE*1, SAVE_SLOT_SIZE*2
 Save_CopyLoop:
 	LDY #0
 Save_MapCompCopyLoop:
-	LDA [Temp_Var3],Y
+	LDA (Temp_Var3),Y
 	JSR Save_CopyByte
 	
 	INY
@@ -6523,7 +6523,7 @@ Save_CopyByte:
 	TAY 	; FIXME: Better way than swapping X into Y?
 	
 	LDA Temp_Var10
-	STA [Temp_Var1],Y
+	STA (Temp_Var1),Y
 	
 	PLA
 	TAY
@@ -6589,11 +6589,11 @@ Save_CalcChecksum:
 Save_SummationLoop:
 	; Adds 16-bit component to 32-bit sum
 	LDA Temp_Var3
-	ADD [Temp_Var1],Y
+	ADD (Temp_Var1),Y
 	INY
 	STA Temp_Var3
 	LDA Temp_Var4
-	ADC [Temp_Var1],Y
+	ADC (Temp_Var1),Y
 	INY
 	STA Temp_Var4
 	LDA Temp_Var5
@@ -6719,10 +6719,10 @@ Game_SaveData:
 	; Checksum is ready! Will be last 2 bytes of save slot.
 	LDY #(SAVE_SLOT_SIZE - 2)
 	LDA Temp_Var3
-	STA [Temp_Var1],Y
+	STA (Temp_Var1),Y
 	INY
 	LDA Temp_Var4
-	STA [Temp_Var1],Y
+	STA (Temp_Var1),Y
 	
 	RTS
 	

@@ -1540,7 +1540,7 @@ PRG008_A956:
 	JSR_THUNKC 30, Debug_FreeMovement
 
 PUM_NoFreeMove:
-	JMP [Temp_Var1]	 ; Jump into the movement code!
+	JMP (Temp_Var1)	 ; Jump into the movement code!
 
 PowerUpMovement_JumpTable:
 	; Ground movement code
@@ -4915,7 +4915,7 @@ PRG008_B7BA:
 	LDA LATP_JumpTable+1,Y
 	STA Temp_Var2	
 
-	JMP [Temp_Var1]	 ; Handle special block!
+	JMP (Temp_Var1)	 ; Handle special block!
 
 LATP_JumpTable:
 	.word LATP_None		; 0 = None
@@ -5840,7 +5840,7 @@ PRG008_BB27:
 	BEQ Player_CeilSlope_NoRev
 
 	; Use the "floor" component instead if we're flipped
-	LDA [Level_GndLUT_L],Y
+	LDA (Level_GndLUT_L),Y
 	AND #$0F			; Use "floor" part
 	STA Temp_Var2		; -> Temp_Var2 
 
@@ -5860,7 +5860,7 @@ Player_CeilSlope_NoRev:
 	AND #$0f	 	; Make Y relative to current tile
 	STA Temp_Var1		 ; -> Temp_Var1
 
-	LDA [Level_GndLUT_L],Y
+	LDA (Level_GndLUT_L),Y
 	LSR A
 	LSR A
 	LSR A
@@ -5983,7 +5983,7 @@ L32PP_NoFlag:
 	ASL A
 	ASL A
 	ASL A
-	CMP [Level_GndLUT_L],Y	 ; NOTE: This makes an assumption that the would-be floor component is always zero!! 
+	CMP (Level_GndLUT_L),Y	 ; NOTE: This makes an assumption that the would-be floor component is always zero!! 
 	BEQ PRG008_BB7E	 ; If 'A' (relative vertical position on tile) > (height at this point on slope), jump to PRG008_BB7E
 	BLT PRG008_BB7E	 ; If 'A' (relative vertical position on tile) > (height at this point on slope), jump to PRG008_BB7E
 
@@ -5994,7 +5994,7 @@ Player_FloorSlopeHChk_RTS:
 Player_FloorSlopeHChk_NoRev:
 	LDA Temp_Var14
 	AND #$0f		; Get Player's vertical position within tile
-	SUB [Level_GndLUT_L],Y	 ; NOTE: This makes an assumption that the would-be ceiling component is always zero!! 
+	SUB (Level_GndLUT_L),Y	 ; NOTE: This makes an assumption that the would-be ceiling component is always zero!! 
 	BMI Player_FloorSlopeHChk_RTS	 ; If 'A' (relative vertical position on tile) > (height at this point on slope), jump to Player_FloorSlopeHChk_RTS (RTS)
 
 PRG008_BB7E:
@@ -6012,7 +6012,7 @@ PRG008_BB7E:
 	BEQ Player_FloorSlope_NoRev
 
 	; Use the "ceiling" component instead if we're flipped
-	LDA [Level_GndLUT_L],Y
+	LDA (Level_GndLUT_L),Y
 	LSR A
 	LSR A
 	LSR A
@@ -6023,7 +6023,7 @@ PRG008_BB7E:
 
 Player_FloorSlope_NoRev:
 
-	LDA [Level_GndLUT_L],Y
+	LDA (Level_GndLUT_L),Y
 	AND #$0f		; Lower 4 bits hold ground slope height
 	STA Temp_Var1	 ; Temp_Var1 = fractional slope value
 

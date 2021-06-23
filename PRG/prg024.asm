@@ -853,7 +853,7 @@ PRG024_A82B:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 Video_Misc_Updates2:
 	LDY #$00	 	; Start at offset 0
-	LDA [Video_Upd_AddrL],Y	; Get next byte from data
+	LDA (Video_Upd_AddrL),Y	; Get next byte from data
 	BNE PRG024_A860	 	; If not $00 (terminator), process it @ PRG024_A860
 	RTS		 ; Return
 
@@ -862,11 +862,11 @@ PRG024_A860:
 
 	STA PPU_VRAM_ADDR	; Store byte into video address high
 	INY		 	; Y++
-	LDA [Video_Upd_AddrL],Y	; Get next byte
+	LDA (Video_Upd_AddrL),Y	; Get next byte
 	STA PPU_VRAM_ADDR	; Store byte into video address low
 
 	INY		 	; Y++
-	LDA [Video_Upd_AddrL],Y	; Get next byte...
+	LDA (Video_Upd_AddrL),Y	; Get next byte...
 
 	ASL A		 	; Its uppermost bit dictates whether to use horizontal (1B) or vertical (32B) advancement
 	PHA		 	; Save A
@@ -900,7 +900,7 @@ PRG024_A888:
 	INY		 ; Y++
 
 PRG024_A88B:
-	LDA [Video_Upd_AddrL],Y	; Get next byte
+	LDA (Video_Upd_AddrL),Y	; Get next byte
 	STA PPU_VRAM_DATA	; Store into PPU
 	DEX		 	; X--
 	BNE PRG024_A888	 	; While X <> 0, loop! 
@@ -1638,10 +1638,10 @@ TISM_FillSaveSlotData:
 	; Check the stored checksum versus the needed checksum;
 	; if there's a mismatch, this slot is invalid.
 	LDY #(SAVE_SLOT_SIZE - 2)
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	STA Temp_Var5
 	INY
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	STA Temp_Var6
 	INY
 	
@@ -1660,7 +1660,7 @@ TISM_FillSaveSlotData:
 	STA Graphics_Buffer+19
 
 	LDY #0
-	LDA [Temp_Var1],Y	; Get World
+	LDA (Temp_Var1),Y	; Get World
 	INY
 	CMP #9
 	BNE TISM_PrintWorldZero
@@ -1678,10 +1678,10 @@ TISM_PrintWorldZero:
 	LDA #$8C
 	STA Graphics_Buffer+22
 
-	LDA [Temp_Var1],Y	; Get Star Low
+	LDA (Temp_Var1),Y	; Get Star Low
 	INY
 	PHA
-	LDA [Temp_Var1],Y	; Get Star High
+	LDA (Temp_Var1),Y	; Get Star High
 	INY
 	PHA
 	
@@ -1697,9 +1697,9 @@ TISM_SlotEmpty:
 	; Empty slot; set checksum to $0000
 	LDA #$00
 	LDY #(SAVE_SLOT_SIZE-2)
-	STA [Temp_Var1],Y
+	STA (Temp_Var1),Y
 	INY
-	STA [Temp_Var1],Y
+	STA (Temp_Var1),Y
 	RTS
 
 PRG024_B166:	.byte $00, $00, $00
@@ -1870,9 +1870,9 @@ Save_TestChecksum:
 	
 	; If checksum was invalid (thus slot is "empty"), it was automatically set to $0000
 	LDY #(SAVE_SLOT_SIZE - 2)	; Checksum offset
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
-	ORA [Temp_Var1],Y
+	ORA (Temp_Var1),Y
 	RTS
 
 TDSM_ClearSave:
@@ -1887,7 +1887,7 @@ TDSM_ClearCont:
 	LDY #(SAVE_SLOT_SIZE - 1)
 	LDA #0
 TDSM_ClearLoop:
-	STA [Temp_Var1],Y
+	STA (Temp_Var1),Y
 	DEY
 	CPY #-1
 	BNE TDSM_ClearLoop
@@ -1933,7 +1933,7 @@ Title_PrepForWorldMap:
 	LDY #0
 	
 	; World to start
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA World_Num
 	STA Map_Previous_World
@@ -1946,7 +1946,7 @@ Title_PrepForWorldMap:
 	; Completion data
 	LDX #0
 TPFWM_CopyCompData:
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Map_Completions,X
 	INX
@@ -1956,7 +1956,7 @@ TPFWM_CopyCompData:
 	; Map object completion data
 	LDX #0
 TPFWM_CopyObjCompData:
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Map_ObjCompletions,X
 	INX
@@ -1964,14 +1964,14 @@ TPFWM_CopyObjCompData:
 	BLT TPFWM_CopyObjCompData
 	
 	; Comet mode
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Map_CometMode
 	
 	; Inventory Items
 	LDX #0
 TPFWM_CopyInventoryLoop:
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Inventory_Items,X
 	INX
@@ -1981,7 +1981,7 @@ TPFWM_CopyInventoryLoop:
 	; Score 1
 	LDX #0
 TPFWM_CopyScore1Loop:
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Inventory_Score,X
 	INX
@@ -1991,7 +1991,7 @@ TPFWM_CopyScore1Loop:
 	; Score 2
 	LDX #0
 TPFWM_CopyScore2Loop:
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	INY
 	STA Inventory_Score2,X
 	INX
@@ -3115,7 +3115,7 @@ EUT_NormalEnding:
 		
 EUT_EndingCont:
 	LDY Ending_TextPos
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	BNE EUT_NotLineBreak
 	
 	; Line break!

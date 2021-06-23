@@ -419,7 +419,7 @@ PRG022_C4B2:
 
 	; Place left tile
 	LDA Temp_Var2
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 PRG022_C4D2:
 	INY		 ; Y++ (next grid tile, DANGEROUS!)
@@ -427,7 +427,7 @@ PRG022_C4D2:
 
 	; Place middle tile (repeated)
 	LDA Temp_Var3
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 	TXA
 	AND #$07
@@ -436,7 +436,7 @@ PRG022_C4D2:
 
 	; Place right tile
 	LDA Temp_Var4
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 	; TileAddr_Off += 16 (next row)
 	LDA TileAddr_Off
@@ -512,7 +512,7 @@ PRG022_C53D:
 
 PRG022_C548:
 	LDA Background_Tiles,X
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 	INY		 ; Y++ (next tile, DANGEROUS)
 
@@ -571,7 +571,7 @@ PRG022_C59C:
 PRG022_C5A0:
 	; Get tile for Player -> grid
 	LDA Player_BonusTiles_Mario,X
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 	INY		 ; Y++ (next grid tile, DANGEROUS!)
 	INX		 ; X++ (next Player tile)
@@ -612,7 +612,7 @@ PRG022_C5CB:
 
 PRG022_C5CF:
 	LDA BonusUNKTALL_Tiles,X
-	STA [BonusText_BaseL],Y	
+	STA (BonusText_BaseL),Y	
 
 	INY		 ; Y++ (next grid tile, DANGEROUS!)
 	INX		 ; X++
@@ -637,21 +637,21 @@ LoadLevel_Border:
 
 	; Border upper left
 	LDA #TILE19_BORDER_UL
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 	; Run of 14 middle tiles
 PRG022_C5F0:
 	INY		 ; Y++
 
 	LDA #TILE19_BORDER_UM
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 	CPY #$0f
 	BNE PRG022_C5F0
 
 	; Border upper right
 	LDA #TILE19_BORDER_UR
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 PRG022_C5FD:
 	INY		 ; Y++
@@ -669,7 +669,7 @@ PRG022_C607:
 	LDA #TILE19_BORDER_MR
 
 PRG022_C60D:
-	STA [BonusText_BaseL],Y	 ; Store appropriate middle border
+	STA (BonusText_BaseL),Y	 ; Store appropriate middle border
 
 	CPY #$9f
 	BNE PRG022_C5FD	 ; If Y <> $9F, loop!
@@ -678,21 +678,21 @@ PRG022_C60D:
 
 	; Lower left border
 	LDA #TILE19_BORDER_LL
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 	; Run of 14 middle tiles
 PRG022_C618:
 	INY		 ; Y++
 
 	LDA #TILE19_BORDER_LM
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 	CPY #$af
 	BNE PRG022_C618
 
 	; Lower right border
 	LDA #TILE19_BORDER_LR
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 	RTS		 ; Return
 
@@ -713,7 +713,7 @@ PRG022_C633:
 
 	; Add prize box tile
 	LDA QBoxOrange_Tiles,X
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 	INY		 ; Y++ (next tile, DANGEROUS)
 	INX		 ; X++ (next prize box tile)
@@ -750,7 +750,7 @@ PRG022_C65A:
 
 	; Add prize box tile
 	LDA QBoxBlue_Tiles,X
-	STA [BonusText_BaseL],Y
+	STA (BonusText_BaseL),Y
 
 	INY		 ; Y++ (next tile, DANGEROUS)
 	INX		 ; X++ (next prize box tile)
@@ -785,7 +785,7 @@ PRG022_C67B:
 
 PRG022_C681:
 	LDA #TILE19_BRICKFLOOR
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 	INY		 ; Y++  (NOT SAFE!)
 
@@ -1393,7 +1393,7 @@ PRG022_C911:
 PRG022_C91D:
 	LDY BonusText_CPos	 ; Y = BonusText_CPos
 
-	LDA [BonusText_BaseL],Y
+	LDA (BonusText_BaseL),Y
 	BNE PRG022_C941	 ; If character is not $00 (line break), jump to PRG022_C941
 
 	; Line break hit..
@@ -1471,7 +1471,7 @@ PRG022_C980:
 	INY		 ; Y++ (byte after string terminator)
 
 	; Get this byte -> Bonus_Round2
-	LDA [BonusText_BaseL],Y
+	LDA (BonusText_BaseL),Y
 	STA Bonus_Round2
 
 	LDA Bonus_GameType
@@ -3540,7 +3540,7 @@ PRG022_D5C9:
 
 	LDX #$00	; X = 0
 PRG022_D5D8:
-	LDA [Temp_Var3],Y	; Get pattern for shape
+	LDA (Temp_Var3),Y	; Get pattern for shape
 	STA PPU_VRAM_DATA	; Store into VRAM
 
 	INY		; Y++ (next shape pattern)

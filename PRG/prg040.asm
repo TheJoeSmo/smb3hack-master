@@ -173,7 +173,7 @@ GHBG_LoadLanternBG:
 
 	; Get and store next tile
 	LDA GHBG_LanternWoodArray,X
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 	; Next tile/column
 	INX
@@ -219,7 +219,7 @@ GHBG_Done:
 
 GHBG_WallLoop:
 	LDA GHBG_WallTiles,X
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 	INY	; Next column
 
@@ -298,7 +298,7 @@ LoadLevel_Generator_TS5:
 	.word LoadLevel_BlockRun		; 21 - Run of bouncing wood blocks
 	.word LoadLevel_BlockRun		; 22 - Run of coins
 	.word LoadLevel_VGroundPipeRun		; 23 - Vertical ground pipe 1 (alt level)
-	.word LoadLevel_VGroundPipeRun		; 24 - Vertical ground pipe 2 (Big [?] area)
+	.word LoadLevel_VGroundPipeRun		; 24 - Vertical ground pipe 2 (Big (?) area)
 	.word LoadLevel_VGroundPipeRun		; 25 - Vertical ground pipe 3 (no entrance)
 	.word LoadLevel_VCeilingPipeRun		; 26 - Vertical ceiling pipe 1 (alt level)
 	.word LoadLevel_VCeilingPipeRun		; 27 - Vertical ceiling pipe 2 (no entrance)
@@ -438,16 +438,16 @@ LoadLevel_Banister:
 
 	; Top of banister first
 	LDA #TILE5_BANISTERL	 ; Get this block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column...
 
 Banister_Loop:
 	LDA #TILE5_BANISTERM	 ; Get this block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column...
 
 	LDA #TILE5_BANISTERM	 ; Get this block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column...
 
 	DEC Temp_Var3		 ; Temp_Var3--
@@ -455,7 +455,7 @@ Banister_Loop:
 
 	; End of top of banister
 	LDA #TILE5_BANISTERR	 ; Get this block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column...
 
 	; Restore width -> Temp_Var3
@@ -471,7 +471,7 @@ Banister_Loop2:
 	JSR LoadLevel_NextColumn ; Next column...
 
 	LDA #TILE5_BANPOLE	 ; Get this block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column...
 
 	DEC Temp_Var3		 ; Temp_Var3--
@@ -494,13 +494,13 @@ LoadLevel_Post:
 
 	; Top of post first
 	LDA #TILE5_POSTTOP
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_TileMemNextRow	; Next row...
 
 GhostHousePost_Loop:
 	; Add banister poles every other tile
 	LDA #TILE5_POSTMID	 ; Get this block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	JSR LoadLevel_TileMemNextRow	; Next row...
 
 	DEC Temp_Var3		 ; Temp_Var3--
@@ -537,13 +537,13 @@ PRG036_D4DB:
 	STA Temp_Var5		; Temp_Var5 = Temp_Var3 
 
 	LDA #TILE5_STAIRR1	 ; Get stair tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JMP PRG036_D4EF	 	; Jump to PRG036_D4EF
 
 PRG036_D4EA:
 	LDA #TILE5_STAIRR2	 ; Get stairway backing tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 PRG036_D4EF:
 	JSR LoadLevel_NextColumn ; Next column
@@ -633,7 +633,7 @@ PRG036_D48B:
 	BGE StairL2NotYet
 
 	LDA #TILE5_STAIRL2	 ; Get stairway backing tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 StairL2NotYet:
 	JSR LoadLevel_NextColumn ; Next column
@@ -644,7 +644,7 @@ StairL2NotYet:
 PRG036_D497:
 
 	LDA #TILE5_STAIRL1	 ; Stairway tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Restore Map_Tile_Addr from backup
 	LDA Temp_Var1
@@ -676,7 +676,7 @@ PRG036_D497:
 LoadLevel_GhostFloor:
 	LDY #$00	 ; Y = 0
 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Temp_Var3		 ; Get next byte from layout -> Temp_Var3 (width of run)
 
 	; Level_LayPtr_Addr += 1
@@ -691,7 +691,7 @@ LoadLevel_GhostFloor:
 
 GhostHouse_FloorLoop:
 	LDA #TILE5_FLOOR	 ; Get floor tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
@@ -724,7 +724,7 @@ LoadLevel_GhostBrick:
 LLGB_Cont:
 	LDY #$00	 ; Y = 0
 
-	LDA [Level_LayPtr_AddrL],Y
+	LDA (Level_LayPtr_AddrL),Y
 	STA Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
 
 	; Level_LayPtr_Addr += 1
@@ -753,7 +753,7 @@ GhostHouse_WallRowLoop:
 
 GhostHouse_WallWidthLoop:
 	LDA LL_GhostBrick_Tile,X	 ; Get brick tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
@@ -778,7 +778,7 @@ PRG036_D398:
 LoadLevel_GhostDoor:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 	LDA #TILEA_DOOR1	 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 
 	; Move to next row by adding 16 to tile offset
 	TYA		 
@@ -789,7 +789,7 @@ LoadLevel_GhostDoor:
 	STA Map_Tile_AddrH
 
 	LDA #TILEA_DOOR2	 
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA (Map_Tile_AddrL),Y	 ; Store into tile mem
 	RTS		 ; Return
 
 
@@ -852,7 +852,7 @@ GHEX_FromArray:
 	INX
 
 GHEX_PutTile:
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 	; Next column
 	INY
@@ -889,7 +889,7 @@ GHEX_Done:
 	LDX #(11*16)	; Number of sky tiles to blast in
 GHEX_SkyFill_Loop:
 	LDA #TILE5_EXITSKY
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 	INY
 	BNE GHEX_SkyFill_NoNextRow
@@ -947,7 +947,7 @@ LL_BB_NotBoo:
 	LDA #TILE5_BIGBOO_CLEAR
 	
 LL_BB_BooTile:
-	STA [Map_Tile_AddrL],Y
+	STA (Map_Tile_AddrL),Y
 
 	INY		; Next tile...
 

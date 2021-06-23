@@ -141,15 +141,15 @@ Map_LoadObjects:
 PRG011_A21B:
 
 	; Copy in the data relevant to this map object
-	LDA [Temp_Var11],Y
+	LDA (Temp_Var11),Y
 	STA Map_Objects_Y,Y	; Y
-	LDA [Temp_Var13],Y
+	LDA (Temp_Var13),Y
 	STA Map_Objects_XHi,Y	; XHi
-	LDA [Temp_Var15],Y	
+	LDA (Temp_Var15),Y	
 	STA Map_Objects_XLo,Y	; XLo
-	LDA [Temp_Var9],Y	
+	LDA (Temp_Var9),Y	
 	STA Map_Objects_IDs,Y	; ID
-	LDA [Temp_Var7],Y	
+	LDA (Temp_Var7),Y	
 	STA Map_Objects_Itm,Y	; Item
 
 	; No "complete" check on index > 7
@@ -1727,7 +1727,7 @@ MapClear_PoofOver:
 	ORA World_Map_Y,X
 	TAY		 ; -> 'Y'
 
-	LDA [Map_Tile_AddrL],Y	 ; Get the tile here
+	LDA (Map_Tile_AddrL),Y	 ; Get the tile here
 	PHA		 ; Save tile value
 
 	AND #%11000000
@@ -1777,7 +1777,7 @@ Complete_OtherTile_NotMatch:
 	BPL Complete_OtherTile_Loop	; While X >= 0, loop!
 
 Complete_PrimaryLevel:
-	STA [Map_Tile_AddrL],Y	; Set it in memory
+	STA (Map_Tile_AddrL),Y	; Set it in memory
 	STA World_Map_Tile	; ... as well as the tile detected
 
 	; Backup 'Y', the tile offset
@@ -2719,11 +2719,11 @@ PRG011_B3D3:
 	STA Temp_Var16
 
 	LDY Temp_Var3		; Y = Temp_Var3 (travel target)
-	LDA [Map_Tile_AddrL],Y	; Get tile here
+	LDA (Map_Tile_AddrL),Y	; Get tile here
 
 	LDY #(Map_Object_Valid_Tiles2Check-1)	; Check all possible travel-over tiles
 PRG011_B3EC:
-	CMP [Temp_Var15],Y
+	CMP (Temp_Var15),Y
 	BEQ PRG011_B3F5	 	; If this tile is valid to travel over, jump to PRG011_B3F5
 	DEY		 ; Y--
 	BPL PRG011_B3EC	 ; While Y >= 0, loop!
@@ -2740,7 +2740,7 @@ PRG011_B3F5:
 	JSR Map_Object_March_PickTravel	 ; Get next tile over, "landing zone"
 
 	LDY Temp_Var3			; Y = Temp_Var3 (travel target)
-	LDA [Map_Tile_AddrL],Y		; Get tile here
+	LDA (Map_Tile_AddrL),Y		; Get tile here
 
 	LDY #(MOV_Landings2Check-1)
 PRG011_B406:
@@ -4303,7 +4303,7 @@ Map_CountComets_ByWorld:
 	; Counting all trackable map objects
 	LDY #7
 Map_CCBW_Loop:
-	LDA [Temp_Var1],Y
+	LDA (Temp_Var1),Y
 	CMP #MAPOBJ_DAREDEVILCOMET
 	BEQ Map_CCBW_CountComet
 	CMP #MAPOBJ_PURPLECOMET

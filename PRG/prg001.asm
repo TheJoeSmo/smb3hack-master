@@ -2199,7 +2199,7 @@ PRG001_ACA9:
 
 	; Change tile to vine tile
 	LDA #TILE1_VINE
-	STA [Temp_Var1],Y
+	STA (Temp_Var1),Y
 
 	LDA Objects_SprHVis,X
 	CMP #$03
