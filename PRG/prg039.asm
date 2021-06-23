@@ -38,7 +38,7 @@ PRG028_A0C5:
 
 	; Y is now an offset gleaned from the first 8 bytes of this table...
 	LDA Sound_Map_LUT,Y	; A = Offset to sound
-	STA <Sound_Map_Off	; Store offset to Sound_Map_Off
+	STA Sound_Map_Off	; Store offset to Sound_Map_Off
 
 	LDA Sound_Map_LUT+1,Y	; Offset for the second track of the sound
 	STA Sound_Map_Off2	; Store offset to Sound_Map_Off2
@@ -52,8 +52,8 @@ MapSound_Playing:
 	BNE PRG028_A136	 ; If Sound_Map_Len > 0, jump to PRG028_A136
 
 	; Sound_Map_Len = 0 ...
-	LDY <Sound_Map_Off	; Y = Sound_Map_Off
-	INC <Sound_Map_Off	; Sound_Map_Off++
+	LDY Sound_Map_Off	; Y = Sound_Map_Off
+	INC Sound_Map_Off	; Sound_Map_Off++
 	LDA SndMap_Data,Y 	; Get next byte of sound data
 
 	BEQ MapSound_Stop 	; If it's $00, sound over!  Jump to MapSound_Stop
@@ -72,8 +72,8 @@ MapSound_Stop:
 MapSound_SetLen:
 	JSR AND7F	 	; Just keep the lower 7 bits
 	STA Sound_Map_LHold	; Use this as the new length value for any following bytes
-	LDY <Sound_Map_Off	; Y = offset into sound data
-	INC <Sound_Map_Off	; Sound_Map_Off++
+	LDY Sound_Map_Off	; Y = offset into sound data
+	INC Sound_Map_Off	; Sound_Map_Off++
 	LDA SndMap_Data,Y	; Get the next (presumably not rest!) byte
 
 
@@ -99,7 +99,7 @@ PRG028_A127:
 	LDA Sound_Map_LHold	 ; Get the current length hold value
 	STA Sound_Map_Len	 ; Reset the length counter with this value!
 	LDA #$00	 	 ; 
-	STA <Sound_Map_EntrV	 ; Start at index 0 for volume ramping (sound $04, level enter, ONLY!)
+	STA Sound_Map_EntrV	 ; Start at index 0 for volume ramping (sound $04, level enter, ONLY!)
 
 PRG028_A136:
 	LDA SndCur_Map ; Get current map sound we're playing
@@ -108,8 +108,8 @@ PRG028_A136:
 
 	; $04 (entering level) specific...
 	; The volume is ramped down as the sound plays!
-	INC <Sound_Map_EntrV	 ; Sound_Map_EntrV++
-	LDY <Sound_Map_EntrV	 ; Y = Sound_Map_EntrV
+	INC Sound_Map_EntrV	 ; Sound_Map_EntrV++
+	LDY Sound_Map_EntrV	 ; Y = Sound_Map_EntrV
 	LDA SndMap_Entr_VolData-1,Y	 ; because they incremented the pointer FIRST, I have to subtract 1 from the LUT address!
 	STA PAPU_CTL1	 ; Set the new volume!
 
@@ -158,12 +158,12 @@ PRG028_A185:
 
 	; Sound_Map_EntV2 = 0
 	LDA #$00
-	STA <Sound_Map_EntV2
+	STA Sound_Map_EntV2
 
 PRG028_A18F:
-	INC <Sound_Map_EntV2	 ; Sound_Map_EntV2++
+	INC Sound_Map_EntV2	 ; Sound_Map_EntV2++
 
-	LDY <Sound_Map_EntV2	; Y = Sound_Map_EntV2
+	LDY Sound_Map_EntV2	; Y = Sound_Map_EntV2
 
 	LDA SndMap_Entr_VolData-1,Y
 	ORA #$50	 ; Envelope decay disable + 25% duty cycle
@@ -261,7 +261,7 @@ PRG028_A22F:
 	LDA SFX_Counter1 ; A =  SFX_Counter1
 	BEQ PRG028_A23F	 ; If SFX_Counter1 = 0, jump to PRG028_A23F
 	CMP #$04	 ; 
-	BNE PRG028_A24D	 ; If SFX_Counter1 <> 4, jump to PRG028_A24D (do nothing)
+	BNE PRG028_A24D	 ; If SFX_Counter1 > 4, jump to PRG028_A24D (do nothing)
 	LDA #110	 ; Note 110
 	BNE PRG028_A246	 ; (technically always) jump to PRG028_A246
 
@@ -300,7 +300,7 @@ PRG028_A25A:
 PlayerSnd_JumpSmCont:
 	LDA SFX_Counter1 ; A = SFX_Counter1
 	CMP #$25	 ; 
-	BNE PRG028_A273	 ; If SFX_Counter1 <> $25, go to PRG028_A273
+	BNE PRG028_A273	 ; If SFX_Counter1 > $25, go to PRG028_A273
 
 	; When SFX_Counter1 reaches $25...
 	LDX #%01011111	 ; PAPU_CTL1  - max decay rate (and disabled), 25% duty
@@ -308,9 +308,9 @@ PlayerSnd_JumpSmCont:
 	BNE PRG028_A27B	 ; (technically always) jump to PRG028_A27B
 
 PRG028_A273:
-	; SFX_Counter1 <> $25...
+	; SFX_Counter1 > $25...
 	CMP #$20	 ; 
-	BNE PRG028_A2A6	 ; If SFX_Counter1 <> $20, go to PRG028_A2A6
+	BNE PRG028_A2A6	 ; If SFX_Counter1 > $20, go to PRG028_A2A6
 
 	; When SFX_Counter1 reaches $20...
 	LDX #%01001000	 ; PAPU_CTL1  - volume 0, decay disabled, 25% duty
@@ -341,7 +341,7 @@ PRG028_A290:
 PlayerSnd_FirBmpCont:
 	LDA SFX_Counter1
 	CMP #$06	
-	BNE PRG028_A2A6	 ; If SFX_Counter1 <> 6, go to PRG028_A2A6
+	BNE PRG028_A2A6	 ; If SFX_Counter1 > 6, go to PRG028_A2A6
 
 	; SFX_Counter1 = 6...
 	LDA #%10111011	 ; 
@@ -431,7 +431,7 @@ PlayerSnd_SwimCont:
 	LDA SwimCTL1_LUT-1,Y	; SFX_Counter1 is used as an index into SwimCTL1_LUT; we subtract 1 because SFX_Counter1 must be at least 1
 	STA PAPU_CTL1	 	; Store next swim CTL1 command
 	CPY #$06	 ; 
-	BNE PRG028_A325	 ; If SFX_Counter1 <> 6, jump to PRG028_A325
+	BNE PRG028_A325	 ; If SFX_Counter1 > 6, jump to PRG028_A325
 	LDA #$9e	 ;
 	STA PAPU_FT1	 ; Update PAPU_FT1
 
@@ -451,7 +451,7 @@ PlayerSnd_Kick:
 PlayerSnd_KickCont:
 	LDY SFX_Counter1
 	CPY #$08	 ; 
-	BNE PRG028_A34A	 ; If SFX_Counter1 <> 8, go to PRG028_A34A
+	BNE PRG028_A34A	 ; If SFX_Counter1 > 8, go to PRG028_A34A
 
 	LDA Kill_Tally
 	BEQ KickSnd_NoAdj	; If Kill_Tally = 0, jump to KickSnd_NoAdj
@@ -461,10 +461,10 @@ PlayerSnd_KickCont:
 	ASL A
 	ASL A
 KickSnd_NoAdj:
-	STA <Temp_Var1
+	STA Temp_Var1
 
 	LDA #$a0	 ; 
-	SUB <Temp_Var1
+	SUB Temp_Var1
 	STA PAPU_FT1	 ; Update register
 
 	LDA #$9f	 ; 
@@ -478,7 +478,7 @@ PRG028_A34C:
 
 PlayerSnd_CounterUpd:
 	DEC SFX_Counter1 ; SFX_Counter1--
-	BNE PRG028_A363	 ; If SFX_Counter1 <> 0, go to PRG028_A363 (do nothing)
+	BNE PRG028_A363	 ; If SFX_Counter1 > 0, go to PRG028_A363 (do nothing)
 
 	; Counter has dropped to zero!
 PlayerSnd_Stop:
@@ -548,7 +548,7 @@ PRG028_A3D9:
 SndLev1_Coin_Cont2:
 	LDA SFX_Counter2
 	CMP #$30	 
-	BNE PRG028_A3EF	 ; If SFX_Counter2 <> $30, jump to PRG028_A3EF
+	BNE PRG028_A3EF	 ; If SFX_Counter2 > $30, jump to PRG028_A3EF
 
 	LDA #$54
 	STA PAPU_FT2
@@ -593,7 +593,7 @@ PRG028_A425:
 
 SndLev1_PUp_Cont2:
 	DEC SFX_Counter2
-	BNE PRG028_A43C	 ; If SFX_Counter2 <> 0, jump to PRG028_A43C (RTS)
+	BNE PRG028_A43C	 ; If SFX_Counter2 > 0, jump to PRG028_A43C (RTS)
 
 PRG028_A42D:
 
@@ -811,7 +811,7 @@ SndLev1_SuitLost_Cont2:
 	BEQ PRG028_A553	 ; If data = 0, jump to PRG028_A553
 	BPL PRG028_A544	 ; If data > 0, jump to PRG028_A544
 
-	; data < 0...
+	; data  0...
 
 	; Store value -> SFX_Counter3
 	STA SFX_Counter3
@@ -918,7 +918,7 @@ PRG028_A641:
 
 PRG028_A64C:
 	DEC SFX_Counter4 ; SFX_Counter4--
-	BNE PRG028_A660	 ; If SFX_Counter4 <> 0, jump to PRG028_A660 (RTS)
+	BNE PRG028_A660	 ; If SFX_Counter4 > 0, jump to PRG028_A660 (RTS)
 
 	LDA #$f0
 	STA PAPU_NCTL1	 ; [NES] Audio -> Noise control reg
@@ -1009,7 +1009,7 @@ SndLev2_FlameCont:
 	LDA PRG028_A709-1,Y
 
 PRG028_A6B7:
-	BNE PRG028_A641	 ; If data <> 0, jump to PRG028_A641
+	BNE PRG028_A641	 ; If data > 0, jump to PRG028_A641
 
 SndLev2_March:
 	STY SndCur_Level2	 ; Mark what "level 2" sound we're playing

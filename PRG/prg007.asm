@@ -38,7 +38,7 @@ ArrowPlat_XOff:
 PDLDAB_GravityOff:	.byte 32, 0	; Non-reversed gravity and reversed gravity
 
 Player_DoLavaDonutArrowBounce:
-	LDA <Player_IsDying		  
+	LDA Player_IsDying		  
 	BNE PRG007_A06F	 ; If Player is dying, jump to PRG007_A06F (RTS)
 
 	LDA Level_7Vertical
@@ -51,42 +51,42 @@ PRG007_A027:
 	; Not vertically oriented level...
 
 	LDY Player_ReverseGrav
-	LDA <Player_Y	; Get Player Y
+	LDA Player_Y	; Get Player Y
 	ADD PDLDAB_GravityOff,Y
-	STA <Temp_Var5	; -> Temp_Var5
+	STA Temp_Var5	; -> Temp_Var5
 
-	LDA <Player_YHi
+	LDA Player_YHi
 	BMI PRG007_A06F	; If Player is up off the top of the screen, jump to PRG007_A06F (RTS)
 
 	ADC #$00	; Apply carry
 	AND #$01	; Only bit 0 is valid anyway in non-vertical mode
-	STA <Temp_Var3	; -> Temp_Var3
+	STA Temp_Var3	; -> Temp_Var3
 
 	LDA Level_32PPSlopeFlag
 	BEQ SpecTile_Not32PP		; If Player is not on sloped 32PP floor, jump to SpecTile_Not32PP
 
 	; Adjust for relativity...
-	LDA <Temp_Var5
+	LDA Temp_Var5
 	SUB Level_VertScroll	; Make relative to Vertical Scroll
 	SBC #16		; - 16
-	STA <Temp_Var5	; -> Temp_Var14
+	STA Temp_Var5	; -> Temp_Var14
 
 	LDA #$01
-	STA <Temp_Var3	 ; Temp_Var13 = 1 (implied high byte / carry)
+	STA Temp_Var3	 ; Temp_Var13 = 1 (implied high byte / carry)
 	
 SpecTile_Not32PP:
-	LDA <Temp_Var5
+	LDA Temp_Var5
 	AND #$F0
-	STA <Temp_Var5	; Align to tile grid
+	STA Temp_Var5	; Align to tile grid
 
-	LDA <Player_X	; Get Player X
+	LDA Player_X	; Get Player X
 	ADD #$08	; +8
 	AND #$f0	; Align to tile grid
-	STA <Temp_Var4	; -> Temp_Var4
+	STA Temp_Var4	; -> Temp_Var4
 
-	LDA <Player_XHi
+	LDA Player_XHi
 	ADC #$00	; Apply carry
-	STA <Temp_Var6	; -> Temp_Var6
+	STA Temp_Var6	; -> Temp_Var6
 
 	CMP #16		; 16 screens are the max!!
 	BCS PRG007_A06F	; If Player is really far to the right (somehow), jump to PRG007_A06F (RTS)
@@ -96,20 +96,20 @@ SpecTile_Not32PP:
 
 	; Store high byte of screen address -> Temp_Var1
 	LDA Tile_Mem_Addr,Y
-	STA <Temp_Var1	
+	STA Temp_Var1	
 
 	; Store low byte of screen address + Player's Y Hi -> Temp_Var2
 	LDA Tile_Mem_Addr+1,Y
-	ADD <Temp_Var3	
-	STA <Temp_Var2
+	ADD Temp_Var3	
+	STA Temp_Var2
 
 	; Calculate a proper offset into the tile memory for the X/Y position of the Player
-	LDA <Temp_Var4
+	LDA Temp_Var4
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var5
+	ORA Temp_Var5
 	TAY	; -> 'Y'
 
 	LDA [Temp_Var1],Y	; Get the tile here
@@ -119,7 +119,7 @@ SpecTile_Not32PP:
 
 	; Otherwise, bounce Player!
 	LDA #-$30
-	STA <Player_YVel
+	STA Player_YVel
 
 PRG007_A06F:
 	RTS		 ; Return
@@ -194,22 +194,22 @@ PRG007_A099:
 	STA Level_ObjectID,X
 
 	; Set donut lift Y 
-	LDA <Temp_Var5
+	LDA Temp_Var5
 	SUB #$01
-	STA <Objects_Y,X
-	LDA <Temp_Var3
+	STA Objects_Y,X
+	LDA Temp_Var3
 	SBC #$00
-	STA <Objects_YHi,X
+	STA Objects_YHi,X
 
 	; Set donut lift X
-	LDA <Temp_Var4
-	STA <Objects_X,X
-	LDA <Temp_Var6
-	STA <Objects_XHi,X
+	LDA Temp_Var4
+	STA Objects_X,X
+	LDA Temp_Var6
+	STA Objects_XHi,X
 
 	; Set donut lift object's Var5 = $20
 	LDA #$20
-	STA <Objects_Var5,X
+	STA Objects_Var5,X
 
 	; Set sprite attribute = 3
 	LDA #$03
@@ -218,13 +218,13 @@ PRG007_A099:
 	; Do tile change event to clear the tile version of the donut lift
 	LDA #$02
 	STA Level_ChgTileEvent
-	LDA <Temp_Var3	
+	LDA Temp_Var3	
 	STA Level_BlockChgYHi
-	LDA <Temp_Var5	
+	LDA Temp_Var5	
 	STA Level_BlockChgYLo
-	LDA <Temp_Var4	
+	LDA Temp_Var4	
 	STA Level_BlockChgXLo
-	LDA <Temp_Var6	
+	LDA Temp_Var6	
 	STA Level_BlockChgXHi
 
 	RTS
@@ -238,7 +238,7 @@ ArrowLift_Support:
 	LDA Level_Tileset
 	SUB #6
 	CMP #3
-	BGE PRG007_A0DD	; If tileset < 6 or > 8, can't be an arrow lift, jump to PRG007_A0DD (RTS)
+	BGE PRG007_A0DD	; If tileset  6 or > 8, can't be an arrow lift, jump to PRG007_A0DD (RTS)
 
 	; Restore tile
 	TXA
@@ -253,38 +253,38 @@ PRG007_A0DE:
 
 	; Vertically oriented level...
 
-	LDA <Player_Y	; Get Player Y
+	LDA Player_Y	; Get Player Y
 	ADD #33		; +33
 	AND #$f0	; Aligned to tile grid
-	STA <Temp_Var1	; -> Temp_Var1
-	STA <Temp_Var5	; -> Temp_Var5
+	STA Temp_Var1	; -> Temp_Var1
+	STA Temp_Var5	; -> Temp_Var5
 
-	LDA <Player_YHi
+	LDA Player_YHi
 	BMI PRG007_A0DD	 ; If Player is up off the top of the level, jump to PRG007_A0DD (RTS)
 
 	ADC #$00	; Apply carry
-	STA <Temp_Var3	; -> Temp_Var3
+	STA Temp_Var3	; -> Temp_Var3
 
 	; High byte of Tile_Mem -> Temp_Var2
-	ORA #HIGH(Tile_Mem)
-	STA <Temp_Var2
+	ORA #>Tile_Mem
+	STA Temp_Var2
 
-	LDA <Player_X	; Get Player X
+	LDA Player_X	; Get Player X
 	ADD #$08	; +8
 	AND #$f0	; Aligned to tile grid
-	STA <Temp_Var4	; -> Temp_Var4
+	STA Temp_Var4	; -> Temp_Var4
 
 	; Construct tile offset
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var1
-	STA <Temp_Var1
+	ORA Temp_Var1
+	STA Temp_Var1
 
 	; Temp_Var6 = 0 (would be "X Hi", which is always zero in vertical level)
 	LDY #$00
-	STY <Temp_Var6
+	STY Temp_Var6
 
 	LDA [Temp_Var1],Y	 ; Get tile here
 
@@ -298,7 +298,7 @@ PRG007_A113:
 	CPY #8
 	BNE PRG007_A0DD		; If this is not tileset 8 (Vertical pipe maze), jump to PRG007_A0DD (RTS)
 
-	LDY <Player_InAir
+	LDY Player_InAir
 	BNE PRG007_A0DD	 ; If Player is mid-air, jump to PRG007_A0DD (RTS)
 
 	LDY ArrowPlat_IsActive
@@ -315,7 +315,7 @@ PRG007_A113:
 
 	; Temp_Var3 = $FF
 	LDA #$ff
-	STA <Temp_Var3
+	STA Temp_Var3
 
 	LDX #$04	 ; X = 4
 PRG007_A12E:
@@ -340,13 +340,13 @@ PRG007_A12E:
 	; empty object appears forward of this position...
 
 PRG007_A144:
-	STX <Temp_Var3		; Temp_Var3 = index we just searched
+	STX Temp_Var3		; Temp_Var3 = index we just searched
 
 PRG007_A146:
 	DEX		 ; X--
 	BPL PRG007_A12E	 ; While X >= 0, loop!
 
-	LDX <Temp_Var3	 ; X = free object slot!
+	LDX Temp_Var3	 ; X = free object slot!
 	BMI PRG007_A182	 ; If no free object slot was found, jump to PRG007_A182
 
 	; Set this to "Normal!"
@@ -359,71 +359,71 @@ PRG007_A146:
 
 	; Set the direction value by tile
 	LDA ArrowPlat_DirByTile,Y
-	STA <Objects_Var4,X
+	STA Objects_Var4,X
 
 	; Arrow platform's Var5 (lifespan counter) = $FF
 	LDA #$ff
-	STA <Objects_Var5,X
+	STA Objects_Var5,X
 
 	LDA Level_7Vertical
 	BNE ArrowLift_Vert	; SB: If vertical, jump to ArrowLift_Vert
 
 	; SB: Non-vertical support...
-	LDA <Player_Y
+	LDA Player_Y
 	AND #$F0
 	ADD #31
-	STA <Objects_Y,X
-	LDA <Player_YHi
+	STA Objects_Y,X
+	LDA Player_YHi
 	ADC #0
-	STA <Objects_YHi,X
+	STA Objects_YHi,X
 
 	LDA ArrowPlat_XOff,Y
-	STA <Temp_Var1
+	STA Temp_Var1
 
-	LDA <Player_X
+	LDA Player_X
 	ADD #8
 	AND #$F0
-	ADD <Temp_Var1
-	STA <Objects_X,X
+	ADD Temp_Var1
+	STA Objects_X,X
 
 	LDY #0	; Y = 0 (16-bit extension)
 
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	BPL ArrowPlat_XOffNotNeg
 
 	LDY #$FF ; Y = $FF (16-bit negative extension)
 
 ArrowPlat_XOffNotNeg:
-	STY <Temp_Var1
+	STY Temp_Var1
 
-	LDA <Player_XHi
-	ADC <Temp_Var1
-	STA <Objects_XHi,X
+	LDA Player_XHi
+	ADC Temp_Var1
+	STA Objects_XHi,X
 
 	RTS
 
 
 ArrowLift_Vert:
 	; Arrow platform Y
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	AND #$f0
 	SUB #$01
-	STA <Objects_Y,X
-	LDA <Temp_Var2
+	STA Objects_Y,X
+	LDA Temp_Var2
 	SBC #$00
 	AND #$0f
-	STA <Objects_YHi,X
+	STA Objects_YHi,X
 
 	; Arrow platform X
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	ASL A
 	ASL A
 	ASL A
 	ASL A
 	ADD ArrowPlat_XOff,Y
-	STA <Objects_X,X
+	STA Objects_X,X
 	LDA #$00
-	STA <Objects_XHi,X
+	STA Objects_XHi,X
 
 PRG007_A182:
 	RTS		 ; Return
@@ -583,7 +583,7 @@ Gameplay_UpdateAndDrawMisc:
 	JSR CannonFire_UpdateAndDraw	 ; Update and draw the Cannon Fires
 	JSR_THUNKA 27, PlayerProjs_UpdateAndDraw27	; Update and draw Player's weapon projectiles
 
-	LDA <Player_Suit
+	LDA Player_Suit
 	CMP #PLAYERSUIT_HAMMER
 	BEQ PRG007_A251	 ; If Player is wearing a Hammer Suit, jump to PRG007_A251
 
@@ -601,14 +601,14 @@ PRG007_A251:
 	ORA Player_IsDucking	; ... Player is ducking ...
 	ORA Player_Kick	 	; ... Player is kicking ...
 	ORA Player_InPipe	; ... Player is in a pipe ...
-	ORA <Player_HaltGame	; ... gameplay is halted ...
+	ORA Player_HaltGame	; ... gameplay is halted ...
 	BNE PRG007_A268	 	; ... then jump to PRG007_A268
 
 	; SB: Support disabling weapons
 	LDA Player_DisTailAtk
 	BNE Player_DisWeapon 
 
-	BIT <Pad_Input
+	BIT Pad_Input
 	BVC PRG007_A268	 ; If Player is NOT pressing B, jump to PRG007_A268
 
 	JSR PlayerProj_ThrowWeapon	 ; Player throws weapon, whatever's appropriate
@@ -634,7 +634,7 @@ PRG007_A268:
 
 	; Set left sprite X
 	LDA ShellKillFlash_X
-	SUB <Horz_Scroll
+	SUB Horz_Scroll
 	STA Sprite_RAM+$03,Y
 
 	; Set right sprite X
@@ -657,18 +657,18 @@ SKF_UseGiantAlt:
 	STA Sprite_RAM+$05,Y
 
 	; Temp_Var1 = toggled vertical flip bit
-	LDA <Counter_1
+	LDA Counter_1
 	LSR A
 	LSR A
 	LSR A
 	ROR A
 	AND #SPR_VFLIP
-	STA <Temp_Var1
+	STA Temp_Var1
 
 	; OR in a palette cycle
-	LDA <Counter_1
+	LDA Counter_1
 	AND #$03
-	ORA <Temp_Var1
+	ORA Temp_Var1
 
 	; Set left sprite attribute
 	STA Sprite_RAM+$02,Y
@@ -704,16 +704,16 @@ PRG007_A2BA:
 	STA Player_FireCount
 
 	; Set projectile X
-	LDA <Player_X
+	LDA Player_X
 	ADD #$04
 	STA PlayerProj_X,X
-	LDA <Player_XHi
+	LDA Player_XHi
 	ADC #$00
 	STA PlayerProj_XHi,X
 
 	LDA #$01	 ; A = 1
 
-	LDY <Player_Suit
+	LDY Player_Suit
 	CPY #PLAYERSUIT_HAMMER
 	SEC		 ; Set carry (if NOT wearing the hammer suit)
 	BNE PRG007_A2E3	 ; If Player is NOT wearing the Hammer Suit, jump to PRG007_A2E3
@@ -730,10 +730,10 @@ PRG007_A2E3:
 	TAY		; Y = 0/2 or 1/3
 
 	; Set projectile Y Hi
-	LDA <Player_Y
+	LDA Player_Y
 	ADD PProj_RYOff,Y	; SB: Add offset for reverse gravity
 	STA PlayerProj_Y,X
-	LDA <Player_YHi
+	LDA Player_YHi
 	ADC #0	; Apply carry
 	STA PlayerProj_YHi,X
 		
@@ -752,14 +752,14 @@ PRG007_A2E3:
 	STA PlayerProj_YVelFrac,X
 	
 	LDA #$00
-	STA <Temp_Var1
+	STA Temp_Var1
 
 	LDA PProj_InitXVel,Y
-	LDY <Player_FlipBits	; Keep in mind this is generally only $00 or $40 since Player doesn't vertically flip/etc.
+	LDY Player_FlipBits	; Keep in mind this is generally only $00 or $40 since Player doesn't vertically flip/etc.
 	BNE PRG007_A30B	 	; If Player is horizontally flipped, jump to PRG007_A30B
 
 	JSR Negate	 ; If Player is turned around, negate value
-	INC <Temp_Var1
+	INC Temp_Var1
 
 PRG007_A30B:
 	LDY PlayerProj_ID,X
@@ -767,7 +767,7 @@ PRG007_A30B:
 	BEQ PProj_NoHammerAdj
 
 	; Hammer only -- boost X velocity by Player
-	ADD <Player_XVel
+	ADD Player_XVel
 	AND #~1		; Make it even in any case so the checks don't fail
 
 PProj_NoHammerAdj:
@@ -775,7 +775,7 @@ PProj_NoHammerAdj:
 
 	AND #$80		; Keep sign bit for telling when boomerang has first turned around
 	ORA #$40		; Bit means we need to do the turnaround check
-	ORA <Temp_Var1	; Sets direction flag
+	ORA Temp_Var1	; Sets direction flag
 	STA PlayerProj_Var2,X
 
 	RTS		 ; Return
@@ -821,7 +821,7 @@ Player_WaterOrWaterfallVizFX:
 	STY Kill_Tally
 
 PRG007_A783:
-	LDY <Player_HaltGame
+	LDY Player_HaltGame
 	BNE PRG007_A7F0	 ; If gameplay halted, jump to PRG007_A7F0 (RTS)
 
 	LDA Player_InWater
@@ -839,17 +839,17 @@ StarInv_NoWaterReset:
 
 	; Player's in a waterfall!
 
-	LDA <Player_YVel
+	LDA Player_YVel
 	CMP #$3c
 	BGS PRG007_A7A2	 ; If Player's Y velocity >= $3C, jump to PRG007_A7A2
 
-	INC <Player_YVel ; Player_YVel++
+	INC Player_YVel ; Player_YVel++
 
-	LDA <Counter_1
+	LDA Counter_1
 	LSR A	
 	BCC PRG007_A7A2	 ; Every other tick, jump to PRG007_A7A2
 
-	INC <Player_YVel ; Player_YVel++
+	INC Player_YVel ; Player_YVel++
 
 PRG007_A7A2:
 	JSR Object_GetRandNearUnusedSpr
@@ -863,7 +863,7 @@ PRG007_A7A2:
 	STA Sprite_RAM+$01,Y
 	STA Sprite_RAM+$05,Y
 
-	LDA <Counter_1
+	LDA Counter_1
 	LSR A
 	AND #$03
 	ADD #$05	; Value of 5 to 8
@@ -878,24 +878,24 @@ PRG007_A7C6:
 	ADD #10		 ; Small or ducking, +10 (15 to 18)
 
 PRG007_A7C9:
-	STA <Temp_Var1	 ; -> Temp_Var1
+	STA Temp_Var1	 ; -> Temp_Var1
 
-	LDX <SlotIndexBackup	 ; Restore 'X' as slot index
+	LDX SlotIndexBackup	 ; Restore 'X' as slot index
 
 	; Sprite "splashing" effect Y
-	LDA <Player_SpriteY
-	ADD <Temp_Var1
+	LDA Player_SpriteY
+	ADD Temp_Var1
 	SUB #10
 	STA Sprite_RAM+$00,Y
 	STA Sprite_RAM+$04,Y
 
 	; Sprite "splashing" effect X
-	LDA <Player_SpriteX
+	LDA Player_SpriteX
 	STA Sprite_RAM+$03,Y
 	ADD #$08
 	STA Sprite_RAM+$07,Y
 
-	LDA <Counter_1
+	LDA Counter_1
 	AND #$03
 	SUB #$02	 ; A = -2 to 1 (spread value)
 
@@ -911,7 +911,7 @@ PRG007_A7F1:
 
 	LDY #$7f	 ; Y = $7F ("slow" mask value for idle underwater player)
 
-	LDA <Pad_Holding
+	LDA Pad_Holding
 	AND #(PAD_A | PAD_LEFT | PAD_RIGHT)
 	BEQ PRG007_A7FB	 ; If Player is not pressing A, LEFT, or RIGHT (swim controls), jump to PRG007_A7FB
 
@@ -919,13 +919,13 @@ PRG007_A7F1:
 
 PRG007_A7FB:
 	TYA		 ; Mask -> 'Y'
-	AND <Counter_1
+	AND Counter_1
 	BNE PRG007_A80C	 ; Periodically jump to PRG007_A80C (RTS)
 
 	; SlotIndexBackup = 2
 	LDX #$02
 PRG007_A802:
-	STX <SlotIndexBackup
+	STX SlotIndexBackup
 
 	LDA Bubble_Cnt,X
 	BEQ PRG007_A80D	 ; If this bubble slot is empty, jump to PRG007_A80D
@@ -944,14 +944,14 @@ PRG007_A80D:
 
 	LDY #$00	 ; Y = 0
 
-	LDA <Player_Frame
+	LDA Player_Frame
 	CMP #PF_PENGUINSWIM_UPBASE
 	BLT PRG007_A835	 ; If Player is not within the low end range of penguin suit swim frames, jump to PRG007_A835
 
 	LDY #$03	 ; Otherwise, Y = 3 (pending this might be the "up" frame)
 
 	CMP #PF_PENGUINHOP_BASE
-	BLT PRG007_A835	 ; If frame < PF_PENGUINHOP_BASE (if true, then absolutely the "up" swim frame), jump to PRG007_A835
+	BLT PRG007_A835	 ; If frame  PF_PENGUINHOP_BASE (if true, then absolutely the "up" swim frame), jump to PRG007_A835
 
 	LDY #$00	 ; Otherwise, Y = 0
 
@@ -977,7 +977,7 @@ PRG007_A835:
 	ASL A
 	TAY
 
-	BIT <Player_FlipBits
+	BIT Player_FlipBits
 	BVC PRG007_A83D	 ; If Player is not horizontally flipped, jump to PRG007_A83D
 
 	INY		 ; Otherwise, Y++
@@ -985,27 +985,27 @@ PRG007_A835:
 PRG007_A83D:
 	LDA #$00	; A = 0
 
-	LDX <Player_Suit
+	LDX Player_Suit
 	BNE PRG007_A845	 ; If Player is not small, jump to PRG007_A845
  
 	LDA #$08	 ; Otherwise, A = 8
 
 PRG007_A845:
-	LDX <SlotIndexBackup	 ; X = slot backup
+	LDX SlotIndexBackup	 ; X = slot backup
 
 	; Set Bubble Y
-	ADD <Player_Y
+	ADD Player_Y
 	ADC SwimBubble_YOff,Y
 	STA Bubble_Y,X
-	LDA <Player_YHi
+	LDA Player_YHi
 	ADC #$00
 	STA Bubble_YHi,X
 
 	; Set Bubble X
-	LDA <Player_X
+	LDA Player_X
 	ADD SwimBubble_XOff,Y
 	STA Bubble_X,X
-	LDA <Player_XHi
+	LDA Player_XHi
 	ADC #$00
 	STA Bubble_XHi,X
 
@@ -1020,7 +1020,7 @@ PRG007_A845:
 Bubbles_UpdateAndDraw:
 	LDX #$03	 ; X = 3
 PRG007_A86A:
-	STX <SlotIndexBackup	 ; -> Slot index backup
+	STX SlotIndexBackup	 ; -> Slot index backup
 
 	LDA Bubble_Cnt,X
 	BEQ PRG007_A874	 ; If this bubble slot is not in use, jump to PRG007_A874
@@ -1035,7 +1035,7 @@ PRG007_A874:
 
 
 Bubble_UpdateAndDraw:
-	LDA <Player_HaltGame		 
+	LDA Player_HaltGame		 
 	BEQ PRG007_A87F	 ; If gameplay is not halted, juimp to PRG007_A89A
 
 	JMP PRG007_A89A	 ; Otherwise, jump to PRG007_A89A
@@ -1067,11 +1067,11 @@ PRG007_A89A:
 	LDA Bubble_Y,X
 	ADD #10		; Bubble Y + 10
 	AND #$f0
-	STA <Temp_Var3	; Temp_Var3 = bubble row (offset into tile memory)
+	STA Temp_Var3	; Temp_Var3 = bubble row (offset into tile memory)
 
 	LDA Bubble_YHi,X
-	ADC #HIGH(Tile_Mem)
-	STA <Temp_Var2	; Temp_Var2 = bubble high offset into tile memory
+	ADC #>Tile_Mem
+	STA Temp_Var2	; Temp_Var2 = bubble high offset into tile memory
 
 	; Create row/column offset into tile memory for current screen of bubble -> Temp_var1
 	LDA Bubble_X,X
@@ -1079,8 +1079,8 @@ PRG007_A89A:
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var3
-	STA <Temp_Var1
+	ORA Temp_Var3
+	STA Temp_Var1
 
 	LDY #$00	 ; Y = 0 (not using the offset like non-vertical does)
 	BEQ PRG007_A8F0	 ; Jump (technically always) to PRG007_A8F0
@@ -1089,7 +1089,7 @@ PRG007_A8BF:
 	LDA Bubble_Y,X
 	ADD #10		 ; Bubble Y + 10
 	AND #$f0
-	STA <Temp_Var3	 ; Temp_Var3 = bubble row (offset into tile memory)
+	STA Temp_Var3	 ; Temp_Var3 = bubble row (offset into tile memory)
 
 	LDA Bubble_YHi,X
 	ADC #$00	 ; Apply carry
@@ -1097,27 +1097,27 @@ PRG007_A8BF:
 
 	; Temp_Var5 = bubble X
 	LDA Bubble_X,X
-	STA <Temp_Var5
+	STA Temp_Var5
 
 	LDA Bubble_XHi,X
 	ASL A		 ; 2 bytes per screen
 	TAY		 ; Y = offset into Tile_Mem_Addr
 
 	LDA Tile_Mem_Addr,Y
-	STA <Temp_Var1	 ; Temp_Var1 = low byte of this screen's tile memory address
+	STA Temp_Var1	 ; Temp_Var1 = low byte of this screen's tile memory address
 
 	PLA		 ; Restore Bubble's Y Hi
 	AND #$01	 ; Only 0/1 valid for non-vertical
 	ADD Tile_Mem_Addr+1,Y	 ; Add to high byte of address
-	STA <Temp_Var2	 ; -> Temp_Var2
+	STA Temp_Var2	 ; -> Temp_Var2
 
 	; Create row/column offset -> Temp_Var3
-	LDA <Temp_Var5
+	LDA Temp_Var5
 	LSR A	
 	LSR A	
 	LSR A	
 	LSR A	
-	ORA <Temp_Var3
+	ORA Temp_Var3
 
 	TAY		 ; Y = this offset
 
@@ -1131,22 +1131,22 @@ PRG007_A8F0:
 	ROL A
 	ROL A
 	AND #$03
-	STA <Temp_Var1
+	STA Temp_Var1
 
 	PLA		 ; Restore specific tile
-	STA <Temp_Var2	 ; -> Temp_Var2
+	STA Temp_Var2	 ; -> Temp_Var2
 
-	LDY <Temp_Var1	 ; Y = tile quadrant
+	LDY Temp_Var1	 ; Y = tile quadrant
 	CMP Tile_AttrTable,Y
 	BGE PRG007_A91E	 ; If this tile is solid, jump to PRG007_A91E (destroy bubble)
 
 	LDA Level_TilesetIdx
 	ASL A
 	ASL A		; Tileset index * 4
-	ADD <Temp_Var1	; + quadrant
+	ADD Temp_Var1	; + quadrant
 	TAY	; -> 'Y' (offset into Level_MinTileUWByQuad)
 
-	LDA <Temp_Var2
+	LDA Temp_Var2
 	CMP #TILE1_WFALLTOP
 	BEQ PRG007_A91E	 ; If this is the top of a waterfall, jump to PRG007_A915 (indirect to PRG007_A91E)
 
@@ -1156,7 +1156,7 @@ PRG007_A915:
 	BEQ PRG007_A91E	 ; If this is the top or middle of a waterfall, jump to PRG007_A91E
 
 	LDA Level_MinTileUWByQuad,Y
-	CMP <Temp_Var2
+	CMP Temp_Var2
 	BLT Bubble_Draw	 ; If this tile is still considered underwater, jump to Bubble_Draw 
 
 PRG007_A91E:
@@ -1179,11 +1179,11 @@ Bubble_Draw:
 
 	; Temp_Var1 = bubble's X offset
 	LDA Bubble_XOff,Y
-	STA <Temp_Var1
+	STA Temp_Var1
 
-	LDA <Counter_1
+	LDA Counter_1
 	AND #%00000011
-	ADC <SlotIndexBackup 	
+	ADC SlotIndexBackup 	
 	TAY		 ; Y = (0 to 3) + bubble's index
 
 	LDA Bubble_SprRAMOff,Y
@@ -1205,8 +1205,8 @@ Bubble_Draw:
 
 	; Bubble X
 	LDA Bubble_X,X
-	ADD <Temp_Var1
-	SUB <Horz_Scroll
+	ADD Temp_Var1
+	SUB Horz_Scroll
 	STA Sprite_RAM+$03,Y
 
 	CMP #248
@@ -1232,12 +1232,12 @@ PRG007_A978:
 Splash_UpdateAndDraw:
 	LDX #$02	 ; X = 2
 PRG007_A97B:
-	STX <SlotIndexBackup	 ; -> Slot Index backup
+	STX SlotIndexBackup	 ; -> Slot Index backup
 
 	LDA Splash_Counter,X
 	BEQ PRG007_A9A0	 ; If no splash is active here, jump to PRG007_A9A0
 
-	LDA <Player_HaltGame
+	LDA Player_HaltGame
 
 	; This probably used to skip something if gameplay was halted, i.e. (BNE xxxx)
 	NOP
@@ -1245,7 +1245,7 @@ PRG007_A97B:
 
 	INC Splash_Counter,X	 ; Splash counter++
 
-	LDA <Counter_1
+	LDA Counter_1
 	LSR A
 	BCC PRG007_A991	 ; Every other tick, jump to PRG007_A991
 
@@ -1254,7 +1254,7 @@ PRG007_A97B:
 PRG007_A991:
 	LDA Splash_Counter,X
 	CMP #$30
-	BLT PRG007_A99D	 ; If splash counter < $30, jump to PRG007_A99D
+	BLT PRG007_A99D	 ; If splash counter  $30, jump to PRG007_A99D
 
 	JSR Splash_Remove ; Remove this splash
 	BEQ PRG007_A9A0	 ; Jump (technically always) to PRG007_A9A0
@@ -1284,10 +1284,10 @@ Splash_Draw:
 	JSR Object_GetRandNearUnusedSpr	 
 	BEQ PRG007_A9AF	 ; If no sprite available, jump to PRG007_A9AF (RTS)
 
-	STY <Temp_Var1	 ; Sprite RAM offset -> Temp_Var1
+	STY Temp_Var1	 ; Sprite RAM offset -> Temp_Var1
 
 	LDA Splash_X,X
-	SUB <Horz_Scroll	; Make scroll relative X for splash
+	SUB Horz_Scroll	; Make scroll relative X for splash
 
 	CMP #240
 	BGE Splash_Remove	; If splash X >= 240, jump to Splash_Remove
@@ -1305,7 +1305,7 @@ Splash_Draw:
 	SUB Level_VertScroll	 ; Make scroll relative Y for splash
 
 PRG007_A9D5:
-	LDY <Temp_Var1		 ; Y = sprite RAM offset
+	LDY Temp_Var1		 ; Y = sprite RAM offset
 
 	CMP #$ae
 	BGE Splash_Remove	 ; If splash sprite RAM offset >= $AE (?), jump to Splash_Remove (remove it!)
@@ -1327,22 +1327,22 @@ PRG007_A9D5:
 	LSR A
 	LSR A
 	TAX		; X = splash counter / 8
-	STX <Temp_Var1	; -> Temp_Var1
+	STX Temp_Var1	; -> Temp_Var1
 
 	; Set splash sprite patterns
 	LDA Splash_Patterns,X
 	STA Sprite_RAM+$01,Y
 	STA Sprite_RAM+$05,Y
 
-	LDX <SlotIndexBackup	 ; X = splash index
+	LDX SlotIndexBackup	 ; X = splash index
 
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	CMP #$03
 	BLT PRG007_AA4C	 ; If (splash counter / 8) < 3, jump to PRG007_AA4C (RTS)
 
-	LDA <Counter_1
+	LDA Counter_1
 	AND #$01
-	ORA <Player_HaltGame
+	ORA Player_HaltGame
 	BNE PRG007_AA10	 ; Every other tick or gameplay halted, jump to 
 
 	INC Splash_Y,X	 ; Splash_Y++
@@ -1356,16 +1356,16 @@ PRG007_AA10:
 	AND #$03	 ; A = (splash counter - 24) / 8
 
 Draw_SpreadAndColorful:
-	STA <Temp_Var1		 
+	STA Temp_Var1		 
 
 	; Subtract from sprite X
 	LDA Sprite_RAM+$03,Y
-	SUB <Temp_Var1	
+	SUB Temp_Var1	
 	STA Sprite_RAM+$03,Y
 
 	; Add to other sprite X
 	LDA Sprite_RAM+$07,Y
-	ADD <Temp_Var1
+	ADD Temp_Var1
 	STA Sprite_RAM+$07,Y
 
 	; Set attributes of two sprites
@@ -1380,7 +1380,7 @@ Draw_SpreadAndColorful:
 	BNE PRG007_AA4C	 ; 2 ticks on, 2 ticks off; jump to PRG007_AA4C (RTS)
 
 	; Mess with attributes for a little sparkly fun
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	ORA #SPR_VFLIP
 	STA Sprite_RAM+$02,Y
 
@@ -1406,41 +1406,41 @@ Score_OffsetRight:	.byte $08, $08, $08, $08, $04, $04, $04, $04, $08, $08, $08, 
 
 	; Score to add (low byte)
 ScoreAdd_L:
-	.byte LOW(  1)	;   10 points
-	.byte LOW(  2)	;   20 points
-	.byte LOW(  4)	;   40 points
-	.byte LOW(  8)	;   80 points
-	.byte LOW( 10)	;  100 points
-	.byte LOW( 20)	;  200 points
-	.byte LOW( 40)	;  400 points
-	.byte LOW( 80)	;  800 points
-	.byte LOW(100)	; 1000 points
-	.byte LOW(200)	; 2000 points
-	.byte LOW(400)	; 4000 points
-	.byte LOW(800)	; 8000 points
+	.byte <1	;   10 points
+	.byte <2	;   20 points
+	.byte <4	;   40 points
+	.byte <8	;   80 points
+	.byte <10	;  100 points
+	.byte <20	;  200 points
+	.byte <40	;  400 points
+	.byte <80	;  800 points
+	.byte <100	; 1000 points
+	.byte <200	; 2000 points
+	.byte <400	; 4000 points
+	.byte <800	; 8000 points
 	.byte $00	; 1-up (no score value)
 
 	; Score to add (high byte)
 ScoreAdd_H:
-	.byte HIGH(  1)	;   10 points
-	.byte HIGH(  2)	;   20 points
-	.byte HIGH(  4)	;   40 points
-	.byte HIGH(  8)	;   80 points
-	.byte HIGH( 10)	;  100 points
-	.byte HIGH( 20)	;  200 points
-	.byte HIGH( 40)	;  400 points
-	.byte HIGH( 80)	;  800 points
-	.byte HIGH(100)	; 1000 points
-	.byte HIGH(200)	; 2000 points
-	.byte HIGH(400)	; 4000 points
-	.byte HIGH(800)	; 8000 points
+	.byte >1	;   10 points
+	.byte >2	;   20 points
+	.byte >4	;   40 points
+	.byte >8	;   80 points
+	.byte >10	;  100 points
+	.byte >20	;  200 points
+	.byte >40	;  400 points
+	.byte >80	;  800 points
+	.byte >100	; 1000 points
+	.byte >200	; 2000 points
+	.byte >400	; 4000 points
+	.byte >800	; 8000 points
 	.byte $00	; 1-up (no score value)
 
 
 Scores_GiveAndDraw:
 	LDA Kill_Tally	  
 	CMP #$08
-	BLT PRG007_AA8D	 ; If Kill_Tally < 8, jump to PRG007_AA8D
+	BLT PRG007_AA8D	 ; If Kill_Tally  8, jump to PRG007_AA8D
 
 	; Max Kill_Tally at 8
 	LDA #$08
@@ -1449,14 +1449,14 @@ Scores_GiveAndDraw:
 PRG007_AA8D:
 	LDX #$04	; X = 4 (all five on-screen "scores")
 PRG007_AA8F:
-	STX <SlotIndexBackup	 ; Update SlotIndexBackup
+	STX SlotIndexBackup	 ; Update SlotIndexBackup
 
 	LDA Scores_Value,X
 	AND #$7f	 ; Keep only lower 7 bits
 	BEQ PRG007_AAAD	 ; If this score's value is $00 or $80, jump to PRG007_AAAD
 
 	CMP #$0D
-	BLT PRG007_AAA8	 ; If score value < $0D (1-up), jump to PRG007_AAA8
+	BLT PRG007_AAA8	 ; If score value  $0D (1-up), jump to PRG007_AAA8
 
 	LDA Scores_Value,X
 	AND #$80	; Keep bit 7
@@ -1466,7 +1466,7 @@ PRG007_AA8F:
 	AND #$7f	 ; Keep only lower 7 bits
 
 PRG007_AAA8:
-	STA <Temp_Var1	 	; Score value -> Temp_Var1
+	STA Temp_Var1	 	; Score value -> Temp_Var1
 	JSR Score_GiveAndDraw	; Give awarded points and draw score sprites
 
 PRG007_AAAD:
@@ -1480,7 +1480,7 @@ Score_GiveAndDraw:
 	ORA Player_SuitLost	; ... or has lost their power-up ...
 	BNE PRG007_AAC0	 	; ... then jump to PRG007_AAC0
 
-	LDA <Player_HaltGame
+	LDA Player_HaltGame
 	BNE PRG007_AB1D	 	; If gameplay is halted, jump to PRG007_AB1D
 
 PRG007_AAC0:
@@ -1501,11 +1501,11 @@ PRG007_AACF:
 	DEC Scores_Counter,X	 ; Decrement the score counter
 
 	CMP #$2a
-	BNE PRG007_AB04	 ; If score counter <> $2A, jump to PRG007_AB04
+	BNE PRG007_AB04	 ; If score counter > $2A, jump to PRG007_AB04
 
 	; Score counter = $2A...
 
-	LDY <Temp_Var1	 ; Y = score value
+	LDY Temp_Var1	 ; Y = score value
 
 	; Add Score's value to Score_Earned
 	LDA Score_Earned
@@ -1531,7 +1531,7 @@ PRG007_AACF:
 	INC Player_Lives,X	; Otherwise, give them the extra life!
 
 PRG007_AB02:
-	LDX <SlotIndexBackup	; X = score slot index
+	LDX SlotIndexBackup	; X = score slot index
 
 PRG007_AB04:
 	LDA Scores_Counter,X
@@ -1541,7 +1541,7 @@ PRG007_AB04:
 	LSR A
 	TAY		 ; Y = score counter / 16
 
-	LDA <Counter_1
+	LDA Counter_1
 	AND Score_RiseCounterMask,Y
 	BNE PRG007_AB1D	 ; Periodically jump to PRG007_AB1D
 
@@ -1578,10 +1578,10 @@ PRG007_AB1D:
 	LDA Object_SprRAM,X
 	ADD #16		; +16 (4 sprites over)
 	TAY		 ; Y = Sprite RAM offset
-	STY <Temp_Var5	 ; -> Temp_Var5
+	STY Temp_Var5	 ; -> Temp_Var5
 
 	ADD #$04	 ; +4 (1 sprite over)
-	STA <Temp_Var6	 ; -> Temp_Var6
+	STA Temp_Var6	 ; -> Temp_Var6
 
 	LDA Sprite_RAM+$00,Y
 	CMP #$f8
@@ -1590,26 +1590,26 @@ PRG007_AB1D:
 PRG007_AB53:
 	JSR Object_GetRandNearUnusedSpr		; Sprite is not free; get a nearby one
 
-	STY <Temp_Var5	 ; -> Temp_Var5
+	STY Temp_Var5	 ; -> Temp_Var5
 	BNE PRG007_AB70	 ; As long as result wasn't zero, jump to PRG007_AB70
 
 	; No sprites available...
 
 	; Temp_Var6 = $FF
 	LDA #$ff
-	STA <Temp_Var6
+	STA Temp_Var6
 
-	LDA <Counter_1
+	LDA Counter_1
 	LSR A
 	BCC PRG007_AB6D	 ; Every other tick, jump to PRG007_AB6D
 
 	; Basically only one or the other half of the score will actually display
-	LDA <Temp_Var5
+	LDA Temp_Var5
 	PHA
-	LDA <Temp_Var6
-	STA <Temp_Var5
+	LDA Temp_Var6
+	STA Temp_Var5
 	PLA
-	STA <Temp_Var6
+	STA Temp_Var6
 
 PRG007_AB6D:
 	JMP PRG007_AB76	 ; Jump to PRG007_AB76
@@ -1618,18 +1618,18 @@ PRG007_AB70:
 	; New sprite RAM offset selected...
 	TYA		 ; -> Y
 	ADD #$04	 ; +4 (next sprite over)
-	STA <Temp_Var6	 ; -> Temp_Var6
+	STA Temp_Var6	 ; -> Temp_Var6
 
 PRG007_AB76: 
-	LDY <Temp_Var5	 ; Y = first sprite offset
+	LDY Temp_Var5	 ; Y = first sprite offset
 	CPY #$ff
 	BEQ PRG007_AB99	 ; If this sprite is marked as "don't display", jump to PRG007_AB99
 
-	LDX <Temp_Var1	 ; X = score value
+	LDX Temp_Var1	 ; X = score value
 
 	LDA Score_PatternLeft-1,X	 ; -1 because a score value of zero is "empty"
 
-	LDX <SlotIndexBackup	 ; X = score slot index
+	LDX SlotIndexBackup	 ; X = score slot index
 
 	CMP #$ff
 	BEQ PRG007_AB99	 ; If this is the "don't display" marker, jump to PRG007_AB99
@@ -1648,7 +1648,7 @@ PRG007_AB76:
 	JSR Score_SetAttribute
 
 PRG007_AB99:
-	LDY <Temp_Var6	 ; Y = second sprite offset
+	LDY Temp_Var6	 ; Y = second sprite offset
 	CPY #$ff
 	BEQ PRG007_ABC4	 ; If this sprite is marked as "don't display", jump to PRG007_ABC4
 
@@ -1662,7 +1662,7 @@ PRG007_AB99:
 	; SB: Hack to free a couple patterns in CHR004
 	; Use the double-zero for score values 5-8 (100, 200, 400, 800)
 	; by moving it over by 4 instead of 8
-	LDX <Temp_Var1	 ; X = score value
+	LDX Temp_Var1	 ; X = score value
 	ADD Score_OffsetRight-1,X
 	STA Sprite_RAM+$03,Y
 
@@ -1671,7 +1671,7 @@ PRG007_AB99:
 	STA Sprite_RAM+$01,Y
 
 Score_SetAttribute:
-	LDA <Temp_Var1	 ; Get score value
+	LDA Temp_Var1	 ; Get score value
 	CMP #$0d
 	LDA #$01	 ; A = 1
 	BGE PRG007_ABBF	 ; If this is the 1-up, jump to PRG007_ABBF
@@ -1682,7 +1682,7 @@ PRG007_ABBF:
 	; Set attribute
 	STA Sprite_RAM+$02,Y
 
-	LDX <SlotIndexBackup	 ; X = score slot index
+	LDX SlotIndexBackup	 ; X = score slot index
 
 PRG007_ABC4:
 	RTS		 ; Return
@@ -1696,7 +1696,7 @@ PRG007_ABC4:
 BrickBusts_DrawAndUpdate:
 	LDX #$01	 ; X = 1
 PRG007_ABC7:
-	STX <SlotIndexBackup	; -> SlotIndexBackup
+	STX SlotIndexBackup	; -> SlotIndexBackup
 
 	JSR BrickBust_DrawAndUpdate	 ; Draw and update this brick bust
 
@@ -1720,10 +1720,10 @@ BrickBust_DrawAndUpdate:
 	JMP PRG007_AD27	 ; Otherwise, jump to PRG007_AD27
 
 PRG007_ABE0:
-	LDA <Player_HaltGame
+	LDA Player_HaltGame
 	BNE PRG007_ABED	 ; If gameplay halted, jump to PRG007_ABED
 
-	LDA <Counter_1
+	LDA Counter_1
 	AND #$03
 	BNE PRG007_ABED	 ; 1:4 proceed, otherwise jump to PRG007_ABED
 
@@ -1736,7 +1736,7 @@ PRG007_ABED:
 	CLC		 ; Clear carry (no point?)
 	SUB Level_ScrollDiffV	 ; Adjust Y based on vertical screen scroll
 
-	LDY <Player_HaltGame
+	LDY Player_HaltGame
 	BNE PRG007_ABFE	 ; If gameplay is halted, jump to PRG007_ABFE
 
 	ADD BrickBust_YVel,X	 ; Apply brick bust Y velocity
@@ -1752,7 +1752,7 @@ PRG007_ABFE:
 
 	LDA Level_ScrollDiffV
 
-	LDY <Player_HaltGame
+	LDY Player_HaltGame
 	BNE PRG007_AC12	 ; If gameplay halted, jump to PRG007_AC12
 
 	SUB BrickBust_YVel,X	 ; Apply velocity in reverse
@@ -1773,7 +1773,7 @@ PRG007_AC1F:
 	CLC		 ; Clear carry (no point?)
 	SUB Level_ScrollDiffV	 ; Adjust Y based on vertical screens croll
 
-	LDY <Player_HaltGame
+	LDY Player_HaltGame
 	BNE PRG007_AC36	 ; If gameplay is halted, jump to PRG007_AC36
 
 	INC BrickBust_XDist,X	 ; Increase the chunk separation
@@ -1793,7 +1793,7 @@ PRG007_AC36:
 
 	LDA Level_ScrollDiffV
 
-	LDY <Player_HaltGame
+	LDY Player_HaltGame
 	BNE PRG007_AC4D	 ; If gameplay halted, jump to PRG007_AC4D
 
 	SUB BrickBust_YVel,X	 ; Apply velocity in reverse
@@ -1816,7 +1816,7 @@ PRG007_AC5A:
 	STA BrickBust_X,X
 
 	TXA		 ; Keeps things interesting
-	EOR <Counter_1
+	EOR Counter_1
 	AND #$01
 	TAY		 ; Y = 0 or 1
 
@@ -1833,25 +1833,25 @@ PRG007_AC5A:
 
 PRG007_AC7A:
 	LDA BrickBust_HEn,X
-	STA <Temp_Var4	 ; Horizontal enable flag -> Var4
+	STA Temp_Var4	 ; Horizontal enable flag -> Var4
 
 	CMP #$0c
 	BLT PRG007_AC91	 ; If at least one of upper or lower are enabled, jump to PRG007_AC91
 
 	; Upper and lower are both disabled!
 
-	LDA <Player_HaltGame
+	LDA Player_HaltGame
 	BNE PRG007_AC8E	 ; If gameplay halted, jump to PRG007_AC8E
 
 	LDA BrickBust_YVel,X
 	CMP #$08
-	BLS PRG007_AC91	 ; If brick bust Y velocity < $08, jump to PRG007_AC91
+	BLS PRG007_AC91	 ; If brick bust Y velocity  $08, jump to PRG007_AC91
 
 PRG007_AC8E:
 	JMP PRG007_AD21	 ; Otherwise, jump to PRG007_AD21 (disable this brick bust)
 
 PRG007_AC91:
-	LDA <Temp_Var4
+	LDA Temp_Var4
 	AND #$08
 	BNE PRG007_ACA0	 ; If upper bust chunks are disabled, jump to PRG007_ACA0
 
@@ -1861,7 +1861,7 @@ PRG007_AC91:
 	STA Sprite_RAM+$04,Y
 
 PRG007_ACA0:
-	LDA <Temp_Var4
+	LDA Temp_Var4
 	AND #$04
 	BNE PRG007_ACAF	 ; If lower bust chunks are disabled, jump to PRG007_ACAF
 
@@ -1871,7 +1871,7 @@ PRG007_ACA0:
 	STA Sprite_RAM+$0C,Y
 
 PRG007_ACAF:
-	LSR <Temp_Var4
+	LSR Temp_Var4
 	BCC PRG007_ACBB	 ; If right bust chunks are NOT disabled, jump to PRG007_ACBB
 
 	; Hide right-hand bust chunks
@@ -1880,7 +1880,7 @@ PRG007_ACAF:
 	STA Sprite_RAM+$08,Y
 
 PRG007_ACBB:
-	LSR <Temp_Var4
+	LSR Temp_Var4
 	BCC PRG007_ACC7	 ; If left bust chunks are NOT disabled, jump to PRG007_ACC7
 
 	; Hide left-hand bust chunks
@@ -1959,7 +1959,7 @@ PRG007_AD27:
 	LDA BrickBust_HEn,X
 	BEQ PRG007_AD21	 ; If BrickBust_HEn = 0 (poof expired), jump to PRG007_AD21 (disable this brick bust)
 
-	LDA <Player_HaltGame
+	LDA Player_HaltGame
 	BNE PRG007_AD33	 ; If gameplay is halted, jump to PRG007_AD33
 
 	DEC BrickBust_HEn,X	 ; BrickBust_HEn-- (used as a counter here)
@@ -1991,7 +1991,7 @@ PRG007_AD54:
 	BGE PRG007_AD21	 ; If the poof effect X >= 24, jump to PRG007_AD21 (disable this brick bust)
 
 	TXA		 ; Keep it interesting
-	EOR <Counter_1	 
+	EOR Counter_1	 
 	AND #$01	 
 	TAY		 ; Y = 0 or 1
 
@@ -2021,11 +2021,11 @@ PRG007_AD54:
 	LSR A
 	ROR A
 	AND #SPR_VFLIP
-	STA <Temp_Var1	 ; Periodically vertically flip
+	STA Temp_Var1	 ; Periodically vertically flip
 
 	; Form attribute with sprite palette 1 for left half
 	LDA #SPR_PAL1
-	ORA <Temp_Var1
+	ORA Temp_Var1
 	STA Sprite_RAM+$02,Y
 
 	; Right half uses opposite flips
@@ -2042,7 +2042,7 @@ PRG007_AD54:
 	STA Sprite_RAM+$01,Y	 ; Left
 	STA Sprite_RAM+$05,Y	 ; Right
 
-	LDX <SlotIndexBackup	 ; X = restore slot index
+	LDX SlotIndexBackup	 ; X = restore slot index
 
 PRG007_ADA7:
 	RTS		 ; Return
@@ -2061,7 +2061,7 @@ CoinPUp_Attributes:	.byte SPR_PAL3, SPR_PAL3 | SPR_HFLIP, SPR_PAL3, SPR_PAL3
 CoinPUps_DrawAndUpdate:
 	LDX #$03	 ; X = 3 (all "power up" coin slots)
 PRG007_ADB2: 
-	STX <SlotIndexBackup	 ; -> slot index backup
+	STX SlotIndexBackup	 ; -> slot index backup
 
 	LDA CoinPUp_State,X
 	BEQ PRG007_ADBC	 ; If there's no active "powerup coin" here, jump to PRG007_ADBC
@@ -2075,7 +2075,7 @@ PRG007_ADBC:
 	RTS		 ; Return
 
 CoinPUp_UpdateAndDraw:
-	LDA <Player_HaltGame		 
+	LDA Player_HaltGame		 
 	BNE PRG007_ADF0	 ; If gameplay is halted, jump to PRG007_ADF0
 
 	INC CoinPUp_Counter,X	 ; counter++
@@ -2105,7 +2105,7 @@ PRG007_ADE2:
 	STA CoinPUp_X,X	 ; Update coin X
 
 PRG007_ADF0:
-	LDA <Player_HaltGame
+	LDA Player_HaltGame
 	BEQ PRG007_AE02	 ; If gameplay is not halted, jump to PRG007_AE02
 
 	; Move coin Y with vertical scroll
@@ -2141,7 +2141,7 @@ PRG007_AE02:
 	LDA CoinPUp_Attributes,X
 	STA Sprite_RAM+$02,Y
 
-	LDX <SlotIndexBackup	; X = power up coin slot index
+	LDX SlotIndexBackup	; X = power up coin slot index
 
 	RTS		 ; Return
 
@@ -2187,13 +2187,13 @@ PRG007_AE4A:
 ; Updates and draws the Cannon Fires
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 CannonFire_UpdateAndDraw:
-	LDA <Player_HaltGame		 
+	LDA Player_HaltGame		 
 	ORA EndCard_Flag
 	BNE PRG007_BB80	 ; If gameplay halted or end level card grabbed, jump to PRG007_BB80 (RTS)
 
 	LDX #$07	 ; X = 7
 PRG007_BB78:
-	STX <SlotIndexBackup	 ; Update index backup
+	STX SlotIndexBackup	 ; Update index backup
 
 	JSR CannonFire_DrawAndUpdate	; Draw and Update Cannon Fire
 
@@ -2256,13 +2256,13 @@ CFire_Gravity:
 
 CFire_Laser:
 	LDA CannonFire_X,X
-	CMP <Horz_Scroll
+	CMP Horz_Scroll
 	LDA CannonFire_XHi,X
-	SBC <Horz_Scroll_Hi
+	SBC Horz_Scroll_Hi
 	BNE PRG007_BBEB	 ; If the Cannon Fire laser is horizontally off-screen, jump to PRG007_BBEB (RTS)
 
 	LDA CannonFire_X,X
-	SUB <Player_X
+	SUB Player_X
 	CMP #$38
 	BLT PRG007_BBEB	; If Player is too far left, jump to PRG007_BBEB (RTS)
 	CMP #$4c
@@ -2315,13 +2315,13 @@ CFire_Cannonball:
 	BNE PRG007_BC5B	 ; If timer not expired, jump to PRG007_BC5B (RTS)
 
 	LDA CannonFire_X,X
-	CMP <Horz_Scroll
+	CMP Horz_Scroll
 	LDA CannonFire_XHi,X
-	SBC <Horz_Scroll_Hi
+	SBC Horz_Scroll_Hi
 	BNE PRG007_BC5B	 ; If Cannon Fire is off-screen left, jump to PRG007_BC5B (RTS)
 
 	LDA CannonFire_X,X
-	SUB <Horz_Scroll
+	SUB Horz_Scroll
 	CMP #240
 	BGE PRG007_BC5B	 ; If Cannon Fire is off-screen right, jump to PRG007_BC5B (RTS)
 
@@ -2331,7 +2331,7 @@ CFire_Cannonball:
 
 	; Temp_Var1 = this particular Cannon Fire ID
 	LDA CannonFire_ID,X
-	STA <Temp_Var1
+	STA Temp_Var1
 
 	CMP #CFIRE_HRBIGCANNON
 	BEQ PRG007_BC4B	 ; If this is the right-shooting BIG Cannon, jump to PRG007_BC4B
@@ -2369,15 +2369,15 @@ PRG007_BC5C:
 	; Big Cannon Ball is BIG
 	INC Objects_IsGiant,X
 
-	LDY <SlotIndexBackup	; Y = Cannon Fire slot index
+	LDY SlotIndexBackup	; Y = Cannon Fire slot index
 
 	; Set BIG Cannon Ball Y
 	LDA CannonFire_Y,Y
-	STA <Objects_Y,X
+	STA Objects_Y,X
 	LDA CannonFire_YHi,Y
-	STA <Objects_YHi,X
+	STA Objects_YHi,X
 
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	CMP #CFIRE_HRCANNON
 
 	LDA #$30	 ; A = $30
@@ -2389,13 +2389,13 @@ PRG007_BC5C:
 	LDA #-$30	 ; A = -$30
 
 PRG007_BC81:
-	STY <Temp_Var1	 ; Temp_Var1 = $12 (if right-shooting) or $09 (if left-shooting)
+	STY Temp_Var1	 ; Temp_Var1 = $12 (if right-shooting) or $09 (if left-shooting)
 
-	STA <Objects_XVel,X	 ; X velocity = -$30 or $30, depending on direction
+	STA Objects_XVel,X	 ; X velocity = -$30 or $30, depending on direction
 
 	EOR #$80	 ; Invert the sign bit
 
-	LDY <SlotIndexBackup	 ; Y = Cannon Fire slot index
+	LDY SlotIndexBackup	 ; Y = Cannon Fire slot index
 
 	ASL A		 ; Inverted sign bit -> carry
 
@@ -2404,10 +2404,10 @@ PRG007_BC81:
 	BCS PRG007_BC92	 ; If right-shooting, jump to PRG007_BC92
 	SUB #16		; -16 for left-shooting
 PRG007_BC92:
-	STA <Objects_X,X
+	STA Objects_X,X
 	LDA CannonFire_XHi,Y
 	SBC #$00
-	STA <Objects_XHi,X
+	STA Objects_XHi,X
 
 	JSR PRG007_BD09		; Set attribute and make noise and smoke!
 	JSR CannonFire_NoiseAndSmoke	 ; make more smoke!!
@@ -2441,21 +2441,21 @@ PRG007_BCB4:
 	INC Objects_Var7,X	 ; Bob-omb's Var7++
 	INC Objects_Var1,X	 ; Bob-omb's Var1++
 
-	LDY <SlotIndexBackup	 ; Y = Cannon Fire slot index
+	LDY SlotIndexBackup	 ; Y = Cannon Fire slot index
 
 	; Set Bob-omb's Y
 	LDA CannonFire_Y,Y
 	SUB #$08
-	STA <Objects_Y,X
+	STA Objects_Y,X
 	LDA CannonFire_YHi,Y
 	SBC #$00
-	STA <Objects_YHi,X
+	STA Objects_YHi,X
 
 	; Set Bob-omb's Y velocity
 	LDA #-$30
-	STA <Objects_YVel,X
+	STA Objects_YVel,X
 
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	CMP #CFIRE_RBOBOMBS
 
 	LDA #$10	 ; A = $10
@@ -2466,28 +2466,28 @@ PRG007_BCB4:
 	LDA #-$10	 ; A = -$10
 
 PRG007_BCE9:
-	STY <Temp_Var1	 ; Temp_Var1 = $0A or $0B
-	STA <Objects_XVel,X	 ; Set Bob-omb's X velocity (-$10 or $10)
+	STY Temp_Var1	 ; Temp_Var1 = $0A or $0B
+	STA Objects_XVel,X	 ; Set Bob-omb's X velocity (-$10 or $10)
 
 	ASL A		 ; Shift sign bit into carry
 
 	; Temp_Var2 = $00 (16-bit sign extension)
 	LDA #$00
-	STA <Temp_Var2
+	STA Temp_Var2
 
-	LDY <SlotIndexBackup	 ; Y = Cannon Fire slot index
+	LDY SlotIndexBackup	 ; Y = Cannon Fire slot index
 
 	; Set Bob-omb's X
 	LDA #$08	 ; A = $08
 	BCC PRG007_BCFC	 ; If this is a right-shot Bob-omb, jump to PRG007_BCFC
 	LDA #-$08	 ; A = -$08
-	DEC <Temp_Var2	 ; Temp_Var2 = $FF (16-bit sign extension)
+	DEC Temp_Var2	 ; Temp_Var2 = $FF (16-bit sign extension)
 PRG007_BCFC:
 	ADD CannonFire_X,Y
-	STA <Objects_X,X
+	STA Objects_X,X
 	LDA CannonFire_XHi,Y
-	ADC <Temp_Var2	
-	STA <Objects_XHi,X
+	ADC Temp_Var2	
+	STA Objects_XHi,X
 
 
 PRG007_BD09:
@@ -2495,7 +2495,7 @@ PRG007_BD09:
 	LDA #SPR_PAL3
 	STA Objects_SprAttr,X
 
-	LDX <SlotIndexBackup	 ; X = Cannon Fire slot index
+	LDX SlotIndexBackup	 ; X = Cannon Fire slot index
 	JMP CannonFire_NoiseAndSmoke	 ; Play cannon fire noise and make smoke
 
 
@@ -2522,14 +2522,14 @@ CFire_GoombaPipe:
 
 	; Set Goomba X
 	LDA CannonFire_X,Y
-	STA <Objects_X,X
+	STA Objects_X,X
 	LDA CannonFire_XHi,Y
-	STA <Objects_XHi,X
+	STA Objects_XHi,X
 
 	JSR Level_ObjCalcXDiffs
-	STY <Temp_Var2		 ; Store directional flag -> Temp_Var2
+	STY Temp_Var2		 ; Store directional flag -> Temp_Var2
 
-	LDY <SlotIndexBackup	 ; Y = Cannon Fire index
+	LDY SlotIndexBackup	 ; Y = Cannon Fire index
 
 	LDA CannonFire_ID,Y
 
@@ -2541,22 +2541,22 @@ CFire_GoombaPipe:
 	INY		 ; Y = 1 (left output Goomba pipe)
 
 PRG007_BD49:
-	CPY <Temp_Var2
+	CPY Temp_Var2
 	BNE PRG007_BD7B	 ; If Player is on the wrong side of the Goomba pipe, jump to PRG007_BD7B
 
 	; Set Goomba's initial flip bits
 	LDA Goomba_InitFlipBits,Y
 	STA Objects_FlipBits,X
 
-	LDY <SlotIndexBackup	 ; Y = Cannon Fire slot index
+	LDY SlotIndexBackup	 ; Y = Cannon Fire slot index
 
 	; Set Goomba's Y
 	LDA CannonFire_Y,Y
 	SUB #$03
-	STA <Objects_Y,X
+	STA Objects_Y,X
 	LDA CannonFire_YHi,Y
 	SBC #$00
-	STA <Objects_YHi,X
+	STA Objects_YHi,X
 
 	; It's ... random! (SB)
 	;LDA RandomN
@@ -2582,7 +2582,7 @@ PRG007_BD49:
 	STA Objects_SprHVis,X
 
 PRG007_BD78:
-	LDX <SlotIndexBackup	 ; X = Cannon Fire slot index
+	LDX SlotIndexBackup	 ; X = Cannon Fire slot index
 
 PRG007_BD7A:
 	RTS		 ; Return
@@ -2673,13 +2673,13 @@ CFire_4Way:
 	BNE PRG007_BE42	 ; If the 4-Way cannon is vertically off-screen, jump to PRG007_BE42 (RTS)
 
 	LDA CannonFire_X,X
-	CMP <Horz_Scroll
+	CMP Horz_Scroll
 	LDA CannonFire_XHi,X
-	SBC <Horz_Scroll_Hi
+	SBC Horz_Scroll_Hi
 	BNE PRG007_BE42	 ; If the 4-Way cannon is horizontally off-screen, jump to PRG007_BE42 (RTS)
 
 	LDA CannonFire_X,X
-	SUB <Horz_Scroll
+	SUB Horz_Scroll
 	ADD #32
 	CMP #40
 	BLT PRG007_BE42	 ; If the 4-Way cannon is too far left off-screen, jump to PRG007_BE42 (RTS)
@@ -2695,7 +2695,7 @@ PRG007_BE1C:
 	BEQ PRG007_BE42	 ; If timer expired, jump to PRG007_BE42 (RTS)
 
 	CMP #$1d
-	BNE PRG007_BE43	 ; If timer <> $1D, jump to PRG007_BE43
+	BNE PRG007_BE43	 ; If timer > $1D, jump to PRG007_BE43
 
 	LDA #CHNGTILE_4WAYCANNON
 	STA Level_ChgTileEvent
@@ -2718,11 +2718,11 @@ PRG007_BE42:
 
 PRG007_BE43:
 	CMP #$01
-	BNE PRG007_BEAA	 ; If timer <> 1, jump to PRG007_BEAA
+	BNE PRG007_BEAA	 ; If timer > 1, jump to PRG007_BEAA
 
 	LDA CannonFire_Var,X
 	AND #$07
-	STA <Temp_Var1	; Temp_Var1 = 0 to 7
+	STA Temp_Var1	; Temp_Var1 = 0 to 7
 
 	JSR FireCannonBall	 ; Fire cannon ball
  
@@ -2731,7 +2731,7 @@ PRG007_BE43:
 	AND #$07	 ; +4 wrap around (fire the cannonball on the opposite side)
 
 PRG007_BE59:
-	STA <Temp_Var1
+	STA Temp_Var1
 	
 	; Load cannonball graphics
 	LDA #$36
@@ -2760,7 +2760,7 @@ PRG007_BE69:
 	; Set cannonball X
 	LDA CannonFire_X,X
 	CLC
-	LDX <Temp_Var1		; X = 0 to 7
+	LDX Temp_Var1		; X = 0 to 7
 	ADC CannonPoof_XOffs,X
 	STA SpecialObj_XLo,Y
 
@@ -2774,20 +2774,20 @@ PRG007_BE69:
 
 	; Temp_Var3 = 0 (16-bit sign extension)
 	LDA #$00
-	STA <Temp_Var3
+	STA Temp_Var3
 
 	LDA CannonPoof_YOffs,X
 	BPL PRG007_BE91	 ; If Y offset is not negative, jump to PRG007_BE91
 
-	DEC <Temp_Var3	 ; Temp_Var3 = $FF (16-bit sign extension)
+	DEC Temp_Var3	 ; Temp_Var3 = $FF (16-bit sign extension)
 
 PRG007_BE91:
 	CLC
-	LDX <SlotIndexBackup	 ; X = Cannon Fire slot index
+	LDX SlotIndexBackup	 ; X = Cannon Fire slot index
 	ADC CannonFire_Y,X
 	STA SpecialObj_YLo,Y
 	LDA CannonFire_YHi,X
-	ADC <Temp_Var3		; 16-bit sign extension
+	ADC Temp_Var3		; 16-bit sign extension
 	STA SpecialObj_YHi,Y	
 
 	; Data = 0
@@ -2816,14 +2816,14 @@ CannonFire_NoiseAndSmoke:
 	; Set poof X
 	LDA CannonFire_X,X	; Get Cannon Fire X
 	CLC
-	LDX <Temp_Var1		; X = Temp_Var1 holds the index into CannonPoof_XOffs
+	LDX Temp_Var1		; X = Temp_Var1 holds the index into CannonPoof_XOffs
 	ADC CannonPoof_XOffs,X	; + CannonPoof_XOffs[Temp_Var1]
-	SUB <Horz_Scroll	; Make relative to horizontal scroll
+	SUB Horz_Scroll	; Make relative to horizontal scroll
 	STA BrickBust_X		; Set X
 
 	LDA CannonPoof_YOffs,X	 ; A = CannonPoof_YOffs[Temp_Var1]
 
-	LDX <SlotIndexBackup	 ; X = Cannon Fire slot index
+	LDX SlotIndexBackup	 ; X = Cannon Fire slot index
 
 	ADD CannonFire_Y,X	 ; + Cannon Fire Y
 	SUB Level_VertScroll	 ; Make relative to vertical scroll
@@ -2859,9 +2859,9 @@ CFire_BulletBill:
 	BNE PRG007_BF28		; If Cannon Fire has fallen off screen vertically, jump to PRG007_BF28 (RTS)
 
 	LDA CannonFire_X,X
-	CMP <Horz_Scroll
+	CMP Horz_Scroll
 	LDA CannonFire_XHi,X
-	SBC <Horz_Scroll_Hi
+	SBC Horz_Scroll_Hi
 	BNE PRG007_BF28		; If Cannon Fire has fallen off screen horizontally, jump to PRG007_BF28 (RTS)
 
 	; Reset Cannon Fire timer to $80-$9F, random
@@ -2871,12 +2871,12 @@ CFire_BulletBill:
 	STA CannonFire_Timer,X
 
 	LDA CannonFire_X,X
-	SUB <Horz_Scroll
+	SUB Horz_Scroll
 	ADD #16
 	CMP #32
 	BLT PRG007_BF28		; If Cannon Fire X + 16 is less than 32 pixels from screen edge, jump to PRG007_BF28 (RTS)
 
-	LDA <Player_X
+	LDA Player_X
 	SBC CannonFire_X,X
 	ADD #17
 	CMP #34
@@ -2884,7 +2884,7 @@ CFire_BulletBill:
 
 	JSR PrepareNewObjectOrAbort
 
-	LDY <SlotIndexBackup	 ; Y = Cannon Fire object slot
+	LDY SlotIndexBackup	 ; Y = Cannon Fire object slot
 
 	LDA CannonFire_ID,Y
 	LSR A		; Selects which Bill type
@@ -2905,16 +2905,16 @@ PRG007_BF80:
 	; Set Bill's Y
 	LDA CannonFire_Y,Y
 	SUB #$01
-	STA <Objects_Y,X
+	STA Objects_Y,X
 	LDA CannonFire_YHi,Y
 	SBC #$00
-	STA <Objects_YHi,X
+	STA Objects_YHi,X
 
 	; Set Bill's X
 	LDA CannonFire_XHi,Y
-	STA <Objects_XHi,X
+	STA Objects_XHi,X
 	LDA CannonFire_X,Y
-	STA <Objects_X,X
+	STA Objects_X,X
 	STA Objects_Var13,X	; original X hold
 
 	; Bill's timer = $0C
@@ -2929,7 +2929,7 @@ PRG007_BF80:
 
 	; Bill fires towards Player
 	LDA Bill_XVelTowardsPlayer,Y
-	STA <Objects_XVel,X
+	STA Objects_XVel,X
 
 	; Bill faces Player
 	LDA Bill_FlipTowardsPlayer,Y
@@ -2937,13 +2937,13 @@ PRG007_BF80:
 
 	; Set Bill's direction flag
 	LDA Bill_Var4TowardsPlayer,Y
-	STA <Objects_Var4,X
+	STA Objects_Var4,X
 
-	LDX <SlotIndexBackup	; X = Cannon Fire slot index
+	LDX SlotIndexBackup	; X = Cannon Fire slot index
 
 	TYA		; 0 or 1
 	ADD #(Bill_CPXOff - CannonPoof_XOffs)
-	STA <Temp_Var1	; -> Temp_Var1
+	STA Temp_Var1	; -> Temp_Var1
 
 	JSR CannonFire_NoiseAndSmoke	 ; Play cannon fire noise and make smoke
 

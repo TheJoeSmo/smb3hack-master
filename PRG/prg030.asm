@@ -3,7 +3,7 @@
 
 ObjState_Frozen30:
 
-	LDA <Player_Suit
+	LDA Player_Suit
 	CMP #PLAYERSUIT_PENGUIN
 	BEQ ObjState_FrozenPenguinOK	; As long as Player is still a Penguin, jump to ObjState_FrozenPenguinOK
 	
@@ -42,15 +42,15 @@ ObjFrozen_NoPoof:
 	JMP ObjFrozen_ForceSmash	; If object is in killed state, jump to ObjFrozen_ForceSmash
 	
 ObjFrozen_NotKilled:
-	LDA <Player_HaltGame
+	LDA Player_HaltGame
 	PHA						; Backup Player_HaltGame (in case gameplay actually IS halted!)
 	
-	INC <Player_HaltGame	; Make sure it's set! (Enemy needs to "believe" that gameplay is halted)
+	INC Player_HaltGame	; Make sure it's set! (Enemy needs to "believe" that gameplay is halted)
 
 	JSR_THUNKC 0, ObjState_DoState	; Act like gameplay halted (it is for you sucka)
 
 	PLA
-	STA <Player_HaltGame	; Restore Player_HaltGame
+	STA Player_HaltGame	; Restore Player_HaltGame
 
 	; ... you're still frozen, though (if FrozenTimer > 0!)	
 	LDA Objects_FrozenTimer,X
@@ -73,7 +73,7 @@ ObjFrozen_NotFlickering:
 	LDY Object_SprRAM,X		; Offset to sprite RAM
 
 	LDA #6
-	STA <Temp_Var1			; Temp_Var1 = 6 (loop counter)
+	STA Temp_Var1			; Temp_Var1 = 6 (loop counter)
 	
 	; Set all 6 sprites...
 ObjFrozen_SetPal0_Loop:
@@ -86,7 +86,7 @@ ObjFrozen_SetPal0_Loop:
 	INY
 	INY						; Y += 4 (next sprite)
 	
-	DEC <Temp_Var1				; Temp_Var1--
+	DEC Temp_Var1				; Temp_Var1--
 	BNE ObjFrozen_SetPal0_Loop	; While Temp_Var1 > 0, loop!
 
 ObjFrozen_Flicker:
@@ -165,12 +165,12 @@ PlayerFrznObj_Collide:
 
 	; Test if Player is standing on top of FrznObj
 
-	LDA <Player_SpriteY
+	LDA Player_SpriteY
 	ADD #24
-	CMP <Objects_SpriteY,X
+	CMP Objects_SpriteY,X
 	BGE PRG030_BABE	 ; If Player's bottom is beneath object's top, jump to PRG030_BABE
 
-	LDA <Player_YVel
+	LDA Player_YVel
 	BMI PRG030_BABD	 ; If Player is moving upward, jump to PRG030_BABD
 
 	JSR Player_StandOnFrznObj	 ; Stand on FrznObj
@@ -185,7 +185,7 @@ PRG030_BABE:
 
 	LDA #-$08	; A = -8 unless small or ducking
 
-	LDY <Player_Suit
+	LDY Player_Suit
 	BEQ PRG030_BAC9	 ; If Player is small, jump to PRG030_BAC9
 
 	LDY Player_IsDucking
@@ -195,17 +195,17 @@ PRG030_BAC9:
 	LDA #$08	 ; A = 8 if small or ducking
 
 PRG030_BACB:
-	ADD <Player_SpriteY
+	ADD Player_SpriteY
 	ADD #8
-	CMP <Objects_SpriteY,X
+	CMP Objects_SpriteY,X
 	BLT PRG030_BADC	 ; If Player's Sprite top is near object's top, jump to PRG030_BADC
 
-	LDA <Player_YVel
+	LDA Player_YVel
 	BPL PRG030_BADA	 ; If Player is falling, jump to PRG030_BADA
 
 	; Player hits head off FrznObj
 	LDA #$10
-	STA <Player_YVel
+	STA Player_YVel
 
 PRG030_BADA:
 	CLC		 ; Clear carry (no collision)
@@ -217,11 +217,11 @@ PRG030_BADC:
 
 	INY		 ; Y = 1 or 2, depending on Player's relative position
 
-	LDA <Pad_Holding
+	LDA Pad_Holding
 	AND #(PAD_LEFT | PAD_RIGHT)
-	STA <Temp_Var1	 ; Temp_Var1 is non-zero if Player is pressing left/right
+	STA Temp_Var1	 ; Temp_Var1 is non-zero if Player is pressing left/right
 
-	CPY <Temp_Var1	 ; Check if Player is pressing a direction favorable to his position
+	CPY Temp_Var1	 ; Check if Player is pressing a direction favorable to his position
 
 	CLC		 ; Clear carry (no collision)
 
@@ -229,7 +229,7 @@ PRG030_BADC:
 
 	; Player pushing with FrznObj
 	LDA PlayerPushWithFrznObj_XVel-1,Y
-	STA <Player_XVel
+	STA Player_XVel
 
 	RTS		 ; Return
 
@@ -237,7 +237,7 @@ PRG030_BAEF:
 
 	; Halt Player's movement
 	LDA #$00
-	STA <Player_XVel
+	STA Player_XVel
 
 	LDY ObjGroupRel_Idx
 	LDA ObjectGroup_Attributes4,Y
@@ -264,20 +264,20 @@ PRG030_BAEF:
 	; Make sure Player is facing object he's kicking
 	JSR_THUNKC 0, Level_ObjCalcXDiffs
 	LDA PlayerKickFlipBits30,Y
-	STA <Player_FlipBits
+	STA Player_FlipBits
 
 	LDA ObjectKickXVelMoving30,Y	 ; Get appropriate base X velocity for kick
-	STA <Objects_XVel,X	 	; -> Object's X velocity
+	STA Objects_XVel,X	 	; -> Object's X velocity
 
-	EOR <Player_XVel
+	EOR Player_XVel
 	BMI ObjFrozen_CantKick	 ; If the object's X velocity is the opposite sign of the Player's, jump to ObjFrozen_CantKick
 
-	LDA <Player_XVel 	; Get the Player's X velocity
-	STA <Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
-	ASL <Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
+	LDA Player_XVel 	; Get the Player's X velocity
+	STA Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
+	ASL Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	ADD ObjectKickXVelMoving30,Y	 ; Add base "moving" X velocity of object
-	STA <Objects_XVel,X	 ; Set as object's X velocity
+	STA Objects_XVel,X	 ; Set as object's X velocity
 
 
 ObjFrozen_CantKick:
@@ -293,29 +293,29 @@ PlayerPushWithFrznObj_XVel:	.byte $04, -$04
 
 Player_StandOnFrznObj:
 	LDA #28
-	STA <Temp_Var1
+	STA Temp_Var1
 
 	LDA Level_ObjectID,X
 	CMP #OBJ_POKEY
 	BNE FrozenObj_NotPokey
 	
 	; Hack for Pokey: The head is offset by the value in Var1
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	ADD Objects_Var1,X
-	STA <Temp_Var1
+	STA Temp_Var1
 
 FrozenObj_NotPokey:
 	; Set Player to object's Y - 31
-	LDA <Objects_Y,X	 
-	SUB <Temp_Var1
-	STA <Player_Y
-	LDA <Objects_YHi,X
+	LDA Objects_Y,X	 
+	SUB Temp_Var1
+	STA Player_Y
+	LDA Objects_YHi,X
 	SBC #$00
-	STA <Player_YHi
+	STA Player_YHi
 
 	; Flag Player as NOT mid-air
 	LDY #$00
-	STY <Player_InAir
+	STY Player_InAir
 
 	LDA Objects_FrozenTimer,X
 	CMP #$FF
@@ -331,11 +331,11 @@ FrozenObj_NotPokey:
 
 PRG030_AA7B:
 	; Add to Player_X, with carry
-	ADD <Player_X
-	STA <Player_X
+	ADD Player_X
+	STA Player_X
 	TYA
-	ADC <Player_XHi
-	STA <Player_XHi
+	ADC Player_XHi
+	STA Player_XHi
 
 PRG030_AA85:
 	RTS		 ; Return
@@ -352,20 +352,20 @@ Player_32PP_BumpCheck:
 	BNE PBC_Sloped
 
 	; Get tile where Player is standing...
-	LDA <Temp_Var16
+	LDA Temp_Var16
 	STA ObjTile_DetXLo
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	STA ObjTile_DetXHi
 
-	LDA <Temp_Var14
+	LDA Temp_Var14
 	ADD #16
-	ADD <Vert_Scroll
+	ADD Vert_Scroll
 	STA ObjTile_DetYLo
-	LDA <Temp_Var13
+	LDA Temp_Var13
 	STA ObjTile_DetYHi
 
 	JSR_THUNKC 0, Object_DetectTileManual
-	LDA <Level_Tile
+	LDA Level_Tile
 		
 	PHA
 	ASL A
@@ -378,7 +378,7 @@ Player_32PP_BumpCheck:
 	BLT Player_32PP_NoBumpChk
 
 	; Bump Player up!
-	;DEC <Player_Y
+	;DEC Player_Y
 	
 	; No longer on 32PP floor...
 	DEC Temp_VarNP0
@@ -392,16 +392,16 @@ PBC_Sloped:
 	INC Level_32PPSlopeFlag
 
 	; Get tile where Player is standing...
-	LDA <Temp_Var16
+	LDA Temp_Var16
 	STA ObjTile_DetXLo
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	STA ObjTile_DetXHi
 
-	LDA <Temp_Var14
+	LDA Temp_Var14
 	ADD #16
-	ADD <Vert_Scroll
+	ADD Vert_Scroll
 	STA ObjTile_DetYLo
-	LDA <Temp_Var13
+	LDA Temp_Var13
 	STA ObjTile_DetYHi
 
 	JSR_THUNKC 0, Object_DetectTileManual
@@ -410,20 +410,20 @@ PBC_Sloped:
 	PHA
 	TYA
 	PHA
-	LDA <Player_Slopes
+	LDA Player_Slopes
 	PHA
 
 	LDA #0
-	STA <Temp_Var1
+	STA Temp_Var1
 
 	LDA #$FF
-	STA <Player_Slopes
+	STA Player_Slopes
 	
 	LDA Level_Tile
-	STA <Temp_Var2
+	STA Temp_Var2
 	JSR_THUNKC 0, PGSAT_GetSlope
 
-	LDA <Player_Slopes
+	LDA Player_Slopes
 	CMP #1
 	BLS PBC_NoSlopeFound	; If slope was background slope (0) or no slope ($FF), jump to PBC_NoSlopeFound
 
@@ -435,7 +435,7 @@ PBC_Sloped:
 
 PBC_NoSlopeFound:
 	PLA
-	STA <Player_Slopes
+	STA Player_Slopes
 	PLA
 	TAY
 	PLA
@@ -462,7 +462,7 @@ Object_32PP_BumpCheck:
 	AND #$02
 	BNE Object_32PP_NoBump30	; If testing a wall, jump to Object_32PP_NoBump
 
-	LDA <Level_Tile
+	LDA Level_Tile
 	PHA
 	TYA
 	PHA
@@ -471,7 +471,7 @@ Object_32PP_BumpCheck:
 	LDA ObjTile_DetYLo
 	PHA
 	LDA #$B0-16
-	ADD <Vert_Scroll
+	ADD Vert_Scroll
 	STA ObjTile_DetYLo
 	LDA ObjTile_DetYHi
 	PHA
@@ -480,20 +480,20 @@ Object_32PP_BumpCheck:
 	STA ObjTile_DetYHi
 	
 	JSR_THUNKC 0, Object_DetectTileManual
-	LDA <Level_Tile
+	LDA Level_Tile
 	ASL A
 	ROL A
 	ROL A		 ; Upper 2 bits shift right 6, effectively
 	AND #%00000011	 ; Keep these bits, i.e. "tile quadrant"
 	TAY
-	LDA <Level_Tile
+	LDA Level_Tile
 	CMP Tile_AttrTable,Y
 	BLT Object_32PP_NoBumpChk
 	
 	; No longer on 32PP floor...
-	LDA <Objects_DetStat,X
+	LDA Objects_DetStat,X
 	AND #~$80
-	STA <Objects_DetStat,X
+	STA Objects_DetStat,X
 	
 Object_32PP_NoBumpChk:
 	PLA
@@ -504,7 +504,7 @@ Object_32PP_NoBumpChk:
 	PLA
 	TAY
 	PLA
-	STA <Level_Tile
+	STA Level_Tile
 
 Object_32PP_NoBump30:
 
@@ -549,7 +549,7 @@ PRG030_C42F:
 	BPL PRG030_C42F	 ; While X >= 0, loop!
 
 PRG030_C43C:
-	LDX <SlotIndexBackup	 ; Restore 'X' as object slot index
+	LDX SlotIndexBackup	 ; Restore 'X' as object slot index
 
 	; Play tick sound
 	LDA Sound_QLevel1
@@ -620,13 +620,13 @@ Level_InitAction_JumpTable:
 Level_InitAction_Do30:
 	LDA Level_InitAction
 	ASL A		
-	TAY		; Y = Level_InitAction << 1 (2 byte index)
+	TAY		; Y = Level_InitAction < 1 (2 byte index)
 
 	; Copy jump address into Temp_Var1/2
 	LDA Level_InitAction_JumpTable,Y
-	STA <Temp_Var1
+	STA Temp_Var1
 	LDA Level_InitAction_JumpTable+1,Y
-	STA <Temp_Var2
+	STA Temp_Var2
 
 	LDA #$00
 	STA Level_InitAction	; Level_InitAction = 0 (same memory gets used as Player_Slide after this!)
@@ -635,7 +635,7 @@ Level_InitAction_Do30:
 
 
 LevelInit_StartSliding:
-	LDY <Player_Suit
+	LDY Player_Suit
 	LDA PowerUp_Ability,Y
 	AND #$02
 	BNE LevelInit_DoNothing	; If this powerup is not able to slide on slopes, jump to LevelInit_DoNothing
@@ -671,7 +671,7 @@ LevelInit_Airship:
 	STA Update_Request	 ; Update_Request = 1
 
 	LSR A		 	; Essentially, A = 0
-	STA <Vert_Scroll	; Vert_Scroll = 0
+	STA Vert_Scroll	; Vert_Scroll = 0
 	RTS			; Return
 
 LevelInit_Airship_Board:
@@ -679,21 +679,21 @@ LevelInit_Airship_Board:
 	STA Level_AirshipCtl	; Level_AirshipCtl = 4
 
 	LDA #SPR_HFLIP
-	STA <Player_FlipBits	; Player face to the right
-	STA <Player_InAir	; Flag Player as "in air"
+	STA Player_FlipBits	; Player face to the right
+	STA Player_InAir	; Flag Player as "in air"
 
 	LDA #$90
-	STA <Player_YVel	; Player_YVel = $90	; Throw Player upward
-	STA <Player_X		; Player_X = $90
+	STA Player_YVel	; Player_YVel = $90	; Throw Player upward
+	STA Player_X		; Player_X = $90
 
-	LDA <Vert_Scroll
+	LDA Vert_Scroll
 	ADD #$80
-	STA <Player_Y		; Player_Y = Vert_Scroll + $80
+	STA Player_Y		; Player_Y = Vert_Scroll + $80
 
 	; Carry into Player_YHi if needed
 	LDA #$00	
 	ADC #$00	
-	STA <Player_YHi
+	STA Player_YHi
 
 	RTS		 ; Return
 
@@ -756,7 +756,7 @@ Level_SetPlayerPUpPal30:
 	LDA Player_Statue
 	BNE PRG030_C55E	 ; If Player is statue, jump to PRG030_C55E
 
-	LDA <Player_Suit
+	LDA Player_Suit
 	TAY		 ; Y = Player_Suit
 	;CMP #PLAYERSUIT_RABBIT
 	;BEQ PRG030_C55B	 ; If Player_Suit = PLAYERSUIT_RABBIT, jump to PRG030_C55B
@@ -769,7 +769,7 @@ PRG030_C55B:
 	LDX Player_Current
 	LDY Player_Character,X
 	CPY #2
-	BLT PRG030_C55E	; If Player_Character < 2 (a Toad), jump to PRG030_C55E
+	BLT PRG030_C55E	; If Player_Character  2 (a Toad), jump to PRG030_C55E
 	
 	; Toad's default palette
 	LDY #7
@@ -824,16 +824,16 @@ PRG030_C55E:
 ; (Moved from bank 8)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_WaterSplash30:
-	LDA <Player_SpriteY
+	LDA Player_SpriteY
 	CMP #$b8
 	BGE PRG030_C111	 ; If sprite Y >= $B8, jump to PRG030_C111 (RTS)
 
 	LDA Splash_DisTimer
 	BNE PRG030_C0F9	 ; If Splash_DisTimer > 0 (Player splashes disabled), jump to PRG030_C0F9
 
-	STA <Temp_Var1	 ; Temp_Var1 = 0
+	STA Temp_Var1	 ; Temp_Var1 = 0
 
-	LDA <Player_Suit
+	LDA Player_Suit
 	BEQ PRG030_C0C8	 ; If Player is small, jump to PRG030_C0C8
 
 	LDA Player_IsDucking
@@ -844,7 +844,7 @@ PRG030_C0C8:
 	; Player is small or ducking
 
 	LDA #10
-	STA <Temp_Var1	 ; Temp_Var1 = 10
+	STA Temp_Var1	 ; Temp_Var1 = 10
 
 PRG030_C0CC:
 	LDA #$01
@@ -858,9 +858,9 @@ PRG030_C0CC:
 
 	; Auto scroll effect active...
 
-	LDA <Player_SpriteY
+	LDA Player_SpriteY
 	CMP #136
-	BLT PRG030_C0E7	 ; If Player_SpriteY < 136, jump to PRG030_C0E7
+	BLT PRG030_C0E7	 ; If Player_SpriteY  136, jump to PRG030_C0E7
 
 	LDA #147
 	STA Splash_NoScrollY	 ; Splash_NoScrollY = 147 (splash Y is not relative to screen scroll, appropriate for fixed water at bottom)
@@ -868,28 +868,28 @@ PRG030_C0CC:
 	BNE PRG030_C0F1	 ; Jump (technically always) to PRG030_C0F1
 
 PRG030_C0E7:
-	LDA <Player_Y
-	ADD <Temp_Var1	; Y offset
+	LDA Player_Y
+	ADD Temp_Var1	; Y offset
 	AND #$F0	; align to grid
 	ADD #$02	; +2
 
 PRG030_C0F1:
 	STA Splash_Y	 ; 147 or above formula -> Splash_Y 
 
-	LDA <Player_X
+	LDA Player_X
 	STA Splash_X	 ; Splash_X = Player_X
 
 PRG030_C0F9:
-	LDA <Player_YVel
-	BMI PRG030_C111	 ; If Player Y velocity < 0 (Player traveling up), jump to PRG030_C111 (RTS)
+	LDA Player_YVel
+	BMI PRG030_C111	 ; If Player Y velocity  0 (Player traveling up), jump to PRG030_C111 (RTS)
 
 	LDA #$00
-	STA <Player_YVel ; Otherwise, halt movement
+	STA Player_YVel ; Otherwise, halt movement
 
-	LDY <Player_InAir
+	LDY Player_InAir
 	BEQ PRG030_C107	 ; If Player is not mid air, jump to PRG030_C107
 
-	STA <Player_XVel ; Otherwise, stop horizontal movement, too
+	STA Player_XVel ; Otherwise, stop horizontal movement, too
 
 PRG030_C107:
 
@@ -921,18 +921,18 @@ PRG030_C118:
 	STA Bubble_Cnt,Y	; Store into bubble counter
 
 	; Set Bubble Y
-	LDA <Player_Y
+	LDA Player_Y
 	ADC SplashBubble_YOff,Y
 	STA Bubble_Y,Y
-	LDA <Player_YHi
+	LDA Player_YHi
 	ADC #$00
 	STA Bubble_YHi,Y
 
 	; Set Bubble X
-	LDA <Player_X
+	LDA Player_X
 	ADC SplashBubble_XOff,Y
 	STA Bubble_X,Y
-	LDA <Player_XHi
+	LDA Player_XHi
 	ADC #$00
 	STA Bubble_XHi,Y
 
@@ -1028,7 +1028,7 @@ PlayerPipe_NoYoshi:
 	ASL A
 	TAX
 
-	LDA <Player_X
+	LDA Player_X
 	ADD PipeEnter_XYOffs,X	 ; Add appropriate X offset
 	CPX #$04	 
 	BGS PRG008_BF65	 	; If pipe movement is up/down, jump to PRG008_BF65
@@ -1036,17 +1036,17 @@ PlayerPipe_NoYoshi:
 	AND #$F0	 ; Otherwise, align Player_X to grid
 
 PRG008_BF65:
-	STA <Pipe_PlayerX	; Update Player_X
+	STA Pipe_PlayerX	; Update Player_X
 
 	LDA Player_ReverseGrav
 	BEQ PipeEntryPrep_NoRev
 
 	; In reverse, we're concerned about going UP the pipe
-	LDA <Player_Y
+	LDA Player_Y
 	CPX #$04	
 	BNE PRG008_BF71	 ; If not an upward pipe, jump to PRG008_BF71
 
-	LDY <Player_Suit
+	LDY Player_Suit
 	BNE PRG008_BF71	 ; If Player is NOT small, jump to PRG008_BF71
 
 	; Player is small / reverse gravity / upward
@@ -1055,11 +1055,11 @@ PRG008_BF65:
 	JMP PRG008_BF75	; Otherwise, jump to PipePrep_PlayerSmallChk
 
 PipeEntryPrep_NoRev:
-	LDA <Player_Y
+	LDA Player_Y
 	CPX #$06	
 	BNE PRG008_BF71	 ; If not a downward pipe, jump to PRG008_BF71
 
-	LDY <Player_Suit
+	LDY Player_Suit
 	BEQ PRG008_BF75	 ; If Player is small, jump to PRG008_BF75
 
 PRG008_BF71:
@@ -1074,7 +1074,7 @@ PRG008_BF75:
 	SUB #$01	 ; Move Player up one pixel 
 
 PRG008_BF7E:
-	STA <Pipe_PlayerY ; Set Pipe_PlayerY
+	STA Pipe_PlayerY ; Set Pipe_PlayerY
 
 	RTS		 ; Return
 
@@ -1100,21 +1100,21 @@ Level_Initialize30:
 	; Set player power up based on current suit on map
 	LDX Player_Current
 	LDA World_Map_Power,X
-	STA <Player_Suit 	
+	STA Player_Suit 	
 
 	; Set power up's correct palette
 	JSR Level_SetPlayerPUpPal30
 
 	LDA #SPR_HFLIP
-	STA <Player_FlipBits	 ; Player_FlipBits = $40 (face right)
+	STA Player_FlipBits	 ; Player_FlipBits = $40 (face right)
 
-	; SB: Checkpoint override if Level_SelXStart < 0 (means use existing Player_X)
+	; SB: Checkpoint override if Level_SelXStart  0 (means use existing Player_X)
 	LDY Level_SelXStart
 	BMI Checkpoint_NoSetX
 
 	; Set Player_X based on Level_SelXStart
 	LDA Level_XStarts,Y
-	STA <Player_X
+	STA Player_X
 	
 	; If we have a start action (mainly pipe), don't center Player because that causes messes
 	LDA Level_InitAction
@@ -1123,21 +1123,21 @@ Level_Initialize30:
 	CMP #5	; exiting left of pipe
 	BNE Checkpoint_NoSetX
 
-	LDA <Player_X
+	LDA Player_X
 	AND #$F0
-	STA <Player_X
+	STA Player_X
 	
 LevInit_PipeLRStart_Fix:
 
 Checkpoint_NoSetX:
-	LDA <Player_X
-	STA <Player_XStart	; Also set Player_XStart
+	LDA Player_X
+	STA Player_XStart	; Also set Player_XStart
 	
 	JSR Level_InitAction_Do30	; Do whatever action this level wants at the start, if any
 	
 	LDA Map_Power_Disp
 	CMP #$08
-	BNE PRG030_C277	 ; If Map_Power_Disp <> 8 (P-Wing), jump to PRG030_C277
+	BNE PRG030_C277	 ; If Map_Power_Disp > 8 (P-Wing), jump to PRG030_C277
 
 	; Max "Power"
 	LDA #$7f	
@@ -1154,7 +1154,7 @@ PRG030_C27A:
 	LDA Level_7Vertical
 	BEQ PRG030_C29E	 	; If level is not vertical, jump to PRG030_C29E
 
-	LDY <Player_YHi		 ; Y = Player_YHi
+	LDY Player_YHi		 ; Y = Player_YHi
 
 	; Stores the vertical screen offset into Level_VertScrollH and Level_VertScroll
 	LDA VertLevel_ScreenH,Y
@@ -1162,20 +1162,20 @@ PRG030_C27A:
 	LDA VertLevel_ScreenL,Y	
 	STA Level_VertScroll	
 
-	LDA <Player_Y
-	LDY <Player_YHi
+	LDA Player_Y
+	LDY Player_YHi
 	JSR LevelJct_GetVScreenH2
-	STY <Player_YHi
-	STA <Player_Y
+	STY Player_YHi
+	STA Player_Y
 
 	RTS		 ; Return
 
 PRG030_C29E:
 
-	LDA <Vert_Scroll
+	LDA Vert_Scroll
 	STA Level_VertScroll	; Level_VertScroll = Vert_Scroll
 
-	LDA <Vert_Scroll_Hi
+	LDA Vert_Scroll_Hi
 	STA Level_VertScrollH	; Level_VertScrollH = Vert_Scroll_Hi
 
 	RTS		 ; Return
@@ -1216,14 +1216,14 @@ LevelJunction_PartialInit30:
 
 	; While airship opening is occurring...
 	LDA #$00	
-	STA <Player_XVel		; Player_XVel = 0
+	STA Player_XVel		; Player_XVel = 0
 	STA Level_InitAction		; Level_InitAction = 0
 	JSR LevelInit_Airship_Board	; Board the airship
 
 PRG030_C379:
 	LDA Level_InitAction
 	CMP #$06
-	BNE PRG030_C383	 	; If Level_InitAction <> 6 (Run & Jump for the airship), jump to PRG030_C383
+	BNE PRG030_C383	 	; If Level_InitAction > 6 (Run & Jump for the airship), jump to PRG030_C383
 
 	JSR LevelInit_Airship	 ; Run & Jump for the airship
 PRG030_C383:
@@ -1263,7 +1263,7 @@ LJPI_Free:
 	
 	; Put him in ride mode
 	LDA #2
-	STA <Objects_Var4,X
+	STA Objects_Var4,X
 	
 	; Nothing in mouth!
 	LDA #$FF
@@ -1287,7 +1287,7 @@ LJPI_NoYoshi:
 GhostHouse_Stairs:
 
 	LDY #0		; Y = 0 (adjusting for stairs, not in front)
-	STY <Temp_Var1	; Temp_Var1 = 0 (rightward stair)
+	STY Temp_Var1	; Temp_Var1 = 0 (rightward stair)
 
 	LDA Player_OnStairs
 	BNE StairsCont	; If Player already on stairs, jump to StairsCont
@@ -1299,7 +1299,7 @@ GhostHouse_Stairs:
 	CMP #TILE5_STAIRR2
 	BEQ GHS_Under
 
-	INC <Temp_Var1	; Temp_Var1 = 1 (leftward stair)
+	INC Temp_Var1	; Temp_Var1 = 1 (leftward stair)
 
 	; Check for stairway left based on left ground tile ONLY
 	LDA Level_Tile_GndL
@@ -1308,7 +1308,7 @@ GhostHouse_Stairs:
 	CMP #TILE5_STAIRL2
 	BEQ GHS_Under
 
-	LDA <Player_InAir
+	LDA Player_InAir
 	BNE GHS_NotStair	; If Player is in mid-air, can't start stairs, jump to GHS_NotStair
 
 	; Check for left stair in front if facing left ONLY
@@ -1316,7 +1316,7 @@ GhostHouse_Stairs:
 	CMP #TILE5_STAIRL1
 	BEQ GHS_Front	; If stair is in front, jump to GHS_Front
 
-	DEC <Temp_Var1	; Temp_Var1 = 0 (rightward stair)
+	DEC Temp_Var1	; Temp_Var1 = 0 (rightward stair)
 
 	; Check for right stair in front if facing right ONLY
 	LDA Level_Tile_InFL
@@ -1336,24 +1336,24 @@ GHS_Front:
 
 GHS_Under:
 	; Newly touched stairs; correct position 
-	LDA <Player_Y
+	LDA Player_Y
 	ADD StairCorrectYLo,Y
-	STA <Player_Y
-	LDA <Player_YHi
+	STA Player_Y
+	LDA Player_YHi
 	ADC StairCorrectYHi,Y
-	STA <Player_YHi
+	STA Player_YHi
 
 GHS_DisableTillClear:
 	; Store X
-	LDA <Player_X
+	LDA Player_X
 	STA Player_OnStairsX
 
 	; Temp_Var1 should be $00 or $02
-	ASL <Temp_Var1
+	ASL Temp_Var1
 
 	; On stairs!
 	LDA #$80	; Flags on stairs at all
-	ORA <Temp_Var1	; $00 or $02 (if leftward stair)
+	ORA Temp_Var1	; $00 or $02 (if leftward stair)
 	STA Player_OnStairs
 
 	JMP StairsSkipFeetChk	; Jump to StairsSkipFeetChk (skips check on first round, assume stairs OK)
@@ -1378,9 +1378,9 @@ StairsCont:
 	BNE GHS_NotLow
 
 GHS_Low:
-	LDA <Player_Y
+	LDA Player_Y
 	AND #$F0
-	STA <Player_Y
+	STA Player_Y
 
 GHS_NotLow:
 
@@ -1390,14 +1390,14 @@ GHS_NotLow:
 	BNE StairsLeftXVelChk
 
 	; Stairs right X Vel check
-	LDA <Player_XVel
+	LDA Player_XVel
 	BMI StairsSkipFeetChk	; Don't check stairs persistence going down
 	BPL StairsFeetChk	; Otherwise, check feet
 
 StairsLeftXVelChk:
 
 	; Stairs left X Vel check
-	LDA <Player_XVel
+	LDA Player_XVel
 	BPL StairsSkipFeetChk	; Don't check stairs persistence going down
 
 
@@ -1435,7 +1435,7 @@ Stairs_Discontinue:
 
 StairsSkipFeetChk:
 	LDA #0
-	STA <Player_YVel
+	STA Player_YVel
 
 	LDA Player_OnStairs
 	AND #$40
@@ -1445,43 +1445,43 @@ StairsSkipFeetChk:
 	LDY #0
 
 	; Only care about the 8-bit difference; as long as we understand this to be 8-bit signed it works
-	LDA <Player_X
+	LDA Player_X
 	SUB Player_OnStairsX
-	STA <Temp_Var1
+	STA Temp_Var1
 
 	LDA Player_OnStairs
 	AND #$02
 	BEQ GHS_XDiffOK
 
 	; However, negate the result on left stairs
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	NEG
-	STA <Temp_Var1
+	STA Temp_Var1
 
 GHS_XDiffOK:
 
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	BPL GHS_XDiffExtPos
 	INY
 GHS_XDiffExtPos:
 
 	; Store proper sign extension based on sign
 	LDA GhostHouseStairs_XDiffExt,Y 
-	STA <Temp_Var2
+	STA Temp_Var2
 
-	LDA <Player_Y
-	SUB <Temp_Var1
-	STA <Player_Y
-	LDA <Player_YHi
-	SBC <Temp_Var2
-	STA <Player_YHi
+	LDA Player_Y
+	SUB Temp_Var1
+	STA Player_Y
+	LDA Player_YHi
+	SBC Temp_Var2
+	STA Player_YHi
 
 	; Update coordinate
-	LDA <Player_X
+	LDA Player_X
 	STA Player_OnStairsX
 
 	LDA #$00	 
-	STA <Player_InAir ; Player NOT mid air
+	STA Player_InAir ; Player NOT mid air
 	STA Kill_Tally	  ; Reset Kill_Tally
 
 	; If 'A' is zero on return, stairs succeeded
@@ -1540,7 +1540,7 @@ Bobomb_BustBlocks30:
 	DEX	; X = $FF (if negative)
 	
 Bobomb_BustBlock_PosX:
-	STX <Temp_Var1		; -> Temp_Var1
+	STX Temp_Var1		; -> Temp_Var1
 
 
 	; Determine if Y needs extension
@@ -1553,33 +1553,33 @@ Bobomb_BustBlock_PosX:
 	DEX	; X = $FF (if negative)
 	
 Bobomb_BustBlock_PosY:
-	STX <Temp_Var2		; -> Temp_Var2
+	STX Temp_Var2		; -> Temp_Var2
 
-	LDX <SlotIndexBackup
+	LDX SlotIndexBackup
 
 	; Calculate bust X!
-	LDA <Objects_X,X
+	LDA Objects_X,X
 	ADD Bobomb_BustOffX,Y
 	AND #$F0
 	STA ObjTile_DetXLo
-	LDA <Objects_XHi,X
-	ADC <Temp_Var1
+	LDA Objects_XHi,X
+	ADC Temp_Var1
 	STA Level_BlockChgXHi
 	STA ObjTile_DetXHi
 
 	; Calculate bust Y!
-	LDA <Objects_Y,X
+	LDA Objects_Y,X
 	ADD Bobomb_BustOffY,Y
 	AND #$F0
 	STA ObjTile_DetYLo
-	LDA <Objects_YHi,X
-	ADC <Temp_Var2
+	LDA Objects_YHi,X
+	ADC Temp_Var2
 	STA ObjTile_DetYHi
 
 	; Check to see if this is a tile we can bust first!
 	JSR Bobomb_BustBlock_DetectManual
 	
-	LDA <Level_Tile
+	LDA Level_Tile
 	CMP #TILEA_BRICK
 	BEQ Bobomb_BustOK			; If a brick, jump to Bobomb_BustOK
 	
@@ -1630,9 +1630,9 @@ Bobomb_BustBlock_DetectManual:
 
 Bobomb_BustBrickFX:
 	LDA Level_BlockChgXLo
-	CMP <Horz_Scroll
+	CMP Horz_Scroll
 	LDA Level_BlockChgXHi
-	SBC <Horz_Scroll_Hi
+	SBC Horz_Scroll_Hi
 	BNE Bobomb_DoneBusting	; SB: If tile change is horizontally off-screen, jump to ActSwBB_SoundOnly
 
 	JSR BrickBust_MoveOver30	 ; If a brick is busting in slot 1, move it to slot 2
@@ -1650,7 +1650,7 @@ Bobomb_BustBrickFX:
 
  	; X
 	LDA Level_BlockChgXLo
-	SUB <Horz_Scroll
+	SUB Horz_Scroll
 	STA BrickBust_X	 ; Store X base coordinate
 
 	LDA #$00	 
@@ -1674,29 +1674,29 @@ CFire_CalcCoarseXDiff:
 	; Temp_Var14 is XHi
 	; Calculate coarse X difference -> Temp_Var15 (basically Object_CalcCoarseXDiff)
 	LDA CannonFire_X,X	 
-	SUB <Temp_Var13
-	STA <Temp_Var15		; Temp_Var15 = difference between Object and Player X
+	SUB Temp_Var13
+	STA Temp_Var15		; Temp_Var15 = difference between Object and Player X
 	LDA CannonFire_XHi,X
-	SBC <Temp_Var14		; Calc diff between X His
+	SBC Temp_Var14		; Calc diff between X His
 	LSR A			; Push low bit of "hi" difference -> carry
-	ROR <Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
+	ROR Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
 	LSR A			; Push low bit of "hi" difference -> carry
-	ROR <Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
+	ROR Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
 	RTS
 
 CFire_Gravity30:
 
 	LDA CannonFire_X,X
-	CMP <Horz_Scroll
+	CMP Horz_Scroll
 	LDA CannonFire_XHi,X
-	SBC <Horz_Scroll_Hi
+	SBC Horz_Scroll_Hi
 	ADD #1
 	CMP #4
 	BGE CFire_Gravity_Delete	; If gravity effect is more than 2 screens away in either direction, jump to CFire_Gravity_Delete
 
 	; Objects can reverse too; to keep down on overhead, only processing one
 	; per frame and one off...
-	LDA <Counter_1
+	LDA Counter_1
 	AND #$07	; 0 to 7
 
 	TAY	; Y = 0 to 7
@@ -1713,13 +1713,13 @@ CFire_Gravity30:
 CFire_Gravity_Do:
 	; Determine if Player/object is within the effect area
 	LDA Player_X,Y
-	STA <Temp_Var13
+	STA Temp_Var13
 	LDA Player_XHi,Y
-	STA <Temp_Var14
+	STA Temp_Var14
 	JSR CFire_CalcCoarseXDiff
 	
 	; 64 each way, 16 coarse units
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	CMP #16
 	BGS CFire_Gravity_NoChange
 	CMP #-16
@@ -1805,7 +1805,7 @@ PRG030_BFCF:
 	RTS		 ; Return
 
 PRG030_BFDC:
-	LDY <SlotIndexBackup	; Y = Cannon Fire slot index
+	LDY SlotIndexBackup	; Y = Cannon Fire slot index
 
 	; This is a Rocky Wrench
 	LDA #OBJ_ROCKYWRENCH
@@ -1814,20 +1814,20 @@ PRG030_BFDC:
 	; Start at Cannon Fire Y - 6
 	LDA CannonFire_Y,Y
 	SUB #$06
-	STA <Objects_Y,X
+	STA Objects_Y,X
 	LDA CannonFire_YHi,Y
 	SBC #$00
-	STA <Objects_YHi,X
+	STA Objects_YHi,X
 
 	; Set Rocky's X to Cannon Fire's X
 	LDA CannonFire_XHi,Y
-	STA <Objects_XHi,X
+	STA Objects_XHi,X
 	LDA CannonFire_X,Y
-	STA <Objects_X,X
+	STA Objects_X,X
 
 	; Var5 = 0
 	LDA #$00
-	STA <Objects_Var5,X
+	STA Objects_Var5,X
 
 	; Set Rocky's timer to $28
 	LDA #$28
@@ -1842,7 +1842,7 @@ PRG030_BFDC:
 	LDA Rocky_InitAttr,Y
 	STA Objects_FlipBits,X
 
-	LDX <SlotIndexBackup	; X = Cannon Fire slot index
+	LDX SlotIndexBackup	; X = Cannon Fire slot index
 
 PRG030_BF28:
 	RTS		 ; Return
@@ -2010,9 +2010,9 @@ ActSwBB_BustAnother:
 	BEQ ActSwBB_SkipSound
 
 	LDA Level_ActSwX
-	CMP <Horz_Scroll
+	CMP Horz_Scroll
 	LDA Level_ActSwXHi
-	SBC <Horz_Scroll_Hi
+	SBC Horz_Scroll_Hi
 	BNE ActSwBB_SoundOnly	; SB: If tile change is horizontally off-screen, jump to ActSwBB_SoundOnly
 
 	JSR BrickBust_MoveOver30	 ; If a brick is busting in slot 1, move it to slot 2
@@ -2030,7 +2030,7 @@ ActSwBB_BustAnother:
 
  	; X
 	LDA Level_ActSwX
-	SUB <Horz_Scroll
+	SUB Horz_Scroll
 	STA BrickBust_X	 ; Store X base coordinate
 
 	LDA #$00	 
@@ -2081,16 +2081,16 @@ ActSw_CoinSnake:
 
 	; Copy coordinates
 	LDA Level_ActSwX
-	STA <Objects_X,X
+	STA Objects_X,X
 	LDA Level_ActSwXHi
-	STA <Objects_XHi,X
+	STA Objects_XHi,X
 
 	LDA Level_ActSwY
 	SUB #16
-	STA <Objects_Y,X
+	STA Objects_Y,X
 	LDA Level_ActSwYHi
 	SBC #0
-	STA <Objects_YHi,X
+	STA Objects_YHi,X
 
 	; Action complete
 	LDA #0
@@ -2122,14 +2122,14 @@ ActSw_FindObject:
 	CPX #0
 	BLS ActSwSearch_Invalid		; If X < 0, jump to ActSwSearch_Invalid
 
-	STA <Temp_Var1
+	STA Temp_Var1
 
 ActSwSearch_Loop:
 	LDA Objects_State,X
 	BEQ ActSwSearch_NotFound		; If object slot is dead/empty, jump to ActSwSearch_NotFound
 	
 	LDA Level_ObjectID,X
-	CMP <Temp_Var1
+	CMP Temp_Var1
 	BEQ ActSwSearch_Found
 	
 ActSwSearch_NotFound:
@@ -2194,13 +2194,13 @@ DarknessCtl_DoBright:
 
 	; Force the darkness controller to state 1.
 	LDA #1
-	STA <Objects_Var4,X
+	STA Objects_Var4,X
 
 	LDA #$FF
 	STA Objects_Timer,X
 	
 	LDA #$01
-	STA <Objects_Var5,X
+	STA Objects_Var5,X
 
 	; Action complete
 	LDA #0
@@ -2227,10 +2227,10 @@ ActSw_StartSandFill_Loop:
 	JSR ActSw_FindObject	; If sand fill controller is not found, this will not return here
 
 	; Start filling!
-	LDA <Objects_Var4,X
+	LDA Objects_Var4,X
 	BNE StartSandFill_AlreadyStarted	; Only start filling if not already started, otherwise jump to StartSandFill_AlreadyStarted
 
-	INC <Objects_Var4,X
+	INC Objects_Var4,X
 
 StartSandFill_AlreadyStarted:
 	; Don't check this object again!
@@ -2417,9 +2417,9 @@ Pause_NotMapBank:
 	JSR Sprite_RAM_Clear	 ; Clear other sprites
 
 	LDA #3
-	STA <Temp_Var14		; Maximum menu index
+	STA Temp_Var14		; Maximum menu index
 	LDA #0
-	STA <Temp_Var15		; Menu Y offset	
+	STA Temp_Var15		; Menu Y offset	
 
 	LDY #(PAUSEMenu_Sprites_End - PAUSEMenu_Sprites - 4)
 
@@ -2428,9 +2428,9 @@ Pause_NotMapBank:
 	BNE Pause_NotOnMap
 
 	LDA #4
-	STA <Temp_Var14		; Maximum menu index
+	STA Temp_Var14		; Maximum menu index
 	LDA #-32
-	STA <Temp_Var15		; Menu Y offset	
+	STA Temp_Var15		; Menu Y offset	
 
 	LDY #(PAUSEMenu_Sprites_EndMap - PAUSEMenu_Sprites - 4)
 
@@ -2439,7 +2439,7 @@ Pause_NotOnMap:
 	; Copy in the pause menu sprites
 PAUSEMenu_SpriteCopyLoop:
 	LDA PAUSEMenu_Sprites,Y
-	ADD <Temp_Var15
+	ADD Temp_Var15
 	STA Sprite_RAM+$00,Y
 	LDA PAUSEMenu_Sprites+1,Y
 	STA Sprite_RAM+$01,Y
@@ -2464,7 +2464,7 @@ PAUSEMenu_SpriteCopyLoop:
 PRG030_8E9D:
 	LDX PAUSE_Sprites,Y
 	; Periodically remove sprites...
-	LDA <Counter_1
+	LDA Counter_1
 	AND #$20
 	BNE PAUSEFlash_NotY
 
@@ -2493,7 +2493,7 @@ Pause_NoPauseOnMap:
 	
 	LDX Level_PauseSelect
 	LDA PAUSEMenu_CursorY,X
-	ADD <Temp_Var15
+	ADD Temp_Var15
 	STA Sprite_RAM+$00,Y
 	LDA #$FF
 	STA Sprite_RAM+$01,Y
@@ -2502,7 +2502,7 @@ Pause_NoPauseOnMap:
 	LDA #$50
 	STA Sprite_RAM+$03,Y
 	
-	LDA <Pad_Input
+	LDA Pad_Input
 	AND #(PAD_UP | PAD_DOWN)
 	BEQ PAUSEMenu_NoUD 
 	
@@ -2516,11 +2516,11 @@ Pause_NoPauseOnMap:
 	BPL PAUSEMenu_NotNeg
 	
 	; Negative
-	LDA <Temp_Var14
+	LDA Temp_Var14
 	SUB #1
 	
 PAUSEMenu_NotNeg:
-	CMP <Temp_Var14
+	CMP Temp_Var14
 	BLT PAUSEMenu_NotHigh
 	
 	; Overflow
@@ -2531,7 +2531,7 @@ PAUSEMenu_NotHigh:
 
 PAUSEMenu_NoUD:
 	LDX Player_Current
-	LDA <Controller1Press,X
+	LDA Controller1Press,X
 	AND #PAD_START
 	BEQ PAUSEMenu_NoStart
 
@@ -2541,7 +2541,7 @@ PAUSEMenu_NoUD:
 	JSR Sprite_RAM_Clear	 ; Clear other sprites
 	
 	LDA #0
-	STA <Map_WarpWind_FX
+	STA Map_WarpWind_FX
 	
 	LDA #149
 	STA PatTable_BankSel+5	; Restore map sprites
@@ -2566,7 +2566,7 @@ Pause_NotMap:
 	
 	LDA Level_PauseSelect
 	CMP #2
-	BNE PAUSEMenu_HandleSelect	; If Level_PauseSelect <> 2, don't quit, jump to PAUSEMenu_NoStart
+	BNE PAUSEMenu_HandleSelect	; If Level_PauseSelect > 2, don't quit, jump to PAUSEMenu_NoStart
 
 	; Quit via Reset_Latch
 	LDA #0
@@ -2580,12 +2580,12 @@ PAUSEMenu_HandleSelect:
 	
 	
 	; Level is already complete...
-	LDA <Pad_Input
+	LDA Pad_Input
 	AND #PAD_SELECT
 	BEQ PAUSEMenu_NoStart	; If Player is not pressing SELECT, jump to PAUSEMenu_NoStart
 	
 	; Start+Select exit level!
-	INC <Level_ExitToMap	; Exit to map
+	INC Level_ExitToMap	; Exit to map
 	INC Map_ReturnStatus	; Did not complete level
 	INC Map_PlayerLost2PVs	; Don't lose a life over it, though
 	
@@ -2603,7 +2603,7 @@ PAUSEMenu_StarRoad:
 	
 	; On World Zero, do not allow return on the upper or lower frings
 	LDX Player_Current
-	LDA <World_Map_Y,X
+	LDA World_Map_Y,X
 	CMP #$21
 	BLT Map_WZeroDeny
 	CMP #$A0
@@ -2612,7 +2612,7 @@ PAUSEMenu_StarRoad:
 Map_NoWZeroDeny:
 	; Continue warp to star road
 	LDA #2
-	STA <Map_WarpWind_FX
+	STA Map_WarpWind_FX
 
 	; Skid sound
 	LDA #SND_LEVELVINE
@@ -2626,7 +2626,7 @@ Map_WZeroDeny:
 
 
 Debug_PauseStuff:
-	LDA <Pad_Holding
+	LDA Pad_Holding
 	AND #(PAD_UP | PAD_A)
 	CMP #(PAD_UP | PAD_A)
 	BNE PauseDebug_NoExit2
@@ -2636,7 +2636,7 @@ Debug_PauseStuff:
 	BNE PauseDebug_Exit1
 
 PauseDebug_NoExit2:
-	LDA <Pad_Holding
+	LDA Pad_Holding
 	AND #(PAD_DOWN | PAD_A)
 	CMP #(PAD_DOWN | PAD_A)
 	BNE PauseDebug_NoExit1
@@ -2647,7 +2647,7 @@ PauseDebug_Exit1:
 	LDA #0
 	STA Map_ReturnStatus
 	STA Level_PauseFlag
-	INC <Level_ExitToMap
+	INC Level_ExitToMap
 
 PauseDebug_NoExit1:
 	RTS
@@ -2661,7 +2661,7 @@ Debug_FreeMovement:
 	INC Player_DebugNoHitFlag
 
 	; Some extra niceities for me...
-	LDA <Pad_Holding
+	LDA Pad_Holding
 	AND #PAD_UP
 	BNE PFM_NotHoldingUp
 	
@@ -2672,25 +2672,25 @@ Debug_FreeMovement:
 	; Player is holding up, then let's go to $EE to unlock it
 	LDA Level_FreeVertScroll
 	BNE PFM_NotHoldingUp	
-	LDA <Vert_Scroll
+	LDA Vert_Scroll
 	CMP #$EF
 	BNE PFM_NotHoldingUp
 	
 	LDA #$EE
-	STA <Vert_Scroll
+	STA Vert_Scroll
 	
 	
 PFM_NotHoldingUp:
 	; Nintendo's old code starts here...
-	LDA <Pad_Holding
+	LDA Pad_Holding
 	AND #(PAD_LEFT | PAD_RIGHT)
 	TAY		 ; Y = 1 or 2
 
 	; Set Player X velocity directly??
 	LDA PRG030_C3E7,Y
-	STA <Player_XVel
+	STA Player_XVel
 
-	LDA <Pad_Holding
+	LDA Pad_Holding
 	LSR A
 	LSR A
 	AND #((PAD_UP | PAD_DOWN) >> 2)
@@ -2698,7 +2698,7 @@ PFM_NotHoldingUp:
 
 	; Set Player Y velocity directly??
 	LDA PRG030_C3E7,Y
-	STA <Player_YVel
+	STA Player_YVel
 
 	RTS		 ; Return
 
@@ -2820,20 +2820,20 @@ LEC_NoNeedPoof2:
 	LDA #OBJ_TREASUREBOX
 	STA Level_ObjectID,X
 
-	LDA <Player_X
-	STA <Objects_X,X
-	LDA <Player_XHi
-	STA <Objects_XHi,X
+	LDA Player_X
+	STA Objects_X,X
+	LDA Player_XHi
+	STA Objects_XHi,X
 
-	LDA <Player_Y
-	STA <Objects_Y,X
-	LDA <Player_YHi
-	STA <Objects_YHi,X
+	LDA Player_Y
+	STA Objects_Y,X
+	LDA Player_YHi
+	STA Objects_YHi,X
 
-	INC <Objects_Var4,X
+	INC Objects_Var4,X
 
 	LDA #-$30
-	STA <Objects_YVel,X
+	STA Objects_YVel,X
 
 	LDA #10
 	STA Level_TreasureItem
@@ -2853,11 +2853,11 @@ Level_EndComet_Poof:
 	STA SpecialObj_ID,Y
 
 	; Set the poof where the box will be
-	LDA <Objects_X,X
+	LDA Objects_X,X
 	STA SpecialObj_XLo,Y
-	LDA <Objects_Y,X
+	LDA Objects_Y,X
 	STA SpecialObj_YLo,Y
-	LDA <Objects_YHi,X
+	LDA Objects_YHi,X
 	STA SpecialObj_YHi,Y
 
 	; Set the "poof" counter

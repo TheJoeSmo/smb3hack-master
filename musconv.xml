@@ -3,7 +3,7 @@
 
 	<!-- Patches section: For remapping MIDI instrument patches to SMB3 patches on Square Tracks 1 and 2 (Only) -->
 	<patches>
-		<!-- For each <patch>:  "id" = MIDI patch number, "map" = SMB3 patch number -->
+		<!-- For each patch>:  "id" = MIDI patch number, "map" = SMB3 patch number -->
 		<patch id="0" map="1" />	<!-- Acoustic Grand Piano -->
 		<patch id="1" map="1" />	<!-- Bright Acoustic Piano -->
 		<patch id="2" map="1" />	<!-- Electric Grand Piano -->

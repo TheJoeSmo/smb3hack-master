@@ -4,11 +4,11 @@ Level_PrepareNewObjectAlt:
 	LDA #$00
 	STA Objects_Var1,X
 	STA Objects_Var2,X
-	STA <Objects_SpriteX,X
+	STA Objects_SpriteX,X
 	STA Objects_Timer,X
 	STA Objects_Timer2,X
-	STA <Objects_XVel,X
-	STA <Objects_YVel,X
+	STA Objects_XVel,X
+	STA Objects_YVel,X
 	STA Objects_FlipBits,X
 	STA Objects_Frame,X	
 	STA Objects_ColorCycle,X
@@ -16,10 +16,10 @@ Level_PrepareNewObjectAlt:
 	STA Objects_FrozenTimer,X	; SB
 	STA Objects_IsBehind,X		; SB
 	STA Objects_StompDisable,X	; SB
-	STA <Objects_DetStat,X	
+	STA Objects_DetStat,X	
 	STA Objects_PlayerHitStat,X
 	STA Objects_Var7,X
-	STA <Objects_Var5,X
+	STA Objects_Var5,X
 
 	CPX #$06
 	BGE PRG000_D4C8	 ; If using slot index >= 6, jump to PRG000_D4C8 (skip variables available only to slots 0 to 5)
@@ -35,7 +35,7 @@ PRG000_D4C8:
 	BGE PRG000_D506	 ; If using slot index >= 5, jump to PRG000_D506 (skip variables available only to slots 0 to 4)
 
 	; Clear even more variables (object slots 0 to 4 [major objects] ONLY!!)
-	STA <Objects_Var4,X
+	STA Objects_Var4,X
 	STA Objects_Timer4,X
 	STA Objects_Timer3,X
 	STA Objects_Slope,X
@@ -90,22 +90,22 @@ PLayer_KickBobomb:
 
 	; Set Y vel to -$20 (bounce up)
 	LDA #-$20
-	STA <Objects_YVel,X
+	STA Objects_YVel,X
 
 	; Set X Velocity appropriately based on kick direction
 	JSR Level_ObjCalcXDiffs
 	LDA BobombKickXVel,Y
-	STA <Objects_XVel,X
+	STA Objects_XVel,X
 
-	EOR <Player_XVel
+	EOR Player_XVel
 	BMI PRG000_CE76	 ; If the Bob-omb's X velocity is the opposite sign of the Player's, jump to PRG000_CE76
 
-	LDA <Player_XVel
-	STA <Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
-	ASL <Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
+	LDA Player_XVel
+	STA Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
+	ASL Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	ADD ObjectKickXVelMoving,Y	 ; Add base "moving" X velocity of Bob-omb
-	STA <Objects_XVel,X	 ; Set this as Bob-omb's X Velocity
+	STA Objects_XVel,X	 ; Set this as Bob-omb's X Velocity
 
 PRG000_CE76:
 	JMP Object_ShakeAndDraw	 ; Draw Bob-omb and don't come back!
@@ -130,17 +130,17 @@ Player_KickRegular:
 
 	LDY #1	 ; Y = 1
 
-	LDA <Player_FlipBits
+	LDA Player_FlipBits
 	BNE PRG000_CE94	 ; If Player is not turned around, jump to PRG000_CE94
 
 	LDY #-1	 ; Y = -1
 
 PRG000_CE94:
-	STY <Objects_XVel,X	 ; Set minimum X velocity on object (to enable wall hit detection)
+	STY Objects_XVel,X	 ; Set minimum X velocity on object (to enable wall hit detection)
 
 	JSR Object_WorldDetectN1 ; Detect against world
 
-	LDA <Objects_DetStat,X
+	LDA Objects_DetStat,X
 	AND #$03	
 	BEQ HeldKickRegular	 ; If object has not hit a wall, jump to PRG000_CEB4
 
@@ -156,18 +156,18 @@ PRG000_CE94:
 
 	; Set object Y velocity to -$40 (fly up a bit)
 	LDA #-$40
-	STA <Objects_YVel,X
+	STA Objects_YVel,X
 
 	; Remove that minimum X velocity
 	LDA #$00
-	STA <Objects_XVel,X
+	STA Objects_XVel,X
 
 	JMP PRG000_CF98	 ; Jump to PRG000_CF98
 
 HeldKickRegular:
 	LDY #0	 	; Y = 0
 
-	LDA <Pad_Holding
+	LDA Pad_Holding
 	AND #PAD_UP
 	BEQ NormalHeldKick			; Not holding up when let go of B, so do a normal kick
 	INY
@@ -175,7 +175,7 @@ HeldKickRegular:
 
 NormalHeldKick:
 
-	LDA <Player_FlipBits
+	LDA Player_FlipBits
 	BEQ PRG000_CEBB	; If Player has not turned around, jump to PRG000_CEBB
 
 	INY		; Y = 1
@@ -190,24 +190,24 @@ PRG000_CEBE:
 	; Make sure Player is facing object he's kicking
 	JSR Level_ObjCalcXDiffs
 	LDA PlayerKickFlipBits,Y
-	STA <Player_FlipBits
+	STA Player_FlipBits
 
 PRG000_CEC6:
 	; Get the base kicking speeds
 	LDA ObjectKickXVelMoving,Y
-	STA <Objects_XVel,X
+	STA Objects_XVel,X
 	LDA ObjectKickYVelMoving, Y
-	STA <Objects_YVel, X
+	STA Objects_YVel, X
 
-	EOR <Player_XVel
+	EOR Player_XVel
 	BMI PRG000_CEDC	 ; If the object's X velocity is the opposite sign of the Player's, jump to PRG000_CEDC
 
-	LDA <Player_XVel 	; Get the Player's X velocity
-	STA <Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
-	ASL <Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
+	LDA Player_XVel 	; Get the Player's X velocity
+	STA Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
+	ASL Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	ADD ObjectKickXVelMoving,Y	 ; Add base "moving" X velocity of object
-	STA <Objects_XVel,X	 ; Set as object's X velocity
+	STA Objects_XVel,X	 ; Set as object's X velocity
 
 PRG000_CEDC:
 	; If object's state is not Killed, jump to PRG000_CEE8
@@ -220,12 +220,12 @@ PRG000_CEDC:
 	BEQ SetEnemyAsKicked
 
 	; Add extra velocity to vertically kicked shells
-	LDA <Player_XVel 	; Get the Player's X velocity
-	;STA <Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
-	;ASL <Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
+	LDA Player_XVel 	; Get the Player's X velocity
+	;STA Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
+	;ASL Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	;ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	;ADD ObjectKickXVelMoving,Y	 ; Add base "moving" X velocity of object
-	STA <Objects_XVel,X	 ; Set as object's X velocity
+	STA Objects_XVel,X	 ; Set as object's X velocity
 
 	; Set shell to be shelled, so it doesn't hit things too much
 	LDA #OBJSTATE_SHELLED
@@ -257,7 +257,7 @@ Player_InvalidKick:
 PRG000_CEFD:
 	LDY #$00	 ; Y = 0
 
-	LDA <Player_FlipBits
+	LDA Player_FlipBits
 	BNE PRG000_CF04	 ; If Player is turned around, jump to PRG000_CF04
 
 	INY		 ; Y = 1
@@ -295,13 +295,13 @@ PRG000_CF1A:
 PRG000_CF1F:
 
 	; Set held object's proper X position
-	LDA <Player_X	
+	LDA Player_X	
 	ADD ObjectHoldXOff,Y
-	STA <Objects_X,X	
+	STA Objects_X,X	
 
-	LDA <Player_XHi	
+	LDA Player_XHi	
 	ADC ObjectHoldXHiOff,Y
-	STA <Objects_XHi,X	
+	STA Objects_XHi,X	
 
 	LDY #0		; Y = 0
 
@@ -310,7 +310,7 @@ PRG000_CF1F:
 
 	INY		; Y = 1
 
-	LDA <Player_Suit
+	LDA Player_Suit
 	BNE PRG000_CF3D	 ; If Player is not small, jump to PRG000_CF3D
 
 	INY		; Y = 2
@@ -329,8 +329,8 @@ PlayerHold_YOffNoRev:
 	PHA		 ; Save 'A'
 
 	; Set Y offset to object being held
-	ADD <Player_Y
-	STA <Objects_Y,X
+	ADD Player_Y
+	STA Objects_Y,X
 
 	LDY #$00	 ; Y = 0
 
@@ -344,14 +344,14 @@ PRG000_CF49:
 	TYA		 ; A = 0 or -1
 
 	; Apply carry
-	ADC <Player_YHi
-	STA <Objects_YHi,X
+	ADC Player_YHi
+	STA Objects_YHi,X
 
 	; While held, object's velocities match Player's
-	LDA <Player_XVel
-	STA <Objects_XVel,X
-	LDA <Player_YVel
-	STA <Objects_YVel,X
+	LDA Player_XVel
+	STA Objects_XVel,X
+	LDA Player_YVel
+	STA Objects_YVel,X
 
 	; SB: Match Player's gravity setting too
 	LDA Player_ReverseGrav
@@ -387,7 +387,7 @@ ObjectHeld_GravMatch:
 
 	; Y velocity = -$30 (fly up a bit)
 	LDA #-$30
-	STA <Objects_YVel,X
+	STA Objects_YVel,X
 
 	; Object that got hit is dead!
 	LDA #OBJSTATE_KILLED
@@ -411,12 +411,12 @@ ObjectHeld_GravMatch:
 
 	; Set the OTHER object's X velocity appropriately
 	LDA ObjectToObject_HitXVel,Y
-	STA <Objects_XVel,X
+	STA Objects_XVel,X
 
 PRG000_CF98:
-	LDX <SlotIndexBackup	 ; Restore 'X' to the object slot index
+	LDX SlotIndexBackup	 ; Restore 'X' to the object slot index
 
-	LDA <Player_IsDying
+	LDA Player_IsDying
 	BNE PRG000_CFA5	 ; If Player is dying, jump to PRG000_CFA5
 
 	; Player is NOT dying...

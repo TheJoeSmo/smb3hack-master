@@ -95,7 +95,7 @@ Music_NoInvert:
 	LDA Music_RestH_Off
 	BEQ Sound_NoSpeed
 
-	LDA <Counter_1
+	LDA Counter_1
 	AND #4
 	BNE Sound_NoSpeed	; Only do this 1:4 ticks
 

@@ -37,7 +37,7 @@ EndWorldSeq_Init:
 	STA CineKing_Timer2
 
 	; Set Player to top of screen
-	STA <Player_Y
+	STA Player_Y
 
 	; Clear auto scroll variables
 	LDY #$14	 ; Y = $14
@@ -85,7 +85,7 @@ EndWorldSeq_VictoryMusNotDone:
 	BEQ EndWorldSeq_NotEnding
 
 	; Ending only: Hit A or START to reset
-	LDA <Pad_Input
+	LDA Pad_Input
 	AND #(PAD_A | PAD_START)
 	BEQ EndWorldSeq_NotEnding
 	
@@ -137,7 +137,7 @@ PRG027_A0B2:
 
 	; Set scroll up high (the letter is actually level data)
 	LDA #$18
-	STA <Vert_Scroll
+	STA Vert_Scroll
 
 	; Level_VertScrollH = 1
 	LDA #$01
@@ -181,7 +181,7 @@ EndWorldSeq_WaitForA:
 	STA PatTable_BankSel+4
 
 	LDA #0
-	STA <Temp_Var1
+	STA Temp_Var1
 
 	LDA World_Num
 	CMP #6
@@ -189,7 +189,7 @@ EndWorldSeq_WaitForA:
 
 	; World 7 only...
 	LDA #$20
-	STA <Temp_Var1
+	STA Temp_Var1
 
 Princess_NotW7:
 
@@ -206,7 +206,7 @@ PRG027_A148:
 
 	; Add offset to pattern (intended for Rosalina)
 	LDA Sprite_RAM+$9F,Y
-	ADD <Temp_Var1
+	ADD Temp_Var1
 	STA Sprite_RAM+$9F,Y
 
 PrincessCopy_NotW7:
@@ -224,7 +224,7 @@ PrincessCopy_NotW7:
 	JSR Letter_PaletteKludge	 ; Not sure what this is for; sets up the graphics buffer to patch a single palette color?
 
 PRG027_A169:
-	LDA <Pad_Input
+	LDA Pad_Input
 	BPL PRG027_A174		; If Player is NOT pressing A, jump to PRG027_A174
 
 	JSR_THUNKC 10, Map_CompleteWorld
@@ -252,7 +252,7 @@ PRG027_A169:
 EndWorldSeq_NoReset:
 
 EndWorldSeq_JumpBack:
-	INC <Level_ExitToMap	; Exiting to map!
+	INC Level_ExitToMap	; Exiting to map!
 
 	; World_EnterState = 0
 	LDA #$00
@@ -261,7 +261,7 @@ EndWorldSeq_JumpBack:
 PRG027_A174:
 	LDY #$01	 ; Y = 1
 
-	LDA <Counter_1
+	LDA Counter_1
 	AND #$38
 	BEQ PRG027_A181	 ; Periodically jump to PRG027_A181
 
@@ -825,16 +825,16 @@ WES_RescuePrincessCount:
 EWLGT_NotWorldZeroWin:
 	; Base address for letter body -> Temp_Var1/2
 	LDA Letter_Bodies,X
-	STA <Temp_Var1
+	STA Temp_Var1
 	LDA Letter_Bodies+1,X
-	STA <Temp_Var2	
+	STA Temp_Var2	
 
 	LDY #$00	 ; Y = 0 (letter body offset)
 	LDX #(LetterRow_VRAM_H - LetterRow_VRAM_L - 1)	 ; init X (letter body line index)
 PRG027_ABA9:
 	; Temp_Var4 = VRAM low address starting for this line
 	LDA LetterRow_VRAM_L,X
-	STA <Temp_Var4
+	STA Temp_Var4
 
 PRG027_ABAE:
 	LDA PPU_STAT
@@ -844,7 +844,7 @@ PRG027_ABAE:
 	STA PPU_VRAM_ADDR
 
 	; Set VRAM Low address starting for this line
-	LDA <Temp_Var4
+	LDA Temp_Var4
 	STA PPU_VRAM_ADDR
 
 	LDA [Temp_Var1],Y ; Get next character from letter body
@@ -859,7 +859,7 @@ PRG027_ABAE:
 
 	STA PPU_VRAM_DATA	; Store character as pattern
 
-	INC <Temp_Var4	 ; Temp_Var4++
+	INC Temp_Var4	 ; Temp_Var4++
 	BNE PRG027_ABAE	 ; Loop (assumes Temp_Var4 never overflows)
 
 PRG027_ABCE:
@@ -875,7 +875,7 @@ PRG027_ABD1:
 	CMP #9
 	BNE Letter_NotWZeroNoStars		; If not the World Zero letter, no need to print star coin totals
 
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	CMP (Letter_Bodies + 18)	; Ew
 	BNE Letter_NotWZeroNoStars
 
@@ -897,27 +897,27 @@ Letter_NotWZeroNoStars:
 	BEQ WorldXClear_NotEnding
 
 	; Base address for letter body -> Temp_Var1/2
-	LDA #LOW(World8_Clear)
-	STA <Temp_Var1
-	LDA #HIGH(World8_Clear+1)
-	STA <Temp_Var2	
+	LDA #<World8_Clear
+	STA Temp_Var1
+	LDA #>World8_Clear+1
+	STA Temp_Var2	
 
 	; Temp_Var4 = VRAM low address starting for this line
 	LDA #$CC
-	STA <Temp_Var4
+	STA Temp_Var4
 
 	BNE PRG027_WXBAE
 
 WorldXClear_NotEnding:
 	; Base address for letter body -> Temp_Var1/2
-	LDA #LOW(WorldX_Clear)
-	STA <Temp_Var1
-	LDA #HIGH(WorldX_Clear+1)
-	STA <Temp_Var2	
+	LDA #<WorldX_Clear
+	STA Temp_Var1
+	LDA #>WorldX_Clear+1
+	STA Temp_Var2	
 
 	; Temp_Var4 = VRAM low address starting for this line
 	LDA #$C9
-	STA <Temp_Var4
+	STA Temp_Var4
 
 PRG027_WXBAE:
 	LDA PPU_STAT
@@ -927,7 +927,7 @@ PRG027_WXBAE:
 	STA PPU_VRAM_ADDR
 
 	; Set VRAM Low address starting for this line
-	LDA <Temp_Var4
+	LDA Temp_Var4
 	STA PPU_VRAM_ADDR
 
 	LDA [Temp_Var1],Y ; Get next character from letter body
@@ -957,7 +957,7 @@ WorldClear_NotWNum:
 WorldClear_SetPattern:
 	STA PPU_VRAM_DATA	; Store character as pattern
 
-	INC <Temp_Var4	 ; Temp_Var4++
+	INC Temp_Var4	 ; Temp_Var4++
 	BNE PRG027_WXBAE	 ; Loop (assumes Temp_Var4 never overflows)
 
 
@@ -984,9 +984,9 @@ Letter_PrintSCTotals:
 
 	; Retrieved star coins
 	LDA Temp_VarNP0
-	STA <Temp_Var2
+	STA Temp_Var2
 	LDA Map_StarCoin_Got
-	STA <Temp_Var1
+	STA Temp_Var1
 	
 	JSR Letter_Print3Digits
 
@@ -1002,9 +1002,9 @@ Letter_PrintSCTotals:
 
 	; Retrieved star coins
 	LDA #1	; Cheating
-	STA <Temp_Var2
+	STA Temp_Var2
 	LDA Map_StarCoin_Total
-	STA <Temp_Var1
+	STA Temp_Var1
 
 	JSR Letter_Print3Digits
 
@@ -1020,14 +1020,14 @@ Letter_Print3Digits:
 
 	LDX #$02	 ; X = 5	0-5, 6 digits
 PRG027_B19A:
-	LDA <Temp_Var1	 ; Get LSD -> A
+	LDA Temp_Var1	 ; Get LSD -> A
 
 	; I haven't taken time yet to discern this magic yet
 	SUB PRG027_B16C,X
-	STA <Temp_Var1	
-	LDA <Temp_Var2	
+	STA Temp_Var1	
+	LDA Temp_Var2	
 	SBC PRG027_B166,X
-	STA <Temp_Var2	
+	STA Temp_Var2	
 
 	BCC PRG027_B1B8	 	; If the subtraction didn't go negative, jump to PRG027_B1B8
 
@@ -1036,14 +1036,14 @@ PRG027_B19A:
 	JMP PRG027_B19A	 ; Jump to PRG027_B19A
 
 PRG027_B1B8:
-	LDA <Temp_Var1
+	LDA Temp_Var1
 
 	; I haven't taken time yet to discern this magic yet
 	ADD PRG027_B16C,X
-	STA <Temp_Var1	
-	LDA <Temp_Var2	
+	STA Temp_Var1	
+	LDA Temp_Var2	
 	ADC PRG027_B166,X
-	STA <Temp_Var2	
+	STA Temp_Var2	
 
 	LDA Score_Temp	 
 	ADD #$70	 	; A = Score_Temp + $F0 (tile to display)
@@ -1403,23 +1403,23 @@ InitPals_Per_MapPUp:
 Setup_PalData:
 	LDA Level_Tileset
 	ASL A
-	TAY		 ; Y = Level_Tileset << 1 (index into Palette_By_Tileset)
+	TAY		 ; Y = Level_Tileset < 1 (index into Palette_By_Tileset)
 
 	; Point to the palette associated with this tileset!
 	LDA Palette_By_Tileset,Y
-	STA <Temp_Var1	
+	STA Temp_Var1	
 	LDA Palette_By_Tileset+1,Y
-	STA <Temp_Var2	
+	STA Temp_Var2	
 
-	LDY <Pal_Force_Set12	; Palette override
+	LDY Pal_Force_Set12	; Palette override
 	BEQ PRG027_B86D	 	; If Pal_Force_Set12 = 0, jump to PRG027_B86D
 
-	; If Pal_Force_Set12 <> 0...
+	; If Pal_Force_Set12 > 0...
 	; Point to the palette associated with this override!
 	LDA Palette_By_Tileset,Y
-	STA <Temp_Var1		
+	STA Temp_Var1		
 	LDA Palette_By_Tileset+1,Y
-	STA <Temp_Var2		
+	STA Temp_Var2		
 
 	; Copy 32 bytes of data into Pal_Data
 	LDY #31	 ; Y = 31 (32 bytes total, a whole bg/sprite palette set)
@@ -1430,7 +1430,7 @@ PRG027_B85E:
 	BPL PRG027_B85E	 ; While Y >= 0, loop
 
 	LDA #$00	 
-	STA <Pal_Force_Set12 ; Pal_Force_Set12 = 0
+	STA Pal_Force_Set12 ; Pal_Force_Set12 = 0
 	JMP PRG027_B8F9	 ; Jump to PRG027_B8F9 (RTS)
 
 PRG027_B86D:
@@ -1439,7 +1439,7 @@ PRG027_B86D:
 	ASL A		 
 	ASL A		 
 	ASL A		 
-	TAY			; Y = PalSel_Tile_Colors << 4; basically, offset by an entire 16 bytes (entire bg palette size) based on PalSel_Tile_Colors
+	TAY			; Y = PalSel_Tile_Colors < 4; basically, offset by an entire 16 bytes (entire bg palette size) based on PalSel_Tile_Colors
 	LDX #$00	 	; X = 0
 
 	; Loop to copy the 16 BG colors to Pal_Data
@@ -1456,24 +1456,24 @@ PRG027_B877:
 	ASL A		 
 	ASL A		 
 	ASL A		 
-	TAY			; Y = PalSel_Obj_Colors << 4; basically, offset by an entire 16 bytes (entire sprite palette size) based on PalSel_Tile_Colors
+	TAY			; Y = PalSel_Obj_Colors < 4; basically, offset by an entire 16 bytes (entire sprite palette size) based on PalSel_Tile_Colors
 
 	LDA Player_RescuePrincess
 	BEQ NoPalEndingOverride		; If this is not the ending, jump to NoPalEndingOverride
 	BMI NoPalEndingOverride		; Not including World Zero ending
 
 	; For the ending only: Override the object palette to copy appropriate player colors!
-	LDA #LOW(Pal_Ending)
-	STA <Temp_Var1
-	LDA #HIGH(Pal_Ending)
-	STA <Temp_Var2
+	LDA #<Pal_Ending
+	STA Temp_Var1
+	LDA #>Pal_Ending
+	STA Temp_Var2
 	
 	LDY #0
 
 NoPalEndingOverride:
 
 	; Daredevil comet palette override
-	LDA <Map_EnterViaID
+	LDA Map_EnterViaID
 	CMP #MAPOBJ_DAREDEVILCOMET
 	BNE SPD_NotDDComet
 
@@ -1513,7 +1513,7 @@ PRG027_B88A:
 
 	LDA Level_Tileset
 	CMP #19
-	BNE PRG027_B8C3	 	; If Level_Tileset <> 19 (Bonus Game intro), jump to PRG027_B8C3
+	BNE PRG027_B8C3	 	; If Level_Tileset > 19 (Bonus Game intro), jump to PRG027_B8C3
 
 	; Level_Tileset = 19... (the intro to the bonus games)
 	LDY Player_Current
@@ -1521,7 +1521,7 @@ PRG027_B88A:
 	ASL A		 
 	ASL A		 
 	ASL A		 
-	TAY		 ; Y = Player_Current << 3
+	TAY		 ; Y = Player_Current < 3
 
 	; This loop copies in the correct palette for the Player
 	; meeting with the bonus game host (Toad ... typically)
@@ -1655,7 +1655,7 @@ PRG027_B91C:
 	STA Fade_Tick	 ; Fade_Tick = 4
 
 	LDA #$06	 
-	STA <Graphics_Queue	 ; Reset the graphics buffer
+	STA Graphics_Queue	 ; Reset the graphics buffer
 	RTS		 ; Return
 
 
@@ -1670,14 +1670,14 @@ PRG027_B93A:
 	BEQ PRG027_B982	 ; If Fade_Level = 0, jump to PRG027_B982 (RTS)
 
 	LDA Fade_Tick	 
-	BNE PRG027_B982	 ; If Fade_Tick <> 0, jump to PRG027_B982 (RTS)
+	BNE PRG027_B982	 ; If Fade_Tick > 0, jump to PRG027_B982 (RTS)
 
 	LDA #$04	
 	STA Fade_Tick	 ; Fade_Tick = 4 (reload) 
 
 	DEC Fade_Level	 ; Fade_Level--
 
-	BNE PRG027_B95F	 ; If Fade_Level <> 0, jump to PRG027_B95F
+	BNE PRG027_B95F	 ; If Fade_Level > 0, jump to PRG027_B95F
 
 PRG027_B95F:
 	LDY #31		 ; Y = 31
@@ -1703,7 +1703,7 @@ PRG027_B97B:
 	BPL PRG027_ABF8	 ; While Y >= 0, loop!
 
 	LDA #$06	 
-	STA <Graphics_Queue	 ; Queue graphics routine 6
+	STA Graphics_Queue	 ; Queue graphics routine 6
 
 PRG027_B982:
 	RTS		 ; Return
@@ -1712,7 +1712,7 @@ PRG027_B982:
 	; Functionally identical copy of Palette_PrepareFadeOut from PRG026
 Palette_PrepareFadeOutTK:
 	LDA FadeOut_Cancel
-	BNE PRG027_B98C	 	; If FadeOut_Cancel <> 0, jump to PRG027_B98C (RTS)
+	BNE PRG027_B98C	 	; If FadeOut_Cancel > 0, jump to PRG027_B98C (RTS)
 
 	SEC			; signals to use "fade out" prep code		 
 	JMP Palette_PrepareFadeOutTK_Entry
@@ -1723,7 +1723,7 @@ PRG027_B98C:
 	; ALMOST identical copy of Palette_DoFadeOut from PRG026
 Palette_DoFadeOutTK:
 	LDA FadeOut_Cancel
-	BNE PRG027_B9C3	 ; If FadeOut_Cancel <> 0, jump to PRG027_B9C3
+	BNE PRG027_B9C3	 ; If FadeOut_Cancel > 0, jump to PRG027_B9C3
 
 	LDA Fade_Tick
 	BEQ PRG027_B99A	 ; If Fade_Tick = 0, jump to PRG027_B99A
@@ -1735,7 +1735,7 @@ PRG027_B99A:
 	BEQ PRG027_B9C3	 ; If Fade_Level = 0, jump to PRG027_B9C3
 
 	LDA Fade_Tick
-	BNE PRG027_AC5F	 ; If Fade_Tick <> 0, jump to PRG027_AC5F
+	BNE PRG027_AC5F	 ; If Fade_Tick > 0, jump to PRG027_AC5F
 
 	LDA #$04
 	STA Fade_Tick	 ; Fade_Tick = 4
@@ -1758,7 +1758,7 @@ PRG027_B9B8:
 
 	; Update palette
 	LDA #$06
-	STA <Graphics_Queue
+	STA Graphics_Queue
 
 PRG027_AC5F:
 	RTS		 ; Return
@@ -1791,11 +1791,11 @@ PRG027_A328:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 PlayerProjs_UpdateAndDraw27:
 	LDX #$01	; X = 1  
-	STX <SlotIndexBackup		 ; SlotIndexBackup = 1
+	STX SlotIndexBackup		 ; SlotIndexBackup = 1
 
 	JSR PlayerProj_UpdateAndDraw	 ; Update and draw this Player Projectile
 
-	DEC <SlotIndexBackup		 ; SlotIndexBackup = 0
+	DEC SlotIndexBackup		 ; SlotIndexBackup = 0
 	DEX		 ; X = 0
 
 PlayerProj_UpdateAndDraw:
@@ -1814,7 +1814,7 @@ PRG027_A33F:
 	LDA AScrlURDiag_WrapState_Copy
 	BEQ PRG027_A361	 ; If diagonal scroller is not wrapping, jump to PRG027_A361
 
-	LDA <Player_HaltGame
+	LDA Player_HaltGame
 	BNE PRG027_A361	 ; If gameplay is halted, jump to PRG027_A361
 
 	; Offset Player projectile to compensate for the diagonal autoscroller's wrap
@@ -1829,7 +1829,7 @@ PRG027_A33F:
 	INC PlayerProj_YHi,X	 ; Apply carry
 
 PRG027_A361:
-	LDY <Player_HaltGame
+	LDY Player_HaltGame
 	BEQ PProj_NoHalt
 
 	JMP PRG027_A3DB	 ; If gameplay halted, jump to PRG027_A3DB
@@ -1843,7 +1843,7 @@ PProj_NoHalt:
 	JSR Negate
 
 PlayerProj_YVel_NoRev:
-	STA <Temp_Var1
+	STA Temp_Var1
 	
 	LDY #$00	 ; Y = 0 (positive high part)
 	
@@ -1856,7 +1856,7 @@ PlayerProj_YVel_NoRev:
 
 	PHP		 ; Save CPU status
 
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	LSR A
 	LSR A
 	LSR A
@@ -1921,38 +1921,38 @@ PRG027_A3AC:
 	LDA PlayerProj_XVel,X
 	BMI PProj_BoomerangLeftScrChk	; If going left, jump to PProj_BoomerangLeftScrChk
 	
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	CMP #96
 	BGS PProj_FireballErase		; If too far away right, jump to PProj_FireballErase
 	JMP PProj_BoomerangScrChk
 	
 PProj_BoomerangLeftScrChk:
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	CMP #-96
 	BLS PProj_FireballErase		; If too far away left, jump to PProj_FireballErase
 
 PProj_BoomerangScrChk:
 	LDA PlayerProj_X,X
 	ADD #8
-	STA <Temp_Var15		; Temp_Var15 = object's X + ??
+	STA Temp_Var15		; Temp_Var15 = object's X + ??
 
 	LDA PlayerProj_XHi,X
 	ADC #$00	 
-	STA <Temp_Var16		; Temp_Var16 = Object's X Hi with carry applied
+	STA Temp_Var16		; Temp_Var16 = Object's X Hi with carry applied
 
-	LDA <Temp_Var15
-	CMP <Horz_Scroll
-	LDA <Temp_Var16	
-	SBC <Horz_Scroll_Hi
+	LDA Temp_Var15
+	CMP Horz_Scroll
+	LDA Temp_Var16	
+	SBC Horz_Scroll_Hi
 	BNE PRG027_A3EF		; If boomerang is horizontally off-screen, jump to PRG027_A3EF (RTS)
 
 
 	; Temp_Var2 = scroll relative X
 	LDA PlayerProj_X,X
-	SUB <Horz_Scroll
-	STA <Temp_Var2
+	SUB Horz_Scroll
+	STA Temp_Var2
 	ADD #3
-	STA <Temp_Var14
+	STA Temp_Var14
 
 	JMP PRG027_A400
 
@@ -1981,8 +1981,8 @@ PRG027_A3DB:
 
 	; Temp_Var2 = scroll relative X
 	LDA PlayerProj_X,X
-	SUB <Horz_Scroll
-	STA <Temp_Var2	
+	SUB Horz_Scroll
+	STA Temp_Var2	
 
 	ADD #11
 	CMP #19
@@ -1999,7 +1999,7 @@ PRG027_A3EF:
 PRG027_A3F0:
 	; Fireball only...
 	ADC #-$08	 ; X Relative - 8
-	STA <Temp_Var14	 ; -> Temp_Var14
+	STA Temp_Var14	 ; -> Temp_Var14
 
 	LDA PlayerProj_YVel,X
 	BMI PRG027_A40E	 ; If fireball is moving upward, jump to PRG027_A40E
@@ -2019,7 +2019,7 @@ PRG027_A40E:
 	TAY		 ; -> 'Y'
 
 	; Set projectile sprite X
-	LDA <Temp_Var2
+	LDA Temp_Var2
 	STA Sprite_RAM+$03,Y
 
 	LDA PlayerProj_Y,X
@@ -2031,22 +2031,22 @@ PRG027_A40E:
 	STA Sprite_RAM+$00,Y
 
 	ADC #14		; Y + 14
-	STA <Temp_Var13	; -> Temp_Var13
+	STA Temp_Var13	; -> Temp_Var13
 
 	LDA Player_ReverseGrav
 	BEQ PlayerProj_FireDet_NoRev
 
 	; Under reverse gravity, fireball just detects from top
-	LDA <Temp_Var13
+	LDA Temp_Var13
 	SUB #14
-	STA <Temp_Var13
+	STA Temp_Var13
 
 PlayerProj_FireDet_NoRev:
 	; Temp_Var3 = initial sprite attribute by Player's travel direction
 	LDA PlayerProj_XVel,X
 	LSR A		; Sign bit shifted right
 	AND #SPR_HFLIP
-	STA <Temp_Var3
+	STA Temp_Var3
 
 	LDA PlayerProj_ID,X
 	CMP #$02
@@ -2054,7 +2054,7 @@ PlayerProj_FireDet_NoRev:
 
 	; Hammer only...
 
-	LDA <Player_Suit
+	LDA Player_Suit
 	CMP #PLAYERSUIT_HAMMER
 	BNE PlayerProj_ChangeToPoof	 ; If Player is NOT wearing the Hammer Suit anymore (uh oh), jump to PlayerProj_ChangeToPoof
 
@@ -2065,13 +2065,13 @@ PlayerProj_FireDet_NoRev:
 	TAX		 ; X = 0 to 3
 
 	LDA PlayerHammer_XOff,X	 ; Get X offset
-	BIT <Temp_Var3	 ; Check for horizontal flip
+	BIT Temp_Var3	 ; Check for horizontal flip
 	BVC PRG027_A453	 ; If no flip, jump to PRG027_A453
 
 	EOR #$06	 ; Otherwise, invert X offset
 
 PRG027_A453:
-	ADD <Temp_Var2		 ; Apply X offset
+	ADD Temp_Var2		 ; Apply X offset
 	STA Sprite_RAM+$03,Y	 ; Set Hammer X
 
 	LDA PlayerHammer_YOff,X	 ; Get Y offset
@@ -2082,7 +2082,7 @@ PRG027_A453:
 	LDA #$4d
 	STA Sprite_RAM+$01,Y
 
-	LDA <Temp_Var3		; Get horizontal flip bit
+	LDA Temp_Var3		; Get horizontal flip bit
 	EOR PlayerHammer_FlipBits,X	 ; XOR in the hammer flip bits
 
 	SEC		 ; Set carry (hammer)
@@ -2103,7 +2103,7 @@ PRG027_A471:
 	STA Sprite_RAM+$01,Y
 
 	; Set fireball attributes
-	LDA <Temp_Var3		 ; Get horizontal flip bit
+	LDA Temp_Var3		 ; Get horizontal flip bit
 	EOR PlayerFireball_FlipBits,X	 ; XOR in the fireball flip bits
 
 	CLC		 ; Clear carry (fireball)
@@ -2117,9 +2117,9 @@ PRG027_A485:
 PRG027_A48C:
 	STA Sprite_RAM+$02,Y	 ; Set Player Projectile attributes
 
-	LDX <SlotIndexBackup	 ; X = Player Projectile slot index
+	LDX SlotIndexBackup	 ; X = Player Projectile slot index
 
-	LDA <Player_HaltGame
+	LDA Player_HaltGame
 	BNE PRG027_A4A2	 ; If gameplay is halted, jump to PRG027_A4A2
 
 	; Gameplay not halted...
@@ -2146,30 +2146,30 @@ Fireball_DetectWorld:
 
 	; Vertical level...
 
-	LDA <Temp_Var13		; Detect Y of fireball
+	LDA Temp_Var13		; Detect Y of fireball
 	ADD Level_VertScroll	; Apply vertical scroll
-	STA <Temp_Var6		; -> Temp_Var6
+	STA Temp_Var6		; -> Temp_Var6
 
 	AND #$f0		; Aligned to grid row
-	STA <Temp_Var3		; -> Temp_Var3
+	STA Temp_Var3		; -> Temp_Var3
 
 	; Temp_Var2 = high byte of tile memory
 	LDA Level_VertScrollH	; Current vertical scroll high
-	ADC #HIGH(Tile_Mem)	; Add the upper byte of the Tile_Mem address
-	STA <Temp_Var2		; -> Temp_Var2
+	ADC #>Tile_Mem	; Add the upper byte of the Tile_Mem address
+	STA Temp_Var2		; -> Temp_Var2
 
 	; Temp_Var14 = fireball X + 4
 	LDA PlayerProj_X,X
 	ADC #$04
-	STA <Temp_Var14
+	STA Temp_Var14
 
 	; Temp_Var1 = Row/Column offset value
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var3
-	STA <Temp_Var1
+	ORA Temp_Var3
+	STA Temp_Var1
 
 	LDY #$00	 ; Y = 0 (don't need additional offset)
 	JMP PRG027_A52D	 ; Jump to PRG027_A52D
@@ -2183,72 +2183,72 @@ PRG027_A4CF:
 
 	; When fireball Y >= 160, force detection of bottom two rows of tiles
 
-	LDA <Temp_Var13	 ; Detect Y of fireball
+	LDA Temp_Var13	 ; Detect Y of fireball
 	CMP #160
 	BLT PRG027_A4E9	 ; If < 160, jump to PRG027_A4E9
 
 	SBC #16		 ; Detect Y - 16
-	STA <Temp_Var6	 ; -> Temp_Var6
+	STA Temp_Var6	 ; -> Temp_Var6
 
 	AND #$f0	 ; Aligned to grid row
-	STA <Temp_Var3	 ; -> Temp_Var3
+	STA Temp_Var3	 ; -> Temp_Var3
 
 	LDA #$01	 ; A = 1 (force bottom tiles)
 	JMP PRG027_A4F8	 ; Jump to PRG027_A4F8
 
 PRG027_A4E7:
-	LDA <Temp_Var13	 ; Detect Y of fireball
+	LDA Temp_Var13	 ; Detect Y of fireball
 
 PRG027_A4E9:
 	ADD Level_VertScroll	 ; Apply vertical scroll
-	STA <Temp_Var6		 ; -> Temp_Var6
+	STA Temp_Var6		 ; -> Temp_Var6
 
 	AND #$f0	 ; Aligned to grid row
-	STA <Temp_Var3	 ; -> Temp_Var3
+	STA Temp_Var3	 ; -> Temp_Var3
 
 	LDA Level_VertScrollH	; Current vertical scroll high
 	ADC #$00	 ; Apply carry
 
 PRG027_A4F8
-	STA <Temp_Var4	 ; -> Temp_Var4
+	STA Temp_Var4	 ; -> Temp_Var4
 	BEQ PRG027_A506	 ; If vertical high = 0, jump to PRG027_A506
 
 	CMP #$02
 	BGE PRG027_A557	 ; If vertical high >= 2 (way too low), jump to PRG027_A557
 
-	LDA <Temp_Var3
+	LDA Temp_Var3
 	CMP #$B0
 	BGE PRG027_A557	 ; If at or lower than $1B0 (too low), jump to PRG027_A557
 
 PRG027_A506:
-	LDA <Temp_Var14	 ; Fireball detect X
-	ADD <Horz_Scroll ; Apply horizontal scroll
-	STA <Temp_Var5	 ; -> Temp_Var5
+	LDA Temp_Var14	 ; Fireball detect X
+	ADD Horz_Scroll ; Apply horizontal scroll
+	STA Temp_Var5	 ; -> Temp_Var5
 
-	LDA <Horz_Scroll_Hi
+	LDA Horz_Scroll_Hi
 	ADC #$00
-	STA <Temp_Var7	 ; High value -> Temp_Var7
+	STA Temp_Var7	 ; High value -> Temp_Var7
 
 	ASL A		 ; Multiply by 2 for Tile_Mem_Addr index
 	TAY		 ; -> 'Y'
 
 	; Temp_Var1 = low byte of Tile_Mem_Addr
 	LDA Tile_Mem_Addr,Y
-	STA <Temp_Var1
+	STA Temp_Var1
 
 	; Temp_Var2 = high byte of Tile_Mem_Addr
-	LDA <Temp_Var4
+	LDA Temp_Var4
 	AND #$01	; Only 0 or 1 is valid in non-vertical
 	ADD Tile_Mem_Addr+1,Y
-	STA <Temp_Var2
+	STA Temp_Var2
 
 	; Y = row/column offset index
-	LDA <Temp_Var5
+	LDA Temp_Var5
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var3
+	ORA Temp_Var3
 	TAY
 
 PRG027_A52D:
@@ -2261,10 +2261,10 @@ PRG027_A52D:
 	ROL A
 	AND #$03
 	TAY		 ; Y = quadrant of tile
-	STY <Temp_Var2	 ; -> Temp_Var2
+	STY Temp_Var2	 ; -> Temp_Var2
 
 	PLA		 ; Restore adjusted tile
-	STA <Temp_Var1	 ; -> Temp_Var1
+	STA Temp_Var1	 ; -> Temp_Var1
 
 	CMP Tile_AttrTable,Y
 	BLT PRG027_A557	 ; If this tile is not solid on top, jump to PRG027_A557
@@ -2312,7 +2312,7 @@ PRG027_A557:
 	;JSR Fireball_ThawTile	 ; Thaw the frozen tile!
 
 PRG027_A566:
-	LDA <Temp_Var1
+	LDA Temp_Var1
 
 	LDY Level_SlopeEn
 	BEQ PRG027_A579	 ; If this level is NOT sloped, jump to PRG027_A579
@@ -2330,7 +2330,7 @@ PRG027_A579:
 
 	LDA Fireball_HitChkPass,X
 	CMP #$02
-	BNE PRG027_A586	 ; If Fireball_HitChkPass <> 2, jump to PRG027_A586
+	BNE PRG027_A586	 ; If Fireball_HitChkPass > 2, jump to PRG027_A586
 
 	; Fireball has been through hit check too many times, it's obviously done
 
@@ -2381,7 +2381,7 @@ PRG027_A59F:
 
 	; Not a sloped level...
 
-	LDA <Temp_Var6	; Relative Y of fireball
+	LDA Temp_Var6	; Relative Y of fireball
 	AND #$0f	; Within tile
 	CMP #$05	
 	BLT PRG027_A594	; If fireball is high enough on the top-solid-only tile, then bounce! (Jump to PRG027_A594)
@@ -2400,7 +2400,7 @@ PRG027_A59F:
 	;STA BrickBust_En
 
 	; Set block change Y 
-	;LDA <Temp_Var3
+	;LDA Temp_Var3
 	;STA Level_BlockChgYLo
 
 	; Set poof Y
@@ -2408,20 +2408,20 @@ PRG027_A59F:
 	;STA BrickBust_YUpr
 
 	; Set block change Y Hi
-	;LDA <Temp_Var4
+	;LDA Temp_Var4
 	;STA Level_BlockChgYHi
 
 	; Set block change X
-	;LDA <Temp_Var5
+	;LDA Temp_Var5
 	;AND #$f0
 	;STA Level_BlockChgXLo
 
 	; Set poof X
-	;SBC <Horz_Scroll
+	;SBC Horz_Scroll
 	;STA BrickBust_X	
 
 	; Set block change X Hi
-	;LDA <Temp_Var7
+	;LDA Temp_Var7
 	;STA Level_BlockChgXHi
 
 	;JMP PlayerProj_ChangeToPoof	 ; Change the projectile itself into a poof
@@ -2430,29 +2430,29 @@ PRG027_A59F:
 PRG027_A5DC:
 
 	; Temp_Var6 will remain as "Y offset within tile"
-	LDA <Temp_Var6
+	LDA Temp_Var6
 	AND #$0f
-	STA <Temp_Var6
+	STA Temp_Var6
 
 	; Temp_Var5 will remain as "X offset within tile"
-	LDA <Temp_Var5
+	LDA Temp_Var5
 	AND #$0f
-	STA <Temp_Var5
+	STA Temp_Var5
 
-	LDY <Temp_Var2	 ; Y = tile quadrant
+	LDY Temp_Var2	 ; Y = tile quadrant
 	TYA
 	ASL A
 	TAX		 ; X = tile quadrant * 2 (2 byte index into Level_SlopeSetByQuad)
 
 	; Temp_Var3/4 pointer into appropriate Level_SlopeSetByQuad
 	LDA Level_SlopeSetByQuad,X
-	STA <Temp_Var3
+	STA Temp_Var3
 	LDA Level_SlopeSetByQuad+1,X
-	STA <Temp_Var4
+	STA Temp_Var4
 
-	LDX <SlotIndexBackup	 ; X = Player Projectile index
+	LDX SlotIndexBackup	 ; X = Player Projectile index
 
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	SUB Tile_AttrTable,Y
 	TAY		 ; Y = tile made relative to solid set
 
@@ -2463,7 +2463,7 @@ PRG027_A5DC:
 	CMP #$80
 	BEQ PRG027_A637	 ; If this tile has no effect, jump to PRG027_A637 ("Poof" away, fireball..)
 
-	STA <Temp_Var7	 ; Effect value -> Temp_Var7
+	STA Temp_Var7	 ; Effect value -> Temp_Var7
 
 	LDA PlayerProj_ID,X
 	CMP #2
@@ -2471,8 +2471,8 @@ PRG027_A5DC:
 
 	; SB: Retooling to work more like Player's retrieval of slopes so fireballs
 	; can properly utilize ceiling slopes $10+
-	LDA #LOW(Slope_LUT)
-	STA <Level_GndLUT_L
+	LDA #<Slope_LUT
+	STA Level_GndLUT_L
 
 	; Tile "shape" index values $1x will add 1 to Level_GndLUT_H
 	; Because of 16 entries per tile in Slope_LUT
@@ -2481,15 +2481,15 @@ PRG027_A5DC:
 	LSR A	
 	LSR A	
 	LSR A	
-	ADD #HIGH(Slope_LUT)
-	STA <Level_GndLUT_H
+	ADD #>Slope_LUT
+	STA Level_GndLUT_H
 
 	TYA	; Slope shape index -> 'A'
 	ASL A
 	ASL A
 	ASL A
 	ASL A	; multiply by 16, since there's 16 entries per slope
-	ADD <Temp_Var5	 ; Add the tile-relative horizontal position (offset to pixel specific height on this slope)
+	ADD Temp_Var5	 ; Add the tile-relative horizontal position (offset to pixel specific height on this slope)
 	TAY
 
 	LDA Player_ReverseGrav
@@ -2498,17 +2498,17 @@ PRG027_A5DC:
 	; Lower 4 bits of Slope_LUT (the "sloped floor height" component) -> Temp_Var2
 	LDA [Level_GndLUT_L],Y
 	AND #$0f
-	STA <Temp_Var2
+	STA Temp_Var2
 
-	LDA <Temp_Var6
+	LDA Temp_Var6
 	CMP #12
 	BGE PRG027_A626	 ; If fireball is deeper than 12 pixels into the tile, jump to PRG027_A626
 
-	CMP <Temp_Var2
+	CMP Temp_Var2
 	BLT PRG027_A645	 ; If fireball is higher than the slope height, jump to PRG027_A645 (RTS)
 
 PRG027_A626:
-	LDA <Temp_Var7
+	LDA Temp_Var7
 	BEQ PRG027_A642	 ; If effect value = 0, jump to PRG027_A642
 
 	LDY #-$50	 ; Y = -$50 (high bounce velocity)
@@ -2527,13 +2527,13 @@ Fireball_SlopeChk_Rev:
 	LSR A
 	LSR A
 	LSR A
-	STA <Temp_Var2
+	STA Temp_Var2
 
-	LDA <Temp_Var6
+	LDA Temp_Var6
 	CMP #4
 	BLT PRG027_A626	 ; If fireball is higher than 4 pixels into the tile, jump to PRG027_A626
 
-	CMP <Temp_Var2
+	CMP Temp_Var2
 	BGE PRG027_A645	 ; If fireball is lower than the slope height, jump to PRG027_A645 (RTS)
 	BLT PRG027_A626	; Otherwise, jump to PRG027_A626
 
@@ -2581,7 +2581,7 @@ PRG027_A648:
 	
 Object_CalcAttrFlagOffX_Done:		
 	LDA Object_AttrFlags,X	
-	STA <Temp_Var1		; Object attribute flags -> Temp_Var1
+	STA Temp_Var1		; Object attribute flags -> Temp_Var1
 
 	AND #OAT_WEAPONIMMUNITY
 	BNE PRG027_A667	 ; If object is immune to Player weapons, jump to PRG027_A667
@@ -2595,7 +2595,7 @@ PRG027_A667:
 	DEY		 ; Y--
 	BPL PRG027_A648	; While Y >= 0, loop
 
-	LDX <SlotIndexBackup	 ; X = Player Projectile slot index
+	LDX SlotIndexBackup	 ; X = Player Projectile slot index
 
 PRG027_A66C:
 	RTS		 ; Return
@@ -2657,22 +2657,22 @@ PlayerProj_HitObject:
 	BNE PRG027_A66C	 	; If mismatched, jump to PRG027_A66C (RTS)
 
 
-	LDA <Temp_Var1		 
+	LDA Temp_Var1		 
 	AND #OAT_BOUNDBOXMASK
 	TAX		 ; X = Object's bounding box index
-	STX <Temp_Var2	 ; -> Temp_var2
+	STX Temp_Var2	 ; -> Temp_var2
 
-	LDA <Temp_Var13	 	; Detect Y of projectile
+	LDA Temp_Var13	 	; Detect Y of projectile
 	SUB Objects_SpriteY,Y	; Difference against this object's Sprite Y
 	CMP Projectile_BBoxY,X
-	LDX <SlotIndexBackup	; X = Player Projectile slot index
+	LDX SlotIndexBackup	; X = Player Projectile slot index
 	BGE PRG027_A66C	 	; If projectile is out of range vertically, jump to PRG027_A66C (RTS)
 
-	LDA <Temp_Var14		; Detect X of projectile
+	LDA Temp_Var14		; Detect X of projectile
 	SUB Objects_SpriteX,Y	; Difference against this object's Sprite X
-	LDX <Temp_Var2		; X = bounding box index
+	LDX Temp_Var2		; X = bounding box index
 	CMP Projectile_BBoxX,X
-	LDX <SlotIndexBackup	; X = Player Projectile slot index
+	LDX SlotIndexBackup	; X = Player Projectile slot index
 	BGE PRG027_A6FD	 	; If projectile is out of range horizontally, jump to PRG027_A6FD (RTS)
 
 	LDA PlayerProj_ID,X
@@ -2686,7 +2686,7 @@ PRG027_A6BD:
 
 	; Hammer hit...
 
-	LDA <Temp_Var1	; Object's attributes
+	LDA Temp_Var1	; Object's attributes
 	BMI PRG027_A6FD	 ; If OAT_HITNOTKILL is set, jump to PRG027_A6FD (RTS)
 	BPL PRG027_A6C9	 ; Otherwise, jump to PRG027_A6C9
 
@@ -2694,7 +2694,7 @@ PRG027_A6C3:
 
 	; Fireball only...
 
-	LDA <Player_Suit
+	LDA Player_Suit
 	CMP #PLAYERSUIT_PENGUIN
 	BNE PW_FireballImmunity
 
@@ -2710,14 +2710,14 @@ IceImmuneCheck_Loop:
 	
 IceImmune_Found:
 	PHP		; Save flags
-	LDX <SlotIndexBackup	; X = Player Projectile slot index
+	LDX SlotIndexBackup	; X = Player Projectile slot index
 	PLP		; Restore flags
 	
 	BEQ PRG027_A6FE		; If object is immune to ice, jump to PRG027_A6FE
 	BNE PRG027_A6C9		; Otherwise, jump to PRG027_A6C9
 
 PW_FireballImmunity:
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	AND #OAT_FIREIMMUNITY
 	BNE PRG027_A6FE	 ; If object is immune to fire, jump to PRG027_A6FE
 
@@ -2741,7 +2741,7 @@ PRG027_A6C9:
 
 
 PRG027_A6DD:
-	LDA <Player_Suit
+	LDA Player_Suit
 	CMP #PLAYERSUIT_PENGUIN
 	BEQ PPHit_Penguin	; If Player is wearing a Penguin suit, jump to PPHit_Penguin
 
@@ -2765,7 +2765,7 @@ PRG027_A6EC:
 	LDA #$05
 	JSR Score_PopUp
 
-	LDX <SlotIndexBackup	 ; X = Player Projectile slot index
+	LDX SlotIndexBackup	 ; X = Player Projectile slot index
 
 	; But the enemy is killed...
 	LDA #OBJSTATE_KILLED
@@ -2807,7 +2807,7 @@ PRG027_A705:
 
 	; Fireball poof!
 
-	LDY <Player_HaltGame
+	LDY Player_HaltGame
 	BNE PRG027_A719	 ; If gameplay halted, jump to PRG027_A719
 
 	; PlayerProj_ID is now the fireball poof counter for the remainder
@@ -2816,7 +2816,7 @@ PRG027_A705:
 
 	LDA PlayerProj_ID,X
 	CMP #$10
-	BNE PRG027_A719	 ; If PlayerProj_ID <> $10, jump to PRG027_A719
+	BNE PRG027_A719	 ; If PlayerProj_ID > $10, jump to PRG027_A719
 
 PRG027_A713:
 	; Poof is over; clear it!
@@ -2827,7 +2827,7 @@ PRG027_A713:
 
 PRG027_A719:
 	TXA
-	ADD <Counter_1
+	ADD Counter_1
 	AND #$01	; A = 0 or 1
 	ASL A
 	ASL A
@@ -2838,7 +2838,7 @@ PRG027_A719:
 	; Set poof left sprite X
 	LDA PlayerProj_X,X
 	SBC #$04
-	SUB <Horz_Scroll
+	SUB Horz_Scroll
 	STA Sprite_RAM+$03,Y
 
 	; Set poof right sprite X
@@ -2876,7 +2876,7 @@ PRG027_A75F:
 	ORA #(SPR_HFLIP | SPR_VFLIP)
 	STA Sprite_RAM+$06,Y	 ; Set right sprite attributes
 
-	LDX <SlotIndexBackup	 ; X = Player Projectile slot index
+	LDX SlotIndexBackup	 ; X = Player Projectile slot index
 
 	RTS		 ; Return
 
@@ -2916,8 +2916,8 @@ PRG027_B8D3:
 PProj_NoXVelAccel:
 
 	JSR PProj_CalcCoarseXDiff
-	LDA <Temp_Var15
-	STA <Temp_Var1
+	LDA Temp_Var15
+	STA Temp_Var1
 
 	CPY #0
 	BEQ PProj_BoomerangLeft	; If Y = 0, boomerang is heading left (for return), jump to PProj_BoomerangLeft
@@ -2946,25 +2946,25 @@ PProj_BoomerangLeft:
 		
 PProj_BoomerangYVel:
 	PLA		; Var2, for Y vel check
-	STA <Temp_Var15		; -> Temp_Var15
+	STA Temp_Var15		; -> Temp_Var15
 	
 	AND #$40	; Check if we still haven't done first turn around
 	BEQ PProj_FollowPlayerY		; If we've done it, jump to PProj_FollowPlayerY
 	
 	; Check if there's been a turn around
 	LDA PlayerProj_XVel,X	; And if there's a conflict in sign (boomerang has reversed direction), bit 7 will be set
-	EOR <Temp_Var15			; Basically, bit 7 is set or not depending on initial velocity
+	EOR Temp_Var15			; Basically, bit 7 is set or not depending on initial velocity
 	BPL PProj_NoYVelAccel	; If there hasn't been a reversal, jump to PProj_NoYVelAccel
 	
 	; OK, start Y following
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	AND #%00111111
 	STA PlayerProj_Var2,X
 
 PProj_FollowPlayerY:
 	JSR PProj_CalcCoarseYDiff
 	
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	SUB #2
 	BNE PProj_BoomerangYNotOK
 
@@ -2999,13 +2999,13 @@ PProj_NoYVelAccel:
 
 PProj_BCanCatch:
 	; Temp_Var15 is the coarse Y offset; if between -2 and 2, catch!
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	SUB #2
 	CMP #4
 	BGE PRG027_B979	; Out of range, jump to PRG027_B979 (RTS)
 
 	; Temp_Var1 is the coarse X offset; if between -3 and 3, potential catch...
-	LDA <Temp_Var1
+	LDA Temp_Var1
 	ADD #3		; Make it 0 to 6 for ease
 	CMP #6
 	BGE PRG027_B979	; Out of range, jump to PRG027_B979 (RTS)
@@ -3030,16 +3030,16 @@ PRG027_B979:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 PProj_CalcCoarseXDiff:
 	LDA PlayerProj_X,X	 
-	SUB <Player_X	
-	STA <Temp_Var15		; Temp_Var15 = difference between Object and Player X
+	SUB Player_X	
+	STA Temp_Var15		; Temp_Var15 = difference between Object and Player X
 
 	LDA PlayerProj_XHi,X
-	SBC <Player_XHi		; Calc diff between X His
+	SBC Player_XHi		; Calc diff between X His
 
 	LSR A			; Push low bit of "hi" difference -> carry
-	ROR <Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
+	ROR Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
 	LSR A			; Push low bit of "hi" difference -> carry
-	ROR <Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
+	ROR Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
 
 	; Temp_Var15 now holds a difference between the Object and Player
 	;  X coordinates in units of 4 pixels (works up to two screen
@@ -3050,7 +3050,7 @@ PProj_CalcCoarseXDiff:
 	; a level cannot be more than 10 screens in width.
 	ASL A			; Shift remaining difference left 1; carry set means negative difference
 	AND #$40
-	STA <Temp_Var16		; Temp_Var16 being $40 also means negative difference
+	STA Temp_Var16		; Temp_Var16 being $40 also means negative difference
 
 	RTS		 ; Return
 
@@ -3070,20 +3070,20 @@ PProj_CalcCoarseXDiff:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 PProj_CalcCoarseYDiff
 	LDA PlayerProj_Y,X
-	SUB <Player_Y	
-	STA <Temp_Var15		 ; Temp_Var15 = difference between object's Y and Player's Y
+	SUB Player_Y	
+	STA Temp_Var15		 ; Temp_Var15 = difference between object's Y and Player's Y
 
 	LDA PlayerProj_YHi,X
-	SBC <Player_YHi	
-	STA <Temp_Var16		 ; Temp_Var16 = difference between object's Y Hi and Player's Y Hi
+	SBC Player_YHi	
+	STA Temp_Var16		 ; Temp_Var16 = difference between object's Y Hi and Player's Y Hi
 
 	LSR A		 	; least significant bit of Y Hi -> carry
 
-	ROR <Temp_Var15		; Temp_Var15 takes on the "Hi" value in its most significant bit
+	ROR Temp_Var15		; Temp_Var15 takes on the "Hi" value in its most significant bit
 
 	LSR A			; next least significant bit of Y Hi -> carry
 
-	ROR <Temp_Var15		; The new Temp_Var15's least significant bit is pushed into its bit 7
+	ROR Temp_Var15		; The new Temp_Var15's least significant bit is pushed into its bit 7
 
 	; So now Temp_Var15 holds the main Y difference in its first 5 bits
 	; Bit 6 and 7 form a signed portion of the "hi" value -- 00 -> Y Hi = 0, 01 -> Y Hi = 1, 11 -> Y Hi = negative

@@ -129,7 +129,7 @@ LoadLevel_Generator_TS1:
 	; * Temp_Var15, Temp_Var16, and LL_ShapeDef are three bytes read from the data
 
 
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	AND #%11100000
 	LSR A		
 	LSR A		
@@ -226,7 +226,7 @@ LeveLoad_FixedSizeGen_TS1:
 	; So the upper 3 bits of Temp_Var15 serve as the most significant bits
 	; to a value where LL_ShapeDef provide the 4 least significant bits
 
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	AND #%11100000
 	LSR A		
 	ADD LL_ShapeDef	
@@ -286,7 +286,7 @@ LeveLoad_FixedSizeGen_TS1:
 LoadLevel_BGHauntPillar:
 	LDA LL_ShapeDef
 	AND #$0f	
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (height of run)
+	STA Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (height of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -303,7 +303,7 @@ BGHauntPillar_Loop:
 
 	JSR LoadLevel_TileMemNextRow
 
-	DEC <Temp_Var3		; Temp_Var3--
+	DEC Temp_Var3		; Temp_Var3--
 	BNE BGHauntPillar_Loop 	; While Temp_Var3 > 0, loop!
 
 	; Store bottom of pillar
@@ -367,7 +367,7 @@ LoadLevel_EmptyBoxesLong15:
 	LDA #TILEA_BLOCKEMPTY
 	
 LLM15_SeTTile:
-	STA <Temp_Var5
+	STA Temp_Var5
 
 	LDA LL_ShapeDef	
 	AND #$0f	
@@ -375,7 +375,7 @@ LLM15_SeTTile:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 PRG015_A6DD:
-	LDA <Temp_Var5
+	LDA Temp_Var5
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEX		 	 ; X--

@@ -127,7 +127,7 @@ LoadLevel_Generator_TS7:
 	; * Temp_Var15, Temp_Var16, and LL_ShapeDef are three bytes read from the data
 
 
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	AND #%11100000
 	LSR A		
 	LSR A		
@@ -232,7 +232,7 @@ LeveLoad_FixedSizeGen_TS7:
 	; So the upper 3 bits of Temp_Var15 serve as the most significant bits
 	; to a value where LL_ShapeDef provide the 4 least significant bits
 
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	AND #%11100000
 	LSR A		
 	ADD LL_ShapeDef	
@@ -287,20 +287,20 @@ LeveLoad_FixedSizeGen_TS7:
 	; Goes to next row and updates backup variable Temp_Var2
 LL44_ReturnTileAndNextRow:
 	; Restore Map_Tile_Addr from backup
-	LDA <Temp_Var1
-	STA <Map_Tile_AddrL
-	LDA <Temp_Var2
-	STA <Map_Tile_AddrH
+	LDA Temp_Var1
+	STA Map_Tile_AddrL
+	LDA Temp_Var2
+	STA Map_Tile_AddrH
 
 	; Go to next row by adding 16 to tile offset
 	LDA TileAddr_Off
 	ADD #16
 	STA TileAddr_Off
 	TAY
-	LDA <Map_Tile_AddrH
+	LDA Map_Tile_AddrH
 	ADC #$00	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2	; Update Map_Tile_AddrH backup
+	STA Map_Tile_AddrH
+	STA Temp_Var2	; Update Map_Tile_AddrH backup
 
 	RTS		 ; Return
 
@@ -341,25 +341,25 @@ LoadLevel_DelfinoBlock:
 	LDY #$00	 ; Y = 0
 
 	LDA [Level_LayPtr_AddrL],Y
-	STA <Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
+	STA Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
 
 	; Level_LayPtr_Addr += 1
-	LDA <Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrL
 	ADD #$01	 
-	STA <Level_LayPtr_AddrL
-	LDA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrH
 	ADC #$00	 
-	STA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrH
 
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDA LL_ShapeDef	
 	AND #$0f	
-	STA <Temp_Var4	; Temp_Var4 = lower 4 bits of LL_ShapeDef (height of run)
+	STA Temp_Var4	; Temp_Var4 = lower 4 bits of LL_ShapeDef (height of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -374,7 +374,7 @@ LoadLevel_DelfinoBlock:
 Delfino_RowLoop:
 	JSR Delfino_Block_DoRow
 
-	DEC <Temp_Var4
+	DEC Temp_Var4
 	BPL Delfino_RowLoop	; While Temp_Var4 >= 0, loop!
 
 	TXA
@@ -388,8 +388,8 @@ Delfino_RowLoop:
 
 
 Delfino_Block_DoRow:
-	LDA <Temp_Var3
-	STA <Temp_Var5		; Width of run -> Temp_Var5
+	LDA Temp_Var3
+	STA Temp_Var5		; Width of run -> Temp_Var5
 
 	; Left edge
 	LDA LL_DBlock_UL,X	 ; Get brick tile
@@ -403,8 +403,8 @@ Delfino_WidthLoop:
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
-	DEC <Temp_Var5		 ; Temp_Var5--
-	BPL Delfino_WidthLoop	 	 ; While Temp_Var5 <> 0, loop!
+	DEC Temp_Var5		 ; Temp_Var5--
+	BPL Delfino_WidthLoop	 	 ; While Temp_Var5 > 0, loop!
 
 	; Right edge
 	LDA LL_DBlock_UR,X	 ; Get brick tile
@@ -421,15 +421,15 @@ Delfino_WidthLoop:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_DelfinoAwnWins:
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDA LL_ShapeDef	 
 	AND #$0f	 
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
-	STA <Temp_Var5
+	STA Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
+	STA Temp_Var5
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -444,14 +444,14 @@ DAW_Loop:
 	JSR LoadLevel_NextColumn ; Go to next column
 	JSR LoadLevel_NextColumn ; Go to next column
 
-	DEC <Temp_Var3		 ; Temp_Var3--
+	DEC Temp_Var3		 ; Temp_Var3--
 	BPL DAW_Loop	 	; While Temp_Var3 >= 0, loop...
 
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 
 	; Reset count
-	LDA <Temp_Var5
-	STA <Temp_Var3
+	LDA Temp_Var5
+	STA Temp_Var3
 
 	; Left awning
 	LDA #TILE7_BGAWNING_L	; Top of window
@@ -468,7 +468,7 @@ DAW_Loop2:
 	LDA #TILE7_BGAWNING_M	; Awning
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 
-	DEC <Temp_Var3		 ; Temp_Var3--
+	DEC Temp_Var3		 ; Temp_Var3--
 	BPL DAW_Loop2	 	; While Temp_Var3 >= 0, loop...
 
 	; Right awning
@@ -489,15 +489,15 @@ DelfinoWins:	.byte TILE7_WINDOW_BOT, TILE7_WINDOW_TOP
 
 LoadLevel_DelfinoWins:
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDA LL_ShapeDef	 
 	AND #$0f	 
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
-	STA <Temp_Var5
+	STA Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
+	STA Temp_Var5
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -505,22 +505,22 @@ LoadLevel_DelfinoWins:
 
 DAWs_RowLoop:
 	; Reset count
-	LDA <Temp_Var5
-	STA <Temp_Var3
+	LDA Temp_Var5
+	STA Temp_Var3
 
 DAWs_Loop:
 	LDA DelfinoWins,X	; Window tile
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 
 	LDA #4
-	STA <Temp_Var4
+	STA Temp_Var4
 
 DAWs_GapLoop:
 	JSR LoadLevel_NextColumn ; Go to next column
-	DEC <Temp_Var4
+	DEC Temp_Var4
 	BNE DAWs_GapLoop
 
-	DEC <Temp_Var3		 ; Temp_Var3--
+	DEC Temp_Var3		 ; Temp_Var3--
 	BPL DAWs_Loop	 	; While Temp_Var3 >= 0, loop...
 
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
@@ -529,8 +529,8 @@ DAWs_GapLoop:
 	BPL DAWs_RowLoop
 
 	; Reset count
-	LDA <Temp_Var5
-	STA <Temp_Var3
+	LDA Temp_Var5
+	STA Temp_Var3
 
 	RTS		 ; Return
 
@@ -542,20 +542,20 @@ DAWs_GapLoop:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_DelfinoRoof:
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDA LL_ShapeDef	 
 	AND #$0f	 
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
+	STA Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
 	; Roof eternally expands, starts with 3 mid
 	LDA #3
-	STA <Temp_Var4
+	STA Temp_Var4
 
 DAR_RowLoop:
 
@@ -565,7 +565,7 @@ DAR_RowLoop:
 	JSR LoadLevel_NextColumn ; Go to next column
 
 	; Mid loop
-	LDX <Temp_Var4
+	LDX Temp_Var4
 DAR_InnerLoop:
 	; Do mid tiles
 	LDA #TILE7_BGROOF_M
@@ -580,15 +580,15 @@ DAR_InnerLoop:
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 
 	; Next mid cycle is two more
-	INC <Temp_Var4
-	INC <Temp_Var4
+	INC Temp_Var4
+	INC Temp_Var4
 
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 
 	; But go back one column
 	JSR LoadLevel_PrevColumn44
 
-	DEC <Temp_Var3
+	DEC Temp_Var3
 	BPL DAR_RowLoop
 
 	RTS		 ; Return
@@ -600,14 +600,14 @@ DAR_InnerLoop:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_DelfinoRoofBG:
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDA LL_ShapeDef	 
 	AND #$0f	 
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
+	STA Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -626,7 +626,7 @@ DARBG_RowLoop:
 	; But go back one column
 	JSR LoadLevel_PrevColumn44
 
-	DEC <Temp_Var3
+	DEC Temp_Var3
 	BPL DARBG_RowLoop
 
 	RTS		 ; Return
@@ -639,14 +639,14 @@ DARBG_RowLoop:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_DelfinoTree:
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDA LL_ShapeDef	 
 	AND #$0f	 
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
+	STA Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -657,7 +657,7 @@ DAT_RowLoop:
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 
-	DEC <Temp_Var3
+	DEC Temp_Var3
 	BPL DAT_RowLoop
 
 	LDA #TILE7_BGTREE_ROOT
@@ -673,14 +673,14 @@ DAT_RowLoop:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_DelfinoPalmTree:
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDA LL_ShapeDef	 
 	AND #$0f	 
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
+	STA Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -712,7 +712,7 @@ DAPT_RowLoop:
 	
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 
-	DEC <Temp_Var3
+	DEC Temp_Var3
 	BPL DAPT_RowLoop
 
 	RTS		 ; Return
@@ -725,12 +725,12 @@ LoadLevel_PrevColumn44:
 	BNE PRG044_A7D6	 ; If we haven't crossed left screen boundary, jump to PRG020_A7D6
 
 	; Go to previous screen by subtracting $1B0
-	LDA <Map_Tile_AddrL
+	LDA Map_Tile_AddrL
 	SUB #$b0
-	STA <Map_Tile_AddrL
-	LDA <Map_Tile_AddrH
+	STA Map_Tile_AddrL
+	LDA Map_Tile_AddrH
 	SBC #$01
-	STA <Map_Tile_AddrH
+	STA Map_Tile_AddrH
 
 	INY
 	TYA
@@ -776,22 +776,22 @@ LoadLevel_NBBlock:
 	LDY #$00	 ; Y = 0
 
 	LDA [Level_LayPtr_AddrL],Y
-	STA <Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
-	STA <Temp_Var5
+	STA Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
+	STA Temp_Var5
 
 	; Level_LayPtr_Addr += 1
-	LDA <Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrL
 	ADD #$01	 
-	STA <Level_LayPtr_AddrL
-	LDA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrH
 	ADC #$00	 
-	STA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrH
 
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	; Defines color (really atypical of SMB3 generators)
 	LDA LL_ShapeDef	
@@ -804,12 +804,12 @@ LoadLevel_NBBlock:
 
 	; Regular left edge tile
 	LDA NBBlock_Tiles,X
-	STA <Temp_Var4
+	STA Temp_Var4
 
 NBBlock_TopLoop:
 
 
-	LDA <Temp_Var4
+	LDA Temp_Var4
 	JSR NBBlock_PutIfNoSky
 
 	LDA NBBlock_Tiles+1,X
@@ -820,9 +820,9 @@ NBBlock_TopLoop:
 
 	; Change to adjacent left edge tile afterward
 	LDA NBBlock_Tiles+8,X
-	STA <Temp_Var4
+	STA Temp_Var4
 
-	DEC <Temp_Var3
+	DEC Temp_Var3
 	BPL NBBlock_TopLoop
 
 	LDA NBBlock_Tiles+3,X
@@ -830,8 +830,8 @@ NBBlock_TopLoop:
 
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 
-	LDA <Temp_Var5
-	STA <Temp_Var3
+	LDA Temp_Var5
+	STA Temp_Var3
 
 NBBlock_BotLoop:
 	LDA NBBlock_Tiles+4,X
@@ -846,7 +846,7 @@ NBBlock_BotLoop:
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Go to next column
 
-	DEC <Temp_Var3
+	DEC Temp_Var3
 	BPL NBBlock_BotLoop
 
 	LDA NBBlock_Tiles+7,X
@@ -856,13 +856,13 @@ NBBlock_BotLoop:
 	RTS
 
 NBBlock_PutIfNoSky:
-	STA <Temp_Var6
+	STA Temp_Var6
 	
 	LDA [Map_Tile_AddrL],Y
 	CMP #TILE7_SKY
 	BNE NBTL_NoSky
 	
-	LDA <Temp_Var6
+	LDA Temp_Var6
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 	
 NBTL_NoSky:
@@ -878,39 +878,39 @@ NBBlock_VBlocks:	.byte TILE7_NB1_VE, TILE7_NB2_VE, TILE7_NB3_VE
 
 LoadLevel_NBBlock_VEdge:
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDY #$00	 ; Y = 0
 
 	LDA [Level_LayPtr_AddrL],Y
-	STA <Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
+	STA Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
 
 	; Level_LayPtr_Addr += 1
-	LDA <Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrL
 	ADD #$01	 
-	STA <Level_LayPtr_AddrL
-	LDA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrH
 	ADC #$00	 
-	STA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrH
 	
 	LDA LL_ShapeDef	 
 	AND #$0f	
 	TAX
 	LDA NBBlock_VBlocks,X
-	STA <Temp_Var4
+	STA Temp_Var4
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
 NBBVE_Loop:
 
-	LDA <Temp_Var4
+	LDA Temp_Var4
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 	JSR LoadLevel_TileMemNextRow	; Next row
 
-	DEC <Temp_Var3
+	DEC Temp_Var3
 	BPL NBBVE_Loop
 
 	RTS		 ; Return
@@ -932,31 +932,31 @@ LoadLevel_DelfinoGround:
 
 	LDY #0
 	LDA [Level_LayPtr_AddrL],Y
-	STA <Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
+	STA Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
 
 	; Level_LayPtr_Addr += 1
-	LDA <Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrL
 	ADD #$01	 
-	STA <Level_LayPtr_AddrL
-	LDA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrH
 	ADC #$00	 
-	STA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrH
 
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDA LL_ShapeDef	
 	AND #$0f	
-	STA <Temp_Var4	; Temp_Var4 = lower 4 bits of LL_ShapeDef (height of run)
+	STA Temp_Var4	; Temp_Var4 = lower 4 bits of LL_ShapeDef (height of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
 DelfinoGround_RowLoop:
-	LDA <Temp_Var3
-	STA <Temp_Var5		; Width of run -> Temp_Var5
+	LDA Temp_Var3
+	STA Temp_Var5		; Width of run -> Temp_Var5
 
 DelfinoGround_WidthLoop:
 	LDA #TILE7_GROUND
@@ -964,12 +964,12 @@ DelfinoGround_WidthLoop:
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
-	DEC <Temp_Var5		 ; Temp_Var5--
-	BPL DelfinoGround_WidthLoop	 	 ; While Temp_Var5 <> 0, loop!
+	DEC Temp_Var5		 ; Temp_Var5--
+	BPL DelfinoGround_WidthLoop	 	 ; While Temp_Var5 > 0, loop!
 
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 	
-	DEC <Temp_Var4
+	DEC Temp_Var4
 	BPL DelfinoGround_RowLoop
 	
 	RTS
@@ -988,20 +988,20 @@ DelfinoCasino_Tiles:
 
 LoadLevel_DelfinoCasino:
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDX #0
 	LDY TileAddr_Off	; Y = TileAddr_Off
 	
 	LDA #2
-	STA <Temp_Var4
+	STA Temp_Var4
 
 DelfinoCasino_RowLoop:
 	LDA #6
-	STA <Temp_Var3
+	STA Temp_Var3
 
 DelfinoCasino_WidthLoop:
 	LDA DelfinoCasino_Tiles,X
@@ -1010,12 +1010,12 @@ DelfinoCasino_WidthLoop:
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
-	DEC <Temp_Var3
+	DEC Temp_Var3
 	BPL DelfinoCasino_WidthLoop	 	 ; While X > 0, loop!
 
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 	
-	DEC <Temp_Var4
+	DEC Temp_Var4
 	BPL DelfinoCasino_RowLoop
 	
 	RTS
@@ -1031,7 +1031,7 @@ LoadLevel_FillDiamondBG:
 
 	; The lower 5 bits of Temp_Var15 are whatever in fixed size gen...
 
-	LDA <Temp_Var15	 
+	LDA Temp_Var15	 
 	AND #$10	 
 	BNE PRG044_D9E1	 ; If bit 4 of Temp_Var15 is set, jump to PRG044_D9E1
 
@@ -1098,23 +1098,23 @@ DelfinoSlots_Tiles:
 
 LoadLevel_DelfinoSlots:
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDX #0
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
 	; Number of rows
 	LDA #2
-	STA <Temp_Var4
+	STA Temp_Var4
 
 DelfinoSlots_RowLoop:
 
 	; Slots remaining
 	LDA #2
-	STA <Temp_Var5
+	STA Temp_Var5
 
 	; Next 3 tiles
 	TXA
@@ -1130,7 +1130,7 @@ DelfinoSlots_SlotLoop:
 
 	; Columns of single slot
 	LDA #2
-	STA <Temp_Var3
+	STA Temp_Var3
 
 DelfinoSlots_WidthLoop:
 	LDA DelfinoSlots_Tiles,X
@@ -1139,18 +1139,18 @@ DelfinoSlots_WidthLoop:
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
-	DEC <Temp_Var3
+	DEC Temp_Var3
 	BPL DelfinoSlots_WidthLoop	 	 ; While Temp_Var3 > 0, loop!
 
 	; Skip a tile
 	JSR LoadLevel_NextColumn ; Go to next column
 
-	DEC <Temp_Var5
+	DEC Temp_Var5
 	BPL DelfinoSlots_SlotLoop	 	 ; While Temp_Var5 > 0, loop!
 
 	JSR LL44_ReturnTileAndNextRow	; Next row / return column
 	
-	DEC <Temp_Var4
+	DEC Temp_Var4
 	BPL DelfinoSlots_RowLoop
 	
 	RTS
@@ -1174,14 +1174,14 @@ Delfino_PipeVRun:
 	TAX		; X = relative index
 
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 	
 	LDA LL_ShapeDef	
 	AND #$0f	
-	STA <Temp_Var4	; Temp_Var4 = lower 4 bits of LL_ShapeDef (height of run)
+	STA Temp_Var4	; Temp_Var4 = lower 4 bits of LL_ShapeDef (height of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -1191,7 +1191,7 @@ Delfino_PipeVRun_Loop:
 
 	JSR LL44_ReturnTileAndNextRow ; Go to next column
 
-	DEC <Temp_Var4
+	DEC Temp_Var4
 	BPL Delfino_PipeVRun_Loop	 	 ; While X > 0, loop!
 
 	RTS
@@ -1218,7 +1218,7 @@ Delfino_PipeHRun:
 	
 	LDA LL_ShapeDef	
 	AND #$0f	
-	STA <Temp_Var4	; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
+	STA Temp_Var4	; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -1228,7 +1228,7 @@ Delfino_PipeHRun_Loop:
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
-	DEC <Temp_Var4
+	DEC Temp_Var4
 	BPL Delfino_PipeHRun_Loop	 	 ; While X > 0, loop!
 
 	RTS	

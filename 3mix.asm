@@ -89,10 +89,10 @@ VU_REPEAT	= $40	; Repeat following value several times instead of several raw va
 ;
 ; Usage example: JSR_THUNKA 30, SubOn30
 	.macro JSR_THUNKA _1, _2
-	LDA #LOW(_2)
-	STA <Thunk_Jump_L
-	LDA #HIGH(_2)
-	STA <Thunk_Jump_H
+	LDA #<_2
+	STA Thunk_Jump_L
+	LDA #>_2
+	STA Thunk_Jump_H
 	
 	LDA #_1
 	JSR ThunkJumpA
@@ -102,10 +102,10 @@ VU_REPEAT	= $40	; Repeat following value several times instead of several raw va
 ;
 ; Usage example: JSR_THUNKC 30, SubOn30
 	.macro JSR_THUNKC _1, _2
-	LDA #LOW(_2)
-	STA <Thunk_Jump_L
-	LDA #HIGH(_2)
-	STA <Thunk_Jump_H
+	LDA #<_2
+	STA Thunk_Jump_L
+	LDA #>_2
+	STA Thunk_Jump_H
 	
 	LDA #_1
 	JSR ThunkJumpC
@@ -115,10 +115,10 @@ VU_REPEAT	= $40	; Repeat following value several times instead of several raw va
 ;
 ; Usage example: JMP_THUNKA 30, SubOn30
 	.macro JMP_THUNKA _1, _2
-	LDA #LOW(_2)
-	STA <Thunk_Jump_L
-	LDA #HIGH(_2)
-	STA <Thunk_Jump_H
+	LDA #<_2
+	STA Thunk_Jump_L
+	LDA #>_2
+	STA Thunk_Jump_H
 	
 	LDA #_1
 	JMP ThunkJumpA
@@ -128,10 +128,10 @@ VU_REPEAT	= $40	; Repeat following value several times instead of several raw va
 ;
 ; Usage example: JMP_THUNKC 30, SubOn30
 	.macro JMP_THUNKC _1, _2
-	LDA #LOW(_2)
-	STA <Thunk_Jump_L
-	LDA #HIGH(_2)
-	STA <Thunk_Jump_H
+	LDA #<_2
+	STA Thunk_Jump_L
+	LDA #>_2
+	STA Thunk_Jump_H
 	
 	LDA #_1
 	JMP ThunkJumpC

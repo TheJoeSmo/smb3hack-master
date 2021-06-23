@@ -113,14 +113,14 @@ PRG036_A40A:
 	BNE PRG036_A40A
 
 	LDA #15
-	STA <Temp_Var10
+	STA Temp_Var10
 
 GhoseHouseBG_AllScreens:
-	LDA <Temp_Var10
+	LDA Temp_Var10
 	TAY
 	JSR LoadLevel_GhostHouseBG
 
-	DEC <Temp_Var10
+	DEC Temp_Var10
 	BPL GhoseHouseBG_AllScreens
 
 	JMP LevelLoad	; Begin actual level loading!
@@ -153,11 +153,11 @@ LoadLevel_GhostHouseBG:
 
 	; Set default address at lantern row
 	LDA Tile_Mem_Addr,Y
-	STA <Map_Tile_AddrL
-	STA <Temp_Var1
+	STA Map_Tile_AddrL
+	STA Temp_Var1
 	LDA Tile_Mem_Addr+1,Y
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2
+	STA Map_Tile_AddrH
+	STA Temp_Var2
 
 	; Initial offset
 	LDY #(16*11)
@@ -167,7 +167,7 @@ LoadLevel_GhostHouseBG:
 GHBG_LoadLanternBG_NextRow:
 	; Column counter
 	LDA #15
-	STA <Temp_Var3
+	STA Temp_Var3
 
 GHBG_LoadLanternBG:
 
@@ -184,7 +184,7 @@ GHBG_LoadLanternBG:
 	BEQ GHBG_Done	; If 'X' is at the end of the array, we're done!
 
 	; Decrement Temp_Var3; if still positive, loop!  (Continue this row)
-	DEC <Temp_Var3
+	DEC Temp_Var3
 	BPL GHBG_LoadLanternBG
 
 	; Return to beginning of row
@@ -205,11 +205,11 @@ GHBG_Done:
 	; GHBG_WallTiles
 
 	; Starting on the lower part
-	LDA <Temp_Var1
-	STA <Map_Tile_AddrL
-	LDA <Temp_Var2
+	LDA Temp_Var1
+	STA Map_Tile_AddrL
+	LDA Temp_Var2
 	ADD #1
-	STA <Map_Tile_AddrH
+	STA Map_Tile_AddrH
 
 	; Down below the windows
 	LDY #(16*7)
@@ -248,7 +248,7 @@ LoadLevel_Generator_TS5:
 	; * Temp_Var15, Temp_Var16, and LL_ShapeDef are three bytes read from the data
 
 
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	AND #%11100000
 	LSR A		
 	LSR A		
@@ -344,7 +344,7 @@ LeveLoad_FixedSizeGen_TS5:
 	; So the upper 3 bits of Temp_Var15 serve as the most significant bits
 	; to a value where LL_ShapeDef provide the 4 least significant bits
 
-	LDA <Temp_Var15
+	LDA Temp_Var15
 	AND #%11100000
 	LSR A		
 	ADD LL_ShapeDef	
@@ -399,20 +399,20 @@ LeveLoad_FixedSizeGen_TS5:
 	; Goes to next row and updates backup variable Temp_Var2
 LL36_ReturnTileAndNextRow:
 	; Restore Map_Tile_Addr from backup
-	LDA <Temp_Var1
-	STA <Map_Tile_AddrL
-	LDA <Temp_Var2
-	STA <Map_Tile_AddrH
+	LDA Temp_Var1
+	STA Map_Tile_AddrL
+	LDA Temp_Var2
+	STA Map_Tile_AddrH
 
 	; Go to next row by adding 16 to tile offset
 	LDA TileAddr_Off
 	ADD #16
 	STA TileAddr_Off
 	TAY
-	LDA <Map_Tile_AddrH
+	LDA Map_Tile_AddrH
 	ADC #$00	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2	; Update Map_Tile_AddrH backup
+	STA Map_Tile_AddrH
+	STA Temp_Var2	; Update Map_Tile_AddrH backup
 
 	RTS		 ; Return
 
@@ -425,14 +425,14 @@ LL36_ReturnTileAndNextRow:
 LoadLevel_Banister:
 	LDA LL_ShapeDef	
 	AND #$0f	
-	STA <Temp_Var3	; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
+	STA Temp_Var3	; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
 	PHA		; Save it
 
 	; Backup Map_Tile_AddrL/H -> Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2
+	LDA Map_Tile_AddrL
+	STA Temp_Var1
+	LDA Map_Tile_AddrH
+	STA Temp_Var2
 
 	LDY TileAddr_Off ; Y = TileAddr_Off
 
@@ -450,7 +450,7 @@ Banister_Loop:
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column...
 
-	DEC <Temp_Var3		 ; Temp_Var3--
+	DEC Temp_Var3		 ; Temp_Var3--
 	BPL Banister_Loop 	; While Temp_Var3 >= 0, loop!
 
 	; End of top of banister
@@ -461,7 +461,7 @@ Banister_Loop:
 	; Restore width -> Temp_Var3
 	PLA
 	ADD #1		; +1 to take in banister beginning/end
-	STA <Temp_Var3
+	STA Temp_Var3
 
 	; Next row (bottom of banister)
 	JSR LL36_ReturnTileAndNextRow
@@ -474,7 +474,7 @@ Banister_Loop2:
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column...
 
-	DEC <Temp_Var3		 ; Temp_Var3--
+	DEC Temp_Var3		 ; Temp_Var3--
 	BPL Banister_Loop2 	; While Temp_Var3 >= 0, loop!
 
 	RTS		 ; Return
@@ -488,7 +488,7 @@ Banister_Loop2:
 LoadLevel_Post:
 	LDA LL_ShapeDef	
 	AND #$0f	
-	STA <Temp_Var3	; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
+	STA Temp_Var3	; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
 
 	LDY TileAddr_Off ; Y = TileAddr_Off
 
@@ -503,7 +503,7 @@ GhostHousePost_Loop:
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 	JSR LoadLevel_TileMemNextRow	; Next row...
 
-	DEC <Temp_Var3		 ; Temp_Var3--
+	DEC Temp_Var3		 ; Temp_Var3--
 	BPL GhostHousePost_Loop	; While Temp_Var3 >= 0, loop!
 
 	RTS		 ; Return
@@ -516,25 +516,25 @@ GhostHousePost_Loop:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_StairRight:
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDA #$00
-	STA <Temp_Var3	; Temp_Var3 = 0 (only add STAIRR2 after initial)
+	STA Temp_Var3	; Temp_Var3 = 0 (only add STAIRR2 after initial)
 
 	LDA LL_ShapeDef	 
 
 	AND #$0f	 
-	STA <Temp_Var4	 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (diagonal length of stairway)
+	STA Temp_Var4	 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (diagonal length of stairway)
 
 
 PRG036_D4DB:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
-	LDA <Temp_Var3
-	STA <Temp_Var5		; Temp_Var5 = Temp_Var3 
+	LDA Temp_Var3
+	STA Temp_Var5		; Temp_Var5 = Temp_Var3 
 
 	LDA #TILE5_STAIRR1	 ; Get stair tile
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
@@ -547,27 +547,27 @@ PRG036_D4EA:
 
 PRG036_D4EF:
 	JSR LoadLevel_NextColumn ; Next column
-	DEC <Temp_Var5		 ; Temp_Var5--
+	DEC Temp_Var5		 ; Temp_Var5--
 	BPL PRG036_D4EA	 	 ; While Temp_Var5 >= 0, loop!
 
 	LDA #1
-	STA <Temp_Var3		 ; Temp_Var3 = 1 (one stair 2)
+	STA Temp_Var3		 ; Temp_Var3 = 1 (one stair 2)
 
 
 	; Restore Map_Tile_Addr from backup
-	LDA <Temp_Var1
-	STA <Map_Tile_AddrL
-	LDA <Temp_Var2	
-	STA <Map_Tile_AddrH
+	LDA Temp_Var1
+	STA Map_Tile_AddrL
+	LDA Temp_Var2	
+	STA Map_Tile_AddrH
 
 	; Go to next row by adding 15 to tile offset (we're always one column too far..)
 	LDA TileAddr_Off
 	ADD #15
 	TAY		 
-	LDA <Map_Tile_AddrH
+	LDA Map_Tile_AddrH
 	ADC #$00	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
+	STA Map_Tile_AddrH
+	STA Temp_Var2		 ; Update Map_Tile_AddrH backup
 
 	TYA
 	AND #$0f
@@ -575,27 +575,27 @@ PRG036_D4EF:
 	BNE PRG036_D534	 	; If we haven't wrapped the screen, jump to PRG036_D534
 
 	; Move back one screen by subtracting $1B0
-	LDA <Map_Tile_AddrL
+	LDA Map_Tile_AddrL
 	SUB #$b0	
-	STA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
+	STA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
 	SBC #$01	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
+	STA Map_Tile_AddrH
+	STA Temp_Var2		 ; Update Map_Tile_AddrH backup
 
 	; Jump to the right side
 	TYA
 	ADD #16
 	TAY	
-	LDA <Map_Tile_AddrH
+	LDA Map_Tile_AddrH
 	ADC #$00	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
+	STA Map_Tile_AddrH
+	STA Temp_Var2		 ; Update Map_Tile_AddrH backup
 
 PRG036_D534:
 	STY TileAddr_Off	 ; Tile_Addr_Off = Y
-	DEC <Temp_Var4		 ; Temp_Var4-- (diagonal length decrement)
+	DEC Temp_Var4		 ; Temp_Var4-- (diagonal length decrement)
 	BPL PRG036_D4DB	 	; While Temp_Var4 >= 0, loop!
 	RTS		 ; Return
 
@@ -607,28 +607,28 @@ PRG036_D534:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_StairLeft:
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDA #$00
-	STA <Temp_Var3	; Temp_Var3 = 0 (only add STAIRL2 after initial)
+	STA Temp_Var3	; Temp_Var3 = 0 (only add STAIRL2 after initial)
 
 	LDA LL_ShapeDef	 
 
 	AND #$0f	 
-	STA <Temp_Var4	 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (diagonal length of stairway)
+	STA Temp_Var4	 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (diagonal length of stairway)
 
 PRG036_D482:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
-	LDA <Temp_Var3
-	STA <Temp_Var5		; Temp_Var5 = Temp_Var3 
+	LDA Temp_Var3
+	STA Temp_Var5		; Temp_Var5 = Temp_Var3 
 	BEQ PRG036_D497	 	; If Temp_Var3 is zero, we skip the middle ground addition
 
 PRG036_D48B:
-	LDA <Temp_Var5
+	LDA Temp_Var5
 	CMP #2
 	BGE StairL2NotYet
 
@@ -638,7 +638,7 @@ PRG036_D48B:
 StairL2NotYet:
 	JSR LoadLevel_NextColumn ; Next column
 
-	DEC <Temp_Var5		 ; Temp_Var5--
+	DEC Temp_Var5		 ; Temp_Var5--
 	BNE PRG036_D48B	 	 ; While Temp_Var5 > 0, loop! 
 
 PRG036_D497:
@@ -647,22 +647,22 @@ PRG036_D497:
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 
 	; Restore Map_Tile_Addr from backup
-	LDA <Temp_Var1
-	STA <Map_Tile_AddrL
-	LDA <Temp_Var2	
-	STA <Map_Tile_AddrH
+	LDA Temp_Var1
+	STA Map_Tile_AddrL
+	LDA Temp_Var2	
+	STA Map_Tile_AddrH
 
 	; Go to next row by adding 16 to tile offset
 	LDA TileAddr_Off
 	ADD #16
 	STA TileAddr_Off
-	LDA <Map_Tile_AddrH
+	LDA Map_Tile_AddrH
 	ADC #$00	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
+	STA Map_Tile_AddrH
+	STA Temp_Var2		 ; Update Map_Tile_AddrH backup
 
-	INC <Temp_Var3		 ; Temp_Var3++ (one more midground behind the stairway)
-	DEC <Temp_Var4		 ; Temp_Var4-- (diagonal length decrement)
+	INC Temp_Var3		 ; Temp_Var3++ (one more midground behind the stairway)
+	DEC Temp_Var4		 ; Temp_Var4-- (diagonal length decrement)
 	BPL PRG036_D482	 	; While Temp_Var4 >= 0, loop!
 
 	RTS		 ; Return
@@ -677,15 +677,15 @@ LoadLevel_GhostFloor:
 	LDY #$00	 ; Y = 0
 
 	LDA [Level_LayPtr_AddrL],Y
-	STA <Temp_Var3		 ; Get next byte from layout -> Temp_Var3 (width of run)
+	STA Temp_Var3		 ; Get next byte from layout -> Temp_Var3 (width of run)
 
 	; Level_LayPtr_Addr += 1
-	LDA <Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrL
 	ADD #$01	 
-	STA <Level_LayPtr_AddrL
-	LDA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrH
 	ADC #$00	 
-	STA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrH
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -695,8 +695,8 @@ GhostHouse_FloorLoop:
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
-	DEC <Temp_Var3		 ; Temp_Var3--
-	BNE GhostHouse_FloorLoop	 	 ; While Temp_Var5 <> 0, loop!
+	DEC Temp_Var3		 ; Temp_Var3--
+	BNE GhostHouse_FloorLoop	 	 ; While Temp_Var5 > 0, loop!
 
 
 	RTS		 ; Return
@@ -725,31 +725,31 @@ LLGB_Cont:
 	LDY #$00	 ; Y = 0
 
 	LDA [Level_LayPtr_AddrL],Y
-	STA <Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
+	STA Temp_Var3		; Get next byte from layout -> Temp_Var3 (width of run)
 
 	; Level_LayPtr_Addr += 1
-	LDA <Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrL
 	ADD #$01	 
-	STA <Level_LayPtr_AddrL
-	LDA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrL
+	LDA Level_LayPtr_AddrH
 	ADC #$00	 
-	STA <Level_LayPtr_AddrH
+	STA Level_LayPtr_AddrH
 
 	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	LDA Map_Tile_AddrL
+	STA Temp_Var1	
+	LDA Map_Tile_AddrH
+	STA Temp_Var2	
 
 	LDA LL_ShapeDef	
 	AND #$0f	
-	STA <Temp_Var4	; Temp_Var4 = lower 4 bits of LL_ShapeDef (height of run)
+	STA Temp_Var4	; Temp_Var4 = lower 4 bits of LL_ShapeDef (height of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
 GhostHouse_WallRowLoop:
-	LDA <Temp_Var3
-	STA <Temp_Var5		; Width of run -> Temp_Var5
+	LDA Temp_Var3
+	STA Temp_Var5		; Width of run -> Temp_Var5
 
 GhostHouse_WallWidthLoop:
 	LDA LL_GhostBrick_Tile,X	 ; Get brick tile
@@ -757,12 +757,12 @@ GhostHouse_WallWidthLoop:
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
-	DEC <Temp_Var5		 ; Temp_Var5--
-	BNE GhostHouse_WallWidthLoop	 	 ; While Temp_Var5 <> 0, loop!
+	DEC Temp_Var5		 ; Temp_Var5--
+	BNE GhostHouse_WallWidthLoop	 	 ; While Temp_Var5 > 0, loop!
 
 	JSR LL36_ReturnTileAndNextRow	; Next row / return column
 
-	DEC <Temp_Var4
+	DEC Temp_Var4
 	BPL GhostHouse_WallRowLoop	; While Temp_Var4 >= 0, loop!
 
 
@@ -784,9 +784,9 @@ LoadLevel_GhostDoor:
 	TYA		 
 	ADD #16
 	TAY		 
-	LDA <Map_Tile_AddrH
+	LDA Map_Tile_AddrH
 	ADC #$00	 
-	STA <Map_Tile_AddrH
+	STA Map_Tile_AddrH
 
 	LDA #TILEA_DOOR2	 
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
@@ -819,11 +819,11 @@ LoadLevel_GhostHouseExit:
 
 	; Ghost house exit only places at left edge where it belongs
 	LDA Tile_Mem_Addr
-	STA <Map_Tile_AddrL
-	STA <Temp_Var1
+	STA Map_Tile_AddrL
+	STA Temp_Var1
 	LDA Tile_Mem_Addr+1
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2
+	STA Map_Tile_AddrH
+	STA Temp_Var2
 
 	; Initial offset
 	LDY #(16*15)
@@ -833,11 +833,11 @@ LoadLevel_GhostHouseExit:
 GHEX_HouseExitBG_NextRow:
 	; Column counter
 	LDA #15
-	STA <Temp_Var3
+	STA Temp_Var3
 
 GHEX_HouseExitBG:
 
-	LDA <Temp_Var3
+	LDA Temp_Var3
 	CMP #10
 	BGE GHEX_FromArray
 
@@ -858,7 +858,7 @@ GHEX_PutTile:
 	INY
 
 	; Decrement Temp_Var3; if still positive, loop!  (Continue this row)
-	DEC <Temp_Var3
+	DEC Temp_Var3
 	BPL GHEX_HouseExitBG
 
 	; We've exhausted this row; are we done?
@@ -881,9 +881,9 @@ GHEX_Done:
 
 	; Go to next screen
 	LDA Tile_Mem_Addr+2
-	STA <Map_Tile_AddrL
+	STA Map_Tile_AddrL
 	LDA Tile_Mem_Addr+3
-	STA <Map_Tile_AddrH
+	STA Map_Tile_AddrH
 
 	LDY #(16*15)	; Initial offset
 	LDX #(11*16)	; Number of sky tiles to blast in
@@ -895,7 +895,7 @@ GHEX_SkyFill_Loop:
 	BNE GHEX_SkyFill_NoNextRow
 
 	; Next row...
-	INC <Map_Tile_AddrH
+	INC Map_Tile_AddrH
 
 GHEX_SkyFill_NoNextRow:
 	DEX	; X--
@@ -908,9 +908,9 @@ LoadLevel_BigBoo:
 
 	; Big Boo tiles only place at left edge where they belong
 	LDA Tile_Mem_Addr
-	STA <Map_Tile_AddrL
+	STA Map_Tile_AddrL
 	LDA Tile_Mem_Addr+1
-	STA <Map_Tile_AddrH
+	STA Map_Tile_AddrH
 
 	; Big Boo is 64x64, which equates to 4x4 in tiles
 	
@@ -932,14 +932,14 @@ LL_BB_Loop:
 	BLT LL_BB_NotBoo	; If not the last 4 columns, jump to LL_BB_NotBoo
 	
 	SUB #$0C
-	STA <Temp_Var1	; Hold value, based 0 to 3
+	STA Temp_Var1	; Hold value, based 0 to 3
 	
 	TXA
 	SUB #15		; Base row at 0 to 3
 	EOR #3		; Reverse the count
 	ASL A
 	ASL A	; Multiply by 4
-	ADD <Temp_Var1
+	ADD Temp_Var1
 	ADD #TILE5_BIGBOO1	; Base tile
 	BNE LL_BB_BooTile	; Jump (technically always) to LL_BB_BooTile
 
@@ -961,7 +961,7 @@ LL_BB_BooTile:
 	BNE LL_BB_NotLowerScreen	; If the overall value is not $00, we didn't wrap to lower screen, jump to LL_BB_NotLowerScreen
 
 	; Lower screen!
-	INC <Map_Tile_AddrH
+	INC Map_Tile_AddrH
 
 LL_BB_NotLowerScreen:
 
