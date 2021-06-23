@@ -385,7 +385,7 @@ MMC3_IRQENABLE	= $E001 ; Enables IRQ generation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Common use zero page RAM.  Bytes in $75-$F3 are context-dependent
 			; SB: Using  instead of .zp to export labels
-	.org $00
+	.enum $00
 
 ; For clarification, none of the other "Temp" vars are damaged by NMI,
 ; the NMI does employ Temp_Var1-3, and restores them when it's done.
@@ -469,7 +469,7 @@ PAD_RIGHT	= $01
 	Scroll_ColumnR:		.ds 1	; ($23) Current tile column (every 16px) of right side of screen (non-vertical level style ONLY)
 	Scroll_ColumnL:		.ds 1	; ($24) Current tile column (every 16px) of left side of screen (non-vertical level style ONLY)
 
-	.org $23	; NOTE, the following two are also $23/$24
+	.base $23	; NOTE, the following two are also $23/$24
 	; In vertical style levels, Scroll_VOffsetT/B are an offset into the
 	; visible tile grid, and levels are rendered in horizontal strips
 	Scroll_VOffsetT:	.ds 1	; ($23) Current tile offset (every 16px) of top of screen (vertical level style ONLY)
@@ -502,7 +502,7 @@ PAD_RIGHT	= $01
 	Map_Tile_AddrH:		.ds 1	; High byte of tile address
 
 
-	.org $63	; NOTE, the following two are also $63/$64, bonus game context
+	.base $63	; NOTE, the following two are also $63/$64, bonus game context
 	BonusText_BaseL:	.ds 1	; Instruction text base address low
 	BonusText_BaseH:	.ds 1	; Instruction text base address high
 
@@ -532,7 +532,7 @@ PAD_RIGHT	= $01
 
 	; NOTE: $75 - $F3 are context specific; see contexts below
 
-	.org $F4
+	.base $F4
 	Scroll_OddEven:		.ds 1	; 0 or 1, depending on what part of 8 pixels has crossed (need better description)
 
 	Controller1Press:	.ds 1	; Player 1's controller "pressed this frame only" (see Controller1 for values)
@@ -561,7 +561,7 @@ PAD_RIGHT	= $01
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: TITLE SCREEN / ENDING CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $75	; $75-$F3 is available for this context-dependent situation
+	.base $75	; $75-$F3 is available for this context-dependent situation
 
 ; Title screen "objects", which includes Mario, Luigi, and the assortment of other things
 ; The following are the offsets from any of the object arrays:
@@ -620,7 +620,7 @@ PAD_RIGHT	= $01
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: WORLD MAP CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $75	; $75-$F3 is available for this context-dependent situation
+	.base $75	; $75-$F3 is available for this context-dependent situation
 
 	World_Map_Y:		.ds 2	; $75-$76 (Mario/Luigi) Y pixel coordinate position of Mario on world map
 	World_Map_XHi:		.ds 2	; $77-$78 (Mario/Luigi) X pixel (hi byte) coordinate position of Mario on world map
@@ -753,7 +753,7 @@ PAD_RIGHT	= $01
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: BONUS GAME CONTEXT (see PRG022 for lots more info)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $75	; $75-$F3 is available for this context-dependent situation
+	.base $75	; $75-$F3 is available for this context-dependent situation
 
 				.ds 22	; $75-$8A unused
 
@@ -775,7 +775,7 @@ PAD_RIGHT	= $01
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: 2P VS CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $75	; $75-$F3 is available for this context-dependent situation
+	.base $75	; $75-$F3 is available for this context-dependent situation
 
 	Vs_State:		.ds 1	; 2P Vs Mode state
 	Vs_IsPaused:		.ds 1	; If set, 2P Vs is paused
@@ -788,7 +788,7 @@ PAD_RIGHT	= $01
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: GAMEPLAY CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $75	; $75-$F3 is available for this context-dependent situation
+	.base $75	; $75-$F3 is available for this context-dependent situation
 
 ; There's a consistent difference of $12 between X and Y; this consistent distancing is meant to be maintained, so leave it alone!
 
@@ -807,7 +807,7 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 	Pipe_PlayerX:		.ds 1	; Stores Player's X when they went into pipe (non-transit)
 	Pipe_PlayerY:		.ds 1	; Stores Player's Y when they went into pipe (non-transit, aligned to nearest 16, minus 1)
 
-	.org $84	; NOTE, the following two are also $84/$85
+	.base $84	; NOTE, the following two are also $84/$85
 	; Otherwise, they are replaced with a lookup address
 	Level_GndLUT_L:		.ds 1
 	Level_GndLUT_H:		.ds 1
@@ -911,13 +911,13 @@ PLAYERSUIT_LAST		= PLAYERSUIT_HAMMER	; Marker for "last" suit (Debug cycler need
 ; there's risk it could be set by accident... but I guess this never happens... ?
 
 	
-	.org $0100
+	.base $0100
 
 	Update_Select:	.ds 1		; Changes which path of "update routines" are selected; $00 = ??, $20 = Title Screen, $40 = Spade Game, $80 = Vertical level, $A0 = 32 pixel partition, $C0 = Normal
 
 	Raster_Effect:	.ds 1		; $00 is standard status bar, $20 is title/ending, $40 = 32 pixel partition, $60 = Spade Bonus Game (3 sliding rows), $80 is nothing (e.g. as in 2P versus), $A0 = ???
 
-	.org $0160
+	.base $0160
 	Debug_Flag:	.ds 1		; Set to $80 by the debug menu, enables debug functionality like power level cycling and not dying from time over
 
 
@@ -927,7 +927,7 @@ PLAYERSUIT_LAST		= PLAYERSUIT_HAMMER	; Marker for "last" suit (Debug cycler need
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $2xx SPRITE RAM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $0200
+	.base $0200
 
 ; \$02([0-9A-F][0-9A-F])
 ; Sprite_RAM+$_1
@@ -960,7 +960,7 @@ SPR_VFLIP	= %10000000
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $03xx RAM (Largely graphics updating / control)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $0300
+	.base $0300
 
 	Graphics_BufCnt:	.ds 1	; first byte holds current position within buffer (Graphics_Buffer+) to store info
 	Graphics_Buffer:	.ds 107	; $0301-$036B Simple (and small!) delayed write buffer; uses same format as Video_Upd_Table in PRG030, get format info there
@@ -1088,9 +1088,9 @@ UPDATERASTER_32PIXSHOWSPR= $80	; If NOT set, hides sprites that fall beneath the
 	; $0400-$04CF is available for this context-dependent situation
 	; $0400-$0443 unused in either of the following cases
 
-	; Doing double .org's because of major overlap, but be careful!
+	; Doing double .base's because of major overlap, but be careful!
 
-	.org $0447
+	.base $0447
 ; W8D = World 8 Darkness; overlaps the vars used by the entrance transition
 	Map_W8D_VAddrH:		.ds 1
 
@@ -1130,7 +1130,7 @@ UPDATERASTER_32PIXSHOWSPR= $80	; If NOT set, hides sprites that fall beneath the
 	; ASSEMBLER BOUNDARY CHECK, CONTEXT END OF $04D0
 .BoundW8D_04D0:	BoundCheck .BoundW8D_04D0, $04D0, $04xx range World Map Entrance Transition context
 
-	.org $0444
+	.base $0444
 	; Entrance transition; overlaps with above
 	; NOTE: Memory is cleared from here to +$1C, $460
 	; For border arrays, 0-3: Top 0, bottom 1, right 2, left 3
@@ -1160,7 +1160,7 @@ UPDATERASTER_32PIXSHOWSPR= $80	; If NOT set, hides sprites that fall beneath the
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $04xx BONUS GAME CONTEXT (see PRG022 for lots more info)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $0400	; $0400-$04CF is available for this context-dependent situation
+	.base $0400	; $0400-$04CF is available for this context-dependent situation
 	; WARNING: $0400-$04CF gets cleared at end of bonus game!
 
 	Roulette_Pos:		.ds 3	; $0400-$0402 horizontal position of each row
@@ -1294,7 +1294,7 @@ BONUS_UNUSED_2RETURN	= 7	; MAY have been Koopa Troopa's "Prize" Game...
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $04xx GAMEPLAY CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $0400	; $0400-$04CF (except $0461 and $0462, see "$04xx RAM SOUND/MUSIC ENGINE") is available for this context-dependent situation
+	.base $0400	; $0400-$04CF (except $0461 and $0462, see "$04xx RAM SOUND/MUSIC ENGINE") is available for this context-dependent situation
 
 	Fade_State:		.ds 1	; 0 = Nothing, 1 = Fade in, 3 = Fade out
 	Fade_Tick:		.ds 1	; Ticks down and then decrements Fade_Level
@@ -1422,7 +1422,7 @@ SOBJ_ALBABOMB	= $19	; Albatoss's bomb!
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $04xx RAM SOUND/MUSIC ENGINE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $04D0
+	.base $04D0
 
 ; $04D0-$04FF is reserved for use by the sound/music engine
 ; Lower ranges are context-dependent
@@ -1612,7 +1612,7 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $05xx TITLE SCREEN CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $0500	; $0500-$05FF is available for this context-dependent situation
+	.base $0500	; $0500-$05FF is available for this context-dependent situation
 
 				.ds 16	; $0500-$050F unused
 
@@ -1624,7 +1624,7 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 	Title_ObjVar2:		.ds 6	; $519-$51E Minor objects user-defined variable 2
 	Title_ObjFrame:		.ds 6	; $51F-$524 Minor object "frame"; adds 2x the value here to the pattern selection for the object's sprites
 	
-	.org $05F0
+	.base $05F0
 	Ending_TextPos:		.ds 1	; Ending text position
 	Ending_VAddrL:		.ds 1	; Ending text VAddr low
 	Ending_VAddrH:		.ds 1	; Ending text VAddr high
@@ -1643,7 +1643,7 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $5xx MAP CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $0500	; $0500-$05FF is available for this context-dependent situation
+	.base $0500	; $0500-$05FF is available for this context-dependent situation
 
 	; NOTE: Most of the memory in this space is shared with Gameplay Context
 	; so don't assume that any value that should be spared is safe in here...
@@ -1694,7 +1694,7 @@ MAPOBJ_TOTAL		= $09	; Total POSSIBLE map objects
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $5xx BONUS GAME CONTEXT (see PRG022 for lots more info)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $0500	; $0500-$05FF is available for this context-dependent situation
+	.base $0500	; $0500-$05FF is available for this context-dependent situation
 
 				.ds 231	; $0500-$05E6 unused
 
@@ -1709,7 +1709,7 @@ MAPOBJ_TOTAL		= $09	; Total POSSIBLE map objects
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $5xx GAMEPLAY CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $0500	; $0500-$05FF is available for this context-dependent situation
+	.base $0500	; $0500-$05FF is available for this context-dependent situation
 
 	; Event_Countdown is context dependent; without context, does nothing
 	; * When you come out of a pipe, this counter decrements until the pipe should be finished
@@ -2004,12 +2004,12 @@ ASCONFIG_HDISABLE	= $80	; Disables horizontal auto scroll coordinate adjustment 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	; DURING ENDING ONLY
-	.org $0600
+	.base $0600
 
 	Ending_CmdBuffer:		.ds 192	; $0600-$06C0 Buffer used during ending sequence
 
 	; Normal purpose $06xx RAM...
-	.org $0600
+	.base $0600
 
 	Level_Tile_Head:	.ds 1	; Tile at Player's head 
 	Level_Tile_GndL:	.ds 1	; Tile at Player's feet left
@@ -2132,7 +2132,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $07xx RAM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $0700
+	.base $0700
 
 	TileAddr_Off:		.ds 1	; During level loading, specifies an offset into the current Mem_Tile_Addr setting
 
@@ -2376,7 +2376,7 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 
 ; 2P Vs Only
 	
-	.org $6800
+	.base $6800
 
 	; SB: Card memory will not longer persist; just borrowing bytes from high RAM
 CARD_MUSHROOM	= 0
@@ -2572,7 +2572,7 @@ VSOBJID_KICKEDBLOCK	= 11	; Kicked block (from [?] block match)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $6000-$7FFF MMC3 SRAM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.org $6000
+	.base $6000
 
 	; NOTE: $6800+ is used by 2P Vs RAM, see previous section
 
@@ -2989,7 +2989,7 @@ MCOMP_SECRET	= %00100000	; Bit 5 - Level Completed (secret/alternate exit)
 .Bound_7E00:	BoundCheck .Bound_7E00, $7E00, MMC3 SRAM
 	
 	; SAVE DATA
-	.org $7E00
+	.base $7E00
 
 	; SAVE FORMAT: See PRG062 Game_SaveData
 	SaveData:	.ds 512
@@ -2997,7 +2997,7 @@ MCOMP_SECRET	= %00100000	; Bit 5 - Level Completed (secret/alternate exit)
 	; ASSEMBLER BOUNDARY CHECK, END OF $8000
 .Bound_8000:	BoundCheck .Bound_8000, $8000, MMC3 SRAM
 
-
+	.ende
 	
 
 ; The objects are broken up into groups of 36 IDs across 5 ROM banks (1 - 5)
