@@ -455,16 +455,16 @@ Map_Tile_Layouts:
 	; Each world's layout; very simple data, specifies a linear list of tile bytes.
 	; Every 144 bytes form a 16x9 single screen of world map.
 	; The stream is terminated by $FF
-W1_Map_Layout:	.include "PRG/maps/World1L"
-W2_Map_Layout:	.include "PRG/maps/World2L"
-W3_Map_Layout:	.include "PRG/maps/World3L"
-W4_Map_Layout:	.include "PRG/maps/World4L"
-W5_Map_Layout:	.include "PRG/maps/World5L"
-W6_Map_Layout:	.include "PRG/maps/World6L"
-W7_Map_Layout:	.include "PRG/maps/World7L"
-W8_Map_Layout:	.include "PRG/maps/World8L"
-W9_Map_Layout:	.include "PRG/maps/World9L"
-W10_Map_Layout:	.include "PRG/maps/World10L"
+W1_Map_Layout:	.include "PRG/maps/World1L.asm"
+W2_Map_Layout:	.include "PRG/maps/World2L.asm"
+W3_Map_Layout:	.include "PRG/maps/World3L.asm"
+W4_Map_Layout:	.include "PRG/maps/World4L.asm"
+W5_Map_Layout:	.include "PRG/maps/World5L.asm"
+W6_Map_Layout:	.include "PRG/maps/World6L.asm"
+W7_Map_Layout:	.include "PRG/maps/World7L.asm"
+W8_Map_Layout:	.include "PRG/maps/World8L.asm"
+W9_Map_Layout:	.include "PRG/maps/World9L.asm"
+W10_Map_Layout:	.include "PRG/maps/World10L.asm"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Map_PrepareLevel
@@ -1158,16 +1158,16 @@ Map_LevelLayouts:
 
 	; "Structure" data files -- contains data that links levels to
 	; their layout and objects by the rows and columns 
-	.include "PRG/maps/World1S"
-	.include "PRG/maps/World2S"
-	.include "PRG/maps/World3S"
-	.include "PRG/maps/World4S"
-	.include "PRG/maps/World5S"
-	.include "PRG/maps/World6S"
-	.include "PRG/maps/World7S"
-	.include "PRG/maps/World8S"
-	.include "PRG/maps/World9S"
-	.include "PRG/maps/World10S"
+	.include "PRG/maps/World1S.asm"
+	.include "PRG/maps/World2S.asm"
+	.include "PRG/maps/World3S.asm"
+	.include "PRG/maps/World4S.asm"
+	.include "PRG/maps/World5S.asm"
+	.include "PRG/maps/World6S.asm"
+	.include "PRG/maps/World7S.asm"
+	.include "PRG/maps/World8S.asm"
+	.include "PRG/maps/World9S.asm"
+	.include "PRG/maps/World10S.asm"
 
 
 	; Gets tile from layout by world (not loaded memory)
