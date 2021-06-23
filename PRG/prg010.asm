@@ -4948,7 +4948,7 @@ Map_RTH_NotToadHouse:
 	RTS
 
 	; SB: Align DMC07 to nearest 64 byte boundary
- .AlignDMC07:	DMCAlign .AlignDMC07
+ AlignDMC07:	DMCAlign .AlignDMC07
 
 DMC07:
 	.byte $4A, $53, $55, $55, $55, $55, $55, $55, $55, $55, $AB, $4A, $55, $AA, $DA, $EE
