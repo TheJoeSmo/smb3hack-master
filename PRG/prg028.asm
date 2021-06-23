@@ -122,7 +122,7 @@ PRG028_A08F:
 
 ; Music segment header
 ; Each segment header is 7 bytes long:
-MusSeg .macro _1, _2, _3, _4, _5, _6
+	.macro MusSeg _1, _2, _3, _4, _5, _6
    .byte _1	; Music_RestH_Base value (always divisible by $10; base part of index into PRG031's Music_RestH_LUT)
    .word _2	; Address of music segment data (all tracks this segment, offsets to follow, except implied Square 2 zero)
    .byte _3	; Triangle track starting offset ($00 means disabled)
