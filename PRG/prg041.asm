@@ -348,22 +348,20 @@ ObjectGrExt_Attributes4:
 	; Object group Extended (i.e. objects starting at ID $E0) pattern index starts
 	; These are used for all states except "normal"
 
-OGE_POff .func (\1 - ObjectGrExt_PatternSets)
-
 	.org ObjectGroup_PatternStarts	; <-- necessary in this bank due to short count
 ObjectGrExt_PatternStarts:
 	; Index by object group relative index (ObjGroupRel_Idx)
-	.byte OGE_POff(ObjPE0), OGE_POff(ObjPE1), OGE_POff(ObjPE2), OGE_POff(ObjPE3)
-	.byte OGE_POff(ObjPE4), OGE_POff(ObjPE5), OGE_POff(ObjPE6), OGE_POff(ObjPE7)
-	.byte OGE_POff(ObjPE8), OGE_POff(ObjPE9), OGE_POff(ObjPEA), OGE_POff(ObjPEB)
-	.byte OGE_POff(ObjPEC), OGE_POff(ObjPED), OGE_POff(ObjPEE), OGE_POff(ObjPEF)
-	.byte OGE_POff(ObjPF0), OGE_POff(ObjPF1), OGE_POff(ObjPF2), OGE_POff(ObjPF3)
-	.byte OGE_POff(ObjPF4), OGE_POff(ObjPF5), OGE_POff(ObjPF6), OGE_POff(ObjPF7)
-	.byte OGE_POff(ObjPF8), OGE_POff(ObjPF9), OGE_POff(ObjPFA), OGE_POff(ObjPFB)
-	.byte OGE_POff(ObjPFC), OGE_POff(ObjPFD), OGE_POff(ObjPFE), OGE_POff(ObjPFF)
+	.byte ObjPE0 - ObjectGrExt_PatternSets, ObjPE1 - ObjectGrExt_PatternSets, ObjPE2 - ObjectGrExt_PatternSets, ObjPE3 - ObjectGrExt_PatternSets
+	.byte ObjPE4 - ObjectGrExt_PatternSets, ObjPE5 - ObjectGrExt_PatternSets, ObjPE6 - ObjectGrExt_PatternSets, ObjPE7 - ObjectGrExt_PatternSets
+	.byte ObjPE8 - ObjectGrExt_PatternSets, ObjPE9 - ObjectGrExt_PatternSets, ObjPEA - ObjectGrExt_PatternSets, ObjPEB - ObjectGrExt_PatternSets
+	.byte ObjPEC - ObjectGrExt_PatternSets, ObjPED - ObjectGrExt_PatternSets, ObjPEE - ObjectGrExt_PatternSets, ObjPEF - ObjectGrExt_PatternSets
+	.byte ObjPF0 - ObjectGrExt_PatternSets, ObjPF1 - ObjectGrExt_PatternSets, ObjPF2 - ObjectGrExt_PatternSets, ObjPF3 - ObjectGrExt_PatternSets
+	.byte ObjPF4 - ObjectGrExt_PatternSets, ObjPF5 - ObjectGrExt_PatternSets, ObjPF6 - ObjectGrExt_PatternSets, ObjPF7 - ObjectGrExt_PatternSets
+	.byte ObjPF8 - ObjectGrExt_PatternSets, ObjPF9 - ObjectGrExt_PatternSets, ObjPFA - ObjectGrExt_PatternSets, ObjPFB - ObjectGrExt_PatternSets
+	.byte ObjPFC - ObjectGrExt_PatternSets, ObjPFD - ObjectGrExt_PatternSets, ObjPFE - ObjectGrExt_PatternSets, ObjPFF - ObjectGrExt_PatternSets
 	
 	; NOT USABLE
-	.byte OGE_POff(ObjPFF), OGE_POff(ObjPFF), OGE_POff(ObjPFF), OGE_POff(ObjPFF)
+	.byte ObjPFF - ObjectGrExt_PatternSets, ObjPFF - ObjectGrExt_PatternSets, ObjPFF - ObjectGrExt_PatternSets, ObjPFF - ObjectGrExt_PatternSets
 
 	; Object group Extended (i.e. objects starting at ID $E0) pattern sets
 	; Note that each "frame" is made up of two tile starts, so there's
