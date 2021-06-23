@@ -4339,7 +4339,7 @@ LoadLevel_Nothing:
 	; SB: In case I hit this trap because I'm a moron, play music...
 	LDA #MUS2A_BONUSGAME
 	STA Sound_QMusic2
-.fixme: JMP .fixme
+fixme: JMP fixme
 
 	RTS		 ; Return
 
