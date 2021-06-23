@@ -5928,31 +5928,29 @@ AScroll_Set_Level_AScrlVar:
 	RTS
 
 
-	; SB: Moved from PRG000
-ASHIM .func \1-AScroll_Movement-1
 	; This is the initial movement table for horizontal auto scroll levels, minus 1
 	; Level_AScrlLimitSel selects which entry to use, which sets Level_AScrlVar (the actual index value)
 AScroll_HorizontalInitMove:
-	.byte ASHIM(ASM_World_36_14)	;  0 World 3-6 / 1-4
-	.byte ASHIM(ASM_W3_Airship)	;  1 World 3 Airship
-	.byte ASHIM(ASM_World_62)	;  2 World 6-2
-	.byte ASHIM(ASM_W5_Airship)	;  3 World 5 Airship
-	.byte ASHIM(ASM_UNK4)		;  4
-	.byte ASHIM(ASM_W4Airship)	;  5 World 4 Airship
-	.byte ASHIM(ASM_W6Airship)	;  6 World 6 Airship
-	.byte ASHIM(ASM_World_56)	;  7 World 5-6
-	.byte ASHIM(ASM_UNK8)		;  8
-	.byte ASHIM(ASM_UNK9)		;  9 
-	.byte ASHIM(ASM_World_67)	;  A World 6-7
-	.byte ASHIM(ASM_W1Airship)	;  B World 1 Airship
-	.byte ASHIM(ASM_W7Airship)	;  C World 7 Airship
-	.byte ASHIM(ASM_W8Airship)	;  D World 8 Airship
-	.byte ASHIM(ASM_W8Battleship)	;  E World 8 Battleship
-	.byte ASHIM(ASM_World_74)	;  F World 7-4
-	.byte ASHIM(ASM_W1CoinHeaven)		; 10
-	.byte ASHIM(ASM_CoinShip)	; 11 Coin Ship
-	.byte ASHIM(ASM_UNK12)		; 12 
-	.byte ASHIM(ASM_World8Tank1)	; 13 World 8 Tank 1
-	.byte ASHIM(ASM_World8Tank2)	; 14 World 8 Tank 2
-	.byte ASHIM(ASM_Terminator)	; 15 ** Terminator Only (because it seeks ahead to see the terminating movement index)
+	.byte ASM_World_36_14 - AScroll_Movement - 1	;  0 World 3-6 / 1-4
+	.byte ASM_W3_Airship - AScroll_Movement - 1	;  1 World 3 Airship
+	.byte ASM_World_62 - AScroll_Movement - 1	;  2 World 6-2
+	.byte ASM_W5_Airship - AScroll_Movement - 1	;  3 World 5 Airship
+	.byte ASM_UNK4 - AScroll_Movement - 1		;  4
+	.byte ASM_W4Airship - AScroll_Movement - 1	;  5 World 4 Airship
+	.byte ASM_W6Airship - AScroll_Movement - 1	;  6 World 6 Airship
+	.byte ASM_World_56 - AScroll_Movement - 1	;  7 World 5-6
+	.byte ASM_UNK8 - AScroll_Movement - 1		;  8
+	.byte ASM_UNK9 - AScroll_Movement - 1		;  9 
+	.byte ASM_World_67 - AScroll_Movement - 1	;  A World 6-7
+	.byte ASM_W1Airship - AScroll_Movement - 1	;  B World 1 Airship
+	.byte ASM_W7Airship - AScroll_Movement - 1	;  C World 7 Airship
+	.byte ASM_W8Airship - AScroll_Movement - 1	;  D World 8 Airship
+	.byte ASM_W8Battleship - AScroll_Movement - 1	;  E World 8 Battleship
+	.byte ASM_World_74 - AScroll_Movement - 1	;  F World 7-4
+	.byte ASM_W1CoinHeaven - AScroll_Movement - 1		; 10
+	.byte ASM_CoinShip - AScroll_Movement - 1	; 11 Coin Ship
+	.byte ASM_UNK12 - AScroll_Movement - 1		; 12 
+	.byte ASM_World8Tank1 - AScroll_Movement - 1	; 13 World 8 Tank 1
+	.byte ASM_World8Tank2 - AScroll_Movement - 1	; 14 World 8 Tank 2
+	.byte ASM_Terminator - AScroll_Movement - 1	; 15 ** Terminator Only (because it seeks ahead to see the terminating movement index)
 
