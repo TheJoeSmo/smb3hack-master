@@ -2292,13 +2292,11 @@ ConfigMenu_SelLR:		.byte 1, -1		; Left/Right movement
 ConfigMenu_PlayerSel:	.byte $40, $80	; P1 or P2 selected character
 ConfigMenu_BothSel:		.byte $40, $C0	; Bits to check that one (1P) or both (2P) Players have made their selections
 
-T_SP_Off .func \1-Title_SpritePattern	; "Title SpritePattern Offset"
-
 	; Index into Title_SpritePattern for all of Mario/Luigi's complex frames
 Title_SpritePatternIndex:
-	.byte T_SP_Off(T_SP_00), T_SP_Off(T_SP_01), T_SP_Off(T_SP_02), T_SP_Off(T_SP_03)
-	.byte T_SP_Off(T_SP_04), T_SP_Off(T_SP_05), T_SP_Off(T_SP_06), T_SP_Off(T_SP_07)
-	.byte T_SP_Off(T_SP_08)
+	.byte T_SP_00 - Title_SpritePattern, T_SP_01 - Title_SpritePattern, T_SP_02 - Title_SpritePattern, T_SP_03 - Title_SpritePattern
+	.byte T_SP_04 - Title_SpritePattern, T_SP_05 - Title_SpritePattern, T_SP_06 - Title_SpritePattern, T_SP_07 - Title_SpritePattern
+	.byte T_SP_08 - Title_SpritePattern
 
 	; Block of patterns, based on offsets from Title_SpritePatternIndex
 	; For use with Mario/Luigi's sprites
