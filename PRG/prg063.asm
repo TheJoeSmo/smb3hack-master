@@ -1375,7 +1375,7 @@ Music_RestH_LUT:
 	.byte $02, $02, $03, $02, $04, $06, $05, $06, $08, $0C, $10, $18, $20		     ; $90 - $9C
 
 	; SB: Align DMC04 to nearest 64 byte boundary
-.AlignDMC04:	DMCAlign .AlignDMC04
+AlignDMC04:	DMCAlign .AlignDMC04
 
 DMC04:	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $B5, $82, $DC
 	.byte $7F, $00, $E0, $FF, $03, $E8, $FF, $03, $00, $F8, $FF, $00, $F0, $FF, $62, $0B
