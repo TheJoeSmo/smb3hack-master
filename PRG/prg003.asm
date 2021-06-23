@@ -362,20 +362,18 @@ ObjectGroup02_Attributes4:
 	; Object group $02 (i.e. objects starting at ID $48) pattern index starts
 	; These are used for all states except "normal"
 
-OG2_POff .func (\1 - ObjectGroup02_PatternSets)
-
 	.org ObjectGroup_PatternStarts	; <-- help enforce this table *here*
 ObjectGroup02_PatternStarts:
 	; Index by object group relative index (ObjGroupRel_Idx)
-	.byte OG2_POff(ObjP48), OG2_POff(ObjP49), OG2_POff(ObjP4A), OG2_POff(ObjP4B)
-	.byte OG2_POff(ObjP4C), OG2_POff(ObjP4D), OG2_POff(ObjP4E), OG2_POff(ObjP4F)
-	.byte OG2_POff(ObjP50), OG2_POff(ObjP51), OG2_POff(ObjP52), OG2_POff(ObjP53)
-	.byte OG2_POff(ObjP54), OG2_POff(ObjP55), OG2_POff(ObjP56), OG2_POff(ObjP57)
-	.byte OG2_POff(ObjP58), OG2_POff(ObjP59), OG2_POff(ObjP5A), OG2_POff(ObjP5B)
-	.byte OG2_POff(ObjP5C), OG2_POff(ObjP5D), OG2_POff(ObjP5E), OG2_POff(ObjP5F)
-	.byte OG2_POff(ObjP60), OG2_POff(ObjP61), OG2_POff(ObjP62), OG2_POff(ObjP63)
-	.byte OG2_POff(ObjP64), OG2_POff(ObjP65), OG2_POff(ObjP66), OG2_POff(ObjP67)
-	.byte OG2_POff(ObjP68), OG2_POff(ObjP69), OG2_POff(ObjP6A), OG2_POff(ObjP6B)
+	.byte ObjP48 - ObjectGroup02_PatternSets, ObjP49 - ObjectGroup02_PatternSets, ObjP4A - ObjectGroup02_PatternSets, ObjP4B - ObjectGroup02_PatternSets
+	.byte ObjP4C - ObjectGroup02_PatternSets, ObjP4D - ObjectGroup02_PatternSets, ObjP4E - ObjectGroup02_PatternSets, ObjP4F - ObjectGroup02_PatternSets
+	.byte ObjP50 - ObjectGroup02_PatternSets, ObjP51 - ObjectGroup02_PatternSets, ObjP52 - ObjectGroup02_PatternSets, ObjP53 - ObjectGroup02_PatternSets
+	.byte ObjP54 - ObjectGroup02_PatternSets, ObjP55 - ObjectGroup02_PatternSets, ObjP56 - ObjectGroup02_PatternSets, ObjP57 - ObjectGroup02_PatternSets
+	.byte ObjP58 - ObjectGroup02_PatternSets, ObjP59 - ObjectGroup02_PatternSets, ObjP5A - ObjectGroup02_PatternSets, ObjP5B - ObjectGroup02_PatternSets
+	.byte ObjP5C - ObjectGroup02_PatternSets, ObjP5D - ObjectGroup02_PatternSets, ObjP5E - ObjectGroup02_PatternSets, ObjP5F - ObjectGroup02_PatternSets
+	.byte ObjP60 - ObjectGroup02_PatternSets, ObjP61 - ObjectGroup02_PatternSets, ObjP62 - ObjectGroup02_PatternSets, ObjP63 - ObjectGroup02_PatternSets
+	.byte ObjP64 - ObjectGroup02_PatternSets, ObjP65 - ObjectGroup02_PatternSets, ObjP66 - ObjectGroup02_PatternSets, ObjP67 - ObjectGroup02_PatternSets
+	.byte ObjP68 - ObjectGroup02_PatternSets, ObjP69 - ObjectGroup02_PatternSets, ObjP6A - ObjectGroup02_PatternSets, ObjP6B - ObjectGroup02_PatternSets
 
 
 	; Object group $02 (i.e. objects starting at ID $48) pattern sets
