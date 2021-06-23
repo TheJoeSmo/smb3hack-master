@@ -94,12 +94,7 @@ PRG063_E2E1:
 	RTS		 ; Return
 
 	; The address are $C000 | (value << 6)
-MADR .func ((\1 & $3FFF) >> 6)
-
 	; The length is (value << 4) + 1 (minimum 1 byte long to $FF1 bytes long)
-MLEN .func ((\2 - \1) >> 4)
-
-
 	; Sample 3: "BAD SAMPLE LENGTH"
 	; Seems there is an errorenous, very long/very wrong sample length on
 	; Sample 3.  Whether this is a mistake or a "lost DMC sample" I don't
@@ -107,41 +102,41 @@ MLEN .func ((\2 - \1) >> 4)
 	; play DMC02 and just continue on through code, which would be noisy.
 
 DMC_MODADDR_LUT:
-	.byte MADR(DMC01)	; Sample  0 (DMC01)
-	.byte MADR(DMC02)	; Sample  1 (DMC02)
-	.byte MADR(DMC03)	; Sample  2 (DMC03)
-	.byte MADR(DMC02)	; Sample  3 (DMC02 BAD SAMPLE LENGTH)
-	.byte MADR(DMC04)	; Sample  4 (DMC04)
-	.byte MADR(DMC05)	; Sample  5 (DMC05)
-	.byte MADR(DMC05)	; Sample  6 (DMC05 3/4 length)
-	.byte MADR(DMC06)	; Sample  7 (DMC06)
-	.byte MADR(DMC06)	; Sample  8 (DMC06 slower)
-	.byte MADR(DMC07)	; Sample  9 (DMC07)
-	.byte MADR(DMC07)	; Sample 10 (DMC07 slower)
-	.byte MADR(DMC05)	; Sample 11 (DMC05 1/2 length)
-	.byte MADR(DMC08)	; Sample 12 (DMC08)
-	.byte MADR(DMC09)	; Sample 13 (DMC09)
-	.byte MADR(DMC09)	; Sample 14 (DMC09 slower)
-	.byte MADR(DMC09)	; Sample 15 (DMC09 even slower)
+	.byte (DMC01 & $3FFF) >> 6	; Sample  0 (DMC01)
+	.byte (DMC02 & $3FFF) >> 6	; Sample  1 (DMC02)
+	.byte (DMC03 & $3FFF) >> 6	; Sample  2 (DMC03)
+	.byte (DMC02 & $3FFF) >> 6	; Sample  3 (DMC02 BAD SAMPLE LENGTH)
+	.byte (DMC04 & $3FFF) >> 6	; Sample  4 (DMC04)
+	.byte (DMC05 & $3FFF) >> 6	; Sample  5 (DMC05)
+	.byte (DMC05 & $3FFF) >> 6	; Sample  6 (DMC05 3/4 length)
+	.byte (DMC06 & $3FFF) >> 6	; Sample  7 (DMC06)
+	.byte (DMC06 & $3FFF) >> 6	; Sample  8 (DMC06 slower)
+	.byte (DMC07 & $3FFF) >> 6	; Sample  9 (DMC07)
+	.byte (DMC07 & $3FFF) >> 6	; Sample 10 (DMC07 slower)
+	.byte (DMC05 & $3FFF) >> 6	; Sample 11 (DMC05 1/2 length)
+	.byte (DMC08 & $3FFF) >> 6	; Sample 12 (DMC08)
+	.byte (DMC09 & $3FFF) >> 6	; Sample 13 (DMC09)
+	.byte (DMC09 & $3FFF) >> 6	; Sample 14 (DMC09 slower)
+	.byte (DMC09 & $3FFF) >> 6	; Sample 15 (DMC09 even slower)
 
 DMC_MODLEN_LUT:
 	; these are (value << 4) + 1, that is minimum 1 byte long to FF1 bytes
-	.byte MLEN(DMC01, DMC01_End)	; Sample  0 (DMC01)
-	.byte MLEN(DMC02, DMC02_End)	; Sample  1 (DMC02)
-	.byte MLEN(DMC03, DMC03_End)	; Sample  2 (DMC03)
-	.byte MLEN(DMC02, DMC02_End)	; Sample  3 (DMC02 BAD SAMPLE LENGTH / SB: Removed, redundant)
-	.byte MLEN(DMC04, DMC04_End)	; Sample  4 (DMC04)
-	.byte MLEN(DMC05, DMC05_End)	; Sample  5 (DMC05)
-	.byte MLEN(DMC05, DMC05_C)	; Sample  6 (DMC05 3/4 length)
-	.byte MLEN(DMC06, DMC06_End)	; Sample  7 (DMC06)
-	.byte MLEN(DMC06, DMC06_End)	; Sample  8 (DMC06 slower)
-	.byte MLEN(DMC07, DMC07_End)	; Sample  9 (DMC07)
-	.byte MLEN(DMC07, DMC07_End)	; Sample 10 (DMC07 slower)
-	.byte MLEN(DMC05, DMC05_B)	; Sample 11 (DMC05 1/2 length)
-	.byte MLEN(DMC08, DMC08_End)	; Sample 12 (DMC08)
-	.byte MLEN(DMC09, DMC09_End)	; Sample 13 (DMC09)
-	.byte MLEN(DMC09, DMC09_End)	; Sample 14 (DMC09 slower)
-	.byte MLEN(DMC09, DMC09_End)	; Sample 15 (DMC09 even slower)
+	.byte (DMC01_End - DMC01) >> 4	; Sample  0 (DMC01)
+	.byte (DMC02_End - DMC02) >> 4	; Sample  1 (DMC02)
+	.byte (DMC03_End - DMC03) >> 4	; Sample  2 (DMC03)
+	.byte (DMC02_End - DMC02) >> 4	; Sample  3 (DMC02 BAD SAMPLE LENGTH / SB: Removed, redundant)
+	.byte (DMC04_End - DMC04) >> 4	; Sample  4 (DMC04)
+	.byte (DMC05_End - DMC05) >> 4	; Sample  5 (DMC05)
+	.byte (DMC05_C - DMC05) >> 4	; Sample  6 (DMC05 3/4 length)
+	.byte (DMC06_End - DMC06) >> 4	; Sample  7 (DMC06)
+	.byte (DMC06_End - DMC06) >> 4	; Sample  8 (DMC06 slower)
+	.byte (DMC07_End - DMC07) >> 4	; Sample  9 (DMC07)
+	.byte (DMC07_End - DMC07) >> 4	; Sample 10 (DMC07 slower)
+	.byte (DMC05_B - DMC05) >> 4	; Sample 11 (DMC05 1/2 length)
+	.byte (DMC08_End - DMC08) >> 4	; Sample 12 (DMC08)
+	.byte (DMC09_End - DMC09) >> 4	; Sample 13 (DMC09)
+	.byte (DMC09_End - DMC09) >> 4	; Sample 14 (DMC09 slower)
+	.byte (DMC09_End - DMC09) >> 4	; Sample 15 (DMC09 even slower)
 
 DMC_MODCTL_LUT:
 	.byte $0F	; Sample  0 (DMC01)
