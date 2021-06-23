@@ -5095,256 +5095,256 @@ TILE19_TABLE_LR		= $D3	; Table lower left
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	; Object support routines
-	.bank 0
+; bank 0
 	.org $C000
 	.include "PRG/prg000.asm"
 
 	; Objects $00-$23
-	.bank 1
+; bank 1
 	.org $A000
 	.include "PRG/prg001.asm"
 
 	; Objects $24-$47
-	.bank 2
+; bank 2
 	.org $A000
 	.include "PRG/prg002.asm"
 
 	; Objects $48-$6B
-	.bank 3
+; bank 3
 	.org $A000
 	.include "PRG/prg003.asm"
 
 	; Objects $6C-$8F
-	.bank 4
+; bank 4
 	.org $A000
 	.include "PRG/prg004.asm"
 
 	; Objects $90-$B3 and special-function object placeholders ($B4-$BC, $D1-$D6)
-	.bank 5
+; bank 5
 
 	.org $A000
 	.include "PRG/prg005.asm"
 
 	; Object placement/layout data (for levels)
-	.bank 6
+; bank 6
 	.org $C000
 	.include "PRG/prg006.asm"
 
 	; Special Objects, Cannon Fire, and some miscellaneous routines
-	.bank 7
+; bank 7
 	.org $A000
 	.include "PRG/prg007.asm"
 
 	; Most of Player control code
-	.bank 8
+; bank 8
 	.org $A000
 	.include "PRG/prg008.asm"
 
 	; 2P Vs and Autoscroll
-	.bank 9
+; bank 9
 	.org $A000
 	.include "PRG/prg009.asm"
 
 	; Handles map BG graphics and logic code; also stores a few DMC samples
-	.bank 10
+; bank 10
 	.org $C000
 	.include "PRG/prg010.asm"
 
 	; Main map logic and map sprites
-	.bank 11
+; bank 11
 	.org $A000
 	.include "PRG/prg011.asm"
 
 	; Tileset 0 (Map), Map object code, map level layouts (links to level layouts/object sets), 
 	; completion code, Airship / bonus host room / toad shop / coin ship / unused map object $0C layout pointers
-	.bank 12
+; bank 12
 	.org $A000
 	.include "PRG/prg012.asm"
 
 	; Tileset 14 (Underground style)
-	.bank 13
+; bank 13
 	.org $A000
 	.include "PRG/prg013.asm"
 
 	; Tileset 18 (2P Vs), 2P Vs battlefields, and shared level load routines
-	.bank 14
+; bank 14
 	.org $C000
 	.include "PRG/prg014.asm"
 
 	; Tileset 1 (Plains style)
-	.bank 15
+; bank 15
 	.org $A000
 	.include "PRG/prg015.asm"
 
 	; Tileset 3 (Hills style)
-	.bank 16
+; bank 16
 	.org $A000
 	.include "PRG/prg016.asm"
 
 	; Tileset 4 (High-Up style) / 12 (Ice)
-	.bank 17
+; bank 17
 	.org $A000
 	.include "PRG/prg017.asm"
 
 	; Tileset 6 (Water level), 7 (Toad house), 8 (Vertical levels typical of World 7)
-	.bank 18
+; bank 18
 	.org $A000
 	.include "PRG/prg018.asm"
 
 	; Tileset 5 (World 7 plant infestations), 11 (Giant World), 13 (Sky areas, inc. coin heaven)
-	.bank 19
+; bank 19
 	.org $A000
 	.include "PRG/prg019.asm"
 
 	; Tileset 9 (Desert)
-	.bank 20
+; bank 20
 	.org $A000
 	.include "PRG/prg020.asm"
 
 	; Tileset 2 (Fortress)
-	.bank 21
+; bank 21
 	.org $A000
 	.include "PRG/prg021.asm"
 
 	; Bonus games (Spade, N-Spade, and the lost games)
-	.bank 22
+; bank 22
 	.org $C000
 	.include "PRG/prg022.asm"
 
 	; Tileset 10 (Airship)
-	.bank 23
+; bank 23
 	.org $A000
 	.include "PRG/prg023.asm"
 
 	; Title screen, ending (logic and images), Toad and King cinematic (Pre-wand-return only!)
 	; Also home a large copy/paste error from PRG022, first half of sprite lists for ending
-	.bank 24
+; bank 24
 	.org $A000
 	.include "PRG/prg024.asm"
 
 	; Contains mostly command buffer graphics for title screen / ending (large images), 
 	; second half of sprite lists for ending, and a table to access them
-	.bank 25
+; bank 25
 	.org $C000
 	.include "PRG/prg025.asm"
 
 	; Tileset 16, 17 (Bonus games)
 	; Status bar routines (draw, use items, etc.), level junctions
 	; (inc. pointers for Big [?] block area and generic pipe exits), border draw, fade routines
-	.bank 26
+; bank 26
 	.org $A000
 	.include "PRG/prg026.asm"
 
 	; Palettes, palette routines, Toad and King Cinematic (Post-wand-return only!)
-	.bank 27
+; bank 27
 	.org $A000
 	.include "PRG/prg027.asm"
 
 	; Primary bank of the sound/music engine
-	.bank 28
+; bank 28
 	.org $A000
 	.include "PRG/prg028.asm"
 
 	; Tile/block change event, pipe movement code, Toad House code,
 	; Player's draw and animation routines
-	.bank 29
+; bank 29
 	.org $C000
 	.include "PRG/prg029.asm"
 
 	; Stuff moved from elsewhere to make room in that bank
-	.bank 30
+; bank 30
 	.org $C000
 	.include "PRG/prg030.asm"
 
 	; NEW Music bank of the sound engine
-	.bank 31
+; bank 31
 	.org $C000
 	.include "PRG/prg031.asm"
 
 	; NEW Music bank of the sound engine
-	.bank 32
+; bank 32
 	.org $C000
 	.include "PRG/prg032.asm"
 
 	; NEW Music bank of the sound engine
-	.bank 33
+; bank 33
 	.org $C000
 	.include "PRG/prg033.asm"
 
 	; NEW Music bank of the sound engine
-	.bank 34
+; bank 34
 	.org $C000
 	.include "PRG/prg034.asm"
 
 	; NEW Music bank of the sound engine
-	.bank 35
+; bank 35
 	.org $C000
 	.include "PRG/prg035.asm"
 
 	; NEW Music bank of the sound engine
-	.bank 36
+; bank 36
 	.org $C000
 	.include "PRG/prg036.asm"
 
 	; NEW Music bank of the sound engine
-	.bank 37
+; bank 37
 	.org $C000
 	.include "PRG/prg037.asm"
 
 	; NEW Music bank of the sound engine
-	.bank 38
+; bank 38
 	.org $C000
 	.include "PRG/prg038.asm"
 
 	; NEW dedicated sound effects bank
-	.bank 39
+; bank 39
 	.org $C000
 	.include "PRG/prg039.asm"
 
 	; Tileset 5 Ghost House (SB: NEW)
-	.bank 40
+; bank 40
 	.org $A000
 	.include "PRG/prg040.asm"
 
 	; Extended object bank (IDs $E0 - $FF)
-	.bank 41
+; bank 41
 	.org $A000
 	.include "PRG/prg041.asm"
 
 	; Bowser Jr.'s personal bank (all world bosses)
-	.bank 42
+; bank 42
 	.org $A000
 	.include "PRG/prg042.asm"
 
 	; "Special Objects" (moved from bank 7)
-	.bank 43
+; bank 43
 	.org $A000
 	.include "PRG/prg043.asm"
 
 	; Tileset 7 Delfino (SB: NEW)
-	.bank 44
+; bank 44
 	.org $A000
 	.include "PRG/prg044.asm"
 
 	; Tileset 15 Ext
-	.bank 45
+; bank 45
 	.org $A000
 	.include "PRG/prg045.asm"
 	
 	; Logic code moved from prg0 for more space
-	.bank 61
+; bank 61
 	.org $A000
 	.include "PRG/prg061.asm"
 
 	; This bank is ALWAYS active in ROM, sitting at 8000h-9FFFh
 	; Contains interrupt handling code and other constantly reused functionality
-	.bank 62
+; bank 62
 	.org $8000
 	.include "PRG/prg062.asm"
 
 	; This bank is ALWAYS active in ROM, sitting at E000h-FFFFh
 	; Contains interrupt handling code and other constantly reused functionality
-	.bank 63
+; bank 63
 	.org $E000
 	.include "PRG/prg063.asm"
 
