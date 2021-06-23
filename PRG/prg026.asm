@@ -131,7 +131,7 @@ PRG026_A10F:
 	; Palette changes for opening the Inventory
 	; This is data in the style of the Video_Upd_Table; see "Video_Upd_Table" in PRG030 for format.
 Inv_OpenPal_Changes:
-	vaddr $3F00			; Palette
+	DBYT $3F00			; Palette
 	.byte $04, $0F, $0F, $30, $3C	; Palette set
 	.byte $00			; Terminator
 
@@ -173,11 +173,11 @@ PRG026_A135:
 Flip_Video_Data_Opening:	; Inventory_Open = 1
 
 Flip_TopBarInv:	
-	vaddr $2B00
+	DBYT $2B00
 	.byte $03, $FC, $A0, $A1
 
 	; SB: New: Item quantities
-	vaddr $2B03
+	DBYT $2B03
 	.byte (Flip_TopBarInv_End - Flip_TopBarInv_Start)
 
 Flip_TopBarInv_Start:	; SB: New, start of quantities for runtime modification
@@ -189,14 +189,14 @@ Flip_TopBarInv_Start:	; SB: New, start of quantities for runtime modification
 
 Flip_TopBarInv_End:
 
-	vaddr $2B1E
+	DBYT $2B1E
 	.byte $02, $A2, $FC
 
 	.byte $00
 
 
 Flip_MidTItems:	
-	vaddr $2B20
+	DBYT $2B20
 
 	;
 	.byte  (Flip_MidTItems_Term - Flip_MidTItems_Top)
@@ -219,7 +219,7 @@ Flip_MidTItems_Term:
 	.byte $00
 
 Flip_MidBItems:	
-	vaddr $2B40
+	DBYT $2B40
 
 	;
 	.byte  (Flip_MidBItems_Term - Flip_MidBItems_Top)
@@ -243,13 +243,13 @@ Flip_MidBItems_Term:
 	.byte $00
 
 Flip_BottomBarInv:	
-	vaddr $2B60
+	DBYT $2B60
 	.byte   2, $FC, $A8
 	
-	vaddr $2B62
+	DBYT $2B62
 	.byte VU_REPEAT | 28, $A4
 
-	vaddr $2B7E
+	DBYT $2B7E
 	.byte 2, $A5, $FC
 
 	.byte $00
@@ -261,60 +261,60 @@ Flip_BottomBarInv:
 Flip_Video_Data_Closing:	; Inventory_Open = 0
 
 Flip_TopBarMid:
-	vaddr $2B20
+	DBYT $2B20
 	.byte 2, $FC, $A0
 
-	vaddr $2B22
+	DBYT $2B22
 	.byte VU_REPEAT | 28, $A1
 
-	vaddr $2B3E
+	DBYT $2B3E
 	.byte 2, $A2, $FC
 
 	.byte $00
 
 Flip_BotBarMid:
 	; Lower left corner
-	vaddr $2B40
+	DBYT $2B40
 	.byte 2, $FC, $A8
 
 	; Bottom bar
-	vaddr $2B42
+	DBYT $2B42
 	.byte VU_REPEAT | 28, $A4
 
 	; Upper right corner
-	vaddr $2B5E
+	DBYT $2B5E
 	.byte 2, $A5, $FC
 
 	.byte $00
 
 Flip_EraseTopBarMid:	
-	vaddr $2B20
+	DBYT $2B20
 	.byte VU_REPEAT | 32, $FC
 
 	.byte $00
 
 Flip_EraseBotBarMid:	
-	vaddr $2B40
+	DBYT $2B40
 	.byte VU_REPEAT | 32, $FC
 	
 	.byte $00
 
 	; Sync with PRG030 "StatusBar" macro
 Flip_TopBarCards:
-	vaddr $2B00
+	DBYT $2B00
 	.byte 2, $FC, $A0
 
-	vaddr $2B02
+	DBYT $2B02
 	.byte VU_REPEAT | 18, $A1	; Bar across the top
 
-	vaddr $2B14
+	DBYT $2B14
 	.byte 12, $A2, $A0, $A1, $A1, $A3, $A1, $A1, $A3, $A1, $A1, $A2, $FC	; top of card slots
 
 	.byte $00
 
 	; Sync with PRG030 "StatusBar" macro
 Flip_MidTStatCards:	
-	vaddr $2B20
+	DBYT $2B20
 
 	.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF	; |WORLD  >>>>>>[P] $  
 
@@ -328,7 +328,7 @@ Flip_MidTStatCards_Start:
 
 	; Sync with PRG030 "StatusBar" macro
 Flip_MidBStatCards:	
-	vaddr $2B40
+	DBYT $2B40
 
 	; Discrepency --------v  (Pattern is ... $FE, $FE ... in PRG030 status bar)  Unimportant; inserts M> which is replaced anyway
 	.byte  32, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE	; [M/L]x  000000 c000| etc.
@@ -344,13 +344,13 @@ Flip_MidBStatCards:
 
 	; Sync with PRG030 "StatusBar" macro
 Flip_BottomBarCards:	
-	vaddr $2B60
+	DBYT $2B60
 	.byte $02, $FC, $A8	; Lower corner
 
-	vaddr $2B62
+	DBYT $2B62
 	.byte VU_REPEAT | 18, $A4	; Bottom bar
 
-	vaddr $2B74
+	DBYT $2B74
 	.byte $0C, $A5, $A8, $A4, $A4, $A9, $A4, $A4, $A9, $A4, $A4, $A5, $FC	; lower corner and card bottoms
 
 	.byte $00
@@ -3724,9 +3724,9 @@ TileChng_VRAMCommit:
 ; Same format as data from Video_Upd_Table in PRG030, check there for details
 ; This is used as a template, but actual values will be overwritten below...
 StatusBar_UpdTemplate:
-	vaddr $2B28
+	DBYT $2B28
 	.byte $0C, $EF, $EF, $EF, $EF, $EF, $EF, $AE, $AF, $FE, $EC, $F0, $F0
-	vaddr $2B45
+	DBYT $2B45
 	.byte $0F, $FE, $F0, $FE, $F0, $F0, $F0, $F0, $F0, $F0, $F0, $FE, $ED, $F0, $F0, $F0
 	.byte $00 ; Terminator
 

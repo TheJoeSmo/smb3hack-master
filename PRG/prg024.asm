@@ -1566,7 +1566,7 @@ Title_InitSaveMenu:
 	.word TISM_Continue		; 4: Go to next state
 
 TISM_SaveLineTemplate:
-	;vaddr $2220
+	;DBYT $2220
 	
 	.byte $20
 	.byte $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $12, $00, $15, $04, $FC, $FF, $FC, $04, $0C, $0F, $13, $18, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
@@ -3448,8 +3448,8 @@ DebugMenu_NoSelChange:
 	.word DebugMenu_Start			; 6
 
 
-	; Temp_Var1 - vaddr high
-	; Temp_Var2 - vaddr low
+	; Temp_Var1 - DBYT high
+	; Temp_Var2 - DBYT low
 	; A - var to print
 Debug_Print2DHex:
 	PHA
@@ -3490,8 +3490,8 @@ Debug_Print2DHex:
 	RTS
 
 
-	; Temp_Var1 - vaddr high
-	; Temp_Var2 - vaddr low
+	; Temp_Var1 - DBYT high
+	; Temp_Var2 - DBYT low
 	; A (Temp_Var3) - char to print
 Debug_PrintChar:
 	PHA

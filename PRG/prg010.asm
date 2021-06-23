@@ -12,655 +12,655 @@
 ;     -> NES mode enabled
 ;---------------------------------------------------------------------------
 Video_DoWXMario00:
-	vaddr $2908
+	DBYT $2908
 	.byte $01, $A0
 
-	vaddr $2909
+	DBYT $2909
 	.byte VU_REPEAT | 14, $A1
 
-	vaddr $2917
+	DBYT $2917
 	.byte $01, $A2
 
-	vaddr $2928
+	DBYT $2928
 	.byte VU_REPEAT | VU_VERT | 6, $E6
 
-	vaddr $2929
+	DBYT $2929
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2937
+	DBYT $2937
 	.byte VU_REPEAT | VU_VERT | 6, $E7
 
-	vaddr $2949
+	DBYT $2949
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2969
+	DBYT $2969
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2989
+	DBYT $2989
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $29A9
+	DBYT $29A9
 	.byte VU_REPEAT | 14, $FE
 	
-	vaddr $29C9
+	DBYT $29C9
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $29E8, 
+	DBYT $29E8, 
 	.byte $01, $E3
 
-	vaddr $29E9
+	DBYT $29E9
 	.byte VU_REPEAT | 14, $E4
 
-	vaddr $29F7
+	DBYT $29F7
 	.byte $01, $E5
 
 	; ----
 
-	vaddr $294C
+	DBYT $294C
 	.byte $05, $D8, $F0, $E9, $EC, $EE	; WORLD
 
-	vaddr $29AA
+	DBYT $29AA
 	.byte $05, $BA, $BC, $E9, $FC, $F0	; MARIO
 
-	vaddr $29B3
+	DBYT $29B3
 	.byte $01, $FB
 
 	; ----
 
-	vaddr $2BD2
+	DBYT $2BD2
 	.byte VU_REPEAT | 4, $00
 
-	vaddr $2BDA
+	DBYT $2BDA
 	.byte VU_REPEAT | 4, $00
 	.byte $00
 
 Video_DoWXMario80:
-	vaddr $2918
+	DBYT $2918
 	.byte $01, $A0
 
-	vaddr $2919
+	DBYT $2919
 	.byte VU_REPEAT | 7, $A1
 
-	vaddr $2900
+	DBYT $2900
 	.byte VU_REPEAT | 7, $A1
 
-	vaddr $2907
+	DBYT $2907
 	.byte $01, $A2
 
-	vaddr $2938
+	DBYT $2938
 	.byte VU_REPEAT | VU_VERT | 6, $E6
 
-	vaddr $2939
+	DBYT $2939
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2920
+	DBYT $2920
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2927
+	DBYT $2927
 	.byte VU_REPEAT | VU_VERT | 6, $E7
 
-	vaddr $2959
+	DBYT $2959
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2940
+	DBYT $2940
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2979
+	DBYT $2979
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2960
+	DBYT $2960
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2999
+	DBYT $2999
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2980
+	DBYT $2980
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29B9
+	DBYT $29B9
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29A0
+	DBYT $29A0
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29D9
+	DBYT $29D9
 	.byte VU_REPEAT | 7, $FE
 	
-	vaddr $29C0
+	DBYT $29C0
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29F8
+	DBYT $29F8
 	.byte $01, $E3
 
-	vaddr $29F9
+	DBYT $29F9
 	.byte VU_REPEAT | 7, $E4
 
-	vaddr $29E0
+	DBYT $29E0
 	.byte VU_REPEAT | 7, $E4
 
-	vaddr $29E7
+	DBYT $29E7
 	.byte $01, $E5
 
 	; ----
 	
-	vaddr $295C
+	DBYT $295C
 	.byte $04, $D8, $F0, $E9, $EC	; WORL
 
-	vaddr $2940
+	DBYT $2940
 	.byte $01, $EE			; D
 
-	vaddr $29BA
+	DBYT $29BA
 	.byte $05, $BA, $BC, $E9, $FC, $F0 ; MARIO
 
-	vaddr $29A3
+	DBYT $29A3
 	.byte $01, $FB
 
-	vaddr $2BD0
+	DBYT $2BD0
 	.byte VU_REPEAT | 2, $00
 
 	; ----
 	
-	vaddr $2BD6
+	DBYT $2BD6
 	.byte VU_REPEAT | 4, $00
 
-	vaddr $2BDE
+	DBYT $2BDE
 	.byte VU_REPEAT | 2, $00
 	.byte $00
 
 
 Video_DoGameOver00:
-	vaddr $2908
+	DBYT $2908
 	.byte $01, $A0
 
-	vaddr $2909
+	DBYT $2909
 	.byte VU_REPEAT | 14, $A1
 
 
-	vaddr $2917
+	DBYT $2917
 	.byte $01, $A2
 
-	vaddr $2928
+	DBYT $2928
 	.byte VU_REPEAT | VU_VERT | 6, $E6
 
-	vaddr $2929
+	DBYT $2929
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2937
+	DBYT $2937
 	.byte VU_REPEAT | VU_VERT | 6, $E7
 
-	vaddr $2949
+	DBYT $2949
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2969
+	DBYT $2969
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2989
+	DBYT $2989
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $29A9
+	DBYT $29A9
 	.byte VU_REPEAT | 14, $FE
 	
-	vaddr $29C9
+	DBYT $29C9
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $29E8
+	DBYT $29E8
 	.byte $01, $E3
 
-	vaddr $29E9
+	DBYT $29E9
 	.byte VU_REPEAT | 14, $E4
 
-	vaddr $29F7
+	DBYT $29F7
 	.byte $01, $E5
 
 	; ----
 
-	vaddr $296B
+	DBYT $296B
 	.byte $0A, $EB, $BC, $BA, $E8, $FE, $F0, $6A, $E8, $E9, $6B	; GAME OVER!
 
-	vaddr $29AF
+	DBYT $29AF
 	.byte $08, $ED, $F0, $DB, $EA, $FC, $DB, $DA, $E8	; CONTINUE
 
-	vaddr $29CF
+	DBYT $29CF
 	.byte $03, $E8, $DB, $EE	; END
 
 	; ----
 
-	vaddr $2BD2
+	DBYT $2BD2
 	.byte VU_REPEAT | 4, $00
 
-	vaddr $2BDA
+	DBYT $2BDA
 	.byte VU_REPEAT | 4, $00
 
 	.byte $00
 
 
 Video_DoGameOver80:
-	vaddr $2918
+	DBYT $2918
 	.byte $01, $A0
 
-	vaddr $2919
+	DBYT $2919
 	.byte VU_REPEAT | 7, $A1
 
-	vaddr $2900
+	DBYT $2900
 	.byte VU_REPEAT | 7, $A1
 
-	vaddr $2907
+	DBYT $2907
 	.byte $01, $A2
 
-	vaddr $2938
+	DBYT $2938
 	.byte VU_REPEAT | VU_VERT | 6, $E6
 
-	vaddr $2939
+	DBYT $2939
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2920
+	DBYT $2920
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2927
+	DBYT $2927
 	.byte VU_REPEAT | VU_VERT | 6, $E7
 
-	vaddr $2959
+	DBYT $2959
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2940
+	DBYT $2940
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2979
+	DBYT $2979
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2960
+	DBYT $2960
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2999
+	DBYT $2999
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2980
+	DBYT $2980
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29B9
+	DBYT $29B9
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29A0
+	DBYT $29A0
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29D9
+	DBYT $29D9
 	.byte VU_REPEAT | 7, $FE
 	
-	vaddr $29C0
+	DBYT $29C0
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29F8
+	DBYT $29F8
 	.byte $01, $E3
 
-	vaddr $29F9
+	DBYT $29F9
 	.byte VU_REPEAT | 7, $E4
 
-	vaddr $29E0
+	DBYT $29E0
 	.byte VU_REPEAT | 7, $E4
 
-	vaddr $29E7
+	DBYT $29E7
 	.byte $01, $E5
 
 	; ----
 
-	vaddr $297B
+	DBYT $297B
 	.byte $04, $EB, $BC, $BA, $E8		; GAME
 
-	vaddr $2960
+	DBYT $2960
 	.byte $05, $F0, $6A, $E8, $E9, $6B	; OVER!
 
-	vaddr $29A0
+	DBYT $29A0
 	.byte $07, $F0, $DB, $EA, $FC, $DB, $DA, $E8
 
-	vaddr $29BF
+	DBYT $29BF
 	.byte $01, $ED
 
-	vaddr $29C0
+	DBYT $29C0
 	.byte $02, $DB, $EE	; ND
 
-	vaddr $29DF
+	DBYT $29DF
 	.byte $01, $E8	; E
 
 	; ----
 
-	vaddr $2BD0
+	DBYT $2BD0
 	.byte VU_REPEAT | 2, $00 
 
-	vaddr $2BD6
+	DBYT $2BD6
 	.byte VU_REPEAT | 4, $00
 
-	vaddr $2BDE
+	DBYT $2BDE
 	.byte VU_REPEAT | 2, $00
 
 	.byte $00
 
 Video_DoW2WZ:	; "WELCOME TO WARP ZONE" banner
-	vaddr $2884
+	DBYT $2884
 	.byte VU_VERT | $04, $A0, $E6, $E6, $E3
 
-	vaddr $2885
+	DBYT $2885
 	.byte VU_REPEAT | 22, $A1
 
-	vaddr $289B
+	DBYT $289B
 	.byte VU_VERT | $04, $A2, $E7, $E7, $E5
 
-	vaddr $28A5	;W    E    L    C    O    M    E         T    O         S    T    A    R         R    O    A    D
+	DBYT $28A5	;W    E    L    C    O    M    E         T    O         S    T    A    R         R    O    A    D
 	.byte 22, $FE, $D8, $E8, $EC, $ED, $F0, $BA, $E8, $FE, $EA, $F0, $FE, $FD, $EA, $BC, $E9, $FE, $E9, $F0, $BC, $EE, $FE
 
-	vaddr $28C5
+	DBYT $28C5
 	.byte VU_REPEAT | 22, $FE
 
-	vaddr $28E5
+	DBYT $28E5
 	.byte VU_REPEAT | 22, $E4
 
-	vaddr $2BC9
+	DBYT $2BC9
 	.byte VU_REPEAT | 6, $00
 	.byte $00
 
 Video_DoWXLuigi00:
-	vaddr $2908
+	DBYT $2908
 	.byte $01, $A0
 
-	vaddr $2909
+	DBYT $2909
 	.byte VU_REPEAT | 14, $A1
 
-	vaddr $2917
+	DBYT $2917
 	.byte $01, $A2
 
-	vaddr $2928
+	DBYT $2928
 	.byte VU_REPEAT | VU_VERT | 6, $E6
 
-	vaddr $2929
+	DBYT $2929
 
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2937
+	DBYT $2937
 	.byte VU_REPEAT | VU_VERT | 6, $E7
 
-	vaddr $2949
+	DBYT $2949
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2969
+	DBYT $2969
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2989
+	DBYT $2989
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $29A9
+	DBYT $29A9
 	.byte VU_REPEAT | 14, $FE
 	
-	vaddr $29C9
+	DBYT $29C9
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $29E8, 
+	DBYT $29E8, 
 	.byte $01, $E3
 
-	vaddr $29E9
+	DBYT $29E9
 	.byte VU_REPEAT | 14, $E4
 
-	vaddr $29F7
+	DBYT $29F7
 	.byte $01, $E5
 
-	vaddr $294C
+	DBYT $294C
 	.byte $05, $D8, $F0, $E9, $EC, $EE	; WORLD
 
-	vaddr $29AA
+	DBYT $29AA
 	.byte $05, $EC, $DA, $FC, $EB, $FC	; LUIGI
 
-	vaddr $29B3
+	DBYT $29B3
 	.byte $01, $FB
 
-	vaddr $2BD2
+	DBYT $2BD2
 	.byte VU_REPEAT | 4, $00
 
-	vaddr $2BDA
+	DBYT $2BDA
 	.byte VU_REPEAT | 4, $00
 	.byte $00
 
 
 Video_DoWXLuigi80:
-	vaddr $2918
+	DBYT $2918
 	.byte $01, $A0
 
-	vaddr $2919
+	DBYT $2919
 	.byte VU_REPEAT | 7, $A1
 
-	vaddr $2900
+	DBYT $2900
 	.byte VU_REPEAT | 7, $A1
 
-	vaddr $2907
+	DBYT $2907
 	.byte $01, $A2
 
-	vaddr $2938
+	DBYT $2938
 	.byte VU_REPEAT | VU_VERT | 6, $E6
 
-	vaddr $2939
+	DBYT $2939
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2920
+	DBYT $2920
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2927
+	DBYT $2927
 	.byte VU_REPEAT | VU_VERT | 6, $E7
 
-	vaddr $2959
+	DBYT $2959
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2940
+	DBYT $2940
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2979
+	DBYT $2979
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2960
+	DBYT $2960
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2999
+	DBYT $2999
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2980
+	DBYT $2980
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29B9
+	DBYT $29B9
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29A0
+	DBYT $29A0
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29D9
+	DBYT $29D9
 	.byte VU_REPEAT | 7, $FE
 	
-	vaddr $29C0
+	DBYT $29C0
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29F8
+	DBYT $29F8
 	.byte $01, $E3
 
-	vaddr $29F9
+	DBYT $29F9
 	.byte VU_REPEAT | 7, $E4
 
-	vaddr $29E0
+	DBYT $29E0
 	.byte VU_REPEAT | 7, $E4
 
-	vaddr $29E7
+	DBYT $29E7
 	.byte $01, $E5
 	
-	vaddr $295C
+	DBYT $295C
 	.byte $04, $D8, $F0, $E9, $EC	; WORL
 
-	vaddr $2940
+	DBYT $2940
 	.byte $01, $EE			; D
 
-	vaddr $29BA
+	DBYT $29BA
 	.byte $05, $EC, $DA, $FC, $EB, $FC	; LUIGI
 
-	vaddr $29A3
+	DBYT $29A3
 	.byte $01, $FB
 
-	vaddr $2BD0
+	DBYT $2BD0
 	.byte VU_REPEAT | 2, $00
 	
-	vaddr $2BD6
+	DBYT $2BD6
 	.byte VU_REPEAT | 4, $00
 
-	vaddr $2BDE
+	DBYT $2BDE
 	.byte VU_REPEAT | 2, $00
 	.byte $00
 
 
 Video_DoWXToad00:
-	vaddr $2908
+	DBYT $2908
 	.byte $01, $A0
 
-	vaddr $2909
+	DBYT $2909
 	.byte VU_REPEAT | 14, $A1
 
-	vaddr $2917
+	DBYT $2917
 	.byte $01, $A2
 
-	vaddr $2928
+	DBYT $2928
 	.byte VU_REPEAT | VU_VERT | 6, $E6
 
-	vaddr $2929
+	DBYT $2929
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2937
+	DBYT $2937
 	.byte VU_REPEAT | VU_VERT | 6, $E7
 
-	vaddr $2949
+	DBYT $2949
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2969
+	DBYT $2969
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $2989
+	DBYT $2989
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $29A9
+	DBYT $29A9
 	.byte VU_REPEAT | 14, $FE
 	
-	vaddr $29C9
+	DBYT $29C9
 	.byte VU_REPEAT | 14, $FE
 
-	vaddr $29E8, 
+	DBYT $29E8, 
 	.byte $01, $E3
 
-	vaddr $29E9
+	DBYT $29E9
 	.byte VU_REPEAT | 14, $E4
 
-	vaddr $29F7
+	DBYT $29F7
 	.byte $01, $E5
 
 	; ----
 
-	vaddr $294C
+	DBYT $294C
 	.byte $05, $D8, $F0, $E9, $EC, $EE	; WORLD
 
-	vaddr $29AA
+	DBYT $29AA
 	.byte $04, $FD, $F0, $BC, $EE		; TOAD
 
-	vaddr $29B3
+	DBYT $29B3
 	.byte $01, $FB
 
 	; ----
 
-	vaddr $2BD2
+	DBYT $2BD2
 	.byte VU_REPEAT | 4, $00
 
-	vaddr $2BDA
+	DBYT $2BDA
 	.byte VU_REPEAT | 4, $00
 	.byte $00
 
 Video_DoWXToad80:
-	vaddr $2918
+	DBYT $2918
 	.byte $01, $A0
 
-	vaddr $2919
+	DBYT $2919
 	.byte VU_REPEAT | 7, $A1
 
-	vaddr $2900
+	DBYT $2900
 	.byte VU_REPEAT | 7, $A1
 
-	vaddr $2907
+	DBYT $2907
 	.byte $01, $A2
 
-	vaddr $2938
+	DBYT $2938
 	.byte VU_REPEAT | VU_VERT | 6, $E6
 
-	vaddr $2939
+	DBYT $2939
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2920
+	DBYT $2920
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2927
+	DBYT $2927
 	.byte VU_REPEAT | VU_VERT | 6, $E7
 
-	vaddr $2959
+	DBYT $2959
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2940
+	DBYT $2940
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2979
+	DBYT $2979
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2960
+	DBYT $2960
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2999
+	DBYT $2999
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $2980
+	DBYT $2980
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29B9
+	DBYT $29B9
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29A0
+	DBYT $29A0
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29D9
+	DBYT $29D9
 	.byte VU_REPEAT | 7, $FE
 	
-	vaddr $29C0
+	DBYT $29C0
 	.byte VU_REPEAT | 7, $FE
 
-	vaddr $29F8
+	DBYT $29F8
 	.byte $01, $E3
 
-	vaddr $29F9
+	DBYT $29F9
 	.byte VU_REPEAT | 7, $E4
 
-	vaddr $29E0
+	DBYT $29E0
 	.byte VU_REPEAT | 7, $E4
 
-	vaddr $29E7
+	DBYT $29E7
 	.byte $01, $E5
 
 	; ----
 	
-	vaddr $295C
+	DBYT $295C
 	.byte $04, $D8, $F0, $E9, $EC	; WORL
 
-	vaddr $2940
+	DBYT $2940
 	.byte $01, $EE			; D
 
-	vaddr $29BA
+	DBYT $29BA
 	.byte $04, $FD, $F0, $BC, $EE		; TOAD
 
-	vaddr $29A3
+	DBYT $29A3
 	.byte $01, $FB
 
-	vaddr $2BD0
+	DBYT $2BD0
 	.byte VU_REPEAT | 2, $00
 
 	; ----
 	
-	vaddr $2BD6
+	DBYT $2BD6
 	.byte VU_REPEAT | 4, $00
 
-	vaddr $2BDE
+	DBYT $2BDE
 	.byte VU_REPEAT | 2, $00
 	.byte $00
 
@@ -1204,11 +1204,11 @@ WorldIntro_EraseAndStars:
 	; for eradicating the "World X" intro from a dark World 8 map
 	; The low bytes of the video address are replaced with the appropriate offset
 Map_W8Dark_IntroCover:
-	vaddr $2900
+	DBYT $2900
 	.byte VU_VERT | 8
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
 
-	vaddr $2900
+	DBYT $2900
 	.byte VU_VERT | 8
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
@@ -2185,22 +2185,22 @@ Border_VAttrs:		.byte $11, $11, $11, $11, $11, $11	; Attributes along left verti
 			.byte $44, $44, $44, $44, $44, $44	; Attributes along right vertical border
 
 PRG010_CB39:
-	vaddr $2BC0
+	DBYT $2BC0
 	.byte $01, $00
 
-	vaddr $2BC8
+	DBYT $2BC8
 	.byte $01, $00
 
-	vaddr $2BD0
+	DBYT $2BD0
 	.byte $01, $00
 
-	vaddr $2BD8
+	DBYT $2BD8
 	.byte $01, $00
 
-	vaddr $2BE0
+	DBYT $2BE0
 	.byte $01, $00
 
-	vaddr $2BE8
+	DBYT $2BE8
 	.byte $01, $00
 
 	.byte $00	; Terminator
@@ -2208,35 +2208,35 @@ PRG010_CB39_End
 
 ; FIXME: Anybody want to claim this??
 ; $CB52
-        vaddr $2BC7
+        DBYT $2BC7
 	.byte $01, $00
 
-	vaddr $2BCF
+	DBYT $2BCF
 	.byte $01, $00
 
-	vaddr $2BD7
+	DBYT $2BD7
 	.byte $01, $00
 
-	vaddr $2BDF
+	DBYT $2BDF
 	.byte $01, $00
 
-	vaddr $2BE7
+	DBYT $2BE7
 	.byte $01, $00
 
-	vaddr $2BEF
+	DBYT $2BEF
 	.byte $01, $00
 
 	; Terminator
 	.byte $00
 
 PRG010_CB6B:
-	vaddr $2860
+	DBYT $2860
 	.byte $01, $00
 
-	vaddr $2880
+	DBYT $2880
 	.byte VU_VERT | VU_REPEAT | $13, $00
 
-	vaddr $2AE0
+	DBYT $2AE0
 	.byte $01, $00
 
 	.byte $00	; Terminator

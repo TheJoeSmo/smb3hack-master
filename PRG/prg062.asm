@@ -117,44 +117,44 @@ Video_Upd_Table: ; $803E
 	.macro StatusBar _1
 
 	; Sync next three with PRG026 Flip_TopBarCards
-	vaddr _1 + $00
+	DBYT _1 + $00
 	.byte $02, $FC, $A0		; Upper left corner
 
-	vaddr _1 + $02
+	DBYT _1 + $02
 	.byte VU_REPEAT | $12, $A1	; Bar across the top
 
-	vaddr _1 + $14
+	DBYT _1 + $14
 	.byte $0C, $A2, $A0, $A1, $A1, $A3, $A1, $A1, $A3, $A1, $A1, $A2, $FC	; top of card slots
 
 	; Sync this with PRG026 Flip_MidTStatCards
-	vaddr _1 + $20
+	DBYT _1 + $20
 	.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF, $EF, $EF, $EF, $EF, $EF, $3C	; |WORLD  >>>>>>[P] $  | |  | |  | |  | |
 	.byte $3D, $FE, $EC, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
 	; Discrepency --------^  (Pattern is ... $FE, $F0 ... in PRG026 status bar graphics)
 
 	; Sync this with PRG026 Flip_MidBStatCards
-	vaddr _1 + $40
+	DBYT _1 + $40
 	; Discrepency --------v  (Pattern is ... $FE, $FE ... in PRG030 status bar)  Unimportant; inserts M> which is replaced anyway
 	.byte $20, $FC, $A6, $FE, $FE, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
 	.byte $FE, $ED, $F0, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
 	; Discrepency --------^  (Pattern is ... $F4, $F0 ... in PRG030 status bar graphics)
 
 	; Sync next three with PRG026 Flip_BottomBarCards
-	vaddr _1 + $60
+	DBYT _1 + $60
 	.byte $02, $FC, $A8	; Lower corner
 
-	vaddr _1 + $62
+	DBYT _1 + $62
 	.byte VU_REPEAT | $12, $A4	; Bottom bar
 
-	vaddr _1 + $74
+	DBYT _1 + $74
 	.byte $0C, $A5, $A8, $A4, $A4, $A9, $A4, $A4, $A9, $A4, $A4, $A5, $FC	; lower corner and card bottoms
 
 	; End PRG026 sync
 
-	vaddr _1 + $80
+	DBYT _1 + $80
 	.byte VU_REPEAT | $20, $FC	; black space
 
-	vaddr _1 + $A0
+	DBYT _1 + $A0
 	.byte VU_REPEAT | $20, $FC	; black space
 
 	; Terminator
@@ -174,160 +174,160 @@ Video_DoStatusBarHM:
 	StatusBar $2300
 
 Video_3CMStarTop:
-	vaddr $208F
+	DBYT $208F
 	.byte VU_REPEAT | $02, $A9
-	vaddr $20AE
+	DBYT $20AE
 	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $20B1
+	DBYT $20B1
 	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $20ED
+	DBYT $20ED
 	.byte $01, $A9
-	vaddr $20F2
+	DBYT $20F2
 	.byte $01, $A9
-	vaddr $2108
+	DBYT $2108
 	.byte VU_REPEAT | $06, $A9
-	vaddr $2112
+	DBYT $2112
 	.byte VU_REPEAT | $06, $A9
 	.byte $00	; Terminator
 
 Video_3CMStarTip:
-	vaddr $2128
+	DBYT $2128
 	.byte $01, $A9
-	vaddr $2137
+	DBYT $2137
 	.byte $01, $A9
-	vaddr $2149
+	DBYT $2149
 	.byte $01, $A9
-	vaddr $214E
+	DBYT $214E
 	.byte VU_VERT | VU_REPEAT | $03, $A9
-	vaddr $2151
+	DBYT $2151
 	.byte VU_VERT | VU_REPEAT | $03, $A9
-	vaddr $2156
+	DBYT $2156
 	.byte $01, $A9
 	.byte $00	; Terminator
 
 Video_3CMStarSide:
-	vaddr $216A
+	DBYT $216A
 	.byte $01, $A9
-	vaddr $2175
+	DBYT $2175
 	.byte $01, $A9
-	vaddr $218B
+	DBYT $218B
 	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $2194
+	DBYT $2194
 	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $21CA
+	DBYT $21CA
 	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $21D5
+	DBYT $21D5
 	.byte VU_VERT | VU_REPEAT | $02, $A9
 	.byte $00	; Terminator
 
 Video_3CMStarBot1:
-	vaddr $2209
+	DBYT $2209
 	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $220F
+	DBYT $220F
 	.byte VU_REPEAT | $42, $A9
-	vaddr $2216
+	DBYT $2216
 	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $222D
+	DBYT $222D
 	.byte VU_REPEAT | $02, $A9
-	vaddr $2231
+	DBYT $2231
 	.byte VU_REPEAT | $02, $A9
 	.byte $00	; Terminator
 
 Video_3CMStarBot2:
-	vaddr $2248
+	DBYT $2248
 	.byte $05, $A9, $FC, $FC, $A9, $A9
-	vaddr $2253
+	DBYT $2253
 	.byte $05, $A9, $A9, $FC, $FC, $A9
-	vaddr $2268
+	DBYT $2268
 	.byte VU_REPEAT | $03, $A9
-	vaddr $2275
+	DBYT $2275
 	.byte VU_REPEAT | $03, $A9
 	.byte $00	; Terminator
 
 Video_3CMAppear1:
-	vaddr $23CA
+	DBYT $23CA
 	.byte VU_REPEAT | $04, $FF
-	vaddr $23D2
+	DBYT $23D2
 	.byte VU_REPEAT | $04, $FF
-	vaddr $23DA
+	DBYT $23DA
 	.byte VU_REPEAT | $04, $FF
-	vaddr $23E2
+	DBYT $23E2
 	.byte VU_REPEAT | $04, $FF
 	.byte $00	; Terminator
 
 Video_3CMAppear3:
-	vaddr $23D3
+	DBYT $23D3
 	.byte $02, $BF, $EF
-	vaddr $23DB
+	DBYT $23DB
 	.byte $02, $FB, $FE
 	.byte $00	; Terminator
 	
 Video_3CMAppear4:
-	vaddr $23D3
+	DBYT $23D3
 	.byte $02, $6A, $9A
-	vaddr $23DB
+	DBYT $23DB
 	.byte $02, $A6, $A9
 	.byte $00	; Terminator
 
 Video_3CMAppear5:
-	vaddr $23CA
+	DBYT $23CA
 	.byte $04, $BF, $AF, $AF, $EF
-	vaddr $23D2
+	DBYT $23D2
 	.byte $04, $BB, $55, $55, $EE
-	vaddr $23DA
+	DBYT $23DA
 	.byte $04, $BB, $55, $55, $EE
-	vaddr $23E2
+	DBYT $23E2
 	.byte $04, $FB, $FA, $FA, $FE
 	.byte $00	; Terminator
 
 Video_3CMAppear6:
-	vaddr $23CA
+	DBYT $23CA
 	.byte $04, $7F, $5F, $5F, $DF
-	vaddr $23D2
+	DBYT $23D2
 	.byte $04, $77, $55, $55, $DD
-	vaddr $23DA
+	DBYT $23DA
 	.byte $04, $77, $55, $55, $DD
-	vaddr $23E2
+	DBYT $23E2
 	.byte $04, $F7, $F5, $F5, $FD
 	.byte $00	; Terminator
 
 Video_3CMAppear7:
-	vaddr $23CA
+	DBYT $23CA
 	.byte VU_REPEAT | $04, $55
-	vaddr $23D2
+	DBYT $23D2
 	.byte VU_REPEAT | $04, $55
-	vaddr $23DA
+	DBYT $23DA
 	.byte VU_REPEAT | $04, $55
-	vaddr $23E2
+	DBYT $23E2
 	.byte VU_REPEAT | $04, $55
 	.byte $00	; Terminator
 
 	; Blacks out a little bit of the palette during end level triple-card match sequecnce
 Video_Blackout:
-	vaddr $3F0D
+	DBYT $3F0D
 	.byte VU_REPEAT | $03, $0F, $00
 
 
 Video_3CMAppear2:
-	vaddr $3F05
+	DBYT $3F05
 	.byte $03
 
 EndLevelCard_PalData:
 	.byte $0F, $30, $3C
-	vaddr $3F09
+	DBYT $3F09
 	.byte $03, $0F, $10, $2C
-	vaddr $3F0D
+	DBYT $3F0D
 	.byte VU_REPEAT | $03, $0F
 	.byte $00	; Terminator
 
 Video_CourseClear:
-	vaddr $2989
+	DBYT $2989
 	.byte $0E
 	;       C    O    U    R    S    E         C    L    E    A    R         !
 	.byte $85, $8E, $8A, $82, $83, $84, $FC, $85, $8B, $84, $80, $82, $FC, $9B, $00
 
 Video_CourseClearH:
-	vaddr $21C9
+	DBYT $21C9
 	.byte $0E
 	;       C    O    U    R    S    E         C    L    E    A    R         !
 	.byte $85, $8E, $8A, $82, $83, $84, $FC, $85, $8B, $84, $80, $82, $FC, $9B, $00

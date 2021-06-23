@@ -60,7 +60,7 @@
 ; This is used in video update streams; since the video address register
 ; takes the address high-then-low (contrary to 6502's normal low-then-high),
 ; this allows a 16-bit value but "corrects" it to the proper endianness.
-	.macro vaddr _1
+	.macro DBYT _1
 	.byte (_1 & $FF00) >> 8
 	.byte (_1 & $00FF)
 	.endm
@@ -1613,8 +1613,8 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 	
 	.base $05F0
 	Ending_TextPos:		.ds 1	; Ending text position
-	Ending_VAddrL:		.ds 1	; Ending text VAddr low
-	Ending_VAddrH:		.ds 1	; Ending text VAddr high
+	Ending_VAddrL:		.ds 1	; Ending text DBYT low
+	Ending_VAddrH:		.ds 1	; Ending text DBYT high
 	Ending_LineNum:		.ds 1	; Line number (tracks line breaks)
 	Ending2_World:		.ds 1	; Current world of Ending 2
 	Ending2_FadeLevel:	.ds 1	; Fade out 0, 1, 2, 3, 4

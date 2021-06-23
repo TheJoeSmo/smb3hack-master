@@ -128,7 +128,7 @@ Video_Upd_Table2:
 Title_Load_Palette:
 	; This is the initial palette applied to the title screen
 
-	vaddr $3F00
+	DBYT $3F00
 	.byte 32	; 32 bytes to follow (32 colors)
 
 	; The colors!
@@ -139,28 +139,28 @@ Title_Load_Palette:
 
 Title_Checkerboard_Floor:
 
-	vaddr $2B00
+	DBYT $2B00
 	.byte 32	; 32 bytes to follow
 	.byte $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7
 	.byte $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7
 
-	vaddr $2B20
+	DBYT $2B20
 	.byte 32 | VU_REPEAT
 	.byte $F6
 
-	vaddr $2B40
+	DBYT $2B40
 	.byte 32 | VU_REPEAT
 	.byte $F6
 	
-	vaddr $2B60
+	DBYT $2B60
 	.byte 32 | VU_REPEAT
 	.byte $F6
 
-	vaddr $2B80
+	DBYT $2B80
 	.byte 32 | VU_REPEAT
 	.byte $F6
 	
-	vaddr $2BC0
+	DBYT $2BC0
 	.byte 64
 	.byte %10101010
 	
@@ -168,7 +168,7 @@ Title_Checkerboard_Floor:
 	.byte $00
 
 TitleScreen_LogoLine01:
-	vaddr $2000
+	DBYT $2000
 	.byte VU_REPEAT | $20, $FC
 	
 	; Terminator
@@ -179,10 +179,10 @@ TitleScreen_LogoLine02:
 	.byte $00
 
 TitleScreen_LogoLine03:
-	vaddr $2020
+	DBYT $2020
 	.byte VU_REPEAT | $0B, $FC
 
-	vaddr $202B
+	DBYT $202B
 	.byte $15, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $FC, $FC, $FC, $FC, $FC
 	.byte $FC, $FC, $FC, $FC, $FC, $FC
 
@@ -190,10 +190,10 @@ TitleScreen_LogoLine03:
 	.byte $00
 
 TitleScreen_LogoLine04:
-	vaddr $2040
+	DBYT $2040
 	.byte VU_REPEAT | $0B, $FC
 
-	vaddr $204B
+	DBYT $204B
 	.byte $15, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $4A, $FC, $FC, $FC, $FC
 	.byte $FC, $FC, $FC, $FC, $FC, $FC
 
@@ -201,29 +201,29 @@ TitleScreen_LogoLine04:
 	.byte $00
 
 TitleScreen_LogoLine05:
-	vaddr $2060
+	DBYT $2060
 	.byte $16, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $50, $51, $52, $53
 	.byte $54, $55, $56, $57, $58, $59, $5A
 
-	vaddr $2076
+	DBYT $2076
 	.byte VU_REPEAT | $0A, $FC
 
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine06:
-	vaddr $2080
+	DBYT $2080
 	.byte $16, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $60, $61, $62, $63
 	.byte $64, $65, $66, $67, $68, $69, $6A
 
-	vaddr $2096
+	DBYT $2096
 	.byte VU_REPEAT | $0A, $FC
 
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine07:
-	vaddr $20A0
+	DBYT $20A0
 	.byte $20, $FC, $FC, $FC, $FC, $FC, $70, $71, $72, $73, $74, $75, $76, $77, $78, $FC
 	.byte $FC, $FC, $FC, $7D, $7E, $7F, $C0, $C1, $FC, $C3, $C4, $FC, $FC, $FC, $FC, $FC
 	.byte $FC
@@ -232,7 +232,7 @@ TitleScreen_LogoLine07:
 	.byte $00
 
 TitleScreen_LogoLine08:
-	vaddr $20C0
+	DBYT $20C0
 	.byte $20, $FC, $FC, $FC, $FC, $FC, $80, $81, $82, $83, $84, $85, $86, $87, $88, $89
 	.byte $8A, $8B, $FC, $8D, $8E, $8F, $D0, $D1, $D2, $D3, $D4, $D5, $FC, $FC, $FC, $FC
 	.byte $FC
@@ -241,7 +241,7 @@ TitleScreen_LogoLine08:
 	.byte $00
 
 TitleScreen_LogoLine09:
-	vaddr $20E0
+	DBYT $20E0
 	.byte $20, $FC, $FC, $FC, $FC, $FC, $90, $91, $92, $93, $94, $95, $96, $97, $98, $99
 	.byte $9A, $9B, $9C, $9D, $9E, $9F, $E0, $E1, $E2, $E3, $E4, $E5, $FC, $FC, $FC, $FC
 	.byte $FC
@@ -250,7 +250,7 @@ TitleScreen_LogoLine09:
 	.byte $00
 
 TitleScreen_LogoLine10:
-	vaddr $2100
+	DBYT $2100
 	.byte $20, $FC, $FC, $FC, $FC, $FC, $A0, $A1, $A2, $A3, $A4, $A5, $A6, $A7, $A8, $A9
 	.byte $AA, $AB, $AC, $AD, $AE, $AF, $F0, $F1, $F2, $F3, $F4, $F5, $FC, $FC, $FC, $FC
 	.byte $FC
@@ -259,7 +259,7 @@ TitleScreen_LogoLine10:
 	.byte $00
 
 TitleScreen_LogoLine11:
-	vaddr $2120
+	DBYT $2120
 	.byte $20, $FC, $FC, $FC, $FC, $FC, $FC, $B1, $B2, $B3, $B4, $B5, $B6, $B7, $B8, $B9
 	.byte $BA, $BB, $BC, $BD, $BE, $BF, $C6, $C7, $C8, $D6, $D7, $D8, $E8, $FC, $FC, $FC
 	.byte $FC
@@ -268,10 +268,10 @@ TitleScreen_LogoLine11:
 	.byte $00
 
 TitleScreen_LogoLine12:
-	vaddr $2140
+	DBYT $2140
 	.byte VU_REPEAT | $0E, $FC
 
-	vaddr $214E
+	DBYT $214E
 	.byte $12, $C9, $CA, $CB, $CC, $FC, $70, $71, $72, $2B, $2C, $2D, $2E, $FC, $FC, $FC
 	.byte $FC, $FC, $FC
 
@@ -279,10 +279,10 @@ TitleScreen_LogoLine12:
 	.byte $00
 
 TitleScreen_LogoLine13:
-	vaddr $2160
+	DBYT $2160
 	.byte VU_REPEAT | $0E, $FC
 
-	vaddr $216E
+	DBYT $216E
 	.byte $12, $D9, $DA, $DB, $DC, $DD, $80, $81, $82, $3B, $3C, $3D, $3E, $3F, $FC, $FC
 	.byte $FC, $FC, $FC
 
@@ -290,10 +290,10 @@ TitleScreen_LogoLine13:
 	.byte $00
 
 TitleScreen_LogoLine14:
-	vaddr $2180
+	DBYT $2180
 	.byte VU_REPEAT | $0E, $FC
 
-	vaddr $218E
+	DBYT $218E
 	.byte $12, $E9, $EA, $EB, $EC, $ED, $90, $91, $2A, $4B, $4C, $4D, $4E, $4F, $FC, $FC
 	.byte $FC, $FC, $FC
 
@@ -301,7 +301,7 @@ TitleScreen_LogoLine14:
 	.byte $00
 
 TitleScreen_LogoLine15:
-	vaddr $21A0
+	DBYT $21A0
 	.byte $20, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $F9
 	.byte $FA, $FB, $B0, $C2, $A0, $A1, $3A, $5B, $5C, $5D, $5E, $5F, $FC, $FC, $FC, $FC
 	.byte $FC
@@ -310,7 +310,7 @@ TitleScreen_LogoLine15:
 	.byte $00
 
 TitleScreen_LogoLine16:
-	vaddr $21C0
+	DBYT $21C0
 	.byte $20
 	.byte $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $79, $7A
 	.byte $7B, $7C, $DE, $DF, $B1, $B2, $6B, $6C, $6D, $6E, $6F, $FC, $FC, $FC, $FC, $FC
@@ -319,7 +319,7 @@ TitleScreen_LogoLine16:
 	.byte $00
 
 TitleScreen_LogoLine17:
-	vaddr $21E0
+	DBYT $21E0
 	.byte $20
 	.byte $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 	.byte $EE, $EF, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
@@ -328,7 +328,7 @@ TitleScreen_LogoLine17:
 	.byte $00
 
 TitleScreen_LogoLine18:
-	vaddr $2200
+	DBYT $2200
 	
 	.byte 32
 	;            S    U    P    E    R         M    A    R    I    O         B    R    O    S         3       (C)    1    9    8    8        NI   IN   NT   TE   EN   DO
@@ -338,7 +338,7 @@ TitleScreen_LogoLine18:
 	.byte $00
 
 TitleScreen_LogoLine19:
-	vaddr $2220
+	DBYT $2220
 
 	.byte 32
 	;            S    M    3    M    I    X         B    Y         S    O    U    T    H    B    I    R    D         2    0    1    4         R    E    V         2    B
@@ -348,14 +348,14 @@ TitleScreen_LogoLine19:
 	.byte $00
 
 TitleScreen_LogoLine20:
-	vaddr $2240
+	DBYT $2240
 	.byte VU_REPEAT | $20, $FC
 	
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine21:
-	vaddr $2260
+	DBYT $2260
 
 	.byte 32
 	;                                                        P    R    E    S    S         S    T    A    R    T
@@ -368,31 +368,31 @@ TitleScreen_LogoLine21:
 
 
 TitleScreen_LogoLine22:
-	vaddr $2280
+	DBYT $2280
 	.byte VU_REPEAT | $20, $FC
 
-	vaddr $22A0
+	DBYT $22A0
 	.byte VU_REPEAT | $20, $FC
 
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine23:
-	vaddr $22C0
+	DBYT $22C0
 	.byte VU_REPEAT | $20, $FC
 
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine24:
-	vaddr $22E0
+	DBYT $22E0
 	.byte VU_REPEAT | $20, $FC
 
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoAttr1:
-	vaddr $23C0
+	DBYT $23C0
 	.byte $20
 	.byte $55, $55, $55, $55, $55, $55, $55, $55
 	.byte $55, $55, $55, $55, $55, $55, $55, $55
@@ -403,7 +403,7 @@ TitleScreen_LogoAttr1:
 	.byte $00
 
 TitleScreen_LogoAttr2:
-	vaddr $23E0
+	DBYT $23E0
 	.byte $20
 	.byte $00, $00, $00, $00, $00, $00, $00, $00
 	.byte $00, $00, $00, $00, $00, $00, $00, $00
@@ -414,7 +414,7 @@ TitleScreen_LogoAttr2:
 	.byte $00
 
 TitleScreen_DarkPal:
-	vaddr $3F00
+	DBYT $3F00
 	.byte 16 | VU_REPEAT
 	.byte $0F
 
@@ -422,7 +422,7 @@ TitleScreen_DarkPal:
 	.byte $00
 
 PRG025_CA9B:
-	vaddr $3F00
+	DBYT $3F00
 	.byte 16	; 16 bytes (colors) to follow...
 	.byte $0F, $0F, $30, $16, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
 
@@ -430,28 +430,28 @@ PRG025_CA9B:
 	.byte $00
 
 Title_FadeIn_1:
-	vaddr $3F00
+	DBYT $3F00
 	.byte 32	; 16 bytes (colors) to follow...
 	.byte $07, $0F, $00, $06, $07, $0F, $01, $02, $07, $0F, $0A, $0A, $07, $0F, $07, $02
 	.byte $07, $0F, $06, $0F, $07, $0F, $06, $0F, $07, $0F, $06, $0F, $0F, $0F, $0F, $0F
 	.byte $00	; Terminator
 
 Title_FadeIn_2:
-	vaddr $3F00
+	DBYT $3F00
 	.byte 32	; 16 bytes (colors) to follow...
 	.byte $17, $0F, $10, $16, $17, $0F, $11, $02, $17, $0F, $1A, $1A, $17, $0F, $17, $02
 	.byte $17, $0F, $16, $0F, $17, $0A, $16, $0F, $17, $0F, $16, $0F, $0F, $0F, $0F, $0F
 	.byte $00	; Terminator
 
 Title_FadeIn_3:
-	vaddr $3F00
+	DBYT $3F00
 	.byte 32
 	.byte $27, $0F, $20, $16, $27, $0F, $21, $02, $27, $0F, $2A, $1A, $27, $0F, $27, $02
 	.byte $27, $06, $26, $0F, $27, $1A, $26, $0F, $27, $06, $26, $0F, $0F, $0F, $0F, $0F
 	.byte $00	; Terminator
 
 Title_FadeIn_4:
-	vaddr $3F00
+	DBYT $3F00
 	.byte 32
 	.byte $37, $0F, $30, $16, $37, $0F, $21, $02, $37, $0F, $2A, $1A, $37, $0F, $27, $02
 	.byte $37, $16, $36, $0F, $37, $2A, $36, $0F, $37, $16, $36, $0F, $0F, $0F, $0F, $0F
@@ -459,10 +459,10 @@ Title_FadeIn_4:
 
 Title_ClearPressStart:
 
-	;vaddr $226A
+	;DBYT $226A
 	;.byte VU_REPEAT | 11, $FC
 
-	vaddr $2260
+	DBYT $2260
 	.byte $20
 	.byte $FC, $FC, $FC, $FC, $FC, $FC, $FC, $00, $2F, $01, $2F, $12, $13, $00, $11, $13, $FC, $13, $0E, $FC, $02, $0B, $04, $00, $11, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 
@@ -470,78 +470,78 @@ Title_ClearPressStart:
 
 
 Ending_CurtainExtension:
-	vaddr $22E0
+	DBYT $22E0
 	.byte $20, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09
 
-	vaddr $2300
+	DBYT $2300
 	.byte $20, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09
 
-	vaddr $2320
+	DBYT $2320
 	.byte $20, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09
 
-	vaddr $2340
+	DBYT $2340
 	.byte $20, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09
 
-	vaddr $2360
+	DBYT $2360
 	.byte $20, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09
 
-	vaddr $2380
+	DBYT $2380
 	.byte $20, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09
 
-	vaddr $23A0
+	DBYT $23A0
 	.byte $20, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09
 
-	vaddr $2800
+	DBYT $2800
 	.byte $20, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
 	.byte $09
 
-	vaddr $2820
+	DBYT $2820
 	.byte $20, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18
 	.byte $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18
 	.byte $19
 
-	vaddr $2840
+	DBYT $2840
 	.byte $20, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28
 	.byte $29, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28
 	.byte $29
 
-	vaddr $23C0
+	DBYT $23C0
 	.byte VU_REPEAT | $20, $00
 
-	vaddr $23E0
+	DBYT $23E0
 	.byte VU_REPEAT | $10, $00
 
-	vaddr $23F0
+	DBYT $23F0
 	.byte VU_REPEAT | $10, $00
 
-	vaddr $2BC0
+	DBYT $2BC0
 	.byte VU_REPEAT | $08, $A0
 
-	vaddr $2BC8
+	DBYT $2BC8
 	.byte VU_REPEAT | $08, $AA
 
-	vaddr $2BD0
+	DBYT $2BD0
 	.byte VU_REPEAT | $10, $AA
 
-	vaddr $2BE0
+	DBYT $2BE0
 	.byte VU_REPEAT | $10, $AA
 
-	vaddr $3F00
+	DBYT $3F00
 	.byte $20, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
 	.byte $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
 	.byte $0F
@@ -550,7 +550,7 @@ Ending_CurtainExtension:
 	.byte $00
 
 PRG025_CCCE:
-	vaddr $3F00
+	DBYT $3F00
 	.byte $20, $0F, $0F, $30, $16, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
 	.byte $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
 	.byte $0F
@@ -559,7 +559,7 @@ PRG025_CCCE:
 	.byte $00
 
 EndSeq_WorldFadeIn1:
-	vaddr $3F00
+	DBYT $3F00
 	.byte $20, $0F, $0F, $30, $16, $0F, $0F, $0F, $00, $0F, $0F, $00, $0F, $0F, $0F, $00
 	.byte $00, $0F, $0F, $0F, $00, $0F, $00, $0F, $0F, $0F, $00, $0F, $0F, $0F, $00, $0F
 	.byte $0F
@@ -568,7 +568,7 @@ EndSeq_WorldFadeIn1:
 	.byte $00
 
 EndSeq_WorldFadeIn2:
-	vaddr $3F00
+	DBYT $3F00
 	.byte $20, $0F, $0F, $30, $16, $0F, $0F, $00, $10, $0F, $00, $10, $00, $0F, $00, $10
 	.byte $10, $0F, $00, $00, $10, $0F, $10, $00, $00, $0F, $10, $00, $00, $0F, $10, $00
 	.byte $00
@@ -577,7 +577,7 @@ EndSeq_WorldFadeIn2:
 	.byte $00
 
 EndSeq_WorldFadeIn3:
-	vaddr $3F00
+	DBYT $3F00
 	.byte $20, $0F, $0F, $30, $16, $0F, $00, $10, $30, $0F, $10, $30, $10, $0F, $10, $30
 	.byte $30, $0F, $10, $10, $30, $0F, $30, $10, $10, $0F, $30, $10, $10, $0F, $30, $10
 	.byte $10
@@ -586,7 +586,7 @@ EndSeq_WorldFadeIn3:
 	.byte $00
 
 EndSeq_WorldFadeIn4:
-	vaddr $3F00
+	DBYT $3F00
 	.byte $20, $0F, $0F, $30, $16, $0F, $27, $2A, $36, $0F, $3C, $30, $37, $0F, $21, $2A
 	.byte $36, $0F, $10, $36, $0F, $0F, $25, $36, $0F, $0F, $29, $36, $0F, $0F, $29, $36
 	.byte $0F
@@ -595,7 +595,7 @@ EndSeq_WorldFadeIn4:
 	.byte $00
 
 Curtain_Line01:
-	vaddr $2000
+	DBYT $2000
 
 	.byte 32
 	.byte $B7, $B8, $B7, $B8, $B7, $B8, $B7, $B8, $B7, $B8, $B7, $B8, $B7, $B8, $B7, $B8
@@ -604,7 +604,7 @@ Curtain_Line01:
 	.byte $00	; Terminator
 
 Curtain_Line02:
-	vaddr $2020
+	DBYT $2020
 
 	.byte 32
 	.byte $B9, $BA, $B9, $BA, $B9, $BA, $B9, $BA, $B9, $BA, $B9, $BA, $B9, $BA, $B9, $BA
@@ -613,7 +613,7 @@ Curtain_Line02:
 	.byte $00	; Terminator
 
 Curtain_Line03:
-	vaddr $2040
+	DBYT $2040
 
 	.byte 32
 	.byte $B7, $B8, $FD, $FD, $FD, $FD, $FD, $00, $01, $02, $03, $04, $FD, $FD, $FD, $FD
@@ -622,7 +622,7 @@ Curtain_Line03:
 	.byte $00	; Terminator
 
 Curtain_Line04:
-	vaddr $2060
+	DBYT $2060
 
 	.byte 32
 	.byte $B9, $BA, $FD, $0A, $0B, $0C, $0D, $0E, $0F, $10, $11, $12, $13, $FD, $FD, $FD
@@ -631,7 +631,7 @@ Curtain_Line04:
 	.byte $00	; Terminator
 
 Curtain_Line05:
-	vaddr $2080
+	DBYT $2080
 
 	.byte 32
 	.byte $B7, $B8, $1E, $1F, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $FD, $FD
@@ -640,7 +640,7 @@ Curtain_Line05:
 	.byte $00	; Terminator
 
 Curtain_Line06:
-	vaddr $20A0
+	DBYT $20A0
 
 	.byte 32
 	.byte $B9, $BA, $36, $37, $38, $39, $3A, $3B, $FB, $FB, $FB, $3C, $3D, $3E, $3F, $40
@@ -649,7 +649,7 @@ Curtain_Line06:
 	.byte $00	; Terminator
 
 Curtain_Line07:
-	vaddr $20C0
+	DBYT $20C0
 
 	.byte 32
 	.byte $B7, $B8, $4E, $4F, $50, $51, $52, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -658,7 +658,7 @@ Curtain_Line07:
 	.byte $00	; Terminator
 
 Curtain_Line08:
-	vaddr $20E0
+	DBYT $20E0
 
 	.byte 32
 	.byte $B9, $BA, $58, $59, $5A, $5B, $5C, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -667,7 +667,7 @@ Curtain_Line08:
 	.byte $00	; Terminator
 
 Curtain_Line09:
-	vaddr $2100
+	DBYT $2100
 
 	.byte 32
 	.byte $B7, $B8, $61, $62, $63, $FB, $5C, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -676,7 +676,7 @@ Curtain_Line09:
 	.byte $00	; Terminator
 
 Curtain_Line10:
-	vaddr $2120
+	DBYT $2120
 
 	.byte 32
 	.byte $B9, $BA, $64, $65, $66, $FB, $5C, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -685,7 +685,7 @@ Curtain_Line10:
 	.byte $00	; Terminator
 
 Curtain_Line11:
-	vaddr $2140
+	DBYT $2140
 
 	.byte 32
 	.byte $B7, $B8, $67, $68, $69, $FB, $5C, $FB, $FB, $E9, $E5, $DE, $DA, $EC, $DE, $FB
@@ -694,7 +694,7 @@ Curtain_Line11:
 	.byte $00	; Terminator
 
 Curtain_Line12:
-	vaddr $2160
+	DBYT $2160
 
 	.byte 32
 	.byte $B9, $BA, $FD, $6A, $6B, $FB, $5C, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -703,7 +703,7 @@ Curtain_Line12:
 	.byte $00	; Terminator
 
 Curtain_Line13:
-	vaddr $2180
+	DBYT $2180
 
 	.byte 32
 	.byte $B7, $B8, $FD, $6C, $6D, $6E, $5C, $FB, $FB, $FB, $FB, $FB, $E9, $E5, $DA, $F2
@@ -712,7 +712,7 @@ Curtain_Line13:
 	.byte $00	; Terminator
 
 Curtain_Line14:
-	vaddr $21A0
+	DBYT $21A0
 
 	.byte 32
 	.byte $B9, $BA, $FD, $6F, $70, $71, $5C, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -721,7 +721,7 @@ Curtain_Line14:
 	.byte $00	; Terminator
 
 Curtain_Line15:
-	vaddr $21C0
+	DBYT $21C0
 
 	.byte 32
 	.byte $B7, $B8, $FD, $72, $73, $74, $5C, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -730,7 +730,7 @@ Curtain_Line15:
 	.byte $00	; Terminator
 
 Curtain_Line16:
-	vaddr $21E0
+	DBYT $21E0
 
 	.byte 32
 	.byte $B9, $BA, $FD, $75, $76, $77, $5C, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -739,7 +739,7 @@ Curtain_Line16:
 	.byte $00	; Terminator
 
 Curtain_Line17:
-	vaddr $2200
+	DBYT $2200
 
 	.byte 32
 	.byte $B7, $B8, $FD, $78, $79, $7A, $5C, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -748,7 +748,7 @@ Curtain_Line17:
 	.byte $00	; Terminator
 
 Curtain_Line18:
-	vaddr $2220
+	DBYT $2220
 
 	.byte 32
 	.byte $B9, $BA, $FD, $7B, $7C, $7D, $5C, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -757,7 +757,7 @@ Curtain_Line18:
 	.byte $00	; Terminator
 
 Curtain_Line19:
-	vaddr $2240
+	DBYT $2240
 
 	.byte 32
 	.byte $B7, $B8, $FD, $7E, $7F, $80, $5C, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -766,7 +766,7 @@ Curtain_Line19:
 	.byte $00	; Terminator
 
 Curtain_Line20:
-	vaddr $2260
+	DBYT $2260
 
 	.byte 32
 	.byte $B9, $BA, $FD, $FD, $81, $6E, $5C, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -775,7 +775,7 @@ Curtain_Line20:
 	.byte $00	; Terminator
 
 Curtain_Line21:
-	vaddr $2280
+	DBYT $2280
 
 	.byte 32
 	.byte $B7, $B8, $FD, $FD, $82, $6E, $8A, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -784,7 +784,7 @@ Curtain_Line21:
 	.byte $00	; Terminator
 
 Curtain_Line22:
-	vaddr $22A0
+	DBYT $22A0
 
 	.byte 32
 	.byte $B9, $BA, $FD, $FD, $83, $FB, $8B, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -793,7 +793,7 @@ Curtain_Line22:
 	.byte $00	; Terminator
 
 Curtain_Line23:
-	vaddr $22C0
+	DBYT $22C0
 
 	.byte 32
 	.byte $B7, $B8, $FD, $FD, $84, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -802,7 +802,7 @@ Curtain_Line23:
 	.byte $00	; Terminator
 
 Curtain_Line24:
-	vaddr $22E0
+	DBYT $22E0
 
 	.byte 32
 	.byte $B9, $BA, $FD, $FD, $85, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -811,7 +811,7 @@ Curtain_Line24:
 	.byte $00	; Terminator
 
 Curtain_Line25:
-	vaddr $2300
+	DBYT $2300
 
 	.byte 32
 	.byte $B7, $B8, $FD, $FD, $86, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -820,7 +820,7 @@ Curtain_Line25:
 	.byte $00	; Terminator
 
 Curtain_Line26:
-	vaddr $2320
+	DBYT $2320
 
 	.byte 32
 	.byte $B9, $BA, $FD, $FD, $87, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $B2, $FD, $FD, $B9, $BA
@@ -828,7 +828,7 @@ Curtain_Line26:
 	.byte $00	; Terminator
 
 Curtain_Line27:
-	vaddr $2340
+	DBYT $2340
 
 	.byte 32
 	.byte $B7, $B8, $FD, $FD, $88, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $B3, $FD, $FD, $B7, $B8
@@ -836,7 +836,7 @@ Curtain_Line27:
 	.byte $00	; Terminator
 
 Curtain_Line28:
-	vaddr $2360
+	DBYT $2360
 
 	.byte 32
 	.byte $B9, $BA, $FD, $FD, $89, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FB
@@ -845,7 +845,7 @@ Curtain_Line28:
 	.byte $00	; Terminator
 
 Curtain_Line29:
-	vaddr $2380
+	DBYT $2380
 
 	.byte 32
 	.byte $B7, $B8, $B7, $B8, $B7, $B8, $B7, $B8, $B7, $B8, $B7, $B8, $B7, $B8, $B7, $B8
@@ -854,7 +854,7 @@ Curtain_Line29:
 	.byte $00	; Terminator
 
 Curtain_Line30:
-	vaddr $23A0
+	DBYT $23A0
 
 	.byte 32
 	.byte $B9, $BA, $B9, $BA, $B9, $BA, $B9, $BA, $B9, $BA, $B9, $BA, $B9, $BA, $B9, $BA
@@ -863,7 +863,7 @@ Curtain_Line30:
 	.byte $00	; Terminator
 
 CurtainAttr_Line01:
-	vaddr $23C0
+	DBYT $23C0
 
 	.byte 32
 	.byte $3E, $0E, $0E, $0E, $0E, $0E, $0E, $8E, $32, $00, $00, $00, $00, $00, $00, $8C
@@ -872,7 +872,7 @@ CurtainAttr_Line01:
 	.byte $00	; Terminator
 
 CurtainAttr_Line02:
-	vaddr $23E0
+	DBYT $23E0
 
 	.byte 32
 	.byte $32, $00, $00, $0E, $00, $00, $00, $8C, $32, $00, $00, $00, $00, $00, $00, $8C
@@ -882,7 +882,7 @@ CurtainAttr_Line02:
 
 
 Curtain_FadeIn_1:
-	vaddr $3F00
+	DBYT $3F00
 	
 	.byte 32
 	.byte $0F, $0F, $0F, $0F, $0F, $00, $0F, $0F, $0F, $00, $0F, $0F, $0F, $00, $0F, $0F
@@ -891,7 +891,7 @@ Curtain_FadeIn_1:
 	.byte $00
 
 Curtain_FadeIn_2:
-	vaddr $3F00
+	DBYT $3F00
 	
 	.byte 32
 	.byte $0F, $08, $0F, $0F, $0F, $10, $0F, $0F, $0F, $10, $0F, $0F, $0F, $10, $0F, $0F
@@ -900,7 +900,7 @@ Curtain_FadeIn_2:
 	.byte $00
 
 Curtain_FadeIn_3:
-	vaddr $3F00
+	DBYT $3F00
 	
 	.byte 32
 	.byte $0F, $18, $06, $0F, $0F, $20, $02, $06, $0F, $20, $06, $02, $0F, $20, $02, $06
@@ -909,7 +909,7 @@ Curtain_FadeIn_3:
 	.byte $00
 
 Curtain_FadeIn_4:
-	vaddr $3F00
+	DBYT $3F00
 	
 	.byte 32
 	.byte $0F, $28, $16, $06, $0F, $30, $12, $16, $0F, $30, $16, $12, $0F, $30, $12, $16
@@ -920,13 +920,13 @@ Curtain_FadeIn_4:
 
 
 Curtain_P2PushStart:
-	vaddr $232B
+	DBYT $232B
 
 	.byte 8
 	;      P    L    A    Y    E    R         2
 	.byte $E9, $E5, $DA, $F2, $DE, $EB, $FB, $D2
 
-	vaddr $234A
+	DBYT $234A
 
 	.byte 10
 	;      P    U    S    H         S    T    A    R    T
@@ -936,11 +936,11 @@ Curtain_P2PushStart:
 
 
 Curtain_P2PushStartClear:
-	vaddr $232B
+	DBYT $232B
 
 	.byte 8 | VU_REPEAT, $FB
 
-	vaddr $234A
+	DBYT $234A
 
 	.byte 10 | VU_REPEAT, $FB
 
@@ -948,13 +948,13 @@ Curtain_P2PushStartClear:
 
 
 DebugMenu_Line1:
-	vaddr $200A
+	DBYT $200A
 
 	.byte 10
 	;      S    E    K    R    E    T         L    A    B
 	.byte $12, $04, $0A, $11, $04, $13, $FC, $0B, $00, $01
 
-	vaddr $2042
+	DBYT $2042
 
 	.byte 10
 	;      S    O    U    N    D         T    E    S    T
@@ -962,7 +962,7 @@ DebugMenu_Line1:
 	
 		
 	; Index
-	vaddr $2050
+	DBYT $2050
 
 	.byte 2
 	;      0    0
@@ -973,7 +973,7 @@ DebugMenu_Line1:
 
 DebugMenu_Line2:
 	; Music_MusBank / Music_NextIndex / Music_Sq2TrkOff / Music_Sq1TrkOff / Music_TriTrkPos / Music_NseTrkPos / Music_PCMTrkPos
-	vaddr $2081
+	DBYT $2081
 	
 	.byte 29
 	;      B    0    0         I    0    0         2    S    0    0         1    S    0    0         T    0    0         N    0    0         D    0    0
@@ -984,25 +984,25 @@ DebugMenu_Line2:
 	
 
 DebugMenu_Line3:
-	vaddr $20E2
+	DBYT $20E2
 
 	.byte 9
 	;      W    O    R    L    D         E    N    D
 	.byte $16, $0E, $11, $0B, $03, $FC, $04, $0D, $03
 
-	vaddr $20F0
+	DBYT $20F0
 	
 	.byte 1
 	; 1
 	.byte $1B
 
-	vaddr $2122
+	DBYT $2122
 
 	.byte 6
 	;      E    N    D    I    N    G 
 	.byte $04, $0D, $03, $08, $0D, $06
 
-	vaddr $2142
+	DBYT $2142
 
 	.byte 8
 	;      E    N    D    I    N    G         2
@@ -1012,25 +1012,25 @@ DebugMenu_Line3:
 
 
 DebugMenu_Line4:
-	vaddr $21E2
+	DBYT $21E2
 
 	.byte 8
 	;      G    E    T         S    T    A    R 
 	.byte $06, $04, $13, $FC, $12, $13, $00, $11
 
-	vaddr $21F0
+	DBYT $21F0
 	
 	.byte 4
 	;      N    O    N    E
 	.byte $0D, $0E, $0D, $04
 
-	vaddr $2222
+	DBYT $2222
 
 	.byte 11
 	;      C    O    M    P    L         W    O    R    L    D
 	.byte $02, $0E, $0C, $0F, $0B, $FC, $16, $0E, $11, $0B, $03
 	
-	vaddr $2230
+	DBYT $2230
 	
 	.byte 1
 	; 1
@@ -1040,7 +1040,7 @@ DebugMenu_Line4:
 
 
 DebugMenu_Line5:
-	vaddr $2262
+	DBYT $2262
 
 	.byte 5
 	;      S    T    A    R    T
@@ -1050,7 +1050,7 @@ DebugMenu_Line5:
 
 
 DebugMenu_Line6:
-	vaddr $22C0
+	DBYT $22C0
 
 	.byte 24
 	;      W    A    R    N    I    N    G         S    A    V    E         D    A    T    A         M    A    Y         B    E
@@ -1059,7 +1059,7 @@ DebugMenu_Line6:
 	.byte $00	; Terminator
 
 DebugMenu_Line7:
-	vaddr $22E0
+	DBYT $22E0
 
 	.byte 25
 	;      O    V    E    R    W    R    I    T    T    E    N              P    R    O    C    E    E    D         W    I    T    H
@@ -1069,7 +1069,7 @@ DebugMenu_Line7:
 
 
 DebugMenu_Line8:
-	vaddr $2300
+	DBYT $2300
 
 	.byte 7
 	;      C    A    U    T    I    O    N
@@ -1081,7 +1081,7 @@ DebugMenu_Line8:
 DebugMenu_Palette:
 	; This is the initial palette applied to the title screen
 
-	vaddr $3F00
+	DBYT $3F00
 	.byte 32	; 32 bytes to follow (32 colors)
 
 	; The colors!
@@ -1091,7 +1091,7 @@ DebugMenu_Palette:
 	.byte $00	; Terminator
 
 Ending2_Fade1:
-	vaddr $3F00
+	DBYT $3F00
 
 	.byte 16
 	.byte $21, $0F, $30, $3C, $21, $0F, $36, $27, $21, $0F, $30, $10, $21, $0F, $21, $12
@@ -1099,7 +1099,7 @@ Ending2_Fade1:
 	.byte $00	; Terminator
 
 Ending2_Fade2:
-	vaddr $3F00
+	DBYT $3F00
 
 	.byte 16
 	.byte $11, $0F, $30, $3C, $11, $0F, $36, $27, $11, $0F, $30, $10, $11, $0F, $21, $12
@@ -1107,7 +1107,7 @@ Ending2_Fade2:
 	.byte $00	; Terminator
 
 Ending2_Fade3:
-	vaddr $3F00
+	DBYT $3F00
 
 	.byte 16
 	.byte $01, $0F, $30, $3C, $01, $0F, $36, $27, $01, $0F, $30, $10, $01, $0F, $21, $12
@@ -1115,7 +1115,7 @@ Ending2_Fade3:
 	.byte $00	; Terminator
 
 Ending2_Fade4:
-	vaddr $3F00
+	DBYT $3F00
 
 	.byte 32
 	.byte $0F, $0F, $30, $3C, $0F, $0F, $36, $27, $0F, $0F, $30, $10, $0F, $0F, $21, $12
@@ -1124,7 +1124,7 @@ Ending2_Fade4:
 	.byte $00	; Terminator
 
 Ending2_BowsersPal:
-	vaddr $3F1C
+	DBYT $3F1C
 	
 	.byte 4
 	.byte $0F, $1A, $30, $27
@@ -1133,7 +1133,7 @@ Ending2_BowsersPal:
 
 
 Ending2_Msg1:
-	vaddr $28E8
+	DBYT $28E8
 
 	.byte 17
 
@@ -1143,7 +1143,7 @@ Ending2_Msg1:
 	.byte $00
 
 Ending2_Msg2:
-	vaddr $2927
+	DBYT $2927
 	
 	.byte 19
 
@@ -1153,7 +1153,7 @@ Ending2_Msg2:
 	.byte $00
 
 Ending2_Msg3:
-	vaddr $2969
+	DBYT $2969
 
 	.byte 15
 
@@ -1163,7 +1163,7 @@ Ending2_Msg3:
 	.byte $00
 
 Ending2_Msg4:
-	vaddr $29A8
+	DBYT $29A8
 
 	.byte 17
 

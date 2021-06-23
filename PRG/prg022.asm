@@ -1598,15 +1598,15 @@ Bonus_DoNothing:
 Bonus_InstBoxTop:
 
 	; Left corner
-	vaddr $28A4
+	DBYT $28A4
 	.byte $01, $94
 
 	; Bar
-	vaddr $28A5
+	DBYT $28A5
 	.byte VU_REPEAT | $18, $90
 
 	; Right corner
-	vaddr $28BD
+	DBYT $28BD
 	.byte $01, $96
 
 	.byte $00	; Terminator
@@ -1614,15 +1614,15 @@ Bonus_InstBoxTop:
 Bonus_InstBoxLine1:
 
 	; Left edge
-	vaddr $28C4
+	DBYT $28C4
 	.byte $01, $92
 	
 	; Middle
-	vaddr $28C5
+	DBYT $28C5
 	.byte VU_REPEAT | $18, $FE
 
 	; Right edge
-	vaddr $28DD
+	DBYT $28DD
 	.byte $01, $93
 
 	.byte $00	; Terminator
@@ -1630,15 +1630,15 @@ Bonus_InstBoxLine1:
 Bonus_InstBoxLine2:
 
 	; Left edge
-	vaddr $28E4
+	DBYT $28E4
 	.byte $01, $92
 	
 	; Middle
-	vaddr $28E5
+	DBYT $28E5
 	.byte VU_REPEAT | $18, $FE
 
 	; Right edge
-	vaddr $28FD
+	DBYT $28FD
 	.byte $01, $93
 
 	.byte $00	; Terminator
@@ -1646,15 +1646,15 @@ Bonus_InstBoxLine2:
 Bonus_InstBoxLine3:
 
 	; Left edge
-	vaddr $2904
+	DBYT $2904
 	.byte $01, $92
 	
 	; Middle
-	vaddr $2905
+	DBYT $2905
 	.byte VU_REPEAT | $18, $FE
 
 	; Right edge
-	vaddr $291D
+	DBYT $291D
 	.byte $01, $93
 
 	.byte $00	; Terminator
@@ -1663,15 +1663,15 @@ Bonus_InstBoxLine3:
 Bonus_InstBoxBot:
 
 	; Left corner
-	vaddr $2924
+	DBYT $2924
 	.byte $01, $95
 
 	; Bar
-	vaddr $2925
+	DBYT $2925
 	.byte VU_REPEAT | $18, $91
 
 	; Right corner
-	vaddr $293D
+	DBYT $293D
 	.byte $01, $97
 
 	.byte $00	; Terminator
@@ -2696,36 +2696,36 @@ Video_Upd_TableRoulette:
 	.byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $BE, $07
 
 Video_RoulBordAttr:
-	vaddr $2020
+	DBYT $2020
 	.byte VU_REPEAT | $20, $FC
 
-	vaddr $2040
+	DBYT $2040
 	.byte VU_REPEAT | $20, $FC
 
-	vaddr $2061
+	DBYT $2061
 	.byte VU_REPEAT | $1E, $A1
 
-	vaddr $22E0
+	DBYT $22E0
 	.byte VU_REPEAT | $20, $FF
 
-	vaddr $26E0
+	DBYT $26E0
 	.byte VU_REPEAT | $20, $FF
 
-	vaddr $23C8
+	DBYT $23C8
 	.byte $20, $55, $55, $D5, $F5, $F5, $75, $55, $55, $55, $55, $DD, $FF, $FF, $77, $55
 	.byte $55, $55, $55, $DD, $FF, $FF, $77, $95, $A5, $55, $55, $DD, $FF, $FF, $77, $99, $AA
 
-	vaddr $23E8
+	DBYT $23E8
 	.byte VU_REPEAT | $08, $55
 
-	vaddr $27C0
+	DBYT $27C0
 	.byte VU_REPEAT | $08, $55
 
-	vaddr $27C8
+	DBYT $27C8
 	.byte $20, $55, $55, $D5, $F5, $F5, $75, $55, $55, $55, $55, $DD, $FF, $FF, $77, $55
 	.byte $55, $A5, $65, $DD, $FF, $FF, $77, $55, $55, $AA, $66, $DD, $FF, $FF, $77, $55, $55
 
-	vaddr $27E8
+	DBYT $27E8
 	.byte VU_REPEAT | $08, $55
 
 	; Terminator
@@ -5076,31 +5076,31 @@ PRG022_DD77:
 
 	; Base card before the face is added
 CardBase_BufCmds:
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $64, $FE, $FE, $65
 
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $64, $00, $00, $65
 
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $64, $00, $00, $65
 
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $64, $FE, $FE, $65
 CardBase_BufCmds_End
 
 	; Blacks out a card
 CardBlackout_BufCmds
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $FF, $FF, $FF, $FF
 
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $FF, $FF, $FF, $FF
 
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $FF, $FF, $FF, $FF
 
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $FF, $FF, $FF, $FF
 
 	; Terminator
@@ -5109,46 +5109,46 @@ CardBlackout_BufCmds_End
 
 	; NSpade Card unflipped backside
 CardBack_BufCmds:
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $66, $FD, $FD, $67
 
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $66, $2E, $2F, $67
 
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $66, $3E, $3F, $67
 
-	vaddr $0000	; Will be patched
+	DBYT $0000	; Will be patched
 	.byte $04, $66, $FD, $FD, $67
 CardBack_BufCmds_End
 
 	; NSpade Game's Candystripe background
 Video_NSpadeBG:
-	vaddr $2000
+	DBYT $2000
 	.byte VU_REPEAT | $22, $98
 
-	vaddr $2020
+	DBYT $2020
 	.byte VU_REPEAT | $22, $98
 
-	vaddr $2040
+	DBYT $2040
 	.byte VU_REPEAT | VU_VERT | $14, $98
 
-	vaddr $2041
+	DBYT $2041
 	.byte VU_REPEAT | VU_VERT | $14, $98
 
-	vaddr $205E
+	DBYT $205E
 	.byte VU_REPEAT | VU_VERT | $14, $98
 
-	vaddr $205F
+	DBYT $205F
 	.byte VU_REPEAT | VU_VERT | $14, $98
 
-	vaddr $23C0
+	DBYT $23C0
 	.byte $10, $3F, $0F, $0F, $0F, $0F, $0F, $0F, $CF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-	vaddr $23D0
+	DBYT $23D0
 	.byte $10, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-	vaddr $23E0
+	DBYT $23E0
 	.byte $10, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
 
 	; Terminator
