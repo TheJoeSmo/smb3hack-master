@@ -5378,259 +5378,259 @@ TILE19_TABLE_LR		= $D3	; Table lower left
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; CHR ROM BEGINS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.incchr "CHR/chr000.pcx"
-	.incchr "CHR/chr001.pcx"
-	.incchr "CHR/chr002.pcx"
-	.incchr "CHR/chr003.pcx"
-	.incchr "CHR/chr004.pcx"
-	.incchr "CHR/chr005.pcx"
-	.incchr "CHR/chr006.pcx"
-	.incchr "CHR/chr007.pcx"
-	.incchr "CHR/chr008.pcx"
-	.incchr "CHR/chr009.pcx"
-	.incchr "CHR/chr010.pcx"
-	.incchr "CHR/chr011.pcx"
-	.incchr "CHR/chr012.pcx"
-	.incchr "CHR/chr013.pcx"
-	.incchr "CHR/chr014.pcx"
-	.incchr "CHR/chr015.pcx"
-	.incchr "CHR/chr016.pcx"
-	;.incchr "CHR/chr017.pcx"
-	.incchr "CHR/chr018.pcx"
-	.incchr "CHR/chr019.pcx"
-	.incchr "CHR/chr020.pcx"
-	;.incchr "CHR/chr021.pcx"
-	.incchr "CHR/chr022.pcx"
-	;.incchr "CHR/chr023.pcx"
-	.incchr "CHR/chr024.pcx"
-	.incchr "CHR/chr025.pcx"
-	.incchr "CHR/chr026.pcx"
-	.incchr "CHR/chr027.pcx"
-	.incchr "CHR/chr028.pcx"
-	;.incchr "CHR/chr029.pcx"
-	.incchr "CHR/chr030.pcx"
-	.incchr "CHR/chr031.pcx"
-	.incchr "CHR/chr032.pcx"
-	.incchr "CHR/chr033.pcx"
-	.incchr "CHR/chr034.pcx"
-	;.incchr "CHR/chr035.pcx"
-	.incchr "CHR/chr036.pcx"
-	.incchr "CHR/chr037.pcx"
-	.incchr "CHR/chr038.pcx"
-	.incchr "CHR/chr039.pcx"
-	.incchr "CHR/chr040.pcx"
-	.incchr "CHR/chr041.pcx"
-	.incchr "CHR/chr042.pcx"
-	.incchr "CHR/chr043.pcx"
-	.incchr "CHR/chr044.pcx"
-	.incchr "CHR/chr045.pcx"
-	.incchr "CHR/chr046.pcx"
-	.incchr "CHR/chr047.pcx"
-	.incchr "CHR/chr048.pcx"
-	.incchr "CHR/chr049.pcx"
-	.incchr "CHR/chr050.pcx"
-	.incchr "CHR/chr051.pcx"
-	.incchr "CHR/chr052.pcx"
-	.incchr "CHR/chr053.pcx"
-	.incchr "CHR/chr054.pcx"
-	.incchr "CHR/chr055.pcx"
-	.incchr "CHR/chr056.pcx"
-	.incchr "CHR/chr057.pcx"
-	.incchr "CHR/chr058.pcx"
-	.incchr "CHR/chr059.pcx"
-	.incchr "CHR/chr060.pcx"
-	.incchr "CHR/chr061.pcx"
-	.incchr "CHR/chr062.pcx"
-	.incchr "CHR/chr063.pcx"
-	.incchr "CHR/chr064.pcx"
-	;.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr066.pcx"
-	;.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr068.pcx"
-	;.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr070.pcx"
-	;.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr072.pcx"
-	;.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr074.pcx"
-	;.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr076.pcx"
-	.incchr "CHR/chr077.pcx"
-	.incchr "CHR/chr078.pcx"
-	.incchr "CHR/chr079.pcx"
-	.incchr "CHR/chr080.pcx"
-	.incchr "CHR/chr081.pcx"
-	.incchr "CHR/chr082.pcx"
-	.incchr "CHR/chr083.pcx"
-	.incchr "CHR/chr084.pcx"
-	.incchr "CHR/chr085.pcx"
-	.incchr "CHR/chr086.pcx"
-	.incchr "CHR/chr087.pcx"
-	.incchr "CHR/chr088.pcx"
-	.incchr "CHR/chr089.pcx"
-	.incchr "CHR/chr090.pcx"
-	.incchr "CHR/chr091.pcx"
-	.incchr "CHR/chr092.pcx"
-	.incchr "CHR/chr093.pcx"
-	.incchr "CHR/chr094.pcx"
-	.incchr "CHR/chr095.pcx"
-	.incchr "CHR/chr096.pcx"
-	;.incchr "CHR/chr097.pcx"
-	.incchr "CHR/chr098.pcx"
-	;.incchr "CHR/chr099.pcx"
-	.incchr "CHR/chr100.pcx"
-	;.incchr "CHR/chr101.pcx"
-	.incchr "CHR/chr102.pcx"
-	;.incchr "CHR/chr103.pcx"
-	.incchr "CHR/chr104.pcx"
-	;.incchr "CHR/chr105.pcx"
-	.incchr "CHR/chr106.pcx"
-	.incchr "CHR/chr107.pcx"
-	.incchr "CHR/chr108.pcx"
-	;.incchr "CHR/chr109.pcx"
-	.incchr "CHR/chr110.pcx"
-	.incchr "CHR/chr111.pcx"
-	.incchr "CHR/chr112.pcx"
-	;.incchr "CHR/chr113.pcx"
-	.incchr "CHR/chr114.pcx"
-	;.incchr "CHR/chr115.pcx"
-	.incchr "CHR/chr116.pcx"
-	;.incchr "CHR/chr117.pcx"
-	.incchr "CHR/chr118.pcx"
-	;.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr120.pcx"	; 4 banks title
-	;.incchr "CHR/chr121.pcx"	;
-	;.incchr "CHR/chr122.pcx"	;
-	;.incchr "CHR/chr123.pcx"	;
-	.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr126.pcx"
-	.incchr "CHR/chr127.pcx"
-	.incchr "CHR/chr128.pcx"
-	.incchr "CHR/chr129.pcx"
-	.incchr "CHR/chr130.pcx"
-	.incchr "CHR/chr131.pcx"
-	.incchr "CHR/chr132.pcx"
-	.incchr "CHR/chr133.pcx"
-	.incchr "CHR/chr134.pcx"
-	.incchr "CHR/chr135.pcx"
-	.incchr "CHR/chr136.pcx"
-	.incchr "CHR/chr137.pcx"
-	.incchr "CHR/chr138.pcx"
-	.incchr "CHR/chr139.pcx"
-	.incchr "CHR/chr140.pcx"
-	;.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr142.pcx"
-	;.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr144.pcx"
-	.incchr "CHR/chr145.pcx"	; World Map 9 (Star Road) Sprites 1
-	.incchr "CHR/chr146.pcx"
-	;.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr148.pcx"	; World Map Object Graphics primary
-	.incchr "CHR/chr149.pcx"	; World Map Object Graphics secondary
-	.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr151.pcx"	; Small Mario 1/5
-	.incchr "CHR/chr152.pcx"	; Small Mario 2/5
-	.incchr "CHR/chr153.pcx"	; Small Mario 3/5
-	.incchr "CHR/chr154.pcx"	; Small Mario 4/5
-	.incchr "CHR/chrBLK.pcx"	; Small Mario 5/5
-	.incchr "CHR/chr156.pcx"	; Big/Fire Mario 1/5
-	.incchr "CHR/chr157.pcx"	; Big/Fire Mario 2/5
-	.incchr "CHR/chr158.pcx"	; Big/Fire Mario 3/5
-	.incchr "CHR/chr159.pcx"	; Big/Fire Mario 4/5
-	.incchr "CHR/chr160.pcx"	; Big/Fire Mario 5/5
-	.incchr "CHR/chr161.pcx"	; Raccoon (Raccoonooki) Mario 1/5
-	.incchr "CHR/chr162.pcx"	; Raccoon (Raccoonooki) Mario 2/5
-	.incchr "CHR/chr163.pcx"	; Raccoon (Raccoonooki) Mario 3/5
-	.incchr "CHR/chr164.pcx"	; Raccoon (Raccoonooki) Mario 4/5
-	.incchr "CHR/chr165.pcx"	; Raccoon (Raccoonooki) Mario 5/5
-	.incchr "CHR/chr166.pcx"	; Penguin Mario 1/5
-	.incchr "CHR/chr167.pcx"	; Penguin Mario 2/5
-	.incchr "CHR/chr168.pcx"	; Penguin Mario 3/5
-	.incchr "CHR/chr169.pcx"	; Penguin Mario 4/5
-	.incchr "CHR/chr170.pcx"	; Penguin Mario 5/5
-	.incchr "CHR/chr171.pcx"	; Rabbit Mario 1/5
-	.incchr "CHR/chr172.pcx"	; Rabbit Mario 2/5
-	.incchr "CHR/chr173.pcx"	; Rabbit Mario 3/5
-	.incchr "CHR/chr174.pcx"	; Rabbit Mario 4/5
-	.incchr "CHR/chr175.pcx"	; Rabbit Mario 5/5
-	.incchr "CHR/chr176.pcx"	; Hammer Mario 1/5
-	.incchr "CHR/chr177.pcx"	; Hammer Mario 2/5
-	.incchr "CHR/chr178.pcx"	; Hammer Mario 3/5
-	.incchr "CHR/chr179.pcx"	; Hammer Mario 4/5
-	.incchr "CHR/chr180.pcx"	; Hammer Mario 5/5
-	.incchr "CHR/chr181.pcx"	; Small Luigi 1/5
-	.incchr "CHR/chr182.pcx"	; Small Luigi 2/5
-	.incchr "CHR/chr183.pcx"	; Small Luigi 3/5
-	.incchr "CHR/chr184.pcx"	; Small Luigi 4/5
-	.incchr "CHR/chrBLK.pcx"	; Small Luigi 5/5
-	.incchr "CHR/chr186.pcx"	; Big/Fire Luigi 1/5
-	.incchr "CHR/chr187.pcx"	; Big/Fire Luigi 2/5
-	.incchr "CHR/chr188.pcx"	; Big/Fire Luigi 3/5
-	.incchr "CHR/chr189.pcx"	; Big/Fire Luigi 4/5
-	.incchr "CHR/chr190.pcx"	; Big/Fire Luigi 5/5
-	.incchr "CHR/chr191.pcx"	; Raccoon (Raccoonooki) Luigi 1/5
-	.incchr "CHR/chr192.pcx"	; Raccoon (Raccoonooki) Luigi 2/5
-	.incchr "CHR/chr193.pcx"	; Raccoon (Raccoonooki) Luigi 3/5
-	.incchr "CHR/chr194.pcx"	; Raccoon (Raccoonooki) Luigi 4/5
-	.incchr "CHR/chr195.pcx"	; Raccoon (Raccoonooki) Luigi 5/5
-	.incchr "CHR/chr196.pcx"	; Penguin Luigi 1/5
-	.incchr "CHR/chr197.pcx"	; Penguin Luigi 2/5
-	.incchr "CHR/chr198.pcx"	; Penguin Luigi 3/5
-	.incchr "CHR/chr199.pcx"	; Penguin Luigi 4/5
-	.incchr "CHR/chr200.pcx"	; Penguin Luigi 5/5
-	.incchr "CHR/chr201.pcx"	; Rabbit Luigi 1/5
-	.incchr "CHR/chr202.pcx"	; Rabbit Luigi 2/5
-	.incchr "CHR/chr203.pcx"	; Rabbit Luigi 3/5
-	.incchr "CHR/chr204.pcx"	; Rabbit Luigi 4/5
-	.incchr "CHR/chr205.pcx"	; Rabbit Luigi 5/5
-	.incchr "CHR/chr206.pcx"	; Hammer Luigi 1/5
-	.incchr "CHR/chr207.pcx"	; Hammer Luigi 2/5
-	.incchr "CHR/chr208.pcx"	; Hammer Luigi 3/5
-	.incchr "CHR/chr209.pcx"	; Hammer Luigi 4/5
-	.incchr "CHR/chr210.pcx"	; Hammer Luigi 5/5
-	.incchr "CHR/chr211.pcx"	; Small Toad 1/5
-	.incchr "CHR/chr212.pcx"	; Small Toad 2/5
-	.incchr "CHR/chr213.pcx"	; Small Toad 3/5
-	.incchr "CHR/chr214.pcx"	; Small Toad 4/5
-	.incchr "CHR/chrBLK.pcx"	; Small Toad 5/5
-	.incchr "CHR/chr216.pcx"	; Big/Fire Toad 1/5
-	.incchr "CHR/chr217.pcx"	; Big/Fire Toad 2/5
-	.incchr "CHR/chr218.pcx"	; Big/Fire Toad 3/5
-	.incchr "CHR/chr219.pcx"	; Big/Fire Toad 4/5
-	.incchr "CHR/chr220.pcx"	; Big/Fire Toad 5/5
-	.incchr "CHR/chr221.pcx"	; Raccoon (Raccoonooki) Toad 1/5
-	.incchr "CHR/chr222.pcx"	; Raccoon (Raccoonooki) Toad 2/5
-	.incchr "CHR/chr223.pcx"	; Raccoon (Raccoonooki) Toad 3/5
-	.incchr "CHR/chr224.pcx"	; Raccoon (Raccoonooki) Toad 4/5
-	.incchr "CHR/chr225.pcx"	; Raccoon (Raccoonooki) Toad 5/5
-	.incchr "CHR/chr226.pcx"	; Penguin Toad 1/5
-	.incchr "CHR/chr227.pcx"	; Penguin Toad 2/5
-	.incchr "CHR/chr228.pcx"	; Penguin Toad 3/5
-	.incchr "CHR/chr229.pcx"	; Penguin Toad 4/5
-	.incchr "CHR/chr230.pcx"	; Penguin Toad 5/5
-	.incchr "CHR/chr231.pcx"	; Rabbit Toad 1/5
-	.incchr "CHR/chr232.pcx"	; Rabbit Toad 2/5
-	.incchr "CHR/chr233.pcx"	; Rabbit Toad 3/5
-	.incchr "CHR/chr234.pcx"	; Rabbit Toad 4/5
-	.incchr "CHR/chr235.pcx"	; Rabbit Toad 5/5
-	.incchr "CHR/chr236.pcx"	; Hammer Toad 1/5
-	.incchr "CHR/chr237.pcx"	; Hammer Toad 2/5
-	.incchr "CHR/chr238.pcx"	; Hammer Toad 3/5
-	.incchr "CHR/chr239.pcx"	; Hammer Toad 4/5
-	.incchr "CHR/chr240.pcx"	; Hammer Toad 5/5
-	.incchr "CHR/chr241.pcx"	; World Map Common
-	.incchr "CHR/chr242.pcx"	; World Map Mario
-	.incchr "CHR/chr243.pcx"	; World Map Luigi
-	.incchr "CHR/chr244.pcx"	; World Map Toad
-	.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr246.pcx"
-	;.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chr248.pcx"
-	.incchr "CHR/chr249.pcx"
-	.incchr "CHR/chr250.pcx"
-	.incchr "CHR/chr251.pcx"
-	.incchr "CHR/chr252.pcx"
-	.incchr "CHR/chr253.pcx"
-	.incchr "CHR/chr254.pcx" 	; Plains alt on/off graphics
-	.incchr "CHR/chr255.pcx"
+	.incchr "CHR/chr000.chr"
+	.incchr "CHR/chr001.chr"
+	.incchr "CHR/chr002.chr"
+	.incchr "CHR/chr003.chr"
+	.incchr "CHR/chr004.chr"
+	.incchr "CHR/chr005.chr"
+	.incchr "CHR/chr006.chr"
+	.incchr "CHR/chr007.chr"
+	.incchr "CHR/chr008.chr"
+	.incchr "CHR/chr009.chr"
+	.incchr "CHR/chr010.chr"
+	.incchr "CHR/chr011.chr"
+	.incchr "CHR/chr012.chr"
+	.incchr "CHR/chr013.chr"
+	.incchr "CHR/chr014.chr"
+	.incchr "CHR/chr015.chr"
+	.incchr "CHR/chr016.chr"
+	;.incchr "CHR/chr017.chr"
+	.incchr "CHR/chr018.chr"
+	.incchr "CHR/chr019.chr"
+	.incchr "CHR/chr020.chr"
+	;.incchr "CHR/chr021.chr"
+	.incchr "CHR/chr022.chr"
+	;.incchr "CHR/chr023.chr"
+	.incchr "CHR/chr024.chr"
+	.incchr "CHR/chr025.chr"
+	.incchr "CHR/chr026.chr"
+	.incchr "CHR/chr027.chr"
+	.incchr "CHR/chr028.chr"
+	;.incchr "CHR/chr029.chr"
+	.incchr "CHR/chr030.chr"
+	.incchr "CHR/chr031.chr"
+	.incchr "CHR/chr032.chr"
+	.incchr "CHR/chr033.chr"
+	.incchr "CHR/chr034.chr"
+	;.incchr "CHR/chr035.chr"
+	.incchr "CHR/chr036.chr"
+	.incchr "CHR/chr037.chr"
+	.incchr "CHR/chr038.chr"
+	.incchr "CHR/chr039.chr"
+	.incchr "CHR/chr040.chr"
+	.incchr "CHR/chr041.chr"
+	.incchr "CHR/chr042.chr"
+	.incchr "CHR/chr043.chr"
+	.incchr "CHR/chr044.chr"
+	.incchr "CHR/chr045.chr"
+	.incchr "CHR/chr046.chr"
+	.incchr "CHR/chr047.chr"
+	.incchr "CHR/chr048.chr"
+	.incchr "CHR/chr049.chr"
+	.incchr "CHR/chr050.chr"
+	.incchr "CHR/chr051.chr"
+	.incchr "CHR/chr052.chr"
+	.incchr "CHR/chr053.chr"
+	.incchr "CHR/chr054.chr"
+	.incchr "CHR/chr055.chr"
+	.incchr "CHR/chr056.chr"
+	.incchr "CHR/chr057.chr"
+	.incchr "CHR/chr058.chr"
+	.incchr "CHR/chr059.chr"
+	.incchr "CHR/chr060.chr"
+	.incchr "CHR/chr061.chr"
+	.incchr "CHR/chr062.chr"
+	.incchr "CHR/chr063.chr"
+	.incchr "CHR/chr064.chr"
+	;.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr066.chr"
+	;.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr068.chr"
+	;.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr070.chr"
+	;.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr072.chr"
+	;.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr074.chr"
+	;.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr076.chr"
+	.incchr "CHR/chr077.chr"
+	.incchr "CHR/chr078.chr"
+	.incchr "CHR/chr079.chr"
+	.incchr "CHR/chr080.chr"
+	.incchr "CHR/chr081.chr"
+	.incchr "CHR/chr082.chr"
+	.incchr "CHR/chr083.chr"
+	.incchr "CHR/chr084.chr"
+	.incchr "CHR/chr085.chr"
+	.incchr "CHR/chr086.chr"
+	.incchr "CHR/chr087.chr"
+	.incchr "CHR/chr088.chr"
+	.incchr "CHR/chr089.chr"
+	.incchr "CHR/chr090.chr"
+	.incchr "CHR/chr091.chr"
+	.incchr "CHR/chr092.chr"
+	.incchr "CHR/chr093.chr"
+	.incchr "CHR/chr094.chr"
+	.incchr "CHR/chr095.chr"
+	.incchr "CHR/chr096.chr"
+	;.incchr "CHR/chr097.chr"
+	.incchr "CHR/chr098.chr"
+	;.incchr "CHR/chr099.chr"
+	.incchr "CHR/chr100.chr"
+	;.incchr "CHR/chr101.chr"
+	.incchr "CHR/chr102.chr"
+	;.incchr "CHR/chr103.chr"
+	.incchr "CHR/chr104.chr"
+	;.incchr "CHR/chr105.chr"
+	.incchr "CHR/chr106.chr"
+	.incchr "CHR/chr107.chr"
+	.incchr "CHR/chr108.chr"
+	;.incchr "CHR/chr109.chr"
+	.incchr "CHR/chr110.chr"
+	.incchr "CHR/chr111.chr"
+	.incchr "CHR/chr112.chr"
+	;.incchr "CHR/chr113.chr"
+	.incchr "CHR/chr114.chr"
+	;.incchr "CHR/chr115.chr"
+	.incchr "CHR/chr116.chr"
+	;.incchr "CHR/chr117.chr"
+	.incchr "CHR/chr118.chr"
+	;.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr120.chr"	; 4 banks title
+	;.incchr "CHR/chr121.chr"	;
+	;.incchr "CHR/chr122.chr"	;
+	;.incchr "CHR/chr123.chr"	;
+	.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr126.chr"
+	.incchr "CHR/chr127.chr"
+	.incchr "CHR/chr128.chr"
+	.incchr "CHR/chr129.chr"
+	.incchr "CHR/chr130.chr"
+	.incchr "CHR/chr131.chr"
+	.incchr "CHR/chr132.chr"
+	.incchr "CHR/chr133.chr"
+	.incchr "CHR/chr134.chr"
+	.incchr "CHR/chr135.chr"
+	.incchr "CHR/chr136.chr"
+	.incchr "CHR/chr137.chr"
+	.incchr "CHR/chr138.chr"
+	.incchr "CHR/chr139.chr"
+	.incchr "CHR/chr140.chr"
+	;.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr142.chr"
+	;.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr144.chr"
+	.incchr "CHR/chr145.chr"	; World Map 9 (Star Road) Sprites 1
+	.incchr "CHR/chr146.chr"
+	;.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr148.chr"	; World Map Object Graphics primary
+	.incchr "CHR/chr149.chr"	; World Map Object Graphics secondary
+	.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr151.chr"	; Small Mario 1/5
+	.incchr "CHR/chr152.chr"	; Small Mario 2/5
+	.incchr "CHR/chr153.chr"	; Small Mario 3/5
+	.incchr "CHR/chr154.chr"	; Small Mario 4/5
+	.incchr "CHR/chrBLK.chr"	; Small Mario 5/5
+	.incchr "CHR/chr156.chr"	; Big/Fire Mario 1/5
+	.incchr "CHR/chr157.chr"	; Big/Fire Mario 2/5
+	.incchr "CHR/chr158.chr"	; Big/Fire Mario 3/5
+	.incchr "CHR/chr159.chr"	; Big/Fire Mario 4/5
+	.incchr "CHR/chr160.chr"	; Big/Fire Mario 5/5
+	.incchr "CHR/chr161.chr"	; Raccoon (Raccoonooki) Mario 1/5
+	.incchr "CHR/chr162.chr"	; Raccoon (Raccoonooki) Mario 2/5
+	.incchr "CHR/chr163.chr"	; Raccoon (Raccoonooki) Mario 3/5
+	.incchr "CHR/chr164.chr"	; Raccoon (Raccoonooki) Mario 4/5
+	.incchr "CHR/chr165.chr"	; Raccoon (Raccoonooki) Mario 5/5
+	.incchr "CHR/chr166.chr"	; Penguin Mario 1/5
+	.incchr "CHR/chr167.chr"	; Penguin Mario 2/5
+	.incchr "CHR/chr168.chr"	; Penguin Mario 3/5
+	.incchr "CHR/chr169.chr"	; Penguin Mario 4/5
+	.incchr "CHR/chr170.chr"	; Penguin Mario 5/5
+	.incchr "CHR/chr171.chr"	; Rabbit Mario 1/5
+	.incchr "CHR/chr172.chr"	; Rabbit Mario 2/5
+	.incchr "CHR/chr173.chr"	; Rabbit Mario 3/5
+	.incchr "CHR/chr174.chr"	; Rabbit Mario 4/5
+	.incchr "CHR/chr175.chr"	; Rabbit Mario 5/5
+	.incchr "CHR/chr176.chr"	; Hammer Mario 1/5
+	.incchr "CHR/chr177.chr"	; Hammer Mario 2/5
+	.incchr "CHR/chr178.chr"	; Hammer Mario 3/5
+	.incchr "CHR/chr179.chr"	; Hammer Mario 4/5
+	.incchr "CHR/chr180.chr"	; Hammer Mario 5/5
+	.incchr "CHR/chr181.chr"	; Small Luigi 1/5
+	.incchr "CHR/chr182.chr"	; Small Luigi 2/5
+	.incchr "CHR/chr183.chr"	; Small Luigi 3/5
+	.incchr "CHR/chr184.chr"	; Small Luigi 4/5
+	.incchr "CHR/chrBLK.chr"	; Small Luigi 5/5
+	.incchr "CHR/chr186.chr"	; Big/Fire Luigi 1/5
+	.incchr "CHR/chr187.chr"	; Big/Fire Luigi 2/5
+	.incchr "CHR/chr188.chr"	; Big/Fire Luigi 3/5
+	.incchr "CHR/chr189.chr"	; Big/Fire Luigi 4/5
+	.incchr "CHR/chr190.chr"	; Big/Fire Luigi 5/5
+	.incchr "CHR/chr191.chr"	; Raccoon (Raccoonooki) Luigi 1/5
+	.incchr "CHR/chr192.chr"	; Raccoon (Raccoonooki) Luigi 2/5
+	.incchr "CHR/chr193.chr"	; Raccoon (Raccoonooki) Luigi 3/5
+	.incchr "CHR/chr194.chr"	; Raccoon (Raccoonooki) Luigi 4/5
+	.incchr "CHR/chr195.chr"	; Raccoon (Raccoonooki) Luigi 5/5
+	.incchr "CHR/chr196.chr"	; Penguin Luigi 1/5
+	.incchr "CHR/chr197.chr"	; Penguin Luigi 2/5
+	.incchr "CHR/chr198.chr"	; Penguin Luigi 3/5
+	.incchr "CHR/chr199.chr"	; Penguin Luigi 4/5
+	.incchr "CHR/chr200.chr"	; Penguin Luigi 5/5
+	.incchr "CHR/chr201.chr"	; Rabbit Luigi 1/5
+	.incchr "CHR/chr202.chr"	; Rabbit Luigi 2/5
+	.incchr "CHR/chr203.chr"	; Rabbit Luigi 3/5
+	.incchr "CHR/chr204.chr"	; Rabbit Luigi 4/5
+	.incchr "CHR/chr205.chr"	; Rabbit Luigi 5/5
+	.incchr "CHR/chr206.chr"	; Hammer Luigi 1/5
+	.incchr "CHR/chr207.chr"	; Hammer Luigi 2/5
+	.incchr "CHR/chr208.chr"	; Hammer Luigi 3/5
+	.incchr "CHR/chr209.chr"	; Hammer Luigi 4/5
+	.incchr "CHR/chr210.chr"	; Hammer Luigi 5/5
+	.incchr "CHR/chr211.chr"	; Small Toad 1/5
+	.incchr "CHR/chr212.chr"	; Small Toad 2/5
+	.incchr "CHR/chr213.chr"	; Small Toad 3/5
+	.incchr "CHR/chr214.chr"	; Small Toad 4/5
+	.incchr "CHR/chrBLK.chr"	; Small Toad 5/5
+	.incchr "CHR/chr216.chr"	; Big/Fire Toad 1/5
+	.incchr "CHR/chr217.chr"	; Big/Fire Toad 2/5
+	.incchr "CHR/chr218.chr"	; Big/Fire Toad 3/5
+	.incchr "CHR/chr219.chr"	; Big/Fire Toad 4/5
+	.incchr "CHR/chr220.chr"	; Big/Fire Toad 5/5
+	.incchr "CHR/chr221.chr"	; Raccoon (Raccoonooki) Toad 1/5
+	.incchr "CHR/chr222.chr"	; Raccoon (Raccoonooki) Toad 2/5
+	.incchr "CHR/chr223.chr"	; Raccoon (Raccoonooki) Toad 3/5
+	.incchr "CHR/chr224.chr"	; Raccoon (Raccoonooki) Toad 4/5
+	.incchr "CHR/chr225.chr"	; Raccoon (Raccoonooki) Toad 5/5
+	.incchr "CHR/chr226.chr"	; Penguin Toad 1/5
+	.incchr "CHR/chr227.chr"	; Penguin Toad 2/5
+	.incchr "CHR/chr228.chr"	; Penguin Toad 3/5
+	.incchr "CHR/chr229.chr"	; Penguin Toad 4/5
+	.incchr "CHR/chr230.chr"	; Penguin Toad 5/5
+	.incchr "CHR/chr231.chr"	; Rabbit Toad 1/5
+	.incchr "CHR/chr232.chr"	; Rabbit Toad 2/5
+	.incchr "CHR/chr233.chr"	; Rabbit Toad 3/5
+	.incchr "CHR/chr234.chr"	; Rabbit Toad 4/5
+	.incchr "CHR/chr235.chr"	; Rabbit Toad 5/5
+	.incchr "CHR/chr236.chr"	; Hammer Toad 1/5
+	.incchr "CHR/chr237.chr"	; Hammer Toad 2/5
+	.incchr "CHR/chr238.chr"	; Hammer Toad 3/5
+	.incchr "CHR/chr239.chr"	; Hammer Toad 4/5
+	.incchr "CHR/chr240.chr"	; Hammer Toad 5/5
+	.incchr "CHR/chr241.chr"	; World Map Common
+	.incchr "CHR/chr242.chr"	; World Map Mario
+	.incchr "CHR/chr243.chr"	; World Map Luigi
+	.incchr "CHR/chr244.chr"	; World Map Toad
+	.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr246.chr"
+	;.incchr "CHR/chrBLK.chr"
+	.incchr "CHR/chr248.chr"
+	.incchr "CHR/chr249.chr"
+	.incchr "CHR/chr250.chr"
+	.incchr "CHR/chr251.chr"
+	.incchr "CHR/chr252.chr"
+	.incchr "CHR/chr253.chr"
+	.incchr "CHR/chr254.chr" 	; Plains alt on/off graphics
+	.incchr "CHR/chr255.chr"
