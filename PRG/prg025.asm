@@ -1173,5 +1173,5 @@ Ending2_Msg4:
 	.byte $00
 
 
-WZEnding_Objects:	.include "PRG/objects/W8A"			; World 8 Airship
+WZEnding_Objects:	.include "PRG/objects/W8A.asm"			; World 8 Airship
 
