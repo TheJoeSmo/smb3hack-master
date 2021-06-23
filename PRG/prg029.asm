@@ -2834,22 +2834,19 @@ PRG029_DDA2:
 	RTS		 ; Return
 
 
-	; Change Big Buffer Command offset
-CBIG_BCOff .func \1 - Chng4Way_90Degrees
-
 	; Get initial offset to proper set of commands to be used
 CBig_Offsets:
-	.byte CBIG_BCOff(Chng4Way_90Degrees)	; 4-way cannon at 90 degrees
-	.byte CBIG_BCOff(Chng4Way_45Degrees)	; 4-way cannon at 45 degrees
+	.byte Chng4Way_90Degrees - Chng4Way_90Degrees	; 4-way cannon at 90 degrees
+	.byte Chng4Way_45Degrees - Chng4Way_90Degrees	; 4-way cannon at 45 degrees
 
-	.byte CBIG_BCOff(CBig_GiantBlock_BrickBust)	; GiantBlock_BrickBust
-	.byte CBIG_BCOff(CBig_GiantBlock_BlockHit)	; GiantBlock_BlockHit
-	.byte CBIG_BCOff(CBig_GiantBlock_BrickRestore)	; GiantBlock_BrickRestore
+	.byte CBig_GiantBlock_BrickBust - Chng4Way_90Degrees	; GiantBlock_BrickBust
+	.byte CBig_GiantBlock_BlockHit - Chng4Way_90Degrees	; GiantBlock_BlockHit
+	.byte CBig_GiantBlock_BrickRestore - Chng4Way_90Degrees	; GiantBlock_BrickRestore
 	
-	.byte CBIG_BCOff(Chng_PipeRaise)	; Pipe raise stage 1
-	.byte CBIG_BCOff(Chng_PipeRaise)+7	; Pipe raise stage 2
-	.byte CBIG_BCOff(Chng_PipeRaise)+14	; Pipe raise stage 3
-	.byte CBIG_BCOff(Chng_PipeRaise)+21	; Pipe raise stage 4
+	.byte Chng_PipeRaise - Chng4Way_90Degrees	; Pipe raise stage 1
+	.byte Chng_PipeRaise - Chng4Way_90Degrees+7	; Pipe raise stage 2
+	.byte Chng_PipeRaise - Chng4Way_90Degrees+14	; Pipe raise stage 3
+	.byte Chng_PipeRaise - Chng4Way_90Degrees+21	; Pipe raise stage 4
 
 Chng4Way_90Degrees:
 	.byte $00, $00, $04, $FF, $A6, $A7, $FF
