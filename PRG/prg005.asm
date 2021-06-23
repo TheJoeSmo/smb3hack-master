@@ -358,20 +358,18 @@ ObjectGroup04_Attributes4:
 	; Object group $04 (i.e. objects starting at ID $90) pattern index starts
 	; These are used for all states except "normal"
 
-OG4_POff .func (\1 - ObjectGroup04_PatternSets)
-
 	.org ObjectGroup_PatternStarts	; <-- help enforce this table *here*
 ObjectGroup04_PatternStarts:
 	; Index by object group relative index (ObjGroupRel_Idx)
-	.byte OG4_POff(ObjP90), OG4_POff(ObjP91), OG4_POff(ObjP92), OG4_POff(ObjP93)
-	.byte OG4_POff(ObjP94), OG4_POff(ObjP95), OG4_POff(ObjP96), OG4_POff(ObjP97)
-	.byte OG4_POff(ObjP98), OG4_POff(ObjP99), OG4_POff(ObjP9A), OG4_POff(ObjP9B)
-	.byte OG4_POff(ObjP9C), OG4_POff(ObjP9D), OG4_POff(ObjP9E), OG4_POff(ObjP9F)
-	.byte OG4_POff(ObjPA0), OG4_POff(ObjPA1), OG4_POff(ObjPA2), OG4_POff(ObjPA3)
-	.byte OG4_POff(ObjPA4), OG4_POff(ObjPA5), OG4_POff(ObjPA6), OG4_POff(ObjPA7)
-	.byte OG4_POff(ObjPA8), OG4_POff(ObjPA9), OG4_POff(ObjPAA), OG4_POff(ObjPAB)
-	.byte OG4_POff(ObjPAC), OG4_POff(ObjPAD), OG4_POff(ObjPAE), OG4_POff(ObjPAF)
-	.byte OG4_POff(ObjPB0), OG4_POff(ObjPB1), OG4_POff(ObjPB2), OG4_POff(ObjPB3)
+	.byte ObjP90 - ObjectGroup04_PatternSets, ObjP91 - ObjectGroup04_PatternSets, ObjP92 - ObjectGroup04_PatternSets, ObjP93 - ObjectGroup04_PatternSets
+	.byte ObjP94 - ObjectGroup04_PatternSets, ObjP95 - ObjectGroup04_PatternSets, ObjP96 - ObjectGroup04_PatternSets, ObjP97 - ObjectGroup04_PatternSets
+	.byte ObjP98 - ObjectGroup04_PatternSets, ObjP99 - ObjectGroup04_PatternSets, ObjP9A - ObjectGroup04_PatternSets, ObjP9B - ObjectGroup04_PatternSets
+	.byte ObjP9C - ObjectGroup04_PatternSets, ObjP9D - ObjectGroup04_PatternSets, ObjP9E - ObjectGroup04_PatternSets, ObjP9F - ObjectGroup04_PatternSets
+	.byte ObjPA0 - ObjectGroup04_PatternSets, ObjPA1 - ObjectGroup04_PatternSets, ObjPA2 - ObjectGroup04_PatternSets, ObjPA3 - ObjectGroup04_PatternSets
+	.byte ObjPA4 - ObjectGroup04_PatternSets, ObjPA5 - ObjectGroup04_PatternSets, ObjPA6 - ObjectGroup04_PatternSets, ObjPA7 - ObjectGroup04_PatternSets
+	.byte ObjPA8 - ObjectGroup04_PatternSets, ObjPA9 - ObjectGroup04_PatternSets, ObjPAA - ObjectGroup04_PatternSets, ObjPAB - ObjectGroup04_PatternSets
+	.byte ObjPAC - ObjectGroup04_PatternSets, ObjPAD - ObjectGroup04_PatternSets, ObjPAE - ObjectGroup04_PatternSets, ObjPAF - ObjectGroup04_PatternSets
+	.byte ObjPB0 - ObjectGroup04_PatternSets, ObjPB1 - ObjectGroup04_PatternSets, ObjPB2 - ObjectGroup04_PatternSets, ObjPB3 - ObjectGroup04_PatternSets
 
 
 	; Object group $04 (i.e. objects starting at ID $90) pattern sets
