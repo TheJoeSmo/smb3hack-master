@@ -383,7 +383,7 @@ MMC3_IRQENABLE	= $E001 ; Enables IRQ generation
 ; ZERO PAGE RAM COMMON
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Common use zero page RAM.  Bytes in $75-$F3 are context-dependent
-	.data		; SB: Using .data instead of .zp to export labels
+			; SB: Using  instead of .zp to export labels
 	.org $00
 
 ; For clarification, none of the other "Temp" vars are damaged by NMI,
@@ -909,7 +909,7 @@ PLAYERSUIT_LAST		= PLAYERSUIT_HAMMER	; Marker for "last" suit (Debug cycler need
 ; The debug flag in particular is pretty precariously placed, and under some kind of heavy call stack, seems like
 ; there's risk it could be set by accident... but I guess this never happens... ?
 
-	.data
+	
 	.org $0100
 
 	Update_Select:	.ds 1		; Changes which path of "update routines" are selected; $00 = ??, $20 = Title Screen, $40 = Spade Game, $80 = Vertical level, $A0 = 32 pixel partition, $C0 = Normal
@@ -921,7 +921,7 @@ PLAYERSUIT_LAST		= PLAYERSUIT_HAMMER	; Marker for "last" suit (Debug cycler need
 
 
 ; Main NES SRAM begin
-	.data	; SB: Using .data instead of .bss to export labels
+		; SB: Using  instead of .bss to export labels
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $2xx SPRITE RAM
@@ -2374,7 +2374,7 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 ; 2P Vs just utilizes a chunk where no tiles will ever exist in 2P Mode
 
 ; 2P Vs Only
-	.data
+	
 	.org $6800
 
 	; SB: Card memory will not longer persist; just borrowing bytes from high RAM
@@ -2997,7 +2997,7 @@ MCOMP_SECRET	= %00100000	; Bit 5 - Level Completed (secret/alternate exit)
 .Bound_8000:	BoundCheck .Bound_8000, $8000, MMC3 SRAM
 
 
-	.code
+	
 
 ; The objects are broken up into groups of 36 IDs across 5 ROM banks (1 - 5)
 ; These lookup table addresses are common, even though their banks are not,
