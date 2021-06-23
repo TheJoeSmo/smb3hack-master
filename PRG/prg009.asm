@@ -159,20 +159,20 @@ PRG009_A1EA:
 
 
 	; This calculates the correct value for the Vs_EnemySetByGameType table by enemy set (2P Vs Enemy Set -> VsES)
-VsES	.func (\1 - Vs_5EnemySets) / 5
+
 Vs_EnemySetByGameType:
-	.byte VsES(VsES_SpinyAll)	;  0: Spiny Only
-	.byte VsES(VsES_FFlyAll)	;  1: Fighter Fly Only
-	.byte VsES(VsES_SpinyFFly)	;  2: Spiny and Fighter Fly
-	.byte VsES(VsES_SpinyAll)	;  3: Static coins (ENEMY SET NOT USED)
-	.byte VsES(VsES_SpinySStep)	;  4: Spiny and Sidestepper
-	.byte VsES(VsES_FFlySStep)	;  5: Fighter Fly and Sidestepper
-	.byte VsES(VsES_SStepAll)	;  6: Sidestepper Only
-	.byte VsES(VsES_SpinyAll)	;  7: Coin Fountain
-	.byte VsES(VsES_SpinyAll)	;  8: Spiny Only
-	.byte VsES(VsES_FFlyAll)	;  9: Fighter Fly Only 
-	.byte VsES(VsES_SStepAll)	; 10: Sidestepper Only
-	.byte VsES(VsES_SpinyAll)	; 11: Ladder and [?] blocks (ENEMY SET NOT USED)
+	.byte (VsES_SpinyAll - Vs_5EnemySets) / 5	;  0: Spiny Only
+	.byte (VsES_FFlyAll - Vs_5EnemySets) / 5	;  1: Fighter Fly Only
+	.byte (VsES_SpinyFFly - Vs_5EnemySets) / 5	;  2: Spiny and Fighter Fly
+	.byte (VsES_SpinyAll - Vs_5EnemySets) / 5	;  3: Static coins (ENEMY SET NOT USED)
+	.byte (VsES_SpinySStep - Vs_5EnemySets) / 5	;  4: Spiny and Sidestepper
+	.byte (VsES_FFlySStep - Vs_5EnemySets) / 5	;  5: Fighter Fly and Sidestepper
+	.byte (VsES_SStepAll - Vs_5EnemySets) / 5	;  6: Sidestepper Only
+	.byte (VsES_SpinyAll - Vs_5EnemySets) / 5	;  7: Coin Fountain
+	.byte (VsES_SpinyAll - Vs_5EnemySets) / 5	;  8: Spiny Only
+	.byte (VsES_FFlyAll - Vs_5EnemySets) / 5	;  9: Fighter Fly Only 
+	.byte (VsES_SStepAll - Vs_5EnemySets) / 5	; 10: Sidestepper Only
+	.byte (VsES_SpinyAll - Vs_5EnemySets) / 5	; 11: Ladder and [?] blocks (ENEMY SET NOT USED)
 
 
 Vs_2PVsInit:
