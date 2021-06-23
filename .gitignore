@@ -1,2 +1,8 @@
 *.nes
 *.exe
+dist
+build
+__pycache__
+*.lua
+*.bin
+*.spec
