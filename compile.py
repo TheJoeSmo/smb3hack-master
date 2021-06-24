@@ -16,7 +16,7 @@ def main(path):
         for line in lines:
             var_name = line.split()[0]
             var_pos = line[-5:-1]
-            fns.write(f"{var_name} = ${var_pos}\n")
+            fns.write(f"{var_name:<32} = ${var_pos}\n")
 
 
 if __name__ == "__main__":
