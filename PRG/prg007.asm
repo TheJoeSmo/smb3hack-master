@@ -162,6 +162,67 @@ PRG007_A07F:
 	JMP PRG007_A183	 ; Jump to PRG007_A183 (Player dies!)
 
 PRG007_A082:
+
+DoCheckCrumblingBlock:
+	; Check if we are on a crumbling block
+	CMP #TILEA_CRUMBLINGBLOCK
+	BNE DoCheckDonutBlocks
+
+	; Check for the correct tileset
+	LDY Level_Tileset
+	CPY #1
+	BNE DoCheckDonutBlocks
+
+	LDA Level_ChgTileEvent
+	BNE DoCheckDonutBlocks	 ; If there's already a tile change event queued, jump to PRG007_A06F (RTS)
+
+	JSR PrepareNewObjectOrAbort	
+
+	; This is a falling donut lift!
+	LDA #OBJ_DONUTLIFTSHAKEFALL
+	STA Level_ObjectID,X
+
+	; Set donut lift Y 
+	LDA <Temp_Var5
+	SUB #$01
+	STA <Objects_Y,X
+	LDA <Temp_Var3
+	SBC #$00
+	STA <Objects_YHi,X
+
+	; Set donut lift X
+	LDA <Temp_Var4
+	STA <Objects_X,X
+	LDA <Temp_Var6
+	STA <Objects_XHi,X
+
+	; Set donut lift object's Var5 = $20
+	; Donut Timer
+	LDA #$07
+	STA <Objects_Var5,X
+
+	; We are doing a crumbling block, not a donut
+	LDA #$01
+	STA Objects_Var1,X
+
+	; Set sprite attribute = 3
+	LDA #$03
+	STA Objects_SprAttr,X
+
+	; Do tile change event to clear the tile version of the donut lift
+	LDA #$02
+	STA Level_ChgTileEvent
+	LDA <Temp_Var3	
+	STA Level_BlockChgYHi
+	LDA <Temp_Var5	
+	STA Level_BlockChgYLo
+	LDA <Temp_Var4	
+	STA Level_BlockChgXLo
+	LDA <Temp_Var6	
+	STA Level_BlockChgXHi
+
+
+DoCheckDonutBlocks:
 	CMP #TILE2_DONUTLIFT
 	BNE ArrowLift_Support	 ; If this is not (possibly) a Donut Lift, jump to ArrowLift_Support
 
@@ -170,22 +231,18 @@ PRG007_A086:
 	LDY Level_Tileset
 	CPY #4
 	BEQ PRG007_A099
-
 	CPY #8
 	BEQ PRG007_A099
-
 	CPY #12
 	BEQ PRG007_A099
-
 	CPY #15
 	BEQ PRG007_A099
-
 	CPY #2
-	BNE PRG007_A06F
+	BNE NoBlockBlockBlockFound
 
 PRG007_A099:
 	LDA Level_ChgTileEvent
-	BNE PRG007_A06F	 ; If there's already a tile change event queued, jump to PRG007_A06F (RTS)
+	BNE NoBlockBlockBlockFound	 ; If there's already a tile change event queued, jump to PRG007_A06F (RTS)
 
 	JSR PrepareNewObjectOrAbort	 ; Prepare a new object or don't come back!
 
@@ -208,6 +265,7 @@ PRG007_A099:
 	STA <Objects_XHi,X
 
 	; Set donut lift object's Var5 = $20
+	; Donut Timer
 	LDA #$20
 	STA <Objects_Var5,X
 
@@ -227,6 +285,7 @@ PRG007_A099:
 	LDA <Temp_Var6	
 	STA Level_BlockChgXHi
 
+NoBlockBlockBlockFound:
 	RTS
 
 ArrowLift_Support:

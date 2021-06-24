@@ -2641,8 +2641,8 @@ OneTile_ChangeToTile:
 	; Defines each of the four 8x8 patterns that make up the tile
 	; Too bad Nintendo couldn't keep things like this in one spot :)
 OneTile_ChangeToPatterns:
-	.byte $05, $07, $06, $08	; $01 - CHNGTILE_DELETECOIN
-	.byte $05, $07, $06, $08	; $02 - CHNGTILE_DELETETOBG
+	.byte $FF, $FF, $FF, $FF	; $01 - CHNGTILE_DELETECOIN
+	.byte $FF, $FF, $FF, $FF	; $02 - CHNGTILE_DELETETOBG
 	.byte $B8, $BA, $B9, $BB	; $03 - CHNGTILE_TOGNOTEBLOCK
 	.byte $C0, $C2, $C1, $C3	; $04 - CHNGTILE_TOBOUNCEWOOD
 	.byte $B8, $BA, $B9, $BB	; $05 - CHNGTILE_TONOTEBLOCK

@@ -27,7 +27,7 @@ Tile_Layout_TS1:
 	.byte $DC, $05, $FC, $FC, $05, $05, $05, $30, $3C, $3C, $3C, $3D, $FC, $03, $3C, $FC ; Tiles $40 - $4F
 	.byte $F4, $F4, $F4, $30, $00, $13, $01, $62, $0A, $66, $01, $62, $FF, $FF, $FF, $D8 ; Tiles $50 - $5F
 	.byte $98, $98, $98, $98, $98, $98, $92, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4 ; Tiles $60 - $6F
-	.byte $B4, $B8, $98, $98, $98, $98, $A4, $EC, $E4, $C0, $5C, $5E, $E9, $30, $FF, $FF ; Tiles $70 - $7F
+	.byte $B4, $B8, $98, $98, $98, $98, $A4, $EC, $E4, $C0, $5C, $5E, $E9, $30, $44, $FF ; Tiles $70 - $7F
 	.byte $05, $3A, $3E, $FF, $FF, $C4, $50, $03, $3C, $3C, $3C, $3D, $FC, $03, $3C, $FC ; Tiles $80 - $8F
 	.byte $68, $6A, $1A, $1C, $6E, $0F, $6E, $0F, $0F, $FC, $FC, $FC, $FC, $0F, $FC, $FC ; Tiles $90 - $9F
 	.byte $13, $00, $13, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $8C, $8E, $8C ; Tiles $A0 - $AF
@@ -45,7 +45,7 @@ Tile_Layout_TS1:
 	.byte $DD, $06, $FC, $FC, $06, $06, $06, $35, $37, $37, $16, $5B, $FC, $23, $16, $FC ; Tiles $40 - $4F
 	.byte $F5, $F5, $F5, $32, $58, $18, $60, $62, $5A, $66, $60, $62, $FF, $FF, $FF, $D9 ; Tiles $50 - $5F
 	.byte $99, $99, $99, $99, $99, $99, $93, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5 ; Tiles $60 - $6F
-	.byte $B5, $B9, $99, $99, $99, $99, $A5, $ED, $E4, $C1, $5E, $5E, $E8, $32, $FF, $FF ; Tiles $70 - $7F
+	.byte $B5, $B9, $99, $99, $99, $99, $A5, $ED, $E4, $C1, $5E, $5E, $E8, $32, $45, $FF ; Tiles $70 - $7F
 	.byte $06, $3E, $3E, $FF, $FF, $C4, $51, $35, $37, $37, $16, $5B, $FC, $23, $16, $FC ; Tiles $80 - $8F
 	.byte $6C, $0F, $1E, $0F, $6E, $0F, $0F, $0F, $0F, $FC, $FC, $FC, $FC, $5B, $FC, $FC ; Tiles $90 - $9F
 	.byte $18, $58, $18, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $9C, $9E, $9C ; Tiles $A0 - $AF
@@ -63,7 +63,7 @@ Tile_Layout_TS1:
 	.byte $DE, $FF, $FC, $FC, $FF, $FF, $FF, $37, $04, $37, $37, $3D, $3D, $37, $04, $37 ; Tiles $40 - $4F
 	.byte $F6, $F6, $F6, $31, $12, $02, $01, $63, $01, $63, $0B, $0D, $FF, $FF, $FF, $DA ; Tiles $50 - $5F
 	.byte $9A, $9A, $9A, $9A, $9A, $9A, $CA, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6 ; Tiles $60 - $6F
-	.byte $B6, $BA, $9A, $9A, $9A, $9A, $A6, $EE, $E5, $C2, $5D, $5F, $EB, $31, $FF, $FF ; Tiles $70 - $7F
+	.byte $B6, $BA, $9A, $9A, $9A, $9A, $A6, $EE, $E5, $C2, $5D, $5F, $EB, $31, $46, $FF ; Tiles $70 - $7F
 	.byte $FF, $3B, $3F, $FF, $FF, $C6, $56, $37, $04, $37, $37, $3D, $3D, $37, $04, $37 ; Tiles $80 - $8F
 	.byte $69, $6B, $1B, $1D, $0F, $6F, $0F, $6F, $0F, $69, $6B, $1B, $1D, $0F, $0F, $6F ; Tiles $90 - $9F
 	.byte $12, $12, $02, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $8D, $8F, $8D ; Tiles $A0 - $AF
@@ -81,7 +81,7 @@ Tile_Layout_TS1:
 	.byte $DF, $FF, $FC, $FC, $FF, $FF, $FF, $3C, $36, $3C, $34, $3D, $3D, $34, $25, $34 ; Tiles $40 - $4F
 	.byte $F7, $F7, $F7, $33, $19, $59, $61, $63, $61, $63, $0C, $0D, $FF, $FF, $FF, $DB ; Tiles $50 - $5F
 	.byte $9B, $9B, $9B, $9B, $9B, $9B, $CB, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7 ; Tiles $60 - $6F
-	.byte $B7, $BB, $9B, $9B, $9B, $9B, $A7, $EF, $E5, $C3, $5F, $5F, $EA, $33, $FF, $FF ; Tiles $70 - $7F
+	.byte $B7, $BB, $9B, $9B, $9B, $9B, $A7, $EF, $E5, $C3, $5F, $5F, $EA, $33, $47, $FF ; Tiles $70 - $7F
 	.byte $FF, $3F, $3F, $FF, $FF, $C6, $57, $3C, $36, $3C, $34, $3D, $3D, $34, $25, $34 ; Tiles $80 - $8F
 	.byte $0F, $6D, $0F, $1F, $0F, $6F, $0F, $0F, $0F, $0F, $6D, $0F, $1F, $0F, $0F, $6F ; Tiles $90 - $9F
 	.byte $17, $19, $59, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $9D, $9F, $9D ; Tiles $A0 - $AF
@@ -211,6 +211,7 @@ LoadLevel_Generator_TS1:
 	.word LevelLoad_OnBlocks15			; 53 - Run of on blocks
 	.word LevelLoad_OffBlocks15			; 54 - Run of off blocks
 	.word LevelLoad_SwitchUpsideDown15  ; 55 - Run of upside down switches
+	.word LevelLoad_CrumblingBlock15	; 56 - Run of crumbling blocks
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LeveLoad_FixedSizeGen_TS1
@@ -357,6 +358,17 @@ LevelLoad_OffBlocks15:
 LevelLoad_SwitchUpsideDown15:
 	LDA #TILEA_EXSWITCHR
 	BNE LLM15_SeTTile
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LevelLoad_SwitchUpsideDown15
+;
+; Puts down 1-16 on blocks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LevelLoad_CrumblingBlock15:
+	LDA #TILEA_CRUMBLINGBLOCK
+	BNE LLM15_SeTTile
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LoadLevel_EmptyBoxesLong15

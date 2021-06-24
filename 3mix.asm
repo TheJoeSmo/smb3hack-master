@@ -3803,6 +3803,7 @@ TILEA_WOODBLOCKFLOWER	= $73	; Wood block which bounces and contains fire flower
 TILEA_WOODBLOCKLEAF	= $74	; Wood block which bounces and contains leaf
 TILEA_WOODBLOCKSTAR	= $75	; Wood block which bounces and contains star
 TILEA_UPSIDEDOWN_MUNCHER = $7C
+TILEA_CRUMBLINGBLOCK = $7E
 TILEA_OFF_BLOCK			= $53
 
 TILEA_WOODBLOCK		= $79	; Standard solid wood block

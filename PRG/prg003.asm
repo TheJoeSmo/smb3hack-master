@@ -411,7 +411,7 @@ ObjP68:
 ObjP69:
 	.byte $81, $83, $85, $87, $89, $89
 ObjP54:
-	.byte $91, $93, $91, $93
+	.byte $91, $93, $44, $46
 ObjP55:
 	.byte $B1, $B3, $B5, $B7, $A7, $B9, $A7, $B9
 ObjP50:
@@ -1210,6 +1210,9 @@ PRG003_A613:
 ObjInit_DonutLift: 
 	RTS		 ; Return
 
+PoofTimeForFallingObjects:
+	.byte $1F, $10
+
 ObjNorm_DonutLift:
 	; Hack: "PatTableSel" cannot support a bank value over 127, so must do so manually
 
@@ -1245,6 +1248,10 @@ PRG003_A62D:
 	JSR Object_AnySprOffscreen
 	BNE PRG003_A64E	 ; If object falls off-screen at all, jump to PRG003_A64E (destroys it)
 
+	; Set the graphics to crumbling block if needed
+	LDA Objects_Var1,X
+	STA Objects_Frame,X
+
 	JSR Object_ShakeAndDraw		; Draw donut lift
 
 	LDA <Player_HaltGame
@@ -1252,11 +1259,15 @@ PRG003_A62D:
 
 	LDA Objects_Var7,X
 	BNE PRG003_A66A	 ; If Var7 is non-zero, jump to PRG003_A66A
+	LDA Objects_Var1,X
 
 	JSR Object_HitTest	 ; Do Player to object collision test
 
 	LDA Objects_PlayerHitStat,X
 	BNE PRG003_A652	 ; If Player is not touching object, jump to PRG003_A652
+
+	LDA Objects_Var1,X
+	BNE PRG003_A652 	; The crumbly block does not care if you leave it, it will crumble
 
 	LDA Level_ChgTileEvent
 	BNE PRG003_A651	 ; If a tile change event is active, jump to PRG003_A651
@@ -1291,14 +1302,20 @@ PRG003_A669:
 	RTS		 ; Return
 
 PRG003_A66A:
+	; Crumbly blocks don't fall, they poof!
+	LDA Objects_Var1,X
+	BNE CrumblyBlockPoof
+
 	JSR Object_Move
 
 	LDA <Objects_DetStat,X
 	AND #$04
 	BEQ PRG003_A677	 ; If donut lift hasn't hit something solid, jump to PRG003_A677
 
+CrumblyBlockPoof:
 	; Set timer to $1F (poof death timer)
-	LDA #$1f
+	LDY Objects_Var1,X
+	LDA PoofTimeForFallingObjects, Y
 	STA Objects_Timer,X
 
 	LDA #OBJSTATE_POOFDEATH
