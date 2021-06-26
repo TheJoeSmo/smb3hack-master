@@ -6543,6 +6543,11 @@ PRG008_BDB1:
 	CMP Level_Tile_Head,X
 	BEQ PRG008_BDAE
 
+	; If hit the sides, die
+	LDA UpsideDownMuncherSet, Y
+	CMP Level_Tile_GndL,X
+	BEQ PRG008_BDAE
+
 	DEX		 ; X--
 	BPL PRG008_BD98	 ; While X >= 0, loop!
 
