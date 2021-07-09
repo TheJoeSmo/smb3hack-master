@@ -2,17 +2,14 @@
 	.byte $00	; Unknown purpose
 
 	.byte OBJ_ACTIONSWITCH, $00, $0B
-	.byte OBJ_ALBATOSS, $0E, $55
-	.byte OBJ_ALBATOSS, $10, $33
-	.byte OBJ_ALBATOSS, $17, $55
-	.byte OBJ_GREENTROOPA, $1B, $38
-	.byte OBJ_POKEY, $1C, $2E
-	.byte OBJ_ALBATOSS, $24, $56
-	.byte OBJ_REDTROOPA, $2C, $01
-	.byte OBJ_ALBATOSS, $30, $0E
-	.byte OBJ_ALBATOSS, $34, $71
-	.byte OBJ_POKEY, $36, $01
-	.byte OBJ_ALBATOSS, $37, $4F
-	.byte OBJ_ALBATOSS, $46, $2D
+	.byte OBJ_PARATROOPAGREENHOP, $0B, $37
+	.byte OBJ_NIPPERFIREBREATHER, $0B, $08
+	.byte OBJ_NIPPER, $0F, $0D
+	.byte OBJ_GREENTROOPA, $14, $09
+	.byte OBJ_NIPPERFIREBREATHER, $1F, $01
+	.byte OBJ_NIPPER, $22, $01
+	.byte OBJ_GREENTROOPA, $25, $32
+	.byte OBJ_NIPPER, $2C, $01
+	.byte OBJ_NIPPERFIREBREATHER, $38, $0C
 	.byte OBJ_ENDLEVELCARD, $D9, $11
 	.byte $FF
