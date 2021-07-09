@@ -176,7 +176,14 @@ DoCheckCrumblingBlock:
 	LDA Level_ChgTileEvent
 	BNE DoCheckDonutBlocks	 ; If there's already a tile change event queued, jump to PRG007_A06F (RTS)
 
+	; Check to see if we have an object, or just do the next check.
+	LDA #HIGH(DoCheckDonutBlocks)
+	PHA 
+	LDA #LOW(DoCheckDonutBlocks)
+	PHA
 	JSR PrepareNewObjectOrAbort	
+	PLA 
+	PLA
 
 	; This is a falling donut lift!
 	LDA #OBJ_DONUTLIFTSHAKEFALL
@@ -244,7 +251,14 @@ PRG007_A099:
 	LDA Level_ChgTileEvent
 	BNE NoBlockBlockBlockFound	 ; If there's already a tile change event queued, jump to PRG007_A06F (RTS)
 
-	JSR PrepareNewObjectOrAbort	 ; Prepare a new object or don't come back!
+	; Prepare a new object or just go to the next check
+	LDA #HIGH(NoBlockBlockBlockFound)
+	PHA 
+	LDA #LOW(NoBlockBlockBlockFound)
+	PHA
+	JSR PrepareNewObjectOrAbort	 
+	PLA 
+	PLA 
 
 	; This is a falling donut lift!
 	LDA #OBJ_DONUTLIFTSHAKEFALL

@@ -1400,9 +1400,96 @@ PRG000_C713:
 	STA Object_TileFeet2
 	STA Object_TileFeet
 
-	PHA		 ; Save tile
+; Check to see if we need to crumble a block
+	LDA Level_Tileset
+	CMP #$01
+	BEQ Object_DoCrumblyBlockCheck
+	JMP ObjectDo_QuickSand  ; Do the check this way because the branch is out of range.
 
+Object_DoCrumblyBlockCheck:
+	LDA Object_TileFeet
+	CMP #TILEA_CRUMBLINGBLOCK
+	BNE ObjectDo_QuickSand
 
+	LDA Level_EnemyCrumble
+	BNE CrumbleTimerLoop
+
+	; Set the timer to 6, which is sets the block as stable for five frames
+	LDA #$06
+	STA Level_EnemyCrumble
+	BNE ObjectDo_QuickSand 	; Finished
+
+CrumbleTimerLoop:
+	DEC Level_EnemyCrumble
+	
+	CMP #$01
+	BNE ObjectDo_QuickSand 	; Finished
+
+	LDA Level_ChgTileEvent
+	BNE FailedToCrumbleBlock	; If we cannot crumble the block, try again next frame
+
+	; Store the current object's index
+	TXA
+	PHA
+
+	; Try to summon an object in the poof state, or just don't spawn one
+	LDA #HIGH(FailedToSummonPoof)
+	PHA 
+	LDA #LOW(FailedToSummonPoof)
+	PHA
+	JSR PrepareNewObjectOrAbort	
+	PLA 
+	PLA
+
+	; This is a falling donut lift!
+	LDA #OBJ_DONUTLIFTSHAKEFALL
+	STA Level_ObjectID,X
+
+	; We are making a poof and make it last for 9 frames
+	LDA #OBJSTATE_POOFDEATH
+	STA Objects_State,X
+	LDA #$0F
+	STA Objects_Timer,X
+
+	; Set the poof's location
+	LDA ObjTile_DetYLo
+	SUB #$01
+	STA <Objects_Y,X
+	LDA ObjTile_DetYHi
+	SBC #$00
+	STA <Objects_YHi,X
+	LDA ObjTile_DetXLo
+	STA <Objects_X,X
+	LDA ObjTile_DetXHi
+	STA <Objects_XHi,X
+
+FailedToSummonPoof:
+	; If we failed to summon a poof, we will still delete the block, just with less effect.
+	PLA 
+	TAX
+
+	; Make some noise!
+	LDA #SND_LEVELCRUMBLE
+	STA Sound_QLevel2
+
+	; Do tile change event to clear the tile version of the donut lift
+	; Note, no animations are used for the enemy, as this is mainly used for timing and enemy transport.
+	LDA #$02
+	STA Level_ChgTileEvent
+	LDA ObjTile_DetYHi	
+	STA Level_BlockChgYHi
+	LDA ObjTile_DetYLo
+	STA Level_BlockChgYLo
+	LDA ObjTile_DetXLo
+	SUB #$01
+	STA Level_BlockChgXLo
+	LDA ObjTile_DetXHi	
+	STA Level_BlockChgXHi
+
+FailedToCrumbleBlock:
+	INC Level_EnemyCrumble 	; Try to crumble next frame
+
+ObjectDo_QuickSand:
 	LDY Level_TilesetIdx
 	LDA QuicksandEnable,Y
 	BEQ PRG000_C736	 ; If value is zero, jump to PRG000_C736
@@ -1418,7 +1505,7 @@ PRG000_C713:
 	STA Objects_State,X	; killed by quicksand
 
 PRG000_C736:
-	PLA		 ; Restore tile
+	LDA Object_TileFeet
 
 	ASL A
 	ROL A

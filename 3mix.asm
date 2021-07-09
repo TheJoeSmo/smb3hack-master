@@ -1383,7 +1383,8 @@ SOBJ_ALBABOMB	= $19	; Albatoss's bomb!
 	Map_Airship_Dest:	.ds 1	; Airship travel destination; 6 X/Y map coordinates defined per world, after that it just sits still
 
 	Level_OnOff:		.ds 1 	; On Off
-	THouse_OpenByID:	.ds 15	; UNUSED would keep track of chests opened for a given Toad House ID (THouse_ID)
+	Level_EnemyCrumble:	.ds 1	; Timer until an enemy will crumble a block.  This is used instead, as enemies cannot detect the block itself.
+	THouse_OpenByID:	.ds 14	; UNUSED would keep track of chests opened for a given Toad House ID (THouse_ID)
 	StatusBar_PMT:		.ds 8	; Status bar tiles that currently make up the power meter >>>>>>[P]
 	StatusBar_CoinH:	.ds 1	; Status bar tile for coin MSD
 	StatusBar_CoinL:	.ds 1	; Status bar tile for coin LSD
