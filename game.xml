@@ -1939,6 +1939,9 @@
 				<generator id="55" name="Action Switch Upsidedown" desc="A run of upsidedown action switches">
 					<param name="Width"></param>	
 				</generator>
+				<generator id="56" name="Crumbling Blocks" desc="A run of crumbling blocks">
+					<param name="Width"></param>	
+				</generator>
 			</vargenerators>
 			<fixedgenerators>
 				<generator id="0" name="Bush Mid-size" desc="Place a mid-sized large green bush"></generator>
