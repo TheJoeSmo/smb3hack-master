@@ -1404,12 +1404,17 @@ PRG000_C713:
 	LDA Level_Tileset
 	CMP #$01
 	BEQ Object_DoCrumblyBlockCheck
+ObjectDo_QuickSandLong:
 	JMP ObjectDo_QuickSand  ; Do the check this way because the branch is out of range.
 
 Object_DoCrumblyBlockCheck:
 	LDA Object_TileFeet
 	CMP #TILEA_CRUMBLINGBLOCK
-	BNE ObjectDo_QuickSand
+	BNE ObjectDo_QuickSandLong
+
+	LDA Objects_State, X
+	CMP #OBJSTATE_HELD		; Do nothing if the object is held.
+	BEQ ObjectDo_QuickSand
 
 	LDA Level_EnemyCrumble
 	BNE CrumbleTimerLoop
