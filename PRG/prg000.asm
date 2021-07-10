@@ -2578,8 +2578,10 @@ PRG000_CB4F:
 	LDA <Objects_DetStat,X 
 	AND #$03 
 	BEQ PRG000_CB58	 ; If object has NOT hit wall, jump to PRG000_CB58 
- 
-	JSR Object_AboutFace	 ; Turn around... 
+
+	; If hit a wall, remove all velocity
+	LDA #$00
+	STA <Objects_XVel,X
 
 PRG000_CB58:
 	JSR DoShelledBumps	 ; Handle object getting hit from underside 
