@@ -1400,6 +1400,60 @@ PRG000_C713:
 	STA Object_TileFeet2
 	STA Object_TileFeet
 
+ObjectDo_Check_IfOnActivitySwitch:
+; Check to see if we need to activate a switch
+	LDA Objects_State, X 	; Held objects cannot activate the switch
+	CMP #OBJSTATE_HELD
+	BEQ ObjectDo_Check_IfOnCrumblyBlock
+
+	LDA Level_Tileset
+	CMP #$01
+	BNE ObjectDo_Check_IfOnCrumblyBlock
+
+	LDA Object_TileFeet
+	CMP #TILEA_EXSWITCH
+	BNE ObjectDo_Check_IfOnCrumblyBlock
+
+; Try to do a switch event
+	LDY Level_ChgTileEvent 	; Ensure that another event is not on-going.
+	BNE ObjectDo_Check_IfOnCrumblyBlock
+
+	; Do the event
+	LDA #CHNGTILE_PSWITCHSTOMP
+	STA Level_ChgTileEvent
+
+	LDA ObjTile_DetYHi	
+	STA Level_BlockChgYHi
+	STA Level_ActSwYHi
+	LDA ObjTile_DetYLo
+	STA Level_BlockChgYLo
+	STA Level_ActSwY
+	LDA ObjTile_DetXLo
+	SUB #$01
+	STA Level_BlockChgXLo
+	STA Level_ActSwX
+	LDA ObjTile_DetXHi	
+	STA Level_BlockChgXHi
+	STA Level_ActSwXHi
+
+	; Pressed sound effect
+	LDA Sound_QMap
+	ORA #SND_MAPPATHMOVE
+	STA Sound_QMap
+
+	; Queue switch action
+	LDA Level_ActSwEvent
+	STA Level_ActSwAction
+
+	; Set to init state
+	LDA #0
+	STA Level_ActSwState
+
+	; Store tile into Var3 by default
+	LDA #TILEA_EXSWITCH
+	STA Level_ActSwVar3
+
+ObjectDo_Check_IfOnCrumblyBlock:
 ; Check to see if we need to crumble a block
 	LDA Level_Tileset
 	CMP #$01
