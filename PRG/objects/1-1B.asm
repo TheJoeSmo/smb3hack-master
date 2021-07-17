@@ -2,21 +2,12 @@
 	.byte $00	; Unknown purpose
 
 	.byte OBJ_ACTIONSWITCH, $00, $0B
-	.byte OBJ_ALBATOSS, $03, $35
-	.byte OBJ_GREENTROOPA, $05, $03
-	.byte OBJ_ALBATOSS, $14, $55
-	.byte OBJ_GREENTROOPA, $1D, $32
-	.byte OBJ_POKEY, $1E, $10
-	.byte OBJ_CHECKPOINT, $2B, $12
-	.byte OBJ_POKEY, $2C, $05
-	.byte OBJ_GREENTROOPA, $39, $17
-	.byte OBJ_GAO, $39, $17
-	.byte OBJ_GREENTROOPA, $3E, $0E
-	.byte OBJ_GAO, $3E, $0E
-	.byte OBJ_GOOMBA, $64, $11
-	.byte OBJ_GOOMBA, $67, $19
-	.byte OBJ_GOOMBA, $7B, $19
-	.byte OBJ_GOOMBA, $7C, $19
+	.byte OBJ_CHECKPOINT_FORCE, $08, $12
+	.byte OBJ_GREENTROOPA, $09, $01
+	.byte OBJ_REDTROOPA, $09, $0F
+	.byte OBJ_NIPPER, $10, $14
+	.byte OBJ_GREENTROOPA, $1A, $01
+	.byte OBJ_GREENTROOPA, $30, $01
 	.byte OBJ_GREENPIRANHA, $81, $17
 	.byte OBJ_GREENPIRANHA, $87, $16
 	.byte OBJ_GOOMBA, $8B, $19
