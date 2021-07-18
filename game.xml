@@ -652,6 +652,10 @@
 			<sprite x="24" y="16" bank="51" pattern="0x1A" palette="3" hflip="1"></sprite>
 			<sprite x="16" y="16" bank="51" pattern="0x1C" palette="3" hflip="1"></sprite>
 		</object>
+		<object id="0x4D" label="OBJ_SPRING" name="Spring" desc="Moveable Spring">
+			<sprite x="0" y="0" bank="79" pattern="0x30" palette="2"></sprite>
+			<sprite x="8" y="0" bank="79" pattern="0x30" palette="2"  hflip="1"></sprite>
+		</object>
 		<object id="0x4E" label="OBJ_BOSSBIRDO" name="Boss Birdo" desc="SMB2 Birdo">
 			<sprite x="0" y="0" bank="134" pattern="0x20" palette="1"></sprite>
 			<sprite x="8" y="0" bank="134" pattern="0x22" palette="1"></sprite>
