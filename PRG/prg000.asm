@@ -3202,8 +3202,8 @@ Object_BumpBlocks:
 
 
 	; X velocities depending on kick direction, added to by half of Player's X velocity
-ObjectKickXVelMoving:	.byte -$30, $30, $00, $00
-ObjectKickYVelMoving:	.byte $00, $00, -$60, -$60
+ObjectKickXVelMoving:	.byte -$30, $30, $00, $00, $00, $00
+ObjectKickYVelMoving:	.byte $00, $00, -$60, -$60, $00, $00
 
 	; Set appropriate flip bits based on object's relative position to Player
 PlayerKickFlipBits:	.byte $00, $40
