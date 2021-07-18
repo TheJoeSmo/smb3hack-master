@@ -660,7 +660,7 @@ ObjSprung_Spring:
 	STA <Player_YVel
 
 	; Time until the player can interact with the spring
-	LDA #$30
+	LDA #$10
 	STA Objects_Timer2, X
 
 	; Set the amount of time before the player can pick up the spring
