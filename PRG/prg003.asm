@@ -574,6 +574,11 @@ SpringSkipWallCheck:
 	JSR Object_HitTest
 	BCC SpringNotHeld 	; Must interact with the player to be held or sprung
 
+	; Refuse to spring when player is on the ground, but can be held
+	LDA Player_InAir
+	BEQ SpringNotSprang
+
+
 	LDA <Player_SpriteY
 	ADD #24
 	CMP <Objects_SpriteY,X
