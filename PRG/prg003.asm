@@ -592,12 +592,13 @@ SpringSkipWallCheck:
 	SUB #28
 	STA <Player_Y
 
-; Makes the spring, but without setting the second object var, for the player velocity
-DirtySpringSprung:
 	; Lower the player velocity
 	LDA #-$02
 	STA <Player_YVel
 
+
+; Makes the spring, but without setting the second object var, for the player velocity
+DirtySpringSprung:
 	; The spring has been sprung!
 	LDA #$01
 	STA Objects_Var1, X
