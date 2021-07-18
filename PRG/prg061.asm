@@ -400,6 +400,12 @@ PRG000_CF49:
 ObjectHeld_GravMatch:
 	JSR Object_WorldDetectN1	; Detect against world
 	JSR Object_CalcSpriteXY_NoHi	; Calculate low parts of sprite X/Y (never off-screen when held by Player!)
+	
+	; Springs cannot kill objects while held
+	LDA Level_ObjectID, X 
+	CMP #OBJ_SPRING
+	BEQ PRG000_CF98
+
 	JSR ObjectToObject_HitTest	; Test if this object has collided with another object
 	BCC PRG000_CF98		 ; If this object did not collide with any other objects, jump to PRG000_CF98
 
