@@ -571,6 +571,9 @@ ObjInit_BounceDU:
 
 
 ObjInit_BounceDU_NoRev:
+	LDA Player_BounceObj
+	STA Objects_Var6, X 	; Store the what hit the object
+
 	LDA Player_BounceDir
 	STA Objects_Var2,X	 ; Store Player's bounce into var 2
 	BEQ PRG001_A4BF	 ; If bounce direction is down, jump to PRG001_A4BF
@@ -610,10 +613,19 @@ PRG001_A4C6:
 	JMP BounceBlock_Update	 ; Jump to BounceBlock_Update
 
 	; Power-up which may emerge from different types of bounce blocks
-Bouncer_PUp:	.byte $00, $00, OBJ_POWERUP_FIREFLOWER, OBJ_POWERUP_SUPERLEAF, OBJ_POWERUP_STARMAN
-		.byte OBJ_POWERUP_MUSHROOM, OBJ_GROWINGVINE, OBJ_POWERUP_1UP
+Bouncer_PUp:	
+		.byte $00
+		.byte $00
+		.byte OBJ_POWERUP_FIREFLOWER
+		.byte OBJ_POWERUP_SUPERLEAF
+		.byte OBJ_POWERUP_STARMAN
+		.byte OBJ_POWERUP_MUSHROOM
+		.byte OBJ_GROWINGVINE
+		.byte OBJ_POWERUP_1UP
 Bouncer_PUp_SS:	
-		.byte OBJ_POWERUP_STARMAN, OBJ_POWERUP_STARMAN, OBJ_POWERUP_STARMAN	; SB: New: Super suits
+		.byte OBJ_POWERUP_STARMAN 
+		.byte OBJ_POWERUP_STARMAN 
+		.byte OBJ_POWERUP_STARMAN	; SB: New: Super suits
 Bouncer_PUp_SS_End
 
 Bounce_TileReplacements:	
@@ -631,6 +643,7 @@ Bouncer_PUpVel:	.byte $00, -$40, -$40, -$30, -$20, -$10, $00, $10, $20, $30, $40
 		.byte -$20, -$20, -$20	; SB: New: Super suits
 
 
+; Block | Powerup
 ObjNorm_BounceDU:
 	LDY Level_BlkBump_Pos-6,X
 	BNE PRG001_A56F	 ; If the block bump position > 0, jump to PRG001_A56F

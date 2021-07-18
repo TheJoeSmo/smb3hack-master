@@ -4663,6 +4663,10 @@ Level_DoBumpBlocks:
 	CPX #$04
 	BEQ PRG008_B6E4	 ; If tile index = 4, jump to PRG008_B6E4
 
+	; Add backward compatibility to the player bumps
+	LDA #$00
+	STA Temp_VarNP0
+
 	LDA <Player_YVel
 	BPL PRG008_B6EF	 ; If Player is moving downward, jump to PRG008_B6EF
 
@@ -4717,9 +4721,14 @@ PRG008_B722:
 	LDY <Temp_Var6	 ; Y = Tile detected relative index with offset fix
 	ORA LATR_BlockResult,Y	 ; Get block which should result
 	CMP #$FF
-	BEQ SkipBumpingRoutine
+	BNE DoNotSkipBumpingRoutine
+	JMP SkipBumpingRoutine
+DoNotSkipBumpingRoutine:
 	CMP #$EF
-	BEQ MakeUpsideDownSwitch
+	BNE MakeRegularBlockFromBump
+	JMP MakeUpsideDownSwitch
+	
+MakeRegularBlockFromBump:
 	STA Player_Bounce	 ; Indicate to Player he should bounce
 
 	; Play bump sound
@@ -5042,12 +5051,20 @@ PRG008_B83F:
 LATP_Brick:
 	JSR LATP_GetCoinAboveBlock	; Get coin above block, if any
 
+; If temp var is set, act like small mario and do not bust the brick
+	LDA Temp_VarNP0
+	BEQ BustTheBrick
+	CMP #OBJSTATE_KICKED
+	BNE DoNotBustTheBrick
+
+BustTheBrick:
 	CPX #$04
 	BEQ PRG008_B84E	 ; If on tile check index 4 (tail attack's tile), jump to PRG008_B84E (bust brick!)
 
 	LDA <Player_Suit
 	BNE PRG008_B84E	 ; If Player is not small, jump to PRG008_B84E (bust brick!)
 
+DoNotBustTheBrick:
 	LDY #$01	 ; Y = 1 (spawn a coin) (index into PRG001 Bouncer_PUp, i.e. nothing)
 
 	RTS		 ; Return
@@ -5272,11 +5289,11 @@ Player_TailAttack_Offsets: ; (Y and X)
 ; Short routine that handles the tail attack hitting blocks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_TailAttack_HitBlocks:
-        LDA Player_TailAttack
-        CMP #$09
-        BNE PRG008_B979        ; If Player_TailAttack <> 9, jump to PRG008_B979
+	LDA Player_TailAttack
+	CMP #$09
+	BNE PRG008_B979        ; If Player_TailAttack <> 9, jump to PRG008_B979
 
-        LDY #$00         ; Y = 0 (Player not flipped)
+	LDY #$00         ; Y = 0 (Player not flipped)
 
 	LDA <Player_FlipBits
 	BNE PRG008_B95F	 ; If Player is horizontally flipped, jump to PRG008_B95F
@@ -5301,6 +5318,10 @@ Player_TailAtk_NoRev:
 
 	JSR Player_GetTileAndSlope	 ; Get tile near tail
 
+	; Act as the player
+	LDA #$00
+	STA Temp_VarNP0
+
 	LDX #$04	 
 	STA Level_Tile_GndL,X	 ; Store into tail's special slot
 	JSR Level_DoBumpBlocks	 ; Handle blocks that can be "bumped"
@@ -5324,6 +5345,10 @@ Object_BumpOffBlocks:
 	LDX #$04	 ; X = 4 
 	STA Level_Tile_GndL,X	 ; Essentially store into Level_Tile_Whack
  
+ 	; Determine if we can bust bricks
+	LDA Objects_State, X 
+	STA Temp_VarNP0
+
 	LDA Player_Bounce 
 	BNE PRG008_B9D3	 ; If Player is bouncing, jump to PRG008_B9D3 
  
@@ -5332,10 +5357,10 @@ Object_BumpOffBlocks:
 	LDA Player_Bounce 
 	BEQ PRG008_B994	 ; If block is NOT a bouncing type, jump to PRG008_B994  
 
-	; Set bounce direction and flag that it was an object that bounced
-	LDA #$01 
-	STA Player_BounceDir 
+	LDA Temp_VarNP0
 	STA Player_BounceObj 
+	LDA #$01
+	STA Player_BounceDir
 
 PRG008_B994:
 	LDA Level_TilesetIdx

@@ -514,9 +514,9 @@ DoRegularSpringActions:
 
 ObjMain_Spring:
 	LDA Objects_State,X
-	CMP #OBJSTATE_HELD
+	CMP #$04 			; Do nothing if held
 	BNE DoMainSpringActions
-		JSR SpringDraw
+	JSR SpringDraw
 
 DoMainSpringActions:
 
