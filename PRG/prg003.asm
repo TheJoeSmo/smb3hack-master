@@ -655,6 +655,10 @@ ObjSprung_Spring:
 	BEQ NoSprungPlayerVecloty
 	STA <Player_YVel
 
+	; Time until the player can interact with the spring
+	LDA #$30
+	STA Objects_Timer2, X
+
 	; Set the amount of time before the player can pick up the spring
 	LDA #$10
 	STA Objects_Timer, X

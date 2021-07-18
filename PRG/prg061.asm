@@ -138,6 +138,11 @@ Player_KickRegular:
 PRG000_CE94:
 	STY <Objects_XVel,X	 ; Set minimum X velocity on object (to enable wall hit detection)
 
+	; Springs cannot die, so do not do the check
+	LDA Level_ObjectID,X
+	CMP #OBJ_SPRING
+	BEQ HeldKickRegular
+
 	JSR Object_WorldDetectN1 ; Detect against world
 
 	LDA <Objects_DetStat,X
