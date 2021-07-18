@@ -347,7 +347,7 @@ Object_AttrFlags:
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $4A - OBJ_BOOMBOOMQBALL
 	.byte OAT_BOUNDBOX13	; Object $4B - OBJ_BOOMBOOMJUMP
 	.byte OAT_BOUNDBOX13	; Object $4C - OBJ_BOOMBOOMFLY
-	.byte OAT_BOUNDBOX00	; Object $4D
+	.byte OAT_BOUNDBOX12 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $4D - OBJ_SPRING
 	.byte OAT_BOUNDBOX02	; Object $4E - OBJ_BOSSBIRDO
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY	; Object $4F
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY	; Object $50 - OBJ_BOBOMBEXPLODE
@@ -3573,6 +3573,10 @@ Object_ShellDoWakeUp:
 
 	; If object is a SMB2 type object, just do normal state
 	JSR Object_IsSMB2Obj
+	BEQ SMB2Object_DoNormal
+
+	; Spring does normal state too
+	CMP #OBJ_SPRING
 	BEQ SMB2Object_DoNormal
 
 	; If object is a Bob-omb, jump to PRG000_D0EC, otherwise jump to PRG000_D101
@@ -6873,4 +6877,3 @@ ObjState_Frozen:
 
 	; Finish up on bank 30 (not enough room here :( )
 	JMP_THUNKC 30, ObjState_Frozen30
-

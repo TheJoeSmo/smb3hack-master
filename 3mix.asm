@@ -3019,6 +3019,12 @@ ObjectGroup_PatternSets		= $A1B0
 ; GAME CONSTANTS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+DetWallRight  	= %00000001
+DetWallLeft		= %00000010
+DetWallGround 	= %00000100
+DetWallCeiling 	= %00001000
+DetPartition 	= %10000000
+
 ; Size of level (width or height, if vertical)
 LEVEL1_SIZE_01		= %00000000
 LEVEL1_SIZE_02		= %00000001
@@ -3382,6 +3388,7 @@ OBJ_ICESNAKE		= $49	; Ice Snake
 OBJ_BOOMBOOMQBALL	= $4A 	; Boom Boom (?) end-level ball
 OBJ_BOOMBOOMJUMP	= $4B	; Jumping Boom-Boom (can actually hit ? blocks!)
 OBJ_BOOMBOOMFLY		= $4C	; Flying Boom-boom
+OBJ_SPRING 			= $4D 	; Spring
 OBJ_BOSSBIRDO		= $4E	; Birdo
 OBJ_BOBOMBEXPLODE	= $50	; Ready-to-explode Bob-Omb
 OBJ_BOOLOOP		= $51	; Dual Rotodisc, sync, clockwise
