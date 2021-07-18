@@ -519,7 +519,6 @@ ObjMain_Spring:
 	JMP SpringDraw
 
 DoMainSpringActions:
-
 	JSR Object_Move 	; Handle standard movements
 
 	LDA <Objects_DetStat,X 
@@ -568,6 +567,10 @@ SpringSkipCeilingCheck:
 		STA <Objects_XVel,X
 
 SpringSkipWallCheck:
+	; Refuse to interact until the timer expires, this prevents bugs
+	LDA Objects_Timer2, X
+	BNE SpringNotHeld
+
 	JSR Object_HitTest
 	BCC SpringNotHeld 	; Must interact with the player to be held or sprung
 
