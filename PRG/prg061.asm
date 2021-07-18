@@ -174,8 +174,18 @@ HeldKickRegular:
 
 	LDA <Pad_Holding
 	AND #PAD_UP
-	BEQ NormalHeldKick			; Not holding up when let go of B, so do a normal kick
+	BEQ HeldKickSmall			; Not holding up when let go of B, so do a normal kick
 	INY
+	INY
+	JMP NormalHeldKick
+
+HeldKickSmall:
+	LDA <Pad_Holding
+	AND #PAD_DOWN
+	BEQ NormalHeldKick			; Not holding up when let go of B, so do a normal kick
+	INY 
+	INY 
+	INY 
 	INY
 
 NormalHeldKick:
@@ -225,7 +235,7 @@ PRG000_CEDC:
 	BEQ SetEnemyAsNormal
 
 	TYA
-	AND #$02
+	AND #$06 				; 0000_0110
 	BEQ SetEnemyAsKicked
 
 	; Add extra velocity to vertically kicked shells
