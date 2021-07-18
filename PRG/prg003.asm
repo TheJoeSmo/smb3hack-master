@@ -197,7 +197,7 @@ ObjectGroup02_Attributes2:
 	.byte OA2_NOSHELLORSQUASH | OA2_TDOGRP1	; Object $4A - OBJ_BOOMBOOMQBALL
 	.byte OA2_STOMPDONTCARE | OA2_TDOGRP2	; Object $4B - OBJ_BOOMBOOMJUMP
 	.byte OA2_STOMPDONTCARE | OA2_TDOGRP2	; Object $4C - OBJ_BOOMBOOMFLY
-	.byte OA2_TDOGRP0	; Object $4D
+	.byte OA2_STOMPDONTCARE | OA2_TDOGRP1	; Object $4D - OBJ_SPRING
 	.byte OA2_TDOGRP2	; Object $4E - OBJ_BOSSBIRDO
 	.byte OA2_NOSHELLORSQUASH | OA2_TDOGRP1	; Object $4F
 	.byte OA2_STOMPDONTCARE | OA2_TDOGRP1	; Object $50 - OBJ_BOBOMBEXPLODE
@@ -501,8 +501,11 @@ ObjInit_Spring:
 
 ObjNorm_Spring:
 	LDA <Player_HaltGame
-	BNE SpringDraw
+	BEQ DoRegularSpringActions
 
+		JMP SpringDraw
+
+DoRegularSpringActions:
 	LDA Objects_Var1, X
 	JSR DynJump
 
@@ -512,7 +515,10 @@ ObjNorm_Spring:
 ObjMain_Spring:
 	LDA Objects_State,X
 	CMP #OBJSTATE_HELD
-	BEQ SpringDraw
+	BNE DoMainSpringActions
+		JSR SpringDraw
+
+DoMainSpringActions:
 
 	JSR Object_Move 	; Handle standard movements
 
@@ -525,19 +531,41 @@ SpringSkipFloorCheck:
 	LDA <Objects_DetStat,X 
 	AND #DetWallCeiling
 	BEQ SpringSkipCeilingCheck
- 
-		; Rebound off the ceiling
-		LDA #$10 
-		STA <Objects_YVel,X 
+
+		; Do a collision with an object
+		LDA <Objects_YHi,X 
+		STA ObjTile_DetYHi
+		LDA <Objects_XHi,X
+		STA ObjTile_DetXHi
+
+		; Do a collision!
+		LDA <Objects_X,X
+		ADD #$08
+		STA ObjTile_DetXLo
+
+		LDA <Objects_Y,X
+		;ADC #$0C
+		STA ObjTile_DetYLo
+
+		LDA Object_TileFeet2
+
+		JSR Object_BumpBlocks
+
+		; Rebound off the ceiling and make the spring squish
+		LDA #$00 
+		STA <Objects_YVel,X
+		STA Objects_Var2, X
+		BEQ DirtySpringSprung
+
 
 SpringSkipCeilingCheck:
 	LDA <Objects_DetStat,X 
 	AND #(DetWallRight | DetWallLeft)
 	BEQ SpringSkipWallCheck
 
-	; If hit a wall, remove all velocity
-	LDA #$00
-	STA <Objects_XVel,X
+		; If hit a wall, remove all velocity
+		LDA #$00
+		STA <Objects_XVel,X
 
 SpringSkipWallCheck:
 	JSR Object_HitTest
@@ -552,18 +580,24 @@ SpringSkipWallCheck:
 	LDA <Player_YVel
 	BMI SpringNotSprang
 
-	; The spring has been sprung!
-	LDA #$01
-	STA Objects_Var1, X
+	; We do want to make the player jump
+	LDA #-$40
+	STA Objects_Var2, X
 
 	; Set the player's y position, otherwise the player will fall through the spring
 	LDA <Objects_Y,X	 
 	SUB #28
 	STA <Player_Y
 
+; Makes the spring, but without setting the second object var, for the player velocity
+DirtySpringSprung:
 	; Lower the player velocity
 	LDA #-$02
 	STA <Player_YVel
+
+	; The spring has been sprung!
+	LDA #$01
+	STA Objects_Var1, X
 
 	; The amount of time to be sprung
 	LDA #$08
@@ -592,7 +626,6 @@ SpringNotSprang:
 	STA Objects_State,X
 
 SpringNotHeld:
-	JSR Object_BumpBlocks
 	JSR Object_DeleteOffScreen_N2	 ; Delete object if it goes way off screen
 
 SpringDraw:
@@ -618,13 +651,15 @@ ObjSpringAnimation_Spring:
 
 ObjSprung_Spring:
 	; The player needs to bounce
-	LDA #-$40
+	LDA Objects_Var2, X
+	BEQ NoSprungPlayerVecloty
 	STA <Player_YVel
 
 	; Set the amount of time before the player can pick up the spring
 	LDA #$10
 	STA Objects_Timer, X
 
+NoSprungPlayerVecloty:
 	; Set the spring back to frame 0 and return
 	LDA #$00
 	STA Objects_Frame, X
