@@ -128,6 +128,32 @@ Level_MinTileUWByQuad:
 	.byte $FF, $FF, $FF, $DB	; 15 ext
 
 
+	; This defines 4 values per Level_Tileset, with each of those values
+	; belonging to a tile "quadrant" (i.e. tiles beginning at $00, $40,
+	; $80, and $C0), and defines the beginning tile which should be 
+	; classified as "in lava" (Minimum Tile In Lava By Quad)
+	; A value of $FF is used to indicate that no tile in that quadrant
+	; is in lava (and for the first three quads is unreachable!)
+Level_MinTileLavaByQuad:
+	; 4 values per Level_TilesetIdx, which is basically (Level_Tileset - 1)
+	; Listing by valid Level_Tileset values for consistency...
+	.byte $FF, $FF, $FF, $FF	;  1 Plains style
+	.byte $FF, $FF, $A6, $FF	;  2 Mini Fortress style
+	.byte $FF, $FF, $FF, $FF	;  3 Hills style
+	.byte $FF, $FF, $FF, $FF	;  4 High-Up style
+	.byte $FF, $FF, $FF, $FF	;  5 Ghost House
+	.byte $FF, $FF, $FF, $FF	;  6 water world
+	.byte $FF, $FF, $FF, $FF	;  7 Toad House
+	.byte $FF, $FF, $FF, $FF	;  8 Vertical pipe maze
+	.byte $FF, $FF, $FF, $FF	;  9 desert levels
+	.byte $FF, $FF, $FF, $FF	; 10 Airship
+	.byte $FF, $FF, $FF, $FF	; 11 Giant World
+	.byte $FF, $FF, $FF, $FF	; 12 Ice level
+	.byte $FF, $FF, $FF, $FF	; 13 Sky level
+	.byte $FF, $FF, $FF, $FF	; 14 Underground
+	.byte $FF, $FF, $FF, $FF	; 15 ext
+
+
 	; Objects detect using a specific offset from this list
 	; Which "group" they use is specified by the respective value in ObjectGroup_Attributes2
 Object_TileDetectOffsets:
@@ -1283,6 +1309,7 @@ Object_GetAttrAndMoveTiles:
 	ROL A		 ; Upper 2 bits shift right 6, effectively
 	AND #%00000011	 ; Keep these bits, i.e. "tile quadrant"
 	STA <Temp_Var1	 ; -> Temp_Var1
+	STA Temp_VarNP0 	; Do not delete it
 	TAY		 ; -> 'Y'
 
 	LDA <Level_Tile
@@ -1368,6 +1395,28 @@ PRG000_C6D0:
 PRG000_C6FA:
 	STA Objects_InWater,X	 ; Set object's in-water flag
 
+
+ObjectDo_Check_IfInLava:
+	LDA Level_TilesetIdx
+	ASL A	
+	ASL A		 ; Offset to beginning of lava-by-quad table
+	ADD Temp_VarNP0	 ; Add quadrant offset
+	TAY		 ; -> 'Y' 
+	LDA Level_MinTileLavaByQuad,Y	; Get the starting lava tile
+	CMP <Level_Tile	
+	BGE PRG000_C6FD	 ; If starting lava tile is >= the detected tile, jump to PRG000_C6D0
+
+	; You can only die to lava once
+	LDA #ObjState_LAVADEATH
+	CMP Objects_State, X
+	BEQ PRG000_C6FD
+
+	STA Objects_State, X
+
+	LDA #$00
+	STA Objects_Var1, X
+
+
 PRG000_C6FD:
 	LDA <Level_Tile
 	STA Objects_LastTile,X	 ; Set last tile this object detected
@@ -1399,6 +1448,7 @@ PRG000_C713:
 	; Store into tile index holders
 	STA Object_TileFeet2
 	STA Object_TileFeet
+
 
 ObjectDo_Check_IfOnActivitySwitch:
 ; Check to see if we need to activate a switch
@@ -2412,6 +2462,7 @@ ObjState_DoState:
 	.word ObjState_Killed		; 6 - Killed
 	.word ObjState_Squashed		; 7 - Object was squashed (NOTE: Really only intended for Goomba/Giant Goomba)
 	.word ObjState_PoofDying	; 8 - "Poof" Dying
+	.word ObjState_LavaDeath	; 9 - Sink into lava and die
 
 	; Patterns selected by "poof" death frame
 PoofDeath_Pats:
@@ -3291,6 +3342,110 @@ ObjectHeld_YOff:
 	.byte -$02, $0D, $0F	; Giant enemy, not small, small
 	.byte  $02, $02, $02	; Same, reverse gravity
 
+
+ObjState_LavaDeath:
+	LDY ObjGroupRel_Idx	 ; Y = object's group relative index
+	LDA ObjectGroup_Attributes4,Y
+	AND #OA4_KA_MASK
+	JSR DynJump
+
+	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
+	.word Object_StandardLavaDeath	; 0: Standard kill (does not set frame 2)
+	.word Object_CalcAndDrawLavaDeath	; 1: Standard sprite draw and kill
+	.word Object_DrawMirroredLavaDeath	; 2: Draw mirrored sprite
+	.word Object_Draw16x32LavaDeath	; 3: Draw tall sprite
+	.word Object_DrawTallHFlippedLavaDeath	; 4: Draw tall object horizontally flipped
+	.word Object_NormalAndLavaDeath	; 5: Do "Normal" state and killed action (sinking/vert flip)
+	.word Object_GiantLavaDeath	; 6: Giant enemy death
+	.word Object_PoofLavaDeath		; 7: Do "poof" dying state while killed
+	.word Object_CalcAndDrawLavaDeath	; 8: Draw and do movements unless gameplay halted
+	.word Object_NormalWhileKilled	; 9: Just do "Normal" state while killed
+
+
+Object_GiantLavaDeath:
+	JSR ObjectGroup_PatternSets	 ; Do special draw routine used by "giant" enemies
+	JMP StandardLavaDeath
+
+Object_PoofLavaDeath:
+	; Set object state to 8 ("Poof" Dying)
+	LDA #OBJSTATE_POOFDEATH
+	STA Objects_State,X
+
+	; Set timer to $1F 
+	LDA #$1f
+	STA Objects_Timer,X
+ 
+	RTS		 ; Return
+
+Object_NormalAndLavaDeath:
+	JSR Object_DoNormal
+	JMP StandardLavaDeath
+
+Object_DrawTallHFlippedLavaDeath:
+	JSR Object_DrawTallAndHFlip
+	JMP StandardLavaDeath
+
+Object_Draw16x32LavaDeath:
+	JSR Object_Draw16x32Sprite
+	JMP StandardLavaDeath
+
+Object_CalcAndDrawLavaDeath:
+	JSR Object_ShakeAndDraw
+	JMP StandardLavaDeath
+
+Object_DrawMirroredLavaDeath:
+	JSR Object_ShakeAndDrawMirrored
+	JMP StandardLavaDeath
+
+Object_StandardLavaDeath:
+	JSR Object_DoHaltedAction
+
+StandardLavaDeathInit:
+
+	; Make a splash!
+	JSR Object_WaterSplash
+
+	; Slow object descent
+	LDA #-$18
+	STA <Objects_YVel,X
+
+	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+
+	INC Objects_Var1, X
+
+	RTS
+
+StandardLavaDeath:
+	LDA Objects_Var1, X
+	BNE DoStandardSinkage
+
+	JSR StandardLavaDeathInit
+
+DoStandardSinkage:
+
+	LDA Counter_1 
+	AND #$02
+	BNE NoSinkageMovement
+
+	; Kill momentum in lava
+	LDA <Objects_XVel,X
+	ASL A
+	ROR <Objects_XVel,X
+
+	JSR Object_ApplyXVel
+
+	JSR Object_Move
+
+NoSinkageMovement:
+	; Set sprite priority 
+	LDA Objects_FlipBits,X
+	ORA #SPR_BEHINDBG
+	STA Objects_FlipBits,X
+
+	RTS		 ; Return
+
+
+
 ObjState_Killed:
 	JSR Object_FallAndDelete	; Have object fall and delete if it gets too low (at which point we don't return)
 
@@ -3450,34 +3605,7 @@ PRG000_D068:
 	JMP Object_SetDeadEmpty	 ; Jump to Object_SetDeadEmpty
 
 ObjState_Squashed:
-	LDA Objects_Timer3,X 
-	BEQ PRG000_D090	 ; If timer 3 is expired, jump to PRG000_D090
-
-	JSR Object_Move	 ; Perform standard object movements
-
-	LDA <Objects_DetStat,X
-	AND #$04
-	BEQ PRG000_D07E	 ; If object did NOT hit ground, jump to PRG000_D07E
-
-	JSR Object_HitGround	 ; Align to ground
-	STA <Objects_XVel,X	 ; Clear X velocity
-
-PRG000_D07E:
-
-	; Set object frame to 3
-	LDA #$03
-	STA Objects_Frame,X
-
-	LDA Objects_IsGiant,X
-	BNE PRG000_D08D	 ; If object is giant, jump to PRG000_D08D (ObjectGroup_PatternSets, i.e. the "giant" enemy alternative)
-
-	JMP Object_ShakeAndDrawMirrored	 ; Draw goomba as mirrored sprite and don't come back
-
-PRG000_D08D:
-	JMP ObjectGroup_PatternSets	 ; Do the giant enemy draw routine and don't come back
-
-PRG000_D090:
-	JMP Object_SetDeadEmpty	 ; Jump to Object_SetDeadEmpty (mark object as dead/empty)
+	JMP_THUNKA 61, ObjState_Squashed61
 
 Object_MaxFalls:
 	.byte OBJECT_MAXFALL, OBJECT_MAXFALLINWATER
@@ -5969,12 +6097,23 @@ PRG000_DA6D:
 	LDA #$00
 	STA Player_Flip	 ; Player not somersaulting
 
-	BEQ PRG000_DAAE	 ; Jump (technically always) to PRG000_DAAE (cosmetic bugfix?)
+	BEQ PRG000_DAAE_	 ; Jump (technically always) to PRG000_DAAE (cosmetic bugfix?)
 
 	RTS		 ; Return
 
 PRG000_DA7A:
 	LDX <SlotIndexBackup	 ; X = SlotIndexBackup
+
+
+PRG000_DAAE_:
+	; Ensure Player_FlipBits is correct?
+	; SB: May be a cosmetic bugfix for player coming out of a somersault
+	; (see jump to PRG000_DAAE) and getting hit, but I'm not really sure...
+	LDA <Player_FlipBits
+	AND #$7f
+	STA <Player_FlipBits
+
+	RTS		 ; Return
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -5985,70 +6124,7 @@ PRG000_DA7A:
 ; changes to small, etc.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_Die:
-	; Queue death song
-	LDA Sound_QMusic1
-	ORA #MUS1_PLAYERDEATH
-	STA Sound_QMusic1
-
-	; Clear a bunch of stuff at time of death
-	LDA #$00
-	STA <Player_XVel
-	STA Player_Flip	
-	STA Player_FlashInv
-	STA Player_Kuribo
-	STA Player_StarInv
-	STA Player_Statue
-	STA Level_PSwitchCnt
-
-	LDA #$01
-	STA Player_QueueSuit	 ; Queue change to "small"
-
-	LDA #-64
-	STA <Player_YVel ; Player_YVel = -64
-
-	LDA #$30	 
-	STA Event_Countdown ; Event_Countdown = $30 (ticks until dropped back to map)
-
-	TXA
-	PHA
-	
-	LDX Player_Current
-	LDA Player_Lives,X
-	BNE Die_NotGameover
-
-	LDA #$04
-	STA <Player_IsDying	 ; Player_IsDying = 4
-	
-	; Used for GAME OVER raise-up
-	LDA #$FF
-	STA <Pipe_PlayerX
-	STA <Pipe_PlayerY
-
-	LDA #MUS1_GAMEOVER
-	STA Sound_QMusic1
-	
-	PLA
-	TAX
-	
-	JMP PRG000_DAAE
-
-Die_NotGameover:
-	PLA
-	TAX
-
-	LDA #$01
-	STA <Player_IsDying	 ; Player_IsDying = 1
-
-PRG000_DAAE:
-	; Ensure Player_FlipBits is correct?
-	; SB: May be a cosmetic bugfix for player coming out of a somersault
-	; (see jump to PRG000_DAAE) and getting hit, but I'm not really sure...
-	LDA <Player_FlipBits
-	AND #$7f
-	STA <Player_FlipBits
-
-	RTS		 ; Return
-
+	JMP_THUNKA 61, Player_Die61
 
 	; X velocities as appropriate based on which direction 
 	; Player was when he killed the enemy
@@ -6774,103 +6850,8 @@ PRG000_DDCB:
 	RTS		 ; Return
 
 
-	
-
-AScrlURDiag_HandleWrap:
-	LDA AScrlURDiag_WrapState
-	STA AScrlURDiag_WrapState_Copy	 ; AScrlURDiag_WrapState_Copy = AScrlURDiag_WrapState
-	JSR AScrlURDiag_NoWrapAbort	; Will not return here if AScrlURDiag_WrapState_Copy not set or gameplay halted!
-
-	LDY #$00	 ; Y = 0
- 
-	LDA Level_AScrlVVelCarry
-	LSR A		
-	BCC PRG000_DE53	 ; If Level_AScrlVVelCarry = 0, jump to PRG000_DE53
-
-	INY		 ; Y = 1
-	DEC Level_ScrollDiffH	 ; Level_ScrollDiffH--
-
-PRG000_DE53:
-	LDA Level_ScrollDiffH
-	STA AScrlURDiag_OffsetX	 ; AScrlURDiag_OffsetX = Level_ScrollDiffH
-
-	STY Level_ScrollDiffH	; Level_ScrollDiffH = 0 or 1
-
-	ADD <Player_X
-	STA <Player_X	 ; Player_X += Level_ScrollDiffH
-	BCC PRG000_DE65	 ; If no carry, jump to PRG000_DE65
-
-	INC <Player_XHi	 ; Otherwise, apply carry
-
-PRG000_DE65:
-	LDY #$00	 ; Y = 0
-
-	LDA Level_AScrlVVelCarry
-	LSR A		
-	BCC PRG000_DE71	 ; If no autoscroll vertical velocity carry, jump to PRG000_DE71
-
-	DEY		 ; Y = -1
-	INC Level_ScrollDiffV
-
-PRG000_DE71:
-	LDA Level_ScrollDiffV
-	STA AScrlURDiag_OffsetY	 ; AScrlURDiag_OffsetY = Level_ScrollDiffV
-
-	STY Level_ScrollDiffV	 ; Level_ScrollDiffV = 0 or -1
-
-	LDY <Player_InAir
-	BEQ PRG000_DE89	 ; If Player is not mid air, jump to PRG000_DE89
-
-	LDY #$00	 ; Y = 0
-
-	ADD Level_ScrollDiffV	 ; Level_ScrollDiffV is 0 or -1 right now
-	CMP #$ff
-	BNE PRG000_DE89
-	DEY		 ; Y = -1 
-
-PRG000_DE89:
-	ADD <Player_Y
-	STA <Player_Y
-	TYA		
-	ADC <Player_YHi	
-	STA <Player_YHi	
-
-	RTS		 ; Return
-
 AScrlURDiag_CheckWrapping:
-	JSR AScrlURDiag_NoWrapAbort	 ; Will not return here if AScrlURDiag_WrapState_Copy is not set or gameplay halted!
-
-	LDA <Objects_X,X
-	ADD AScrlURDiag_OffsetX	
-	STA <Objects_X,X
-	BCC PRG000_DEA3	 ; If no carry, jump to PRG000_DEA3
-	INC <Objects_XHi,X	 ; Otherwise, apply carry
-PRG000_DEA3:
-
-	LDA <Objects_Y,X
-	ADD AScrlURDiag_OffsetY	
-	STA <Objects_Y,X
-	BCC PRG000_DEAF	 ; If no carry, jump to PRG000_DEAF
-	INC <Objects_YHi,X	 ; Otherwise, apply carry 
-
-PRG000_DEAF:
-	RTS		 ; Return
-
-
-AScrlURDiag_NoWrapAbort:
-	LDA AScrlURDiag_WrapState_Copy
-	BEQ PRG000_DEB9	 ; If diagonal autoscroller is not wrapping, jump to PRG000_DEB9
-
-	LDA <Player_HaltGame
-	BEQ PRG000_DEBB	 ; If gameplay is not halted, jump to PRG000_DEBB (RTS)
-
-PRG000_DEB9:
-	; If NOT AScrlURDiag_WrapState_Copy or if gameplay is halted, do not return to caller!!
-	PLA
-	PLA		 ; Pull return address
-
-PRG000_DEBB:
-	RTS		 ; Return
+	JMP_THUNKA 61, AScrlURDiag_CheckWrapping61
 
 
 ObjState_Frozen:

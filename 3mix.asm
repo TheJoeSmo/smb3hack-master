@@ -2055,6 +2055,7 @@ OBJSTATE_KICKED		= 5	; Kicked (kicked by Player / spinning shell)
 OBJSTATE_KILLED		= 6	; Killed (flipped over and falling off screen)
 OBJSTATE_SQUASHED	= 7	; Squashed (generally Goomba only)
 OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
+ObjState_LAVADEATH  = 9 ; Fall into lava a die slowly
 	Objects_State:		.ds 8
 
 	Objects_Frame:		.ds 8	; $0669-$0670 "Frame" of object (see ObjectGroup_PatternSets)
@@ -4071,9 +4072,6 @@ TILE2_BGBRICK_LDSHADOW	= $91	; Background brickwork pattern, dark shadowed left
 TILE2_BGBRICK_ULDSHADOW	= $92	; Background brickwork pattern, dark shadowed upper-left
 TILE2_BGBRICK_TOPDSHADOW= $93	; Background brickwork pattern, dark shadowed on top
 
-TILE2_LAVATOP		= $94	; Top lava tile
-TILE2_LAVABOTTOM	= $95	; Bottom lava tile
-
 TILE2_ENDDOOR_UL	= $97	; The final door to the princess, upper left
 TILE2_ENDDOOR_UR	= $98	; The final door to the princess, upper right
 TILE2_ENDDOOR_LL	= $99	; The final door to the princess, lower left
@@ -4089,7 +4087,11 @@ TILE2_FENCE_LL		= $A1	; Fence, lower left
 TILE2_FENCE_LM		= $A2	; Fence, lower middle
 TILE2_FENCE_LR		= $A3	; Fence, lower right
 
-TILE2_SHADOW		= $A8	; Black
+TILE2_SHADOW		= $A4	; Black
+
+TILE2_LAVATOP		= $A7	; Top lava tile
+TILE2_LAVABOTTOM	= $A8	; Bottom lava tile
+
 TILE2_CANDLE		= $A9	; Candle (for Hot Foot)
 TILE2_SOLIDBRICK	= $AA	; Solid Bowser's Castle style brick
 TILE2_DARKREDDIAMOND	= $AB	; Dark red diamond block

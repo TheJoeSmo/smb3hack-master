@@ -1165,3 +1165,198 @@ Birdo_CheckEmpty:
 
 	; If you get here, the Green Shy Guy is gone!  (Check with BNE since Y < 0)
 	RTS		 ; Return
+
+
+ObjState_Squashed61:
+	LDA Objects_Timer3,X 
+	BEQ PRG000_D090	 ; If timer 3 is expired, jump to PRG000_D090
+
+	JSR Object_Move	 ; Perform standard object movements
+
+	LDA <Objects_DetStat,X
+	AND #$04
+	BEQ PRG000_D07E	 ; If object did NOT hit ground, jump to PRG000_D07E
+
+	JSR Object_HitGround	 ; Align to ground
+	STA <Objects_XVel,X	 ; Clear X velocity
+
+PRG000_D07E:
+
+	; Set object frame to 3
+	LDA #$03
+	STA Objects_Frame,X
+
+	LDA Objects_IsGiant,X
+	BNE PRG000_D08D	 ; If object is giant, jump to PRG000_D08D (ObjectGroup_PatternSets, i.e. the "giant" enemy alternative)
+
+	JMP Object_ShakeAndDrawMirrored	 ; Draw goomba as mirrored sprite and don't come back
+
+PRG000_D08D:
+	JMP ObjectGroup_PatternSets	 ; Do the giant enemy draw routine and don't come back
+
+PRG000_D090:
+	JMP Object_SetDeadEmpty	 ; Jump to Object_SetDeadEmpty (mark object as dead/empty)
+
+
+AScrlURDiag_HandleWrap:
+	LDA AScrlURDiag_WrapState
+	STA AScrlURDiag_WrapState_Copy	 ; AScrlURDiag_WrapState_Copy = AScrlURDiag_WrapState
+	JSR AScrlURDiag_NoWrapAbort	; Will not return here if AScrlURDiag_WrapState_Copy not set or gameplay halted!
+
+	LDY #$00	 ; Y = 0
+ 
+	LDA Level_AScrlVVelCarry
+	LSR A		
+	BCC PRG000_DE53	 ; If Level_AScrlVVelCarry = 0, jump to PRG000_DE53
+
+	INY		 ; Y = 1
+	DEC Level_ScrollDiffH	 ; Level_ScrollDiffH--
+
+PRG000_DE53:
+	LDA Level_ScrollDiffH
+	STA AScrlURDiag_OffsetX	 ; AScrlURDiag_OffsetX = Level_ScrollDiffH
+
+	STY Level_ScrollDiffH	; Level_ScrollDiffH = 0 or 1
+
+	ADD <Player_X
+	STA <Player_X	 ; Player_X += Level_ScrollDiffH
+	BCC PRG000_DE65	 ; If no carry, jump to PRG000_DE65
+
+	INC <Player_XHi	 ; Otherwise, apply carry
+
+PRG000_DE65:
+	LDY #$00	 ; Y = 0
+
+	LDA Level_AScrlVVelCarry
+	LSR A		
+	BCC PRG000_DE71	 ; If no autoscroll vertical velocity carry, jump to PRG000_DE71
+
+	DEY		 ; Y = -1
+	INC Level_ScrollDiffV
+
+PRG000_DE71:
+	LDA Level_ScrollDiffV
+	STA AScrlURDiag_OffsetY	 ; AScrlURDiag_OffsetY = Level_ScrollDiffV
+
+	STY Level_ScrollDiffV	 ; Level_ScrollDiffV = 0 or -1
+
+	LDY <Player_InAir
+	BEQ PRG000_DE89	 ; If Player is not mid air, jump to PRG000_DE89
+
+	LDY #$00	 ; Y = 0
+
+	ADD Level_ScrollDiffV	 ; Level_ScrollDiffV is 0 or -1 right now
+	CMP #$ff
+	BNE PRG000_DE89
+	DEY		 ; Y = -1 
+
+PRG000_DE89:
+	ADD <Player_Y
+	STA <Player_Y
+	TYA		
+	ADC <Player_YHi	
+	STA <Player_YHi	
+
+	RTS		 ; Return
+
+
+AScrlURDiag_CheckWrapping61:
+	JSR AScrlURDiag_NoWrapAbort	 ; Will not return here if AScrlURDiag_WrapState_Copy is not set or gameplay halted!
+
+	LDA <Objects_X,X
+	ADD AScrlURDiag_OffsetX	
+	STA <Objects_X,X
+	BCC PRG000_DEA3	 ; If no carry, jump to PRG000_DEA3
+	INC <Objects_XHi,X	 ; Otherwise, apply carry
+PRG000_DEA3:
+
+	LDA <Objects_Y,X
+	ADD AScrlURDiag_OffsetY	
+	STA <Objects_Y,X
+	BCC PRG000_DEAF	 ; If no carry, jump to PRG000_DEAF
+	INC <Objects_YHi,X	 ; Otherwise, apply carry 
+
+PRG000_DEAF:
+	RTS		 ; Return
+
+
+AScrlURDiag_NoWrapAbort:
+	LDA AScrlURDiag_WrapState_Copy
+	BEQ PRG000_DEB9	 ; If diagonal autoscroller is not wrapping, jump to PRG000_DEB9
+
+	LDA <Player_HaltGame
+	BEQ PRG000_DEBB	 ; If gameplay is not halted, jump to PRG000_DEBB (RTS)
+
+PRG000_DEB9:
+	; If NOT AScrlURDiag_WrapState_Copy or if gameplay is halted, do not return to caller!!
+	PLA
+	PLA		 ; Pull return address
+
+PRG000_DEBB:
+	RTS		 ; Return
+
+
+Player_Die61:
+	; Queue death song
+	LDA Sound_QMusic1
+	ORA #MUS1_PLAYERDEATH
+	STA Sound_QMusic1
+
+	; Clear a bunch of stuff at time of death
+	LDA #$00
+	STA <Player_XVel
+	STA Player_Flip	
+	STA Player_FlashInv
+	STA Player_Kuribo
+	STA Player_StarInv
+	STA Player_Statue
+	STA Level_PSwitchCnt
+
+	LDA #$01
+	STA Player_QueueSuit	 ; Queue change to "small"
+
+	LDA #-64
+	STA <Player_YVel ; Player_YVel = -64
+
+	LDA #$30	 
+	STA Event_Countdown ; Event_Countdown = $30 (ticks until dropped back to map)
+
+	TXA
+	PHA
+	
+	LDX Player_Current
+	LDA Player_Lives,X
+	BNE Die_NotGameover
+
+	LDA #$04
+	STA <Player_IsDying	 ; Player_IsDying = 4
+	
+	; Used for GAME OVER raise-up
+	LDA #$FF
+	STA <Pipe_PlayerX
+	STA <Pipe_PlayerY
+
+	LDA #MUS1_GAMEOVER
+	STA Sound_QMusic1
+	
+	PLA
+	TAX
+	
+	JMP PRG000_DAAE
+
+Die_NotGameover:
+	PLA
+	TAX
+
+	LDA #$01
+	STA <Player_IsDying	 ; Player_IsDying = 1
+
+PRG000_DAAE:
+	; Ensure Player_FlipBits is correct?
+	; SB: May be a cosmetic bugfix for player coming out of a somersault
+	; (see jump to PRG000_DAAE) and getting hit, but I'm not really sure...
+	LDA <Player_FlipBits
+	AND #$7f
+	STA <Player_FlipBits
+
+	RTS		 ; Return
