@@ -717,6 +717,14 @@ PRG029_D1CE:
 	JMP PRG029_D6BC	 ; Jump to PRG029_D6BC (the Player's death routine)
 
 PRG029_D1D5:
+	LDA Player_LavaImmune
+	BEQ Player_IsNotLavaImmune
+
+	; Dec until player is not lava immune
+	DEC Player_LavaImmune
+
+Player_IsNotLavaImmune:
+
 	LDA Level_CoinHeav
 	BPL PRG029_D205	 ; If Level_CoinHeav >= 0, jump to PRG029_D205
 

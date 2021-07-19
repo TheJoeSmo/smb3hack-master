@@ -2151,7 +2151,9 @@ ObjState_LAVADEATH  = 9 ; Fall into lava a die slowly
 
 	Scroll_UpdAttrFlag:	.ds 1	; Set when it is time to update attributes
 
-				.ds 2	; $0708-$0709 unused
+	Player_LavaImmune:	.ds 1 	; Set to make the player immune to lava, slowly counts to 0
+
+				.ds 1	; $0708-$0709 unused
 
 	; Tileset values:
 	; 00 = On map

@@ -126,44 +126,33 @@ PRG007_A06F:
 
 
 PRG007_A070:
-	CMP #TILE15_LAVATOP
-	BNE Tile_NotLava15
-
-	LDY Level_Tileset
-
-	CPY #15
-	BEQ PRG007_A07F	 ; If this is tileset 15 ext, jump to PRG007_A07F
-
-Tile_NotLava15:
-
-	CMP #TILE3_LAVATOP
-	BNE Tile_NotPurpleGoo
-
-	LDY Level_Tileset
-
-	CPY #3
-	BEQ PRG007_A07F	 ; If this is tileset 3 (Hills), jump to PRG007_A07F
-
-Tile_NotPurpleGoo:
-	CMP #TILE2_LAVATOP
-	BNE PRG007_A082	 ; If this is not (possibly) a lava tile, jump to PRG007_A082
-
-	LDY Level_Tileset
+	STA <Temp_Var1     ; Store the tile to check
 	
-	;CPY #3
-	;BEQ PRG007_A07F	 ; If this is tileset 3 (Hills), jump to PRG007_A07F
-	CPY #14
-	BEQ PRG007_A07F	 ; If this is tileset 14 (Underground), jump to PRG007_A07F
+	; If the player is immune to lava, do not check lava
+	LDA Player_LavaImmune
+	BNE DoCheckCrumblingBlock
 
-	CPY #2
-	BNE PRG007_A082	 ; If this is NOT tileset 2 (Fortress style), jump to PRG007_A082
+	LDA <Temp_Var1
+	ASL A		 
+	ROL A		 
+	ROL A		 		; Upper 2 bits shift right 6, effectively
+	AND #%00000011
+	STA <Temp_Var2 		; Store the tile quadrent
 
-PRG007_A07F:
-	JMP PRG007_A183	 ; Jump to PRG007_A183 (Player dies!)
+	LDA Level_TilesetIdx
+	ASL A	
+	ASL A		 ; Offset to beginning of lava-by-quad table
+	ADD <Temp_Var2	 ; Add quadrant offset
+	TAY		 ; -> 'Y' 
+	LDA Level_MinTileLavaByQuad,Y	; Get the starting lava tile
+	CMP <Temp_Var1	
+	BGE DoCheckCrumblingBlock	 ; If starting lava tile is >= the detected tile, jump to PRG000_C6D0
 
-PRG007_A082:
+; Fell into lava, kill the player
+	JMP PRG007_A183
 
 DoCheckCrumblingBlock:
+	LDA Temp_Var1  		; Restore the tile
 	; Check if we are on a crumbling block
 	CMP #TILEA_CRUMBLINGBLOCK
 	BNE DoCheckDonutBlocks

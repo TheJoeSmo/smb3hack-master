@@ -3367,15 +3367,9 @@ Object_GiantLavaDeath:
 	JMP StandardLavaDeath
 
 Object_PoofLavaDeath:
-	; Set object state to 8 ("Poof" Dying)
-	LDA #OBJSTATE_POOFDEATH
-	STA Objects_State,X
-
-	; Set timer to $1F 
-	LDA #$1f
-	STA Objects_Timer,X
- 
-	RTS		 ; Return
+	LDA #OBJSTATE_KILLED
+	STA Objects_State, X
+	JMP StandardLavaDeathInit
 
 Object_NormalAndLavaDeath:
 	JSR Object_DoNormal
@@ -3416,6 +3410,8 @@ StandardLavaDeathInit:
 	RTS
 
 StandardLavaDeath:
+	JSR Object_FallAndDelete 	; Delete if it is too far off screen
+
 	LDA Objects_Var1, X
 	BNE DoStandardSinkage
 

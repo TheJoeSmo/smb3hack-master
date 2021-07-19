@@ -495,9 +495,18 @@ ObjFloorCheckFinish:
 
 ObjInit_Spring:
 	LDA #$00
-	STA Objects_Var1, X
+	STA Objects_Var3, X
 	RTS
 
+ObjLava_Spring:
+	LDA Objects_Var1, X
+	BNE Spring_SkipLavaInit
+
+	JSR StandardLavaDeathInit
+
+Spring_SkipLavaInit:
+	JSR StandardLavaDeath
+	JMP SpringSkipWallCheck
 
 ObjNorm_Spring:
 	LDA <Player_HaltGame
@@ -506,13 +515,25 @@ ObjNorm_Spring:
 		JMP SpringDraw
 
 DoRegularSpringActions:
-	LDA Objects_Var1, X
+	LDA Objects_Var3, X
 	JSR DynJump
 
 		.word ObjMain_Spring
 		.word ObjSprang_Spring
+		.word ObjLava_Spring
 
 ObjMain_Spring:
+	LDA Objects_State, X
+	CMP #ObjState_LAVADEATH
+	BNE SpringNotInLava
+
+	; Do the custom lava code, not this
+	LDA #$02
+	STA Objects_Var3, X
+	JMP DoRegularSpringActions
+
+SpringNotInLava:
+
 	LDA Objects_State,X
 	CMP #$04 			; Do nothing if held
 	BNE DoMainSpringActions
@@ -555,7 +576,6 @@ SpringSkipFloorCheck:
 		STA <Objects_YVel,X
 		STA Objects_Var2, X
 		BEQ DirtySpringSprung
-
 
 SpringSkipCeilingCheck:
 	LDA <Objects_DetStat,X 
@@ -601,12 +621,15 @@ SpringSkipWallCheck:
 	LDA #-$02
 	STA <Player_YVel
 
+	; Make the player not die to lava if by lava
+	LDA #$0C
+	STA Player_LavaImmune
 
 ; Makes the spring, but without setting the second object var, for the player velocity
 DirtySpringSprung:
 	; The spring has been sprung!
 	LDA #$01
-	STA Objects_Var1, X
+	STA Objects_Var3, X
 
 	; The amount of time to be sprung
 	LDA #$08
@@ -631,6 +654,11 @@ SpringNotSprang:
 	BIT <Pad_Holding
 	BVC SpringNotHeld
 
+	; Reset the state of the spring, in the advent it was in lava
+	LDA #$00
+	STA Objects_Var3, X
+
+	; Set the state to held
 	LDA #OBJSTATE_HELD
 	STA Objects_State,X
 
@@ -647,7 +675,7 @@ ObjSprang_Spring:
 	LDA Objects_Timer, X
 	BNE ObjSpringAnimation_Spring
 	
-	INC Objects_Var1, X 	; Go to the next state
+	INC Objects_Var3, X 	; Go to the next state
 
 ObjSpringAnimation_Spring:
 	LDA Objects_Timer, X
@@ -676,7 +704,7 @@ NoSprungPlayerVecloty:
 	; Set the spring back to frame 0 and return
 	LDA #$00
 	STA Objects_Frame, X
-	STA Objects_Var1, X
+	STA Objects_Var3, X
 	JMP ObjMain_Spring
 
 
