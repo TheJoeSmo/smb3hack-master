@@ -6100,6 +6100,7 @@ PRG000_DA6D:
 PRG000_DA7A:
 	LDX <SlotIndexBackup	 ; X = SlotIndexBackup
 
+	JMP Player_Die
 
 PRG000_DAAE_:
 	; Ensure Player_FlipBits is correct?
