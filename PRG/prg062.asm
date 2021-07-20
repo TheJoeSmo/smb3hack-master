@@ -790,10 +790,6 @@ PRG062_857E:
 PRG062_85A5:
 	STY World_8_Dark ; Set the darkness flag
 
-	; Not sure what this assignment means here?
-	LDA #$00
-	STA Bonus_UnusedFlag
-
 	; Changes pages at A000 and C000 based on value Level_Tileset (0)
 	JSR SetPages_ByTileset	 ;	A000 = Page 11, C000 = Page 10
 
@@ -2244,8 +2240,7 @@ PRG062_8CDE:
 
 	LDA #$04
 	STA BonusText_CharPause	; BonusText_CharPause = $04
-	STA Bonus_UnusedFlag	; Bonus_UnusedFlag = $04
-
+	
 	; Set text VRAM pointer to $28C5
 	LDA #$28
 	STA BonusText_VH
@@ -3662,98 +3657,6 @@ Battle_PlayerLost:
 
 	JMP PRG062_8FB2	 ; Jump to PRG062_8FB2
 
-	; SB: Old 2P Vs code; removed because no longer used for competition
-
-	;LDX Map_PlayerLost2PVs
-	;DEX
-	;CPX Player_Current
-	;BNE PRG062_93E7	 ; If the Player who lost the match was not the Player whose turn it was, jump to PRG062_93E7
-
-	;JMP PRG062_946C	 ; Jump to PRG062_946C
-
-PRG062_93E7:
-	;LDA #(Inventory_Score - Inventory_Items)	; Offset to Mario's score
-
-	;LDX Player_Current
-	;BEQ PRG062_93F1	 ; If current Player is Mario, jump to PRG062_93F1
-
-	;ADD #(Inventory_Score2 - Inventory_Score)	; Offset to Luigi's score
-
-;PRG062_93F1:
-	;TAY		 ; Y = offset to Player's score
-
-	;LDX #$00	 ; X = 0
-;PRG062_93F4:
-	;LDA Inventory_Items,Y
-	;STA Player_Score,X
-
-	;INY		 ; Y++ (next "inventory" score byte)
-	;INX		 ; X++ (next "active" score byte)
-
-	;CPX #$03
-	;BNE PRG062_93F4	; While X <> 3, loop!
-
-	;LDX Map_PlayerLost2PVs
-	;DEX
-	;TXA
-	;EOR #$01
-	;TAY		 ; Y = the OTHER Player's index
-
-	; Swap all Player map position variables because the challenger lost!
-	;LDA Map_Previous_Y,Y
-	;STA <Temp_Var1
-	;LDA Map_Previous_XHi,Y
-	;STA <Temp_Var2
-	;LDA Map_Previous_X,Y
-	;STA <Temp_Var3
-	;LDA Map_Prev_XOff2,Y
-	;STA <Temp_Var4
-	;LDA Map_Prev_XHi2,Y
-	;STA <Temp_Var5
-	;LDA Map_Prev_XOff,Y
-	;STA <Temp_Var6
-	;LDA Map_Prev_XHi,Y
-	;STA <Temp_Var7
-	;LDA Map_Previous_Y,X
-	;STA Map_Previous_Y,Y
-	;LDA Map_Previous_XHi,X
-	;STA Map_Previous_XHi,Y
-	;LDA Map_Previous_X,X
-	;STA Map_Previous_X,Y
-	;LDA Map_Prev_XOff2,X
-	;STA Map_Prev_XOff2,Y
-	;LDA Map_Prev_XHi2,X
-	;STA Map_Prev_XHi2,Y
-	;LDA <Temp_Var1
-	;STA Map_Previous_Y,X
-	;LDA <Temp_Var2
-	;STA Map_Previous_XHi,X
-	;LDA <Temp_Var3
-	;STA Map_Previous_X,X
-	;LDA <Temp_Var4
-	;STA Map_Prev_XOff2,X
-	;LDA <Temp_Var5
-	;STA Map_Prev_XHi2,X
-	;LDA <Temp_Var6
-	;STA Map_Prev_XOff,X
-	;LDA <Temp_Var7
-	;STA Map_Prev_XHi,X
-
-;PRG062_946C:
-
-	; Flag as "death" so challenger flies backward
-	;LDX Map_PlayerLost2PVs
-	;STX Map_ReturnStatus
-
-	; Set new current Player
-	;DEX		 ; X--
-	;STX Player_Current
-
-	;JMP PRG062_8FB2	 ; Jump to PRG062_8FB2
-
-;GameOver_WhiteMapObjs:
-;	.byte MAPOBJ_NSPADE, MAPOBJ_WHITETOADHOUSE, MAPOBJ_UNK0C
-
 
 GameOver_PlayerQuitCleanup:
 	LDY Total_Players	; Y = Total_Players
@@ -3776,53 +3679,8 @@ PRG062_948E:
 	RTS		 ; Return
 
 PRG062_948F:
-	; BUG!! Apparently the game is SUPPOSED to delete all 
-	; bonus objects after a game over, but code starts with
-	; the wrong index (see immediately below) and that causes
-	; this to not work correctly!  Strange, huh?
-
-	; As my brother put it:
-	; "It may have been because of the 2P mode. You can't punish
-	; the other player because one of you sucks bad."
-
-	;LDX #-$04	; <-- BUG!  BAD INDEX!!  (Should be X = 2??)
-;PRG062_9491:
-	;LDY #(MAPOBJ_TOTAL-1)	 ; Y = (MAPOBJ_TOTAL-1) (all Map Objects)
-
-;PRG062_9493:
-	;LDA Map_Objects_IDs,Y
-	;BEQ PRG062_94A2	 ; If this Map Object is empty, jump to PRG062_94A2
-
-	;CMP GameOver_WhiteMapObjs,X
-	;BNE PRG062_94A2	 ; If this is NOT one of the "white" objects (White Toad House, Coin Ship, and the ??), jump to PRG062_94A2
-
-	; Delete the bonus objects!  You don't deserve them!
-
-	;LDA #MAPOBJ_EMPTY
-	;STA Map_Objects_IDs,Y
-
-;PRG062_94A2:
-	;DEY		 ; Y--
-	;BPL PRG062_9493	 ; While Y >= 0, loop
-
-	;DEX		 ; X--
-	;BPL PRG062_9491	 ; While X >= 0, loop	<-- BUG! This will fail on the first pass!
-
-	; SB: Removing N-Spade from map
-
 	LDA #$00
-	;STA Map_NSpade_NextScore	 ; Highest byte in the N-Spade score = 0
 	STA Map_Anchored ; Airship is no longer anchored
-
-	; N-Spade appears every 80,000 points, but the leading zero is fake, so 8000
-
-	; Middle byte of the N-Spade score
-	;LDA #HIGH(8000)
-	;STA Map_NSpade_NextScore+1
-
-	; Lowest byte of the N-Spade score
-	;LDA #LOW(8000)
-	;STA Map_NSpade_NextScore+2
 
 	RTS		 ; Return
 
@@ -3929,18 +3787,6 @@ PRG062_952C:
 
 	RTS			; Return
 
-	; This LUTs are for the unused-in-US-release "Box out" effect when a level starts
-	
-	; This one selects the appropriate init values for everything
-	; else based on what the vertical start position is...
-BoxOut_ByVStart:	.byte $00, $30, $70, $B0, $EF	; Needs to sync with GamePlay_VStart
-
-	; The init values, each column links to an above vertical start position
-BoxOut_InitVAddrH:	.byte $21, $22, $23, $28, $29
-BoxOut_InitVAddrL0:	.byte $6E, $2E, $2E, $6E, $6E
-BoxOut_InitVAddrL1:	.byte $8E, $4E, $4E, $8E, $8E
-BoxOut_InitVAddrL2:	.byte $73, $33, $33, $73, $73
-BoxOut_InitVAddrL3:	.byte $6D, $2D, $2D, $6D, $6D
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Map_Clear_EntTranMem
