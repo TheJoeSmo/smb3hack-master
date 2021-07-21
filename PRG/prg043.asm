@@ -2686,22 +2686,14 @@ SObj_CheckHitSolid:
 	TAY
 
 	LDA [Temp_Var1],Y ; Get the tile here
-	PHA		 ; Save it
+	STA <Temp_Var3
 
-	ASL A
-	ROL A
-	ROL A
-	AND #$03
-	TAY		 ; Y = tile quadrant
-	STY <Temp_Var2	 ; -> Temp_Var2
-
-	PLA		 ; Restore the tile value
-	STA <Temp_Var1	 ; -> Temp_Var1
-	
-	CMP Tile_AttrTable,Y
+	GetBlockAttributes <Temp_Var3
+	TAY 
+	GetIfBlockSolidAtFeet
 	BLT PRG043_AEE0	 ; If this tile is not solid on top, jump to PRG043_AEE0
 
-	CMP Tile_AttrTable+4,Y
+	GetIfBlockIsSolid
 	BLT PRG043_AECF	 ; If this tile is not solid on the sides/bottom, jump to PRG043_AECF
 
 	; Tile is solid all around

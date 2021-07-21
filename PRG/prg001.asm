@@ -2139,19 +2139,9 @@ ObjNorm_Vine:
 
 	JSR Object_WorldDetectN1 ; Detect against world
 
-	LDA Object_TileFeet
-	PHA		 ; Save tile detected by vine
-
-	; Calculate tile "quadrant"
-	ASL A
-	ROL A
-	ROL A
-	AND #$03
-	TAY		 ; -> 'Y'
-
-	PLA		 ; Restore tile detected by vine
-
-	CMP Tile_AttrTable,Y
+	GetBlockAttributes Object_TileFeet
+	TAY 
+	GetIfBlockIsSolid
 	BLT PRG001_AC86	 ; If vine is not within the solid tiles, jump to PRG001_AC86
 
 PRG001_AC80:
@@ -4522,16 +4512,7 @@ CoinSnake_NotGhost:
 	CMP #$02
 	BLT CoinSnake_DeleteNoPopInd	; If hitting one of the door tiles, abort! 
 
-	; Calculate tile quadrant
-	LDA <Level_Tile
-	ASL A
-	ROL A
-	ROL A
-	AND #$03
-	TAY	; -> 'Y'
-
-	LDA <Level_Tile
-	CMP Tile_AttrTable,Y
+	GetIfLevelBlockIsSolid
 	BGE CoinSnake_DeleteNoPopInd	; If solid, jump to CoinSnake_DeleteNoPopInd
 
 	LDA #(CHNGTILE_FROZENCOIN | $80)

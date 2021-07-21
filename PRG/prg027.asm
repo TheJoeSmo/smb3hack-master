@@ -2254,24 +2254,15 @@ PRG027_A506:
 PRG027_A52D:
 	LDA [Temp_Var1],Y	 ; Get the tile at the Player Projectile 
 	JSR DoSubstTileAndAttr	 ; Handle P-Switch changed tiles
-	PHA		 ; Save adjusted tile
-
-	ASL A
-	ROL A
-	ROL A
-	AND #$03
-	TAY		 ; Y = quadrant of tile
-	STY <Temp_Var2	 ; -> Temp_Var2
-
-	PLA		 ; Restore adjusted tile
-	STA <Temp_Var1	 ; -> Temp_Var1
-
-	CMP Tile_AttrTable,Y
+	STA <Temp_Var3
+	GetBlockAttributes <Temp_Var3 
+	TAY 
+	GetIfBlockSolidAtFeet
 	BLT PRG027_A557	 ; If this tile is not solid on top, jump to PRG027_A557
 
 	; Tile is solid on top...
 
-	CMP Tile_AttrTable+4,Y
+	GetIfBlockIsSolid
 	BLT PRG027_A59F	 ; If this tile is not solid on the sides/bottom, jump to PRG027_A59F
 
 	; Tile is solid all around

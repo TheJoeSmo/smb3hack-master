@@ -91,8 +91,29 @@ Tile_Layout_TS1:
 	.byte $AB, $AB, $17, $19, $59, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $E0 - $EF
 	.byte $65, $FF, $E3, $FF, $61, $63, $61, $63, $0C, $0D, $FF, $FF, $F2, $3D, $FB, $FF ; Tiles $F0 - $FF
 
+;Tile_Attributes_TS1:
+;	.byte $25, $54, $A0, $E2, $2D, $56, $AD, $F0
+
+
 Tile_Attributes_TS1:
-	.byte $25, $54, $A0, $E2, $2D, $56, $AD, $F0
+	.byte Block_Air, Block_Purple_Coin, Block_Air, Block_Hidden_Noteblock, Block_Air, Block_Hidden_Coin, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air
+	.byte Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air
+	.byte Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_Solid, Block_Noteblock, Block_Noteblock_with_Flower
+	.byte Block_Noteblock_with_Leaf, Block_Noteblock_with_Star, Block_Throwable_Block, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid
+	.byte Block_Coin, Block_Air, Block_Air, Block_Air, Block_Hidden_Question_Block_with_Coin, Block_Hidden_Question_Block_with_1UP, Block_Hidden_Noteblock_with_Warp, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air
+	.byte Block_Star_Coin_1, Block_Star_Coin_2, Block_Star_Coin_3, Block_Off_Blocks, Block_USemiSolid, Block_USemiSolid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid
+	
+	.byte Block_Question_Block_with_Fire_Flower, Block_Question_Block_with_Leaf, Block_Question_Block_with_Star, Block_Question_Block_with_Coins, Block_Question_Block_with_Star_or_Coin, Block_Question_Block_with_Coins, Block_Muncher, Block_Brick, Block_Brick_with_Fire_Flower, Block_Brick_with_Leaf, Block_Brick_with_Star, Block_Brick_with_Coins, Block_Brick_with_Star_or_Coin, Block_Brick_with_Coins, Block_Brick_with_1UP, Block_Brick_with_Vine
+	
+	.byte Block_Brick_with_P_Switch, Block_Noteblock, Block_Question_Block_with_Carrot, Block_Question_Block_with_Penguin, Block_Question_Block_with_Boomerang, Block_Question_Block, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid
+	.byte Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Vine, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air
+	.byte Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air
+	.byte Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_USemiSolid, Block_Vertical_go_to_alt_level, Block_Vertical_go_to_alt_level, Block_Vertical_go_to_secret_level
+	.byte Block_Vertical_go_to_secret_level, Block_Solid, Block_Solid, Block_Vertical_go_to_this_level, Block_Vertical_go_to_this_level, Block_Horizontal_go_to_alt_level, Block_Solid, Block_Horizontal_go_to_this_level, Block_Solid, Block_Solid, Block_Solid, Block_Warp_Noteblock, Block_Solid, Block_Solid, Block_Solid, Block_Solid
+	.byte Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air
+	.byte Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Air, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water
+	.byte Block_DWaterfall, Block_DWaterfall, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water, Block_Water
+	.byte Block_Solid, Block_Solid, Block_P_Switch, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Solid, Block_Upside_Down_Activator_Switch, Block_On_Blocks, Block_Activator_Switch
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

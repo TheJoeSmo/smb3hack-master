@@ -2414,18 +2414,7 @@ DesertBones_InSand:
 	
 	
 DesertBones_NotInSand:
-	LDA <Level_Tile
-	
-	PHA
-	
-	ASL A		 
-	ROL A		 
-	ROL A		 ; Upper 2 bits shift right 6, effectively
-	AND #%00000011	 ; Keep these bits, i.e. "tile quadrant"
-	TAY		 ; Y = quadrant of last detected tile
-	
-	PLA
-	CMP Tile_AttrTable,Y
+	GetIfLevelBlockSolidAtFeet
 	BGE DesertBones_HitFloor
 
 	INC <Objects_YVel,X

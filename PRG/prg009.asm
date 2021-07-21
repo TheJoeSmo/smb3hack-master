@@ -1785,20 +1785,11 @@ Vs_GetTileAndCheckSolid:
 	STY <Temp_Var3	 ; -> Temp_Var3
 
 	LDA Tile_Mem,Y	 ; Get tile here
-	PHA		 ; Save it
+	STA <Temp_Var4
 
-	; Calculate tile quadrant
-	ASL A
-	ROL <Temp_Var15
-	ASL A
-	ROL <Temp_Var15
-	LDA <Temp_Var15
-	AND #$03
-	TAY		 ; -> 'Y'
-
-	PLA		 ; Restore tile
-
-	CMP Tile_AttrTable+4,Y	 ; Run comparison against solidity range (2P Vs doesn't concern itself with top/side/bottom specifics)
+	GetBlockAttributes <Temp_Var4 
+	TAY 
+	GetIfBlockIsSolid
 	RTS		 ; Return
 
 

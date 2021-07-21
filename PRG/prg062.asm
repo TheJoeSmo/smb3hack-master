@@ -45,7 +45,6 @@ Tile_Mem_AddrVH:
 	.byte Tile_MemH+$B, Tile_MemH+$C, Tile_MemH+$D, Tile_MemH+$E
 
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; This table contains commands for Video_Misc_Updates which tells
 ; it how to generate certain graphical elements programatically
@@ -2240,7 +2239,7 @@ PRG062_8CDE:
 
 	LDA #$04
 	STA BonusText_CharPause	; BonusText_CharPause = $04
-	
+
 	; Set text VRAM pointer to $28C5
 	LDA #$28
 	STA BonusText_VH
@@ -6077,17 +6076,10 @@ PRG062_9EDB:
 	STA <Temp_Var2		 ; Store into Temp_Var2
 
 PGSAT_GetSlope:
-	LDA <Temp_Var2		 ; Re-get tile
-	AND #$c0
-	CLC
-	ROL A
-	ROL A
-	ROL A
-	TAY		; Y = tile quadrant (0 to 3)
-
-	LDA <Temp_Var2		 ; Re-get tile
-	CMP Tile_AttrTable,Y
-	BLT PRG062_9F0D	 	; If it's less than the tile specified in Tile_AttrTable[Y], jump to PRG062_9F0D
+	GetBlockAttributes <Temp_Var2
+	TAY 
+	GetIfBlockSolidAtFeet
+	BLT PRG062_9F0D	 	; If it's less than the tile specified , jump to PRG062_9F0D
 
 	TYA
 	ASL A

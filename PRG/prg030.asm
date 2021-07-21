@@ -365,16 +365,7 @@ Player_32PP_BumpCheck:
 	STA ObjTile_DetYHi
 
 	JSR_THUNKC 0, Object_DetectTileManual
-	LDA <Level_Tile
-		
-	PHA
-	ASL A
-	ROL A
-	ROL A		 ; Upper 2 bits shift right 6, effectively
-	AND #%00000011	 ; Keep these bits, i.e. "tile quadrant"
-	TAY
-	PLA
-	CMP Tile_AttrTable,Y
+	GetIfLevelBlockSolidAtFeet
 	BLT Player_32PP_NoBumpChk
 
 	; Bump Player up!
@@ -480,14 +471,7 @@ Object_32PP_BumpCheck:
 	STA ObjTile_DetYHi
 	
 	JSR_THUNKC 0, Object_DetectTileManual
-	LDA <Level_Tile
-	ASL A
-	ROL A
-	ROL A		 ; Upper 2 bits shift right 6, effectively
-	AND #%00000011	 ; Keep these bits, i.e. "tile quadrant"
-	TAY
-	LDA <Level_Tile
-	CMP Tile_AttrTable,Y
+	GetIfLevelBlockSolidAtFeet
 	BLT Object_32PP_NoBumpChk
 	
 	; No longer on 32PP floor...

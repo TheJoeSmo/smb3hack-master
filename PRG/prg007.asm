@@ -1185,21 +1185,11 @@ PRG007_A8BF:
 
 PRG007_A8F0:
 	LDA [Temp_Var1],Y ; Get the tile the bubble detects
+	STA <Temp_Var3
 
-	PHA		 ; Save it
-
-	; Get tile "quadrant" -> Temp_Var1
-	ASL A
-	ROL A
-	ROL A
-	AND #$03
-	STA <Temp_Var1
-
-	PLA		 ; Restore specific tile
-	STA <Temp_Var2	 ; -> Temp_Var2
-
-	LDY <Temp_Var1	 ; Y = tile quadrant
-	CMP Tile_AttrTable,Y
+	GetBlockAttributes <Temp_Var3
+	TAY 
+	GetIfBlockIsSolid
 	BGE PRG007_A91E	 ; If this tile is solid, jump to PRG007_A91E (destroy bubble)
 
 	LDA Level_TilesetIdx
