@@ -662,9 +662,9 @@
 			<sprite x="0" y="16" bank="134" pattern="0x30" palette="1"></sprite>
 			<sprite x="8" y="16" bank="134" pattern="0x32" palette="1"></sprite>
 		</object>
-		<object id="0x4F" label="OBJ_CHAINCHOMPFREE" name="Chain Chomp (Freed)" desc="Jumping chain chomp head after he breaks free">
-			<sprite x="0" y="0" bank="10" pattern="0x1C" palette="1"></sprite>
-			<sprite x="8" y="0" bank="10" pattern="0x1E" palette="1"></sprite>
+		<object id="0x4F" label="OBJ_CRATE" name="Crate" desc="Movable Crate">
+			<sprite x="0" y="0" bank="79" pattern="0x20" palette="2"></sprite>
+			<sprite x="8" y="0" bank="79" pattern="0x20" palette="2" hflip="1"></sprite>
 		</object>
 		<object id="0x50" label="OBJ_BOBOMBEXPLODE" name="Bob-omb Ready Explode" desc="Ready-to-explode Bob-Omb">
 			<sprite x="0" y="0" bank="11" pattern="0x30" palette="3"></sprite>
@@ -2218,6 +2218,24 @@
 					<param name="Height" min="0"></param>	
 					<param name="Width" min="0"></param>	
 				</generator>
+				<generator id="66" name="Muncher" desc="Run of Munchers">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="67" name="Upsidedown Munchers" desc="Run of Upsidedown Munchers">
+					<param name="Width"></param>
+				</generator>	
+				<generator id="68" name="On Blocks" desc="Run of On Blocks">
+					<param name="Width"></param>
+				</generator>	
+				<generator id="69" name="Off Blocks" desc="Run of Off Blocks">
+					<param name="Width"></param>
+				</generator>	
+				<generator id="70" name="Upsidedown Switches" desc="Run of Upsidedown Switches">
+					<param name="Width"></param>
+				</generator>
+				<generator id="71" name="Crumbly Blocks" desc="Run of Crumbly Blocks">
+					<param name="Width"></param>
+				</generator>		
 			</vargenerators>
 			<fixedgenerators>
 				<generator id="0" name="Door Type 2" desc="Door style 2"></generator>

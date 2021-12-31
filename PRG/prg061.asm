@@ -143,6 +143,9 @@ PRG000_CE94:
 	CMP #OBJ_SPRING
 	BEQ HeldKickRegular
 
+	CMP #OBJ_CRATE
+	BEQ HeldKickRegular
+
 	JSR Object_WorldDetectN1 ; Detect against world
 
 	LDA <Objects_DetStat,X
@@ -234,6 +237,9 @@ PRG000_CEDC:
 	CMP #OBJ_SPRING
 	BEQ SetEnemyAsNormal
 
+	CMP #OBJ_CRATE
+	BEQ SetEnemyAsNormal
+
 	TYA
 	AND #$06 				; 0000_0110
 	BEQ SetEnemyAsKicked
@@ -249,7 +255,11 @@ PRG000_CEDC:
 	; If spring, go back to being normal
 	LDA Level_ObjectID,X
 	CMP #OBJ_SPRING
+	BEQ SetEnemyAsNormal
+
+	CMP #OBJ_CRATE
 	BNE SetEnemyAsShelled
+
 
 SetEnemyAsNormal:
 	LDA #OBJSTATE_NORMAL
@@ -404,6 +414,9 @@ ObjectHeld_GravMatch:
 	; Springs cannot kill objects while held
 	LDA Level_ObjectID, X 
 	CMP #OBJ_SPRING
+	BEQ PRG000_CF98
+
+	CMP #OBJ_CRATE
 	BEQ PRG000_CF98
 
 	JSR ObjectToObject_HitTest	; Test if this object has collided with another object

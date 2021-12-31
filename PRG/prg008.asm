@@ -4427,8 +4427,8 @@ PRG008_B64F:
 
 Collect_CheckActionSwitch:
 	LDY Level_Tileset
-	CPY #$01
-	BNE Collect_CheckActionSwitchReg
+	CPY #$03
+	BPL Collect_CheckActionSwitchReg
 
 	; Check for the upside down switch
 	CMP #TILEA_EXSWITCHR

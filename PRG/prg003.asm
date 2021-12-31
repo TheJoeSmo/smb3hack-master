@@ -31,7 +31,7 @@ ObjectGroup02_InitJumpTable:
 	.word ObjInit_BoomBoom		; Object $4C - OBJ_BOOMBOOMFLY
 	.word ObjInit_Spring		; Object $4D - OBJ_SPRING
 	.word ObjInit_Birdo		; Object $4E - OBJ_BOSSBIRDO
-	.word ObjInit_DoNothing		; Object $4F
+	.word ObjInit_Crate		; Object $4F - OBJ_CRATE
 	.word ObjInit_BobOmbExplode	; Object $50 - OBJ_BOBOMBEXPLODE
 	.word ObjInit_DoNothing		; Object $51 - OBJ_BOOLOOP
 	.word ObjInit_TreasureBox	; Object $52 - OBJ_TREASUREBOX
@@ -73,7 +73,7 @@ ObjectGroup02_NormalJumpTable:
 	.word ObjNorm_BoomBoom		; Object $4C - OBJ_BOOMBOOMFLY
 	.word ObjNorm_Spring		; Object $4D - OBJ_SPRING
 	.word ObjNorm_Birdo		; Object $4E - OBJ_BOSSBIRDO
-	.word ObjNorm_DoNothing	; Object $4F
+	.word ObjMain_Crate	; Object $4F - Obj_Crate
 	.word ObjNorm_BobOmb		; Object $50 - OBJ_BOBOMBEXPLODE
 	.word ObjNorm_BooLoop		; Object $51 - OBJ_BOOLOOP
 	.word ObjNorm_TreasureBox	; Object $52 - OBJ_TREASUREBOX
@@ -158,7 +158,7 @@ ObjectGroup02_Attributes:
 	.byte OA1_PAL3 | OA1_HEIGHT32 | OA1_WIDTH32	; Object $4C - OBJ_BOOMBOOMFLY
 	.byte OA1_PAL2 | OA1_HEIGHT16 | OA1_WIDTH16	; Object $4D - OBJ_SPRING
 	.byte OA1_PAL3 | OA1_HEIGHT32 | OA1_WIDTH16	; Object $4E - OBJ_BOSSBIRDO
-	.byte OA1_PAL1 | OA1_HEIGHT16 | OA1_WIDTH16	; Object $4F
+	.byte OA1_PAL1 | OA1_HEIGHT16 | OA1_WIDTH16	; Object $4F - OBJ_SPRING
 	.byte OA1_PAL3 | OA1_HEIGHT16 | OA1_WIDTH16	; Object $50 - OBJ_BOBOMBEXPLODE
 	.byte OA1_PAL1 | OA1_HEIGHT16 | OA1_WIDTH16	; Object $51 - OBJ_BOOLOOP
 	.byte OA1_PAL3 | OA1_HEIGHT16 | OA1_WIDTH16	; Object $52 - OBJ_TREASUREBOX
@@ -199,7 +199,7 @@ ObjectGroup02_Attributes2:
 	.byte OA2_STOMPDONTCARE | OA2_TDOGRP2	; Object $4C - OBJ_BOOMBOOMFLY
 	.byte OA2_STOMPDONTCARE | OA2_TDOGRP1	; Object $4D - OBJ_SPRING
 	.byte OA2_TDOGRP2	; Object $4E - OBJ_BOSSBIRDO
-	.byte OA2_NOSHELLORSQUASH | OA2_TDOGRP1	; Object $4F
+	.byte OA2_STOMPDONTCARE | OA2_TDOGRP1	; Object $4F - OBJ_CRATE
 	.byte OA2_STOMPDONTCARE | OA2_TDOGRP1	; Object $50 - OBJ_BOBOMBEXPLODE
 	.byte OA2_NOSHELLORSQUASH | OA2_TDOGRP1	; Object $51 - OBJ_BOOLOOP
 	.byte OA2_STOMPDONTCARE | OA2_TDOGRP1	; Object $52 - OBJ_TREASUREBOX
@@ -283,7 +283,7 @@ ObjectGroup02_PatTableSel:
 	.byte OPTS_SETPT6 | $33	; Object $4C - OBJ_BOOMBOOMFLY
 	.byte OPTS_SETPT6 | $4F	; Object $4D - OBJ_SPRING
 	.byte OPTS_NOCHANGE	; Object $4E - OBJ_BOSSBIRDO (SB: Done manually in ObjInit_Birdo)
-	.byte OPTS_SETPT5 | $0A	; Object $4F
+	.byte OPTS_SETPT6 | $4F	; Object $4F - OBJ_CRATE
 	.byte OPTS_SETPT5 | $36	; Object $50 - OBJ_BOBOMBEXPLODE
 	.byte OPTS_SETPT5 | $12	; Object $51 - OBJ_BOOLOOP
 	.byte OPTS_SETPT5 | $05	; Object $52 - OBJ_TREASUREBOX
@@ -328,7 +328,7 @@ ObjectGroup02_Attributes4:
 	.byte OA4_KA_NORMALANDKILLED	; Object $4C - OBJ_BOOMBOOMFLY
 	.byte OA4_KA_NORMALSTATE	; Object $4D - OBJ_SPRING
 	.byte OA4_KA_NORMALANDKILLED	; Object $4E - OBJ_BOSSBIRDO
-	.byte OA4_KA_NORMALANDKILLED	; Object $4F
+	.byte OA4_KA_NORMALSTATE	; Object $4F - OBJ_CRATE
 	.byte OA4_KA_JUSTDRAW16X16	; Object $50 - OBJ_BOBOMBEXPLODE
 	.byte OA4_KA_STANDARD	; Object $51 - OBJ_BOOLOOP
 	.byte OA4_KA_STANDARD	; Object $52 - OBJ_TREASUREBOX
@@ -398,6 +398,7 @@ ObjP4E: .byte $A1, $A3, $A5, $A7, $A9, $AB	; Birdo head
 ObjP4D:
 		.byte $F1, $F1, $F3, $F3, $F1, $F1, $F5, $F5
 ObjP4F:
+		.byte $E1, $E1, $E1, $E1, $E1, $E1
 ObjP65:
 ObjP66:
 	.byte $91, $93, $9D, $9F, $9D, $9F
@@ -492,11 +493,171 @@ ObjFloorCheckPosDirUndo:
 ObjFloorCheckFinish:
 	RTS
 
-
+ObjInit_Crate:
 ObjInit_Spring:
 	LDA #$00
 	STA Objects_Var3, X
 	RTS
+
+
+ObjNorm_Crate:
+	LDA <Player_HaltGame
+	BEQ DoRegularCrateActions
+
+DoRegularCrateActions:
+	LDA Objects_Var3, X
+	JSR DynJump
+
+		.word ObjMain_Crate
+		.word $0000
+		.word ObjLava_Crate
+
+ObjMain_Crate:
+	LDA Objects_State, X
+	CMP #ObjState_LAVADEATH
+	BNE CrateNotInLava
+
+	; Do the custom lava code, not this
+	LDA #$02
+	STA Objects_Var3, X
+	JMP DoRegularCrateActions
+
+CrateNotInLava:
+
+	LDA Objects_State,X
+	CMP #$04 			; Do nothing if held
+	BNE DoMainCrateActions
+
+DoMainCrateActions:
+	JSR Object_Move 	; Handle standard movements
+
+	LDA <Objects_DetStat,X 
+	AND #DetWallGround
+	BEQ CrateSkipFloorCheck
+		JSR ObjFloorCheck
+
+CrateSkipFloorCheck: 
+	LDA <Objects_DetStat,X 
+	AND #DetWallCeiling
+	BEQ CrateSkipCeilingCheck
+
+		; Do a collision with an object
+		LDA <Objects_YHi,X 
+		STA ObjTile_DetYHi
+		LDA <Objects_XHi,X
+		STA ObjTile_DetXHi
+
+		; Do a collision!
+		LDA <Objects_X,X
+		ADD #$08
+		STA ObjTile_DetXLo
+
+		LDA <Objects_Y,X
+		;ADC #$0C
+		STA ObjTile_DetYLo
+
+		LDA Object_TileFeet2
+
+		JSR Object_BumpBlocks
+
+		; Rebound off the ceiling
+		LDA #$00 
+		STA <Objects_YVel,X
+		STA Objects_Var2, X
+
+CrateSkipCeilingCheck:
+	LDA <Objects_DetStat,X 
+	AND #(DetWallRight | DetWallLeft)
+	BEQ CrateSkipWallCheck
+
+		; If hit a wall, remove all velocity
+		LDA #$00
+		STA <Objects_XVel,X
+
+CrateSkipWallCheck:
+	; Refuse to interact until the timer expires, this prevents bugs
+	LDA Objects_Timer2, X
+	BNE CrateNotHeld
+
+	JSR Object_HitTest
+	BCC CrateNotHeld 	; Must interact with the player to be held or sprung
+
+	JSR Crate_StandOnCheck
+	BCS CrateNotHeld
+	JMP SpringNotSprang ; Do checks to see if crate will be held and draw
+
+Crate_StandOnCheck:
+	BCC Crate_NotStandOn	 	; If not, jump to Crate_NotStandOn (RTS)
+
+	; Test if Player is standing on top of object
+
+	LDA <Player_SpriteY
+	ADD #26
+	CMP <Objects_SpriteY,X
+	BGE Crate_NotStandOn	 ; If Player's bottom is beneath object's top, jump to SMB2Object_NotStandOn (RTS)
+
+	LDA <Player_YVel
+	BMI Crate_UpBypass	 ; If Player is moving upward, jump to SMB2Object_UpBypass (RTS)
+
+	JSR Crate_StandOn	 ; Stand on platform
+
+Crate_UpBypass:
+	SEC		 ; Set carry (collided)
+	RTS
+
+Crate_NotStandOn:
+	CLC		; Clear carry (didn't collide)
+	RTS		 ; Return
+
+Crate_StandOn:
+	; Set Player to object's Y - 32
+	LDA <Objects_Y,X	 
+	SUB #32
+	STA <Player_Y
+	LDA <Objects_YHi,X
+	SBC #$00
+	STA <Player_YHi
+
+	; Flag Player as NOT mid-air
+	LDY #$00
+	STY <Player_InAir
+
+	LDA <Player_SpriteX
+	CMP #16
+	BLT Crate_Player_SC_LeftEdge	; If Player is too close to left edge, jump to Player_SC_LeftEdge
+
+	LDA Object_XVelCarry
+	BPL Crate_Player_StandCorrect	
+
+	DEY		 ; Y = -1 (provides a sort of carry if Player's X Velocity caused one)
+
+Crate_Player_StandCorrect:
+	; Add to Player_X, with carry
+	ADD <Player_X
+	STA <Player_X
+	TYA
+	ADC <Player_XHi
+	STA <Player_XHi
+
+Crate_Player_SC_LeftEdge:
+	RTS		 ; Return
+
+
+ObjLava_Crate:
+	LDA Objects_Var1, X
+	BNE Crate_SkipLavaInit
+
+	JSR StandardLavaDeathInit
+
+Crate_SkipLavaInit:
+	JSR StandardLavaDeath
+	JMP CrateSkipWallCheck
+
+CrateNotHeld:
+	JSR Object_DeleteOffScreen_N2	 ; Delete object if it goes way off screen
+	JMP Object_ShakeAndDrawMirrored
+
+
 
 ObjLava_Spring:
 	LDA Objects_Var1, X

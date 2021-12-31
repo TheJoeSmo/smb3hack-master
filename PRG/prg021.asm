@@ -25,9 +25,9 @@ Tile_Layout_TS2:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $B8, $B8 ; Tiles $20 - $2F
 	.byte $B8, $B8, $BC, $FF, $B0, $B1, $86, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DC, $05, $05, $FC, $05, $05, $05, $04, $F4, $F4, $F4, $FE, $FE, $04, $FE, $FE ; Tiles $40 - $4F
-	.byte $FE, $7E, $10, $12, $24, $26, $28, $2A, $06, $05, $26, $5C, $04, $04, $04, $D8 ; Tiles $50 - $5F
+	.byte $FE, $7E, $10, $30, $24, $26, $28, $2A, $06, $05, $26, $5C, $04, $04, $04, $D8 ; Tiles $50 - $5F
 	.byte $98, $98, $98, $98, $98, $98, $92, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4 ; Tiles $60 - $6F
-	.byte $B4, $B8, $98, $98, $98, $98, $A4, $EC, $E4, $C0, $D5, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
+	.byte $B4, $B8, $98, $98, $98, $98, $A4, $EC, $E4, $C0, $D5, $B2, $E9, $30, $04, $FF ; Tiles $70 - $7F
 	.byte $05, $54, $58, $58, $44, $C4, $48, $48, $18, $68, $1C, $10, $60, $10, $10, $10 ; Tiles $80 - $8F
 	.byte $60, $05, $05, $05, $FF, $FF, $44, $27, $3D, $27, $3D, $0A, $30, $30, $31, $34 ; Tiles $90 - $9F
 	.byte $34, $31, $34, $34, $FF, $FF, $FF, $88, $FE, $2A, $14, $40, $6C, $8C, $8E, $8C ; Tiles $A0 - $AF
@@ -35,7 +35,7 @@ Tile_Layout_TS2:
 	.byte $34, $05, $FC, $2C, $FC, $FC, $34, $30, $38, $FE, $FE, $FE, $FE, $38, $FE, $39 ; Tiles $C0 - $CF
 	.byte $5F, $FE, $5F, $38, $1D, $39, $30, $05, $B3, $CC, $FC, $C5, $C7, $D4, $FE, $FC ; Tiles $D0 - $DF
 	.byte $AA, $AB, $4C, $4A, $00, $40, $50, $06, $30, $34, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $E0 - $EF
-	.byte $50, $D7, $E0, $05, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FE, $F8, $FF ; Tiles $F0 - $FF
+	.byte $50, $D7, $E0, $05, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $F1, $17, $F8, $FF ; Tiles $F0 - $FF
 
 	; Lower left 8x8 pattern per tile
 	.byte $FC, $DD, $FF, $06, $D6, $E9, $22, $22, $24, $7C, $06, $06, $7F, $65, $06, $06 ; Tiles $00 - $0F
@@ -43,9 +43,9 @@ Tile_Layout_TS2:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $B9, $B9 ; Tiles $20 - $2F
 	.byte $B9, $B9, $BD, $FF, $B1, $B0, $86, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DD, $06, $06, $FC, $06, $06, $06, $09, $F5, $F5, $F5, $FE, $FE, $09, $09, $7C ; Tiles $40 - $4F
-	.byte $5E, $FF, $20, $22, $18, $1A, $0A, $0E, $05, $05, $27, $5D, $FE, $FE, $09, $D9 ; Tiles $50 - $5F
+	.byte $5E, $FF, $20, $32, $18, $1A, $0A, $0E, $05, $05, $27, $5D, $FE, $FE, $09, $D9 ; Tiles $50 - $5F
 	.byte $99, $99, $99, $99, $99, $99, $93, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5 ; Tiles $60 - $6F
-	.byte $B5, $B9, $99, $99, $99, $99, $A5, $ED, $E4, $C1, $B2, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
+	.byte $B5, $B9, $99, $99, $99, $99, $A5, $ED, $E4, $C1, $B2, $B2, $E8, $32, $05, $FF ; Tiles $70 - $7F
 	.byte $06, $58, $58, $56, $48, $C4, $48, $46, $19, $69, $1D, $11, $61, $11, $61, $11 ; Tiles $80 - $8F
 	.byte $61, $06, $06, $11, $FF, $FF, $58, $27, $3F, $27, $3D, $31, $34, $34, $31, $34 ; Tiles $90 - $9F
 	.byte $34, $0E, $32, $32, $FF, $FF, $FF, $89, $FE, $2B, $15, $41, $6D, $9C, $9E, $9C ; Tiles $A0 - $AF
@@ -53,7 +53,7 @@ Tile_Layout_TS2:
 	.byte $31, $06, $36, $3E, $FE, $FE, $3E, $31, $31, $3A, $FE, $FE, $3A, $31, $3A, $FF ; Tiles $C0 - $CF
 	.byte $3B, $FE, $3B, $31, $3B, $FF, $31, $E6, $CD, $CD, $CD, $FE, $FE, $FE, $FE, $FE ; Tiles $D0 - $DF
 	.byte $AB, $AB, $4A, $4B, $01, $41, $51, $07, $31, $35, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $E0 - $EF
-	.byte $51, $06, $E1, $06, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FE, $F9, $FF ; Tiles $F0 - $FF
+	.byte $51, $06, $E1, $06, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $F0, $3C, $F9, $FF ; Tiles $F0 - $FF
 
 	; Upper right 8x8 pattern per tile	
 	.byte $FC, $DE, $FF, $07, $07, $EA, $21, $23, $23, $07, $7D, $07, $7F, $07, $64, $66 ; Tiles $00 - $0F
@@ -61,9 +61,9 @@ Tile_Layout_TS2:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $BA, $BA ; Tiles $20 - $2F
 	.byte $BA, $BA, $BE, $FF, $B0, $B1, $FF, $86, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DE, $07, $07, $FC, $07, $07, $07, $09, $F6, $F6, $F6, $FE, $09, $FE, $FE, $09 ; Tiles $40 - $4F
-	.byte $7C, $7F, $11, $13, $25, $27, $29, $2B, $07, $05, $28, $5E, $09, $09, $FE, $DA ; Tiles $50 - $5F
+	.byte $7C, $7F, $11, $31, $25, $27, $29, $2B, $07, $05, $28, $5E, $09, $09, $FE, $DA ; Tiles $50 - $5F
 	.byte $9A, $9A, $9A, $9A, $9A, $9A, $CA, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6 ; Tiles $60 - $6F
-	.byte $B6, $BA, $9A, $9A, $9A, $9A, $A6, $EE, $E5, $C2, $D5, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
+	.byte $B6, $BA, $9A, $9A, $9A, $9A, $A6, $EE, $E5, $C2, $D5, $B2, $EB, $31, $06, $FF ; Tiles $70 - $7F
 	.byte $07, $55, $59, $59, $45, $C6, $49, $49, $1A, $6A, $1E, $12, $62, $62, $12, $12 ; Tiles $80 - $8F
 	.byte $12, $12, $07, $07, $FF, $FF, $45, $3C, $27, $3C, $27, $30, $30, $0B, $34, $34 ; Tiles $90 - $9F
 	.byte $33, $34, $34, $33, $FF, $FF, $FF, $8A, $FE, $2C, $16, $42, $6E, $8D, $8F, $8D ; Tiles $A0 - $AF
@@ -71,7 +71,7 @@ Tile_Layout_TS2:
 	.byte $1C, $07, $FC, $3A, $FC, $FC, $32, $32, $3A, $FE, $FC, $FE, $FC, $33, $FE, $3D ; Tiles $C0 - $CF
 	.byte $3A, $FE, $33, $35, $3C, $FF, $07, $07, $B3, $CE, $FC, $C5, $C7, $D4, $FE, $FC ; Tiles $D0 - $DF
 	.byte $AA, $AB, $4C, $4A, $02, $42, $52, $32, $32, $36, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $E0 - $EF
-	.byte $52, $D7, $E2, $07, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FE, $FA, $FF ; Tiles $F0 - $FF
+	.byte $52, $D7, $E2, $07, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $F3, $18, $FA, $FF ; Tiles $F0 - $FF
 
 	; Lower right 8x8 pattern per tile
 	.byte $FC, $DF, $FF, $08, $D6, $EB, $23, $23, $25, $7C, $7D, $7E, $08, $08, $65, $67 ; Tiles $00 - $0F
@@ -79,9 +79,9 @@ Tile_Layout_TS2:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $BB, $BB ; Tiles $20 - $2F
 	.byte $BB, $BB, $BF, $FF, $B1, $B0, $FF, $86, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DF, $08, $08, $FC, $08, $08, $08, $FE, $F7, $F7, $F7, $FE, $04, $04, $04, $7D ; Tiles $40 - $4F
-	.byte $7F, $FF, $21, $23, $19, $1B, $0B, $0F, $05, $05, $29, $5F, $FE, $04, $FE, $DB ; Tiles $50 - $5F
+	.byte $7F, $FF, $21, $33, $19, $1B, $0B, $0F, $05, $05, $29, $5F, $FE, $04, $FE, $DB ; Tiles $50 - $5F
 	.byte $9B, $9B, $9B, $9B, $9B, $9B, $CB, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7 ; Tiles $60 - $6F
-	.byte $B7, $BB, $9B, $9B, $9B, $9B, $A7, $EF, $E5, $C3, $B2, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
+	.byte $B7, $BB, $9B, $9B, $9B, $9B, $A7, $EF, $E5, $C3, $B2, $B2, $EA, $33, $07, $FF ; Tiles $70 - $7F
 	.byte $08, $59, $59, $57, $49, $C6, $49, $47, $1B, $6B, $1F, $13, $63, $63, $63, $63 ; Tiles $80 - $8F
 	.byte $63, $13, $13, $13, $FF, $FF, $59, $3E, $27, $3C, $27, $34, $34, $33, $34, $34 ; Tiles $90 - $9F
 	.byte $33, $32, $32, $0F, $FF, $FF, $FF, $8B, $FE, $2D, $17, $43, $6F, $9D, $9F, $9D ; Tiles $A0 - $AF
@@ -89,7 +89,7 @@ Tile_Layout_TS2:
 	.byte $33, $08, $FE, $3F, $FE, $FC, $33, $33, $3F, $FE, $FC, $FE, $FC, $30, $39, $1D ; Tiles $C0 - $CF
 	.byte $3F, $39, $30, $3F, $33, $3E, $06, $E7, $CF, $CF, $CF, $FE, $FE, $FE, $FE, $FE ; Tiles $D0 - $DF
 	.byte $AB, $AB, $4A, $4B, $03, $43, $53, $36, $33, $37, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $E0 - $EF
-	.byte $53, $08, $E3, $08, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FE, $FB, $FF ; Tiles $F0 - $FF
+	.byte $53, $08, $E3, $08, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $F2, $3D, $FB, $FF ; Tiles $F0 - $FF
 
 Tile_Attributes_TS2:
 	.byte $14, $5A, $A9, $E2, $14, $5A, $A9, $E2
@@ -280,6 +280,12 @@ LoadLevel_Generator_TS2:
 	.word LoadLevel_TopManiacZapper	; 63 - Topmaniac Zapper
 	.word LoadLevel_PurpleCoins		; 64 - Run of Purple coins
 	.word LoadLevel_PurpleCoinR		; 65 - Rectangle of Purple Coins
+	.word LoadLevel_Munchers21			; 66 - Run of munchers
+	.word LoadLevel_Munchers21_Upsidedown ; 67 - Run of upside down munchers
+	.word LevelLoad_OnBlocks21			; 68 - Run of on blocks
+	.word LevelLoad_OffBlocks21			; 69 - Run of off blocks
+	.word LevelLoad_SwitchUpsideDown21  ; 70 - Run of upside down switches
+	.word LevelLoad_CrumblingBlock21	; 71 - Run of crumbling blocks
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LeveLoad_FixedSizeGen_TS2
@@ -1027,6 +1033,79 @@ LL_TMZ_Loop:
 	BPL LL_TMZ_Loop	 	; While Temp_Var3 >= 0, loop...
 
 	RTS		 ; Return
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LoadLevel_Munchers
+;
+; Puts down 1-16 munchers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LoadLevel_Munchers21:
+	LDA #TILEA_MUNCHER
+	BNE LLM21_SeTTile
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LoadLevel_Munchers15_Upsidedown
+;
+; Puts down 1-16 munchers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LoadLevel_Munchers21_Upsidedown:
+	LDA #TILEA_UPSIDEDOWN_MUNCHER
+	BNE LLM21_SeTTile
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LevelLoad_OnBlocks15
+;
+; Puts down 1-16 on blocks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LevelLoad_OnBlocks21:
+	LDA #TILEA_ON_BLOCK
+	BNE LLM21_SeTTile
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LevelLoad_OffBlocks15
+;
+; Puts down 1-16 on blocks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LevelLoad_OffBlocks21:
+	LDA #TILEA_OFF_BLOCK
+	BNE LLM21_SeTTile
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LevelLoad_SwitchUpsideDown15
+;
+; Puts down 1-16 on blocks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LevelLoad_SwitchUpsideDown21:
+	LDA #TILEA_EXSWITCHR
+	BNE LLM21_SeTTile
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LevelLoad_SwitchUpsideDown15
+;
+; Puts down 1-16 on blocks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LevelLoad_CrumblingBlock21:
+	LDA #TILEA_CRUMBLINGBLOCK
+
+LLM21_SeTTile:
+	STA <Temp_Var5
+
+	LDA LL_ShapeDef	
+	AND #$0f	
+	TAX		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
+	LDY TileAddr_Off	 ; Y = TileAddr_Off
+
+PRG021_SimpleGenLoop:
+	LDA <Temp_Var5
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	JSR LoadLevel_NextColumn ; Next column
+	DEX		 	 ; X--
+	BPL PRG021_SimpleGenLoop	 	 ; While X >= 0, loop!
+
+	RTS		 ; Return
+	
+
 
 
 	; Broken into another file for ease of integration in NoDice editor

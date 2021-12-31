@@ -375,7 +375,7 @@ Object_AttrFlags:
 	.byte OAT_BOUNDBOX13	; Object $4C - OBJ_BOOMBOOMFLY
 	.byte OAT_BOUNDBOX12 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $4D - OBJ_SPRING
 	.byte OAT_BOUNDBOX02	; Object $4E - OBJ_BOSSBIRDO
-	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY	; Object $4F
+	.byte OAT_BOUNDBOX12 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $4F - OBJ_CRATE
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY	; Object $50 - OBJ_BOBOMBEXPLODE
 	.byte OAT_BOUNDBOX01 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $51 - OBJ_BOOLOOP
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $52 - OBJ_TREASUREBOX
@@ -1506,8 +1506,8 @@ ObjectDo_Check_IfOnActivitySwitch:
 ObjectDo_Check_IfOnCrumblyBlock:
 ; Check to see if we need to crumble a block
 	LDA Level_Tileset
-	CMP #$01
-	BEQ Object_DoCrumblyBlockCheck
+	CMP #$03
+	BMI Object_DoCrumblyBlockCheck
 ObjectDo_QuickSandLong:
 	JMP ObjectDo_QuickSand  ; Do the check this way because the branch is out of range.
 
@@ -3701,6 +3701,9 @@ Object_ShellDoWakeUp:
 
 	; Spring does normal state too
 	CMP #OBJ_SPRING
+	BEQ SMB2Object_DoNormal
+
+	CMP #OBJ_CRATE
 	BEQ SMB2Object_DoNormal
 
 	; If object is a Bob-omb, jump to PRG000_D0EC, otherwise jump to PRG000_D101
