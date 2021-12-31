@@ -59,7 +59,7 @@ ObjectGroup04_InitJumpTable:
 	.word ObjInit_BigCannonBall	; Object $B0 - OBJ_BIGCANNONBALL
 	.word ObjInit_FireJetRight	; Object $B1 - OBJ_FIREJET_RIGHT
 	.word ObjInit_FireJetUpsideDown	; Object $B2 - OBJ_FIREJET_UPSIDEDOWN
-	.word ObjInit_DoNothing		; Object $B3 
+	.word ObjInit_ObjB3		; Object $B3 
 
 
 	; Object group $04 (i.e. objects starting at ID $90) State 2 jump table
@@ -101,7 +101,7 @@ ObjectGroup04_NormalJumpTable:
 	.word ObjNorm_BigCannonBall	; Object $B0 - OBJ_BIGCANNONBALL
 	.word ObjNorm_FireJet		; Object $B1 - OBJ_FIREJET_RIGHT
 	.word ObjNorm_FireJet		; Object $B2 - OBJ_FIREJET_UPSIDEDOWN
-	.word ObjNorm_DoNothing		; Object $B3
+	.word ObjNorm_ObjB3		; Object $B3
 
 
 	; Object group $04 (i.e. objects starting at ID $90) Collision routine jump table (if calling Object_HitTestRespond;
@@ -834,11 +834,114 @@ Spark_NotFortCheck:
 	CMP #TILE1_VINE
 	BEQ Spark_TileOverride	; If a vine, jump to Spark_TileOverride
 
-	GetIfLevelBlockIsSolid
-
+	; Calculate quadrant
+	PHA		; Save tile
+	
+	ASL A
+	ROL A
+	ROL A
+	AND #$03
+	TAY		 ; Y = tile quadrant
+		
+	PLA		; Restore tile
+	CMP Tile_AttrTable,Y	; Compare against solidity check table (BGE for solid)
+	
 Spark_TileOverride:
 	RTS
 
+
+ObjInit_ObjB3:
+
+	JSR Level_ObjCalcXDiffs
+
+	; Set X velocity towards Player
+	LDA SpinyEgg_TowardsPlayer,Y
+	STA <Objects_XVel,X
+
+	RTS		 ; Return
+
+
+ObjB3_AttrByFrame:	.byte $03, $01, $02, $01
+	
+ObjNorm_ObjB3:
+
+	; Strange object... hurts Player, can be killed, appears able to be "bounced" off a sideways bounce block
+
+	LDA Level_NoStopCnt
+	LSR A
+	LSR A
+	AND #$03
+	STA Objects_Frame,X	 ; Set frame 0 to 3
+
+	TAY		 	 ; Y = 0 to 3
+	LDA ObjB3_AttrByFrame,Y
+	STA Objects_SprAttr,X	 ; Set attribute by frame
+
+	JSR Object_ShakeAndDraw	 ; Draw thing
+
+	; Clear horizontal and vertical flip bits on first sprite
+	LDA Sprite_RAM+$02,Y
+	AND #$3f
+	STA Sprite_RAM+$02,Y
+
+	; Set horizontal and vertical flip bits on second sprite
+	ORA #$c0
+	STA Sprite_RAM+$06,Y
+
+	LDA Objects_State,X
+	CMP #OBJSTATE_NORMAL
+	BNE PRG005_A34A	 ; If object state is not Normal, jump to PRG005_A34A
+
+	LDA <Player_HaltGame
+	BNE PRG005_A34A	 ; If gameplay halted, jump to PRG005_A34A
+
+	LDA <Counter_1
+	LSR A
+	NOP
+	NOP
+	AND #$01
+	STA Objects_Frame,X	 ; Toggle frame 0 or 1
+
+	JSR Object_DeleteOffScreen	; Delete object if it falls off-screen
+	JSR Player_HitEnemy	 	; Do Player to "thing" collision
+	JSR Object_Move	 		; Do standard movements
+
+	LDA <Objects_DetStat,X
+	AND #$04
+	BEQ PRG005_A34F	 ; If object did not hit floor, jump to PRG005_A34F
+
+	JSR Object_HitGround	; Align to floor
+
+	LDA Objects_Timer,X
+	BNE PRG005_A34A	 ; If timer not expired, jump to PRG005_A34A
+
+	LDA LRBounce_Vel
+	CMP <Objects_Var4,X
+	BEQ PRG005_A34A	 ; If bounced different, jump to PRG005_A34A
+
+	JSR PRG005_A355	 ; Turn around
+
+PRG005_A34A:
+
+	; Lock in how object was bounced so it can't be bounced the same again
+	LDA LRBounce_Vel
+	STA <Objects_Var4,X
+
+PRG005_A34F:
+	LDA <Objects_DetStat,X
+	AND #$03
+	BEQ ObjInit_BigCannonBall	 ; If object did not hit wall, jump to ObjInit_BigCannonBall (RTS)
+
+
+PRG005_A355:
+
+	; Set timer to $20
+	LDA #$20
+	STA Objects_Timer,X
+
+	JSR Object_AboutFace	 ; Turn around
+	JSR Object_ApplyXVel	 ; Apply X velocity
+	JSR Object_ApplyXVel	 ; Apply Y velocity
 
 ObjInit_BigCannonBall:
 	RTS		 ; Return
@@ -3482,11 +3585,17 @@ PRG005_B0AE:
 	LDY #$00	 ; Y = 0
 
 	LDA [Temp_Var1],Y ; Get the tile here
-	STA <Temp_Var3
+	PHA		 ; Save it
 
-	GetBlockAttributes <Temp_Var3
-	TAY 
-	GetIfBlockIsSolid
+	ASL A
+	ROL A
+	ROL A
+	AND #$03
+	TAY		 ; Y = tile quadrant
+
+	PLA		 ; Restore tile proper
+
+	CMP Tile_AttrTable+4,Y	 ; Test if this tile is one of the solid ceiling/wall tiles
 	RTS		 ; Return
 
 PRG005_B0DD:

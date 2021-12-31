@@ -525,8 +525,6 @@ PRG008_A3FA:
 	BNE PRG008_A427_fix	 ; If Player_SpriteY < $C0 && Player_SpriteY > $CF, jump to PRG008_A427
 
 Player_FellAndDied:
-
-
 	; Fell in a pit and died
 	LDA #PLAYERSUIT_SMALL
 	STA <Player_Suit ; Player_Suit = PLAYERSUIT_SMALL
@@ -780,10 +778,14 @@ Level_CheckIfTileUnderwater:
 
 Player_NotGHUWChk:
 	LDA <Temp_Var1,X
-	STA <Temp_Var3
-	GetBlockAttributes <Temp_Var3
-	TAY 
-	GetIfBlockIsSolid
+	ASL A
+	ROL A
+	ROL A
+	AND #$03
+	TAY		 ; Y = Quadrant of tile (i.e. 0-3 for $00, $40, $80, $C0)
+
+	LDA <Temp_Var1,X
+	CMP Tile_AttrTable,Y
 	BGE PRG008_A6A9	 ; If tile is solid floor, jump to PRG008_A6A9 (RTS)
 
 	CMP #TILEA_PSWITCH_PRESSED
@@ -964,6 +966,15 @@ PRG008_A743:
 	STA Player_Behind_En	; Default enable with being behind the scenes
 	BEQ PRG008_A77E	 	; If Player is not behind the scenes, jump to PRG008_A77E
 
+	; SB: No longer time limited
+
+	;LDA <Counter_1
+	;LSR A	
+	;BCC PRG008_A766	 	; Every other tick, jump to PRG008_A766
+
+	;DEC Player_Behind	; Player_Behind--
+
+;PRG008_A766:
 	LDY #$00	 ; Y = 0 (disable "behind the scenes")
 
 	; If tile behind Player's head is $41 or TILE1_SKY, jump to PRG008_A77B
@@ -986,11 +997,17 @@ PRG008_A77B:
 	STY Player_Behind_En	; Store whether Player is actually behind scenery
 
 PRG008_A77E:
+	LDA <Temp_Var1
+	AND #$c0
+	ASL A
+	ROL A
+	ROL A
+	TAY		 ; Y = uppermost 2 bits down by 6 (thus 0-3, depending on which "quadrant" of tiles we're on, $00, $40, $80, $C0)
+
 	; Checks for solid tile at Player's head
-	GetBlockAttributes Level_Tile_Head
-	TAY 
-	GetIfBlockSolidAtHead
-	BLT PRG008_A7AD	 ; If tile index is less than value (not solid for wall/ceiling), jump to PRG008_A7AD
+	LDA <Temp_Var1	 
+	CMP Tile_AttrTable+4,Y	; Wall/ceiling-solid tile quadrant limits begin at Tile_AttrTable+4
+	BLT PRG008_A7AD	 ; If tile index is less than value in Tile_AttrTable (not solid for wall/ceiling), jump to PRG008_A7AD
 
 	LDA <Player_InAir
 	ORA Player_InWater
@@ -4133,15 +4150,14 @@ FloorChk_GhostHouseStair:
 	;;;;;;;;;;;;;;;;;;;;;
 
 PRG008_B55B:
-	GetBlockAttributes Level_Tile_GndR
-	TAY 
-	GetIfBlockSolidAtFeet	
+	LDX Level_Tile_Quad+1	 ; Get right tile quadrant
+	LDA Level_Tile_GndR	 ; Get right tile
+	CMP Tile_AttrTable,X	
 	BGE PRG008_B57E	 	 ; If the tile is >= the attr value, jump to PRG008_B57E
 
-
-	GetBlockAttributes Level_Tile_GndL
-	TAY 
-	GetIfBlockSolidAtFeet
+	LDX Level_Tile_Quad	 ; Get left tile quadrant
+	LDA Level_Tile_GndL	 ; Get left tile
+	CMP Tile_AttrTable,X	
 	BGE PRG008_B57E	 	 ; If the tile is >= the attr value, jump to PRG008_B57E
 
 
@@ -4239,17 +4255,16 @@ PRG008_B5B02:
 	; This checks if the given tile is greater-than-or-equal-to
 	; the related "AttrTable" slot and, if so, returns 'carry set'
 Level_CheckGndLR_TileGTAttr:
-	TYA
-	TAX
-	GetBlockAttributesX Level_Tile_GndR
-	TAY 
-	GetIfBlockIsSolid
+
+	LDX Level_Tile_Quad+1,Y	; Get this particular "quad" (0-3) index
+	LDA Level_Tile_GndR,Y		; Check the tile here
+	CMP Tile_AttrTable+4,X
 	BGE PRG008_B5D0			; If the tile is >= the attr value, jump to PRG008_B5D0 (NOTE: Carry set when true)
 
-	GetBlockAttributesX Level_Tile_GndR
-	TAY 
-	GetIfBlockIsSolid
-	
+	LDX Level_Tile_Quad,Y		; Get this particular "quad" (0-3) index
+	LDA Level_Tile_GndL,Y		; Check the tile here
+	CMP Tile_AttrTable+4,X		; Set carry if tile is >= the attr value
+
 PRG008_B5D0:
 
 	; NOTE: The return value is "carry set" for true!
@@ -4893,9 +4908,372 @@ PRG008_B7B7:
 	RTS		 ; Return
 
 
-DoHitBumpBlock:
 PRG008_B7BA:
-	JMP_THUNKA 61, DoHitBumpBlock61
+
+	; Align X Detect low to tile grid
+	LDA <Temp_Var16
+	AND #$F0
+	STA <Temp_Var16
+
+	LDA <Temp_Var1	 ; Get power-up value
+	ASL A		 ; Make into 2-byte index
+	TAY		 ; -> 'Y'
+
+	; Load jump address as per block tile type...
+	LDA LATP_JumpTable,Y
+	STA <Temp_Var1	
+	LDA LATP_JumpTable+1,Y
+	STA <Temp_Var2	
+
+	JMP [Temp_Var1]	 ; Handle special block!
+
+LATP_JumpTable:
+	.word LATP_None		; 0 = None
+	.word LATP_Flower	; 1 = Mushroom/Flower
+	.word LATP_Leaf		; 2 = Mushroom/Leaf
+	.word LATP_Star		; 3 = Star
+	.word LATP_Coin		; 4 = Coin
+	.word LATP_CoinStar	; 5 = Coin/Star
+	.word LATP_Brick	; 6 = Standard brick behavior
+	.word LATP_Vine		; 7 = Vine
+	.word LATP_10Coin	; 8 = 10 coin
+	.word LATP_1up		; 9 = 1-up
+	.word LATP_PSwitch	; A = P-Switch
+	.word LATP_BrickAltClear; B = Brick which clears to alternate tile when smashed
+	.word LATP_ExtPowerUp	; C = Penguin (TEMP)
+	.word LATP_ExtPowerUp	; D = Rabbit
+	.word LATP_ExtPowerUp	; E = Hammer
+	.word LATP_LikeExSwitch	; F = Like hitting an [!] switch (multipurpose)
+
+LATP_None:
+	LDY #1		; Y = 1 (spawn .. nothing?) (index into PRG001 Bouncer_PUp)
+	RTS		 ; Return
+
+LATP_Flower:
+	LDA #$00
+	STA PUp_StarManFlash	 ; PUp_StarManFlash = 0 (don't activate star man flash)
+
+	LDY #$05	 ; Y = 5 (spawn a mushroom) (index into PRG001 Bouncer_PUp)
+
+	LDA <Player_Suit
+	BEQ PRG008_B7F9	 ; If Player is small, jump to PRG008_B7F9
+
+	LDY #$02	 ; Y = 2 (spawn a fire flower) (index into PRG001 Bouncer_PUp)
+
+PRG008_B7F9:
+	RTS		 ; Return
+
+
+LATP_Leaf:
+	LDA #$00
+	STA PUp_StarManFlash	 ; PUp_StarManFlash = 0 (don't activate star man flash)
+
+	LDY #$05	 ; Y = 5 (spawn a mushroom) (index into PRG001 Bouncer_PUp)
+
+	LDA <Player_Suit
+	BEQ PRG008_B807	 ; If Player is small, jump to PRG008_B807
+
+	LDY #$03	 ; Y = 3 (spawn a leaf) (index into PRG001 Bouncer_PUp)
+
+PRG008_B807:
+	RTS		 ; Return
+
+LATP_Star:
+	LDA #$80
+	STA PUp_StarManFlash	 ; PUp_StarManFlash = $80 (activate star man flash)
+
+	LDY #$04	 ; Y = 4 (spawn a starman) (index into PRG001 Bouncer_PUp)
+
+	RTS		 ; Return
+
+LATP_ExtPowerUp:
+	LDA #$00
+	STA PUp_StarManFlash	 ; PUp_StarManFlash = 0 (don't activate star man flash)
+
+	LDA <Player_Suit
+	BEQ LATP_ExtPowerUp_Sm	 ; If Player is small, jump to LATP_ExtPowerUp_Sm
+
+
+	TYA	; 'Y' -> 'A'
+	LSR A	; Return to index value
+	SUB #4	; Base at 8
+	TAY	; Y = 8 to 10 (spawn a suit) (index into PRG001 Bouncer_PUp)
+
+	SUB #7	; Base 1-3
+	STA PUp_StarManFlash	 ; PUp_StarManFlash = 1 to 3 (trigger super suit)
+
+	RTS		 ; Return
+
+LATP_ExtPowerUp_Sm:
+	LDY #$05	 ; Y = 5 (spawn a mushroom) (index into PRG001 Bouncer_PUp)
+	RTS
+
+
+LATP_Coin:
+	JSR LATP_CoinCommon	 ; Do common "power up" coin routine
+
+	LDY #$01	 ; Y = 1 (spawn a coin) (index into PRG001 Bouncer_PUp, i.e. nothing)
+
+	LDA <Temp_Var16
+	ORA <Temp_Var15	; Regenerate 10 coin block ID
+	CMP B10Coin_ID
+	BNE PRG008_B82F	; If this is a DIFFERENT coin block than the last one we started, jump to PRG008_B82F (RTS)
+
+	LDA B10Coin_Timer
+	BEQ PRG008_B82F	; In any case, if a 10 coin timer is not still on, jump to PRG008_B82F (RTS)
+
+	LDA B10Coin_Count
+	BMI PRG008_B82F	; If you've already got 10 coins (ideally), jump to PRG008_B82F (RTS)
+
+	DEC B10Coin_Count	 ; B10Coin_Count--
+
+	LDA #$17
+	STA <Temp_Var6	 ; Temp_Var6 = $17
+
+PRG008_B82F:
+	RTS		 ; Return
+
+LATP_CoinStar:
+	LDA #$80
+	STA PUp_StarManFlash	 ; Get that Starman flash ready just in case...
+
+	LDY #$04	 	; Y = 4 (spawn a starman) (index into PRG001 Bouncer_PUp)
+
+	LDA Player_StarInv
+	BNE PRG008_B83F	 ; If Player if invincible, jump to PRG008_B83F!
+
+	; Otherwise, sorry, just a coin :(
+	JMP LATP_Coin
+
+PRG008_B83F:
+	RTS		 ; Return
+
+LATP_Brick:
+	JSR LATP_GetCoinAboveBlock	; Get coin above block, if any
+
+; If temp var is set, act like small mario and do not bust the brick
+	LDA Temp_VarNP0
+	BEQ BustTheBrick
+	CMP #OBJSTATE_KICKED
+	BNE DoNotBustTheBrick
+
+BustTheBrick:
+	CPX #$04
+	BEQ PRG008_B84E	 ; If on tile check index 4 (tail attack's tile), jump to PRG008_B84E (bust brick!)
+
+	LDA <Player_Suit
+	BNE PRG008_B84E	 ; If Player is not small, jump to PRG008_B84E (bust brick!)
+
+DoNotBustTheBrick:
+	LDY #$01	 ; Y = 1 (spawn a coin) (index into PRG001 Bouncer_PUp, i.e. nothing)
+
+	RTS		 ; Return
+
+PRG008_B84E:
+	; Crumbling sound
+	LDA Sound_QLevel2
+	ORA #SND_LEVELCRUMBLE
+	STA Sound_QLevel2
+
+	JSR BrickBust_MoveOver	 ; If a brick is busting in slot 1, move it to slot 2
+
+	LDA #$02
+	STA BrickBust_En	 ; Set brick bust enable
+
+	; Y
+	LDA <Temp_Var14
+	AND #$F0
+	CLC
+	SBC Level_VertScroll
+	STA BrickBust_YUpr	 ; Store upper brick segment Y
+
+	ADD #$08
+	STA BrickBust_YLwr	 ; Store lower brick segment Y
+
+ 	; X
+	LDA <Temp_Var16
+	SUB <Horz_Scroll
+	STA BrickBust_X	 ; Store X base coordinate
+
+	LDA #$00	 
+	STA BrickBust_XDist	 ; Reset X fan out distance
+	STA BrickBust_HEn	 ; Reset horizontal enablers
+
+	LDA #-6	 
+	STA BrickBust_YVel	 ; Y velocity = -6
+
+	LDA #$01	
+	STA Score_Earned	 ; 10 points!
+
+	LDY #CHNGTILE_DELETETOBG
+	STY <Temp_Var12		 ; Temp_Var12 = CHNGTILE_DELETETOBG
+
+	LDY #$80	 	; Y = $80
+	RTS		 ; Return
+
+LATP_Vine:
+	LDY #$00	 ; Y = 0 (??)
+
+	; Vine raise sound!
+	LDA Sound_QLevel1
+	ORA #SND_LEVELVINE
+	STA Sound_QLevel1
+
+	LDY #$06	 ; Y = 6 (vine) (index into PRG001 Bouncer_PUp)
+	RTS		 ; Return
+
+LATP_10Coin:
+	LDA <Temp_Var16
+	ORA <Temp_Var15
+	STA B10Coin_ID	 ; X & Y are merged into a sort of unique ID for this block
+
+	LDA #$09
+	STA B10Coin_Count ; Set coin counter to 9
+
+	LDA #200
+	STA B10Coin_Timer ; B10Coin_Timer = 200
+
+	JMP LATP_Coin	; Jump to common coin routine...
+
+LATP_1up:
+	JSR Level_RecordBlockHit	 ; Record having grabbed this 1-up so it does not come back
+
+	LDA #$00
+	STA PUp_StarManFlash	 ; PUp_StarManFlash = 0 (don't activate star man flash)
+
+	LDY #$07	 ; Y = 7 (1-up) (index into PRG001 Bouncer_PUp)
+
+	RTS		 ; Return
+
+LATP_PSwitch:
+	LDY #$05	 ; Y = 5
+
+PRG008_B8BE:
+	LDA SpecialObj_ID,Y
+	BEQ PRG008_B8C9	 ; If this is a free spawn event slot, jump to PRG008_B8C9
+	DEY		 ; Y--
+	BPL PRG008_B8BE	 ; While Y >= 0, loop!
+	JMP PRG008_B8D3	 ; Jump to PRG008_B8D3
+
+PRG008_B8C9:
+	LDA #SOBJ_POOF
+	STA SpecialObj_ID,Y	 ; Special object "poof"
+	LDA #$20	 
+	STA SpecialObj_Data,Y	 ; Used as "counter" while poof is in effect
+
+PRG008_B8D3: 
+	LDA <Temp_Var14	 ; Get Y Low
+	AND #$F0	 ; Align to tile grid
+	SUB #16		 ; Above hit tile
+	PHP		 ; Save processor status
+
+	CPY #$00
+	BLS PRG008_B8E2	 ; If index < 0, then we don't have a special object, and skip setting Y Lo
+
+	STA SpecialObj_YLo,Y	 ; Otherwise, store Y Lo
+
+PRG008_B8E2:
+	STA Level_BlockChgYLo	 ; Store block change Y low coord
+	PLP		 ; Restore processor status
+
+	LDA <Temp_Var13	 ; Get Y high
+	SBC #$00	 ; Apply carry as necessary from previous subtraction
+
+	CPY #$00	 
+	BLS PRG008_B8F1	 ; If index < 0, then we don't have a special object, and skip setting Y Hi
+	STA SpecialObj_YHi,Y	 ; Otherwise, store Y Hi
+
+PRG008_B8F1:
+	STA Level_BlockChgYHi	 ; Store block change Y high coord
+
+	LDA <Temp_Var16	 ; Get X Low
+
+	CPY #$00
+	BLS PRG008_B8FD	 ; If index < 0, then we don't have a special object, and skip setting X Lo
+	STA SpecialObj_XLo,Y	 ; Otherwise, store X Lo
+
+PRG008_B8FD:
+	STA Level_BlockChgXLo	 ; Store block change X low coord
+
+	LDA <Temp_Var15		 ; Get X Hi
+	STA Level_BlockChgXHi	 ; Store block change X high coord
+
+	LDA #CHNGTILE_PSWITCHAPPEAR	 
+	STA Level_ChgTileEvent	 ; Queue P-Switch appear!
+
+	LDY #$01	 ; Y = 1 (index into PRG001 Bouncer_PUp, i.e. nothing)
+	RTS		 ; Return
+
+LATP_BrickAltClear:
+	JSR LATP_Brick	 ; Act like a brick!  ('A' = 0 when small)
+	BEQ PRG008_B916	 ; If Player is small, then do nothing...
+
+	LDA #CHNGTILE_DELETETOBGALT
+	STA <Temp_Var12	 ; Temp_Var12 = 12
+
+PRG008_B916:
+	RTS		 ; Return
+
+LATP_CoinCommon:
+	INC Coins_Earned ; One more coin earned
+	INC Coins_ThisLevel	 ; One more coin earned this level
+
+	; Y Lo - into Temp_Var1
+	LDA <Temp_Var14	
+	STA <Temp_Var1	
+
+	; X Lo - center it up, shove into Temp_Var2
+	LDA <Temp_Var16
+	ORA #$04
+	STA <Temp_Var2
+
+	JMP PRG000_C49B	 ; Jump to PRG000_C49B (common "power up" coin entry)
+
+
+	; Special routine which gets a coin above a ? block, if one is present!
+LATP_GetCoinAboveBlock:
+	; SB: Bug: If you bump a P-Switch induced "temporary brick" beneath
+	; another temporary brick, you'll get a "coin" (because they really
+	; are still coin blocks!)  This worked in original SMB3 as well.  In
+	; any case, if P-Switch is active, cancel this logic!
+	LDA Level_PSwitchCnt
+	BNE GCAB_PSwitch_Cancel
+
+	LDA <Temp_Var14
+	PHA		 ; Save Temp_Var14 (Y Lo)
+	SUB #16	
+	STA <Temp_Var14	 ; Temp_Var14 -= 16 (get tile above)
+
+	STX <Temp_Var5	 ; Backup X into Temp_Var5
+	JSR Player_GetTileAndSlope_Normal	 ; Get a tile here
+	LDX <Temp_Var5	 ; Restore X into Temp_Var5
+
+	CMP #TILEA_COIN
+	BNE PRG008_B948	 ; If tile above is not a coin, jump to PRG008_B948
+
+	; Tile above was a coin...
+	; The following will collect the coin along with the ? block hit!
+
+	LDA #CHNGTILE_DELETETOBG
+	JSR Level_QueueChangeBlock	; Delete to background
+
+	PLA		 
+	STA <Temp_Var14		 ; Restore Temp_Var14
+	JMP LATP_CoinCommon	 ; Jump to common coin routine
+
+PRG008_B948:
+	PLA		 
+	STA <Temp_Var14	 ; Restore Temp_Var14
+
+GCAB_PSwitch_Cancel:
+	RTS		 ; Return
+
+
+LATP_LikeExSwitch:
+	LDY #1
+	JSR ExSwitch_Press
+	RTS
+
 
 Player_TailAttack_Offsets: ; (Y and X)
 	.byte 28, -6	; Player not horizontally flipped
@@ -5817,23 +6195,22 @@ Player_GetTileSlopeAndQuad:
 	; 'X' defines which tile index to do
 	; 'Y' defines an X and Y offset index for the TileAttrAndQuad_OffsSloped table
 
-	; Todo: Fixme
-	;LDA TileAttrAndQuad_OffsSloped,Y
-	;STA <Temp_Var10	 ; Temp_Var10 (Y offset)
-	;LDA TileAttrAndQuad_OffsSloped+1,Y
-	;STA <Temp_Var11	 ; Temp_Var11 (X offset)
+	LDA TileAttrAndQuad_OffsSloped,Y
+	STA <Temp_Var10	 ; Temp_Var10 (Y offset)
+	LDA TileAttrAndQuad_OffsSloped+1,Y
+	STA <Temp_Var11	 ; Temp_Var11 (X offset)
 
-	;JSR Player_GetTileAndSlope ; Get tile
-	;STA Level_Tile_GndL,X	 ; Store into appropriate location
+	JSR Player_GetTileAndSlope ; Get tile
+	STA Level_Tile_GndL,X	 ; Store into appropriate location
 
-	;AND #$c0	 ; Get quadrant of tile
-	;ASL A
-	;ROL A
-	;ROL A		 ; A = 0-3, based on quadrant
-	;STA Level_Tile_Quad,X	; Store quadrant
+	AND #$c0	 ; Get quadrant of tile
+	ASL A
+	ROL A
+	ROL A		 ; A = 0-3, based on quadrant
+	STA Level_Tile_Quad,X	; Store quadrant
 
-	;LDA <Player_Slopes	 ; Get slope
-	;STA Level_Tile_Slope,X	 ; Store slope
+	LDA <Player_Slopes	 ; Get slope
+	STA Level_Tile_Slope,X	 ; Store slope
 	RTS		 ; Return
 
 
@@ -6278,6 +6655,65 @@ PRG008_BE2E:
 
 PRG008_BE31:
 
+	; SB: Removed -- no more special white block support
+
+	;LDA Level_TilesetIdx
+	;CMP #$00
+	;BNE PRG008_BE76	 ; If Player is NOT in a Plains style level, jump to PRG008_BE76
+
+	;LDY #$01	 ; Y = 1
+
+;PRG008_BE3A:
+	;LDA Level_Tile_GndL,Y
+
+	;SUB #TILE1_WBLOCKTH
+	;CMP #$03
+	;BLT PRG008_BE4E	 ; If Player is on a big white block, jump to PRG008_BE4E
+
+	;DEY		 ; Y--
+	;BPL PRG008_BE3A	 ; While Y >= 0, loop!
+
+	; Not on a white block...
+
+;PRG008_BE47:
+	;LDA #$00	 
+	;STA Player_WhiteBlkCnt	 ; Reset white block counter if not on a white block!
+	;BEQ PRG008_BE76	 ; Jump (technically always) to PRG008_BE76
+
+;PRG008_BE4E:
+	;LDA <Pad_Holding
+	;AND #PAD_DOWN
+	;BEQ PRG008_BE47	 ; If Player is NOT pressing down, jump to PRG008_BE47
+
+	;INC Player_WhiteBlkCnt	 ; Player_WhiteBlkCnt++
+
+	;LDA Player_WhiteBlkCnt
+	;CMP #$F0	 
+	;BNE PRG008_BE76	 ; If Player_WhiteBlkCnt <> $F0, jump to PRG008_BE76
+
+	; Count max reached!  Fall into background...
+
+	;LDA #$F0	 ; Superfluous!
+	;STA Player_Behind	 ; Set Player as behind the scene...
+
+	; To make Player fall, do everything in our power to make sure
+	; the Player doesn't get a chance to jump or anything else :)
+	;LDA #$00
+	;STA <Player_YVel	 ; Halt Player vertically 
+
+	;LDA <Player_Y
+	;ADD #$06
+	;STA <Player_Y		; Force Player down by 6 pixels (fall)
+
+	;INC <Player_InAir	 ; Set Player as in air
+
+	; Don't register 'A' button
+	;LDA <Pad_Input
+	;AND #~PAD_A
+	;STA <Pad_Input
+
+;PRG008_BE76:
+
 	; QUICKSAND LOGIC
 
 	LDY Level_TilesetIdx
@@ -6430,7 +6866,21 @@ PipeEntryPrepare:
 Level_QueueChangeBlock: 
 	STA Level_ChgTileEvent	 ; Store type of block change!
 
-	JMP_THUNKA 61, Level_QueueChangeBlock61
+	; Store change Y Hi and Lo
+	LDA <Temp_Var13
+	STA Level_BlockChgYHi
+	LDA <Temp_Var14
+	AND #$F0		; Align to nearest grid coordinate
+	STA Level_BlockChgYLo
+
+	; Store change X Hi and Lo
+	LDA <Temp_Var15
+	STA Level_BlockChgXHi
+	LDA <Temp_Var16	
+	AND #$F0	 	; Align to nearest grid coordinate
+	STA Level_BlockChgXLo
+
+	RTS		 ; Return
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -2039,6 +2039,9 @@ ASCONFIG_HDISABLE	= $80	; Disables horizontal auto scroll coordinate adjustment 
 	Object_TileFeet:	.ds 1	; Object tile detected at "feet" of object
 	Object_TileWall:	.ds 1	; Object tile detected in front of object, i.e. a wall
 
+	Object_AttrFeet:	.ds 1	; Object tile quadrant of Object_TileFeet
+	Object_AttrWall:	.ds 1	; Object tile quadrant of Object_TileWall
+
 	Objects_SprHVis:	.ds 8	; $0651-$0658 Flags; Bits 7-2 set when each 8x16 sprite is horizontally off-screen (left-to-right from MSb)
 	Objects_SpawnIdx:	.ds 8	; $0659-$0660 Holds the index into level data that this object was spawned from
 
@@ -3024,12 +3027,6 @@ DetWallLeft		= %00000010
 DetWallGround 	= %00000100
 DetWallCeiling 	= %00001000
 DetPartition 	= %10000000
-
-
-BlkAir 			= 0
-BlkSemiSolid	= 1
-BlkSolid 		= 2
-
 
 ; Size of level (width or height, if vertical)
 LEVEL1_SIZE_01		= %00000000
