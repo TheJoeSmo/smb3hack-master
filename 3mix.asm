@@ -5493,8 +5493,8 @@ TILE19_TABLE_LR		= $D3	; Table lower left
 	;.incchr "CHR/chr121.pcx"	;
 	;.incchr "CHR/chr122.pcx"	;
 	;.incchr "CHR/chr123.pcx"	;
-	.incchr "CHR/chrBLK.pcx"
-	.incchr "CHR/chrBLK.pcx"
+	.incchr "CHR/chr124.pcx"	; fortress off background
+	;.incchr "CHR/chrBLK.pcx"
 	.incchr "CHR/chr126.pcx"
 	.incchr "CHR/chr127.pcx"
 	.incchr "CHR/chr128.pcx"

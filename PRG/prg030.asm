@@ -1882,7 +1882,7 @@ ActSw_NotInit:
 Level_BG_Pages1_Off:
 	.byte $00	;  0 Not Used
 	.byte $FE	;  1 Plains
-	.byte $10	;  2 Fortress
+	.byte $7C	;  2 Fortress
 	.byte $1C	;  3 Hills / Underground
 	.byte $0C	;  4 High-Up
 	.byte $82	;  5 Ghose House

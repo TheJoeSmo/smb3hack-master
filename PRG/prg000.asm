@@ -1457,8 +1457,8 @@ ObjectDo_Check_IfOnActivitySwitch:
 	BEQ ObjectDo_Check_IfOnCrumblyBlock
 
 	LDA Level_Tileset
-	CMP #$01
-	BNE ObjectDo_Check_IfOnCrumblyBlock
+	CMP #$03
+	BPL ObjectDo_Check_IfOnCrumblyBlock
 
 	LDA Object_TileFeet
 	CMP #TILEA_EXSWITCH

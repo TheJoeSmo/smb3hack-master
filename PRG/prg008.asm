@@ -4678,8 +4678,8 @@ PRG008_B6E4:
 	INY		 ; Action Switch
 
 	LDA Level_Tileset
-	CMP #$01
-	BNE PRG008_B6EF
+	CMP #$03
+	BPL PRG008_B6EF
 	INY  	; Include the upsidedown action switch
 
 PRG008_B6EF:
