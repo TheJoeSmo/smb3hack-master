@@ -1431,7 +1431,6 @@ PRG000_C6FD:
 	LSR A		; Value * 4
 	ADD <Temp_Var1	; Value * 12 (SB: Adding additional reverse gravity offsets)
 
-	PHA		; Save it
 	TAY		; -> 'Y' (use respective Object_TileDetectOffsets group Row 1)
 
 	LDA <Objects_YVel,X
@@ -1538,8 +1537,7 @@ CrumbleTimerLoop:
 	BNE FailedToCrumbleBlock	; If we cannot crumble the block, try again next frame
 
 	; Store the current object's index
-	TXA
-	PHA
+	STX <Temp_Var16
 
 	; Try to summon an object in the poof state, or just don't spawn one
 	LDA #HIGH(FailedToSummonPoof)
@@ -1574,8 +1572,7 @@ CrumbleTimerLoop:
 
 FailedToSummonPoof:
 	; If we failed to summon a poof, we will still delete the block, just with less effect.
-	PLA 
-	TAX
+	LDX <Temp_Var16
 
 	; Make some noise!
 	LDA #SND_LEVELCRUMBLE
@@ -1658,7 +1655,7 @@ PRG000_C76C:
 	LDA #$00
 	STA Object_TileWall2	 ; Object_TileWall2 = 0
 
-	PLA		 ; Restore Object_TileDetectOffsets index
+	;PLA		 ; Restore Object_TileDetectOffsets index
 
 	CMP #(OTDO_G1R1 - Object_TileDetectOffsets)
 	BNE PRG000_C78C	 ; If not using Group 1 Row 1, jump to PRG000_C78C
