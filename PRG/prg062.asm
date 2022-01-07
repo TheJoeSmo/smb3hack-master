@@ -446,7 +446,7 @@ MuncherJelectroSet:
 
 UpsideDownMuncherSet:
 	.byte TILEA_UPSIDEDOWN_MUNCHER ;  0 Plains style
-	.byte TILEA_MUNCHER	;  1 Mini Fortress style
+	.byte TILEA_UPSIDEDOWN_MUNCHER	;  1 Mini Fortress style
 	.byte TILEA_MUNCHER	;  2 Hills style
 	.byte TILEA_MUNCHER	;  3 High-Up style
 	.byte TILEA_MUNCHER	;  4 ghost house
