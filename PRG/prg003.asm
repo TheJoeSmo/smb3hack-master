@@ -495,6 +495,25 @@ ObjFloorCheckFinish:
 
 ObjInit_Crate:
 ObjInit_Spring:
+	; Set to shelled if needed
+	LDA <Objects_YHi,X
+	AND #$02
+	BEQ CrateSpringNormalInitState
+
+	LDA #$07
+	CLC
+	ADC <Objects_X, X
+	STA <Objects_X, X
+	LDA #$00
+	ADC <Objects_XHi, X
+	STA <Objects_XHi, X
+
+CrateSpringNormalInitState:
+	; Reset the y hi if needed
+	LDA <Objects_YHi,X
+	AND #$01
+	STA <Objects_YHi,X
+
 	LDA #$00
 	STA Objects_Var3, X
 	RTS
@@ -530,6 +549,7 @@ CrateNotInLava:
 
 DoMainCrateActions:
 	JSR Object_Move 	; Handle standard movements
+	JSR Object_HandleConveyorCarry
 
 	LDA <Objects_DetStat,X 
 	AND #DetWallGround
@@ -702,6 +722,7 @@ SpringNotInLava:
 
 DoMainSpringActions:
 	JSR Object_Move 	; Handle standard movements
+	JSR Object_HandleConveyorCarry
 
 	LDA <Objects_DetStat,X 
 	AND #DetWallGround
@@ -2484,8 +2505,11 @@ PRG003_AA5D:
 	BNE BoomBoom_Halted	; If gameplay halted, jump to BoomBoom_Halted (RTS)
 
 	LDA <Objects_Var5,X
-	CMP #$05
+	CMP #$06
 	BEQ PRG003_AAD9	 ; If Var5 (internal state) = 5, jump to PRG003_AAD9
+	CMP #$05
+	BEQ PRG003_AAD9
+
 
 	; Var5 (Internal state) < 5...
 
@@ -2595,6 +2619,7 @@ PRG003_AAD9:
 	.word BoomBoom_Init		; 0: Initial state, wait for Player
 	.word BoomBoom_PrimaryAttack	; 2: Boom Boom's run around with fists flailing
 	.word BoomBoom_SeconaryAttack	; 3: Boom Boom jumps about or flies, depending
+	.word BoomBoom_SeconaryAttack	; 3: Boom Boom jumps about or flies, depending
 	.word BoomBoom_FinalAttack	; 4: Second hit
 	.word BoomBoom_Death		; 5: Kaboom Death
 	.word BoomBoom_TimeOut		; 6: SB NEW: Boom Boom just takes care of level end
@@ -2623,21 +2648,13 @@ PRG003_AB1E:
 	RTS		 ; Return
 
 Boss_WaitAndLock:
-	LDA <Horz_Scroll
-	CMP #$07
-	BGE Boss_WaitAndLock_End	 ; If the horizontal scroll is any greater than 7, jump to Boss_WaitAndLock_End (RTS) (Waits for screen to come around to boss)
+	LDA <Player_InAir
+	BNE Boss_WaitAndLock_End	; If Player is not on ground, jump to Boss_WaitAndLock_End (RTS)
 
-	; Lock horizontal scroll to zero point
-	LDA #$00
-	STA <Horz_Scroll
 
 	; Halt Player horizontally
 	LDY #$00
 	STY <Player_XVel
-
-	LDA <Player_InAir
-	BNE Boss_WaitAndLock_End	; If Player is not on ground, jump to Boss_WaitAndLock_End (RTS)
-
 	STA Level_PSwitchCnt	 ; Cancel any active P-Switch
 
 	; Play boss music
@@ -3271,7 +3288,7 @@ PRG003_AE50:
 
 	LDA <Objects_Var5,X
 	INC <Objects_Var5,X	; Var5++ (Next internal state)
-	CMP #$04	 
+	CMP #$05	 
 	BEQ PRG003_AE82	 ; If next up is internal state 4 (Death), jump to PRG003_AE82
 
 	; Halt Boom Boom's movement
