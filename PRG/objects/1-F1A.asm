@@ -5,24 +5,12 @@
 	.byte OBJ_SPRING, $02, $17
 	.byte OBJ_CRATE, $06, $10
 	.byte OBJ_SPRING, $12, $0E
-	.byte OBJ_CRATE, $16, $0C
 	.byte OBJ_GREENTROOPA, $16, $16
+	.byte OBJ_CRATE, $16, $2C
 	.byte OBJ_CRATE, $23, $0C
 	.byte OBJ_CRATE, $25, $0D
 	.byte OBJ_SPRING, $2E, $0E
 	.byte OBJ_CRATE, $3D, $01
-	.byte OBJ_SPRING, $44, $06
-	.byte OBJ_SPRING, $4E, $0E
-	.byte OBJ_CRATE, $62, $01
-	.byte OBJ_THWOMP, $7D, $10
-	.byte OBJ_CHECKPOINT, $8C, $15
-	.byte OBJ_GOOMBA, $90, $16
-	.byte OBJ_GOOMBA, $93, $16
-	.byte OBJ_GOOMBA, $96, $16
-	.byte OBJ_PODOBOO, $AD, $14
-	.byte OBJ_PODOBOO, $BB, $14
-	.byte OBJ_CFIRE_BULLETBILL, $C9, $18
-	.byte OBJ_CFIRE_BULLETBILL, $D4, $18
-	.byte OBJ_PODOBOO, $E1, $13
-	.byte OBJ_PODOBOO, $E5, $13
+	.byte OBJ_CRATE, $48, $01
+	.byte OBJ_BOOMBOOMFLY, $71, $12
 	.byte $FF
