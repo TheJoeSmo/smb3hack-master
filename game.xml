@@ -1,4 +1,3 @@
-<!-- This file is used by the NoDice editor, not strictly required for the disassembly -->
 <game>
 	<config>
 		<configitem name="title" value="Super Mario Bros. 3"></configitem>
@@ -87,6 +86,7 @@
 				<option label="LEVEL3_TILESET_13" display="Tileset 13 (Sky)" value="13"></option>
 				<option label="LEVEL3_TILESET_14" display="Tileset 14 (Underground)" value="14"></option>
 				<option label="LEVEL3_TILESET_15" display="Tileset 15 (ext)" value="15"></option>
+				<option label="LEVEL3_TILESET_16" display="Tileset 16 (Sewers)" value="16"></option>
 			</options>
 			<options mask="00010000" shift="4" display="Level is Vertical:">
 				<option label="LEVEL3_VERTICAL"></option>
@@ -130,6 +130,7 @@
 				<option label="LEVEL4_BGBANK_INDEX(25)" display="Fire and Ice Galaxy (Hills/Under recolor)" value="25"></option>
 				<option label="LEVEL4_BGBANK_INDEX(26)" display="Topmaniac Fortress" value="26"></option>
 				<option label="LEVEL4_BGBANK_INDEX(27)" display="Castle Bleck" value="27"></option>
+				<option label="LEVEL4_BGBANK_INDEX(28)" display="Sewers" value="28"></option>
 			</options>
 			<options mask="11100000" shift="5" display="Initial action:">
 				<option label="LEVEL4_INITACT_NOTHING" display="Nothing" value="0"></option>
@@ -654,7 +655,7 @@
 		</object>
 		<object id="0x4D" label="OBJ_SPRING" name="Spring" desc="Moveable Spring">
 			<sprite x="0" y="0" bank="79" pattern="0x30" palette="2"></sprite>
-			<sprite x="8" y="0" bank="79" pattern="0x30" palette="2"  hflip="1"></sprite>
+			<sprite x="8" y="0" bank="79" pattern="0x30" palette="2" hflip="1"></sprite>
 		</object>
 		<object id="0x4E" label="OBJ_BOSSBIRDO" name="Boss Birdo" desc="SMB2 Birdo">
 			<sprite x="0" y="0" bank="134" pattern="0x20" palette="1"></sprite>
@@ -5502,6 +5503,281 @@
 			</levels>
 		</tileset>
 	
+		<tileset id="16" name="Sewers" path="Sewers" desc="Cover your nose and hop into the sewers.">
+			<vargenerators>
+				<generator id="0" name="Slope 45 T2B (UG only)" desc="Above ground (UG only) 45 degree slope top-to-bottom">
+					<param name="Width"></param>
+				</generator>
+				<generator id="1" name="Slope 45 B2T (UG only)" desc="Above ground (UG only) 45 degree slope bottom-to-top">
+					<param name="Width"></param>
+				</generator>
+				<generator id="2" name="Slope Ceil 45 T2B (UG only)" desc="Above ground (UG only) 45 degree ceiling slope top-to-bottom">
+					<param name="Width"></param>
+				</generator>
+				<generator id="3" name="Slope Ceil 45 B2T (UG only)" desc="Above ground (UG only) 45 degree ceiling slope bottom-to-top">
+					<param name="Width"></param>
+				</generator>
+				<generator id="4" name="Slope 45 T2B (UG / Hills)" desc="Underground/Hills normal 45 degree slope top-to-bottom">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="5" name="Slope 45 B2T (UG / Hills)" desc="Underground/Hills normal 45 degree slope bottom-to-top">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="6" name="Slope Ceil 45 T2B (UG / Hills)" desc="Underground/Hills normal 45 degree ceiling slope top-to-bottom">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="7" name="Slope Ceil 45 B2T (UG / Hills)" desc="Underground/Hills normal 45 degree ceiling slope bottom-to-top">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="8" name="Slope 45 T2B (Water)" desc="Underwater 45 degree slope top-to-bottom">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="9" name="Slope 45 B2T (Water)" desc="Underwater 45 degree slope bottom-to-top">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="10" name="Slope Ceil 45 T2B (Water)" desc="Underwater 45 degree ceiling slope top-to-bottom">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="11" name="Slope Ceil 45 B2T (Water)" desc="Underwater 45 degree ceiling slope bottom-to-top">
+					<param name="Width"></param>	
+				</generator>
+
+				<generator id="15" name="Brick" desc="Run of bricks">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="16" name="[?] (Coin)" desc="Run of '?' blocks with a coin">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="17" name="Brick (Coin)" desc="Run of bricks with a coin">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="18" name="Wood" desc="Run of wood blocks">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="19" name="Note Block Green" desc="Run of green note blocks (?)">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="20" name="Note Block" desc="Run of note blocks">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="21" name="[?] Rabbit" desc="Run of FIXME">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="22" name="Coin" desc="Run of coins">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="23" name="Pipe Vertical (to Alt)" desc="Vertical ground pipe 1 (alt level)">
+					<param name="Height"></param>	
+				</generator>
+				<generator id="24" name="Pipe Vertical N/A" desc="Vertical ground pipe 2 (Big [?] area)">
+					<param name="Height"></param>	
+				</generator>
+				<generator id="25" name="Pipe Vertical (to Big [?])" desc="Vertical ground pipe 3 (no entrance)">
+					<param name="Height"></param>	
+				</generator>
+				<generator id="26" name="Pipe Ceiling Vertical (to Alt)" desc="Vertical ceiling pipe 1 (alt level)">
+					<param name="Height" min="1"></param>	
+				</generator>
+				<generator id="27" name="Pipe Ceiling Vertical N/A" desc="Vertical ceiling pipe 2 (no entrance)">
+					<param name="Height" min="1"></param>	
+				</generator>
+				<generator id="28" name="Pipe Right Wall (to Alt)" desc="Horizontal right-hand wall pipe (alt level)">
+					<param name="Width" min="1"></param>	
+				</generator>
+				<generator id="29" name="Pipe Right Wall N/A" desc="Horizontal right-hand wall pipe (no entrance)">
+					<param name="Width" min="1"></param>	
+				</generator>
+				<generator id="30" name="Pipe Left Wall (to Alt)" desc="Horizontal left-hand wall pipe (alt level)">
+					<param name="Width" min="1"></param>	
+				</generator>
+				<generator id="31" name="Pipe Left Wall N/A" desc="Horizontal left-hand wall pipe (no entrance)">
+					<param name="Width" min="1"></param>	
+				</generator>
+				<generator id="32" name="Cannon" desc="Bullet bill cannon">
+					<param name="Height" min="0"></param>	
+				</generator>
+				<generator id="33" name="Bridge Cheep Cheep" desc="Cheep-Cheep style 'oo' bridge">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="34" name="P-Switch Coins" desc="Coins invisible until P-Switch is hit">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="35" name="Waterfall" desc="Top-Deco Rectangle Waterfall">
+					<param name="Height" min="0"></param>	
+					<param name="Width" min="0"></param>	
+				</generator>
+				<generator id="36" name="Water pool (left)" desc="Top-Deco Rectangle Left waving water pool">
+					<param name="Height" min="0"></param>	
+					<param name="Width" min="0"></param>	
+				</generator>
+				<generator id="37" name="Water pool (still)" desc="Top-Deco Rectangle No current waving water pool">
+					<param name="Height" min="0"></param>	
+					<param name="Width" min="0"></param>	
+				</generator>
+				<generator id="38" name="Water pool (right)" desc="Top-Deco Rectangle Right waving water pool">
+					<param name="Height" min="0"></param>	
+					<param name="Width" min="0"></param>	
+				</generator>
+				<generator id="39" name="BG Haunted Gate/Graves" desc="Ghost Haunting area only">
+					<param name="Height" min="0"></param>	
+					<param name="Width" min="0"></param>	
+				</generator>
+				<generator id="40" name="Diamond Block" desc="Top-Deco Rectangle Diamond blocks (not really any deco on top)">
+					<param name="Height" min="0"></param>	
+					<param name="Width" min="0"></param>	
+				</generator>
+				<generator id="41" name="Ghost Plains Ground" desc="Ghost Plains ground tile">
+					<param name="Height" min="0"></param>	
+					<param name="Width" min="0"></param>	
+				</generator>
+				<generator id="43" name="BG Ghost Plains Brick Dark" desc="Dark brick background, Ghost Plains only">
+					<param name="Height" min="1"></param>	
+					<param name="Width" min="0"></param>	
+				</generator>
+				<generator id="44" name="BG Ghost Plains Brick Light" desc="Light brick background, Ghost Plains only">
+					<param name="Height" min="1"></param>	
+					<param name="Width" min="0"></param>	
+				</generator>
+				<generator id="45" name="Slope 22.5 T2B (UG Only)" desc="Above ground (UG only) 22.5 degree slope top-to-bottom">
+					<param name="Width"></param>
+				</generator>
+				<generator id="46" name="Slope 22.5 B2T (UG Only)" desc="Above ground (UG only) 22.5 degree slope bottom-to-top">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="47" name="Slope 22.5 Ceiling T2B (UG Only)" desc="Above ground (UG only) 22.5 degree ceiling slope top-to-bottom">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="48" name="Slope 22.5 Ceiling B2T (UG Only)" desc="Above ground (UG only) 22.5 degree ceiling slope bottom-to-top">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="49" name="Slope 22.5 T2B (UG / Hills)" desc="Underground/Hills normal 22.5 degree slope top-to-bottom">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="50" name="Slope 22.5 B2T (UG / Hills)" desc="Underground/Hills normal 22.5 degree slope bottom-to-top">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="51" name="Slope 22.5 Ceil T2B (UG / Hills)" desc="Underground/Hills normal 22.5 degree ceiling slope top-to-bottom">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="52" name="Slope 22.5 Ceil B2T (UG / Hills)" desc="Underground/Hills normal 22.5 degree ceiling slope bottom-to-top">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="53" name="Slope 22.5 T2B (Water)" desc="Underwater 22.5 degree slope top-to-bottom">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="54" name="Slope 22.5 B2T (Water)" desc="Underwater 22.5 degree slope bottom-to-top">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="55" name="Slope 22.5 Ceil T2B (Water)" desc="Underwater 22.5 degree ceiling slope top-to-bottom">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="56" name="Slope 22.5 Ceil B2T (Water)" desc="Underwater 22.5 degree ceiling slope bottom-to-top">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="57" name="Munchers" desc="Why didn't this exist already?">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="58" name="Purple Coins" desc="Run of Purple Coins">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="59" name="Purple Coin Rectangle" desc="Rectangle of Purple Coins">
+					<param name="Height" min="0"></param>	
+					<param name="Width" min="0"></param>	
+				</generator>
+				<generator id="60" name="Upsidedown Munchers" desc="A run of upsidedown munchers">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="61" name="On Blocks" desc="A run of on blocks">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="62" name="Off Blocks" desc="A run of off blocks">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="63" name="Action Switch Upsidedown" desc="A run of upsidedown action switches">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="64" name="Crumbling Blocks" desc="A run of crumbling blocks">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="65" name="Ground" desc="Basic ground for the sewers">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="66" name="Ceiling" desc="Basic ceiling for the sewers">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="67" name="Left Wall" desc="Basic left wall for the sewers">
+					<param name="Height"></param>	
+				</generator>
+				<generator id="68" name="Right Wall" desc="Basic right wall for the sewers">
+					<param name="Height"></param>	
+				</generator>
+				<generator id="69" name="Wall" desc="Fill for the walls of the sewers">
+					<param name="Height"></param>	
+					<param name="Width" min="1"></param>	
+				</generator>
+				<generator id="70" name="Shadow Top" desc="Top shadow for sewers">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="71" name="Shadow Bottom" desc="Bottom shadow for sewers">
+					<param name="Width"></param>	
+				</generator>
+				<generator id="72" name="Shadow Left" desc="Left shadow for sewers">
+					<param name="Height"></param>	
+				</generator>
+				<generator id="73" name="Shadow Right" desc="Right shadow for sewers">
+					<param name="Height"></param>	
+				</generator>
+			</vargenerators>
+			<fixedgenerators>
+				<generator id="0" name="Corner UL" desc="Upper-left corner tile"></generator>
+				<generator id="1" name="Inverse Corner UL" desc="Invserse upper-left corner tile"></generator>
+				<generator id="2" name="Corner UL (Water)" desc="Underwater upper-left corner tile"></generator>
+				<generator id="3" name="Corner UR" desc="Upper-right corner tile"></generator>
+				<generator id="4" name="Inverse Corner UR" desc="Inverse upper-right corner tile"></generator>
+				<generator id="5" name="Corner UR (Water)" desc="Underwater upper-right corner tile"></generator>
+				<generator id="6" name="Corner LL" desc="Lower-left corner tile"></generator>
+				<generator id="7" name="Inverse Corner LL" desc="Inverse lower-left corner tile"></generator>
+				<generator id="8" name="Corner LL (Water)" desc="Underwater lower-left corner tile"></generator>
+				<generator id="9" name="Corner LR" desc="Lower-right corner tile"></generator>
+				<generator id="10" name="Inverse Corner LR" desc="Inverse lower-right corner tile"></generator>
+				<generator id="11" name="Corner LR (Water)" desc="Underwater lower-right corner tile"></generator>
+				<generator id="12" name="Star Coin 1" desc="Star Coin 1"></generator>
+				<generator id="13" name="Star Coin 2" desc="Star Coin 2"></generator>
+				<generator id="14" name="Star Coin 3" desc="Star Coin 3"></generator>
+				<generator id="15" name="Door 2" desc="Door style 2"></generator>
+				<generator id="16" name="[?] (Fire Flower)" desc="? block with fire flower"></generator>
+				<generator id="17" name="[?] (Leaf)" desc="? block with leaf "></generator>
+				<generator id="18" name="[?] (Star)" desc="? block with star"></generator>
+				<generator id="19" name="[?] (Coin/Star)" desc="? block with coin OR star"></generator>
+				<generator id="20" name="[?] (Coin)" desc="? block with coin"></generator>
+				<generator id="21" name="Muncher" desc="Muncher Plant!"></generator>
+				<generator id="22" name="Brick (Fire Flower)" desc="Brick with flower"></generator>
+				<generator id="23" name="Brick (Leaf)" desc="Brick with leaf"></generator>
+				<generator id="24" name="Brick (Star)" desc="Brick with star"></generator>
+				<generator id="25" name="Brick (Coin/Star)" desc="Brick with coin OR star"></generator>
+				<generator id="26" name="Brick (10 coins)" desc="Brick with 10-coin"></generator>
+				<generator id="27" name="Brick (1-Up)" desc="Brick with 1-up"></generator>
+				<generator id="28" name="Brick (Vine)" desc="Brick with vine"></generator>
+				<generator id="29" name="Brick (P-Switch)" desc="Brick with P-Switch"></generator>
+				<generator id="30" name="Invisible Coin" desc="Invisible coin"></generator>
+				<generator id="31" name="Invisible 1-Up" desc="Invisible 1-up"></generator>
+				<generator id="32" name="Invisible Note" desc="Invisible note"></generator>
+				<generator id="33" name="Note (Fire Flower)" desc="Note block with flower"></generator>
+				<generator id="34" name="Note (Leaf)" desc="Note block with leaf"></generator>
+				<generator id="35" name="Note (Star)" desc="Note block with star"></generator>
+				<generator id="36" name="[?] Penguin" desc="FIXME"></generator>
+				<generator id="37" name="[?] Hammer" desc="FIXME"></generator>
+				<generator id="38" name="[?] (Like [!])" desc="FIXME"></generator>
+				<generator id="39" name="Invisible Orange Note" desc="Invisible note to coin heaven"></generator>
+				<generator id="40" name="P-Switch" desc="P-Switch"></generator>
+				<generator id="41" name="Goal" desc="The end goal"></generator>
+				<generator id="48" name="Inside UL 22 Slope" desc="Inside UL 22 Slope"></generator>
+				<generator id="49" name="Inside UR 22 Slope" desc="Inside UR 22 Slope"></generator>
+				<generator id="50" name="Inside BL 22 Slope" desc="Inside BL 22 Slope"></generator>
+				<generator id="51" name="Inside BR 22 Slope" desc="Inside BR 22 Slope"></generator>
+			</fixedgenerators>
+			<levels><level name="Sewers" layoutfile="Sewer_Layout_0" layoutlabel="Sewer_Layout_0" objectfile="Sewer_Object_0" objectlabel="Sewer_Object_0" desc="Subboot sewer level"></level></levels>
+ 		</tileset>
 
 		<tileset id="18" name="2P Vs." path="2PVs" desc="Battlefields for 2-Player Versus/Challenge mode.  Cannot be used for gameplay.">
 			<vargenerators>

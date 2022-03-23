@@ -290,3 +290,4 @@ W6BatlO:	.include "PRG/objects/W6Batl"	; W6 Challenge
 W7BatlO:	.include "PRG/objects/W7Batl"	; W7 Challenge
 WZBatlO:	.include "PRG/objects/WZBatl"	; WZero Challenge
 W708PO:	.include "PRG/objects/7-8P"	; W7-8 Preface
+Sewer_Object_0:	.include "PRG/objects/Sewer_Object_0"	; Sewers

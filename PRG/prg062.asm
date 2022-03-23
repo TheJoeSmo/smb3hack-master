@@ -355,7 +355,7 @@ ClearPattern_ByTileset:
 	.byte $FC	; 13 - coin heaven / sky level
 	.byte $FC	; 14 - underground
 	.byte $FF	; 15 - ext
-	.byte $FF	; 16 - spade game sliders
+	.byte $FF	; 16 - sewers
 	.byte $FF	; 17 - N-spade
 	.byte $FC	; 18 - 2P Vs
 	.byte $FF	; 19 - bonus game intro
@@ -379,7 +379,7 @@ Level_StarCoinByTileset:
 	.byte TILE13_STARCOIN1	; 13 - coin heaven / sky level
 	.byte TILE14_STARCOIN1	; 14 - underground
 	.byte TILE5_STARCOIN1	; 15 - ext
-	.byte $FF		; 16 - spade game sliders
+	.byte TILE1_STARCOIN1		; 16 - spade game sliders
 	.byte $FF		; 17 - N-spade
 	.byte $FC		; 18 - 2P Vs
 	.byte $FF		; 19 - bonus game intro
@@ -402,6 +402,7 @@ SpikesEnable:
 	.byte $FF	; 12 Sky level
 	.byte $FF	; 13 Underground
 	.byte TILE15_SPIKEDOWN	; 14 ext
+	.byte $FF 	; 15 Sewers
 
 	; Index by Level_TilesetIdx
 	; Enables conveyor tiles where available (this tile and tile before it)
@@ -421,6 +422,7 @@ ConveyorEnable:
 	.byte $00	; 12 Sky level
 	.byte $00	; 13 Underground
 	.byte $00	; 14 ext
+	.byte $00	; 15 Sewers
 
 	; Index by Level_TilesetIdx
 	; Sets the tile which is a pain in the ass (typically muncher, sometimes jelectro)
@@ -443,6 +445,7 @@ MuncherJelectroSet:
 	.byte TILEA_MUNCHER	; 12 Sky level
 	.byte TILEA_MUNCHER	; 13 Underground
 	.byte TILEA_MUNCHER	; 14 ext
+	.byte TILEA_MUNCHER ; 15 Sewer
 
 UpsideDownMuncherSet:
 	.byte TILEA_UPSIDEDOWN_MUNCHER ;  0 Plains style
@@ -460,6 +463,7 @@ UpsideDownMuncherSet:
 	.byte TILEA_MUNCHER	; 12 Sky level
 	.byte TILEA_MUNCHER	; 13 Underground
 	.byte TILEA_MUNCHER	; 14 ext
+	.byte TILEA_UPSIDEDOWN_MUNCHER ; 15 Sewer
 
 	; Index by Level_TilesetIdx
 	; Enables quicksand tiles where available (this tile and tile before it)
@@ -479,14 +483,15 @@ QuicksandEnable:
 	.byte $00	; 12 Sky level
 	.byte TILE3_QUICKSAND_MID	; 13 Underground
 	.byte $00	; 14 ext
+	.byte $00 	; 15 Sewers
 
 	; List of C000 pages to switch to by Level_Tileset
 PAGE_C000_ByTileset: ; $83D6
-	.byte 10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 22, 22, 14, 22
+	.byte 10, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 22, 14, 22
 
 	; List of A000 pages to switch to by Level_Tileset
 PAGE_A000_ByTileset: ; $83E9
-	.byte 11, 15, 21, 16, 17, 40, 18, 44, 18, 20, 23, 19, 17, 19, 13, 45, 26, 26,  9, 26
+	.byte 11, 15, 21, 16, 17, 40, 18, 44, 18, 20, 23, 19, 17, 19, 13, 45, 46, 26,  9, 26
 
 	; The normal level VROM page cycle set
 PT2_Anim:	.byte $60, $62, $64, $66
@@ -2299,15 +2304,6 @@ PRG062_8D23:
 	STA PPU_CTL1	 	
 	STA <PPU_CTL1_Copy	; Keep PPU_CTL1_Copy in sync!
 
-	LDA Bonus_GameType
-	CMP #BONUS_UNUSED_2RETURN
-	BNE PRG062_8D4A	 ; If Bonus_GameType <> BONUS_UNUSED_2RETURN (??!), jump to PRG062_8D4A
-
-	; BONUS_UNUSED_2RETURN (??!) only...
-
-	JSR Bonus_Return2_SetMapPos	; Change Player's map position and mark them as having died??
-
-PRG062_8D4A:
 	SUB #BONUS_ARENA_KEY1
 	CMP #4
 	BGE NotBONUS_ARENA_KEY1
@@ -3756,7 +3752,7 @@ TileAttribute_ByTileset:
 	.word Tile_Attributes_TS11_TS13		; 13 - coin heaven / sky level [19]
 	.word Tile_Attributes_TS14		; 14 - underground [13]
 	.word Tile_Attributes_TS15		; 15 - ext [45]
-	.word Tile_Attributes_TS15_TS16_TS17	; 16 - spade game sliders [22]
+	.word Tile_Attributes_TS16	; 16 - Sewers [46]
 	.word Tile_Attributes_TS15_TS16_TS17	; 17 - N-spade [22]
 	.word Tile_Attributes_TS18		; 18 - 2P Vs [14]
 	.word Tile_Attributes_TS15_TS16_TS17	; 19 - bonus game intro [22]
@@ -4283,6 +4279,7 @@ Level_BG_Pages1:
 	.byte $48	; 25 Fire and Ice Galaxy (SB: Hills/Underground rebranded)
 	.byte $4A	; 26 Topmaniac Fortress
 	.byte $76	; 27 Castle Bleck
+	.byte $2E	; 28 Sewers
 
 Level_BG_Pages2:
 	.byte $00	;  0 Not Used
@@ -4313,6 +4310,7 @@ Level_BG_Pages2:
 	.byte $60	; 25 Fire and Ice Galaxy (SB: Hills/Underground rebranded)
 	.byte $60	; 26 Topmaniac Fortress
 	.byte $60	; 27 Castle Bleck
+	.byte $60 	; 28 Sewers
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -4999,7 +4997,7 @@ TileLayout_ByTileset:
 	.word Tile_Layout_TS11_TS13	; 13 - coin heaven / sky level [19]
 	.word Tile_Layout_TS14		; 14 - underground [13]
 	.word Tile_Layout_TS15		; 15 - ext [45]
-	.word Tile_Layout_TS15_TS16_TS17; 16 - spade game sliders [22]
+	.word Tile_Layout_TS16		; 16 - sewers [46]
 	.word Tile_Layout_TS15_TS16_TS17; 17 - N-spade [22]
 	.word Tile_Layout_TS18		; 18 - 2P Vs [14]
 	.word Tile_Layout_TS15_TS16_TS17; 19 - bonus game intro [22]
@@ -5027,8 +5025,8 @@ LevelLoad_ByTileset:
 	.word LevelLoad_TS13		; 13 - coin heaven / sky level [19]
 	.word LevelLoad_TS14		; 14 - underground [13]
 	.word LevelLoad_TS15	; 15 - ext
+	.word LevelLoad_TS16	; 16 - sewers [46]
 	
-	.word LevelLoad_TS15_TS16_TS17	; 16 - spade game sliders [22]
 	.word LevelLoad_TS15_TS16_TS17	; 17 - N-spade [22]
 	.word LevelLoad_TS18		; 18 - 2P Vs [14]
 	.word LevelLoad_TS15_TS16_TS17	; 19 - bonus game intro [22]
@@ -5074,7 +5072,7 @@ LeveLoad_Generators:
 	.word LoadLevel_Generator_TS1113	; 13 - coin heaven / sky level [19]
 	.word LoadLevel_Generator_TS14		; 14 - underground [13]
 	.word LoadLevel_Generator_TS15		; 15 - ext
-	.word LoadLevel_Generator_TS151617	; 16 - spade game sliders
+	.word LoadLevel_Generator_TS16		; 16 - sewers
 	.word LoadLevel_Generator_TS151617	; 17 - N-spade
 	.word LoadLevel_Generator_TS18		; 18 - 2P Vs
 	.word LoadLevel_Generator_TS151617	; 19 - bonus game intro
@@ -5100,7 +5098,7 @@ LeveLoad_FixedSizeGens:
 	.word LeveLoad_FixedSizeGen_TS1113	; 13 - coin heaven / sky level [19]
 	.word LeveLoad_FixedSizeGen_TS14	; 14 - underground [13]
 	.word LeveLoad_FixedSizeGen_TS15	; 15 - bonus game intro
-	.word LeveLoad_FixedSizeGen_TS151617	; 16 - spade game sliders
+	.word LeveLoad_FixedSizeGen_TS16	; 16 - sewers
 	.word LeveLoad_FixedSizeGen_TS151617	; 17 - N-spade
 	.word LeveLoad_FixedSizeGen_TS18	; 18 - 2P Vs
 	.word LeveLoad_FixedSizeGen_TS151617	; 19 - bonus game intro
@@ -5133,7 +5131,7 @@ TileLayoutPage_ByTileset:
 	.byte BANK(Tile_Layout_TS11_TS13)	; 13 - coin heaven / sky level [19]
 	.byte BANK(Tile_Layout_TS14)		; 14 - underground [13]
 	.byte BANK(Tile_Layout_TS15)	; 15 - ext [45]
-	.byte BANK(Tile_Layout_TS15_TS16_TS17)	; 16 - spade game sliders [22]
+	.byte BANK(Tile_Layout_TS16)		; 16 - sewers [46]
 	.byte BANK(Tile_Layout_TS15_TS16_TS17)	; 17 - N-spade [22]
 	.byte BANK(Tile_Layout_TS18)		; 18 - 2P Vs [14]
 	.byte BANK(Tile_Layout_TS15_TS16_TS17)	; 19 - bonus game intro [22]

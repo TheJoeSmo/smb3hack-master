@@ -662,103 +662,18 @@ Letter_World7:
 
 
 Letter_World8:
-	;       C    o    n    g    r    a    t    u    l    a    t    i    o    n    s    ,    
-	.byte $B2, $DE, $DD, $D6, $CB, $D0, $CD, $CE, $DB, $D0, $CD, $D8, $DE, $DD, $CC, $9A, $00
-
-	;       h    e    r    o    e    s    !         Y    o    u         h    a    v    e    
-	.byte $D7, $D4, $CB, $DE, $D4, $CC, $EA, $FE, $C8, $DE, $CE, $FE, $D7, $D0, $CF, $D4, $00
-
-	;       d    e    f    e    a    t    e    d         B    o    w    s    e    r         a    n    d    
-	.byte $D3, $D4, $D5, $D4, $D0, $CD, $D4, $D3, $FE, $B1, $DE, $81, $CC, $D4, $CB, $FE, $D0, $DD, $D3, $00
-
-	;       r    e    s    t    o    r    e    d         p    e    a    c    e         t    o    
-	.byte $CB, $D4, $CC, $CD, $DE, $CB, $D4, $D3, $FE, $DF, $D4, $D0, $D2, $D4, $FE, $CD, $DE, $00
-
-	;       t    h    e         K    i    n    g    d    o    m    !    
-	.byte $CD, $D7, $D4, $FE, $BA, $D8, $DD, $D6, $D3, $DE, $DC, $EA, $00
-
-	;       
-	.byte $00
-
-	;       H    o    w    e    v    e    r    ,         c    o    m    e    t    s    
-	.byte $B7, $DE, $81, $D4, $CF, $D4, $CB, $9A, $FE, $D2, $DE, $DC, $D4, $CD, $CC, $00
-
-	;       f    r    o    m         t    h    e         g    r    e    a    t    e    r    
-	.byte $D5, $CB, $DE, $DC, $FE, $CD, $D7, $D4, $FE, $D6, $CB, $D4, $D0, $CD, $D4, $CB, $00
-
-	;       G    a    l    a    x    y         h    a    v    e         s    h    o    w    n    
-	.byte $B6, $D0, $DB, $D0, $88, $8C, $FE, $D7, $D0, $CF, $D4, $FE, $CC, $D7, $DE, $81, $DD, $00
-
-	;       u    p    ,         c    a    u    s    i    n    g    
-	.byte $CE, $DF, $9A, $FE, $D2, $D0, $CE, $CC, $D8, $DD, $D6, $00
-
-	;       s    t    r    a    n    g    e         e    f    f    e    c    t    s    
-	.byte $CC, $CD, $CB, $D0, $DD, $D6, $D4, $FE, $D4, $D5, $D5, $D4, $D2, $CD, $CC, $00
-
-	;       i    n         s    o    m    e         a    r    e    a    s    .    .    .    
-	.byte $D8, $DD, $FE, $CC, $DE, $DC, $D4, $FE, $D0, $CB, $D4, $D0, $CC, $E9, $E9, $E9, $00
 
 	; Terminator
 	.byte $FF
 
 
 Letter_WorldZeroA:
-	;       C    o    n    g    r    a    t    u    l    a    t    i    o    n    s    !    
-	.byte $B2, $DE, $DD, $D6, $CB, $D0, $CD, $CE, $DB, $D0, $CD, $D8, $DE, $DD, $CC, $EA, $00
-
-	;       Y    o    u         d    e    f    e    a    t    e    d         C    o    u    n    t    
-	.byte $C8, $DE, $CE, $FE, $D3, $D4, $D5, $D4, $D0, $CD, $D4, $D3, $FE, $B2, $DE, $CE, $DD, $CD, $00
-
-	;       B    l    e    c    k         i    n         W    o    r    l    d         Z    e    r    o    !    
-	.byte $B1, $DB, $D4, $D2, $DA, $FE, $D8, $DD, $FE, $C6, $DE, $CB, $DB, $D3, $FE, $C9, $D4, $CB, $DE, $EA, $00
-
-	;       
-	.byte $00
-
-	;       H    o    w    e    v    e    r    ,         s    e    e    m    s         y    o    u    
-	.byte $B7, $DE, $81, $D4, $CF, $D4, $CB, $9A, $FE, $CC, $D4, $D4, $DC, $CC, $FE, $8C, $DE, $CE, $00
-
-	;       m    i    s    s    e    d         a         f    e    w         S    t    a    r    
-	.byte $DC, $D8, $CC, $CC, $D4, $D3, $FE, $D0, $FE, $D5, $D4, $81, $FE, $C2, $CD, $D0, $CB, $00
-
-	;       C    o    i    n    s         f    o    r         f    u    l    l    
-	.byte $B2, $DE, $D8, $DD, $CC, $FE, $D5, $DE, $CB, $FE, $D5, $CE, $DB, $DB, $00
-
-	;       c    o    m    p    l    e    t    i    o    n    .    .    .    
-	.byte $D2, $DE, $DC, $DF, $DB, $D4, $CD, $D8, $DE, $DD, $E9, $E9, $E9, $00
-
 
 	; Terminator
 	.byte $FF
 	
 	
 Letter_WorldZeroB:
-	;       C    o    n    g    r    a    t    u    l    a    t    i    o    n    s    !    
-	.byte $B2, $DE, $DD, $D6, $CB, $D0, $CD, $CE, $DB, $D0, $CD, $D8, $DE, $DD, $CC, $EA, $00
-
-	;       Y    o    u         d    e    f    e    a    t    e    d         C    o    u    n    t    
-	.byte $C8, $DE, $CE, $FE, $D3, $D4, $D5, $D4, $D0, $CD, $D4, $D3, $FE, $B2, $DE, $CE, $DD, $CD, $00
-
-	;       B    l    e    c    k         i    n         W    o    r    l    d         Z    e    r    o    
-	.byte $B1, $DB, $D4, $D2, $DA, $FE, $D8, $DD, $FE, $C6, $DE, $CB, $DB, $D3, $FE, $C9, $D4, $CB, $DE, $00
-
-	;       a    n    d         g    o    t         e    v    e    r    y         S    t    a    r    
-	.byte $D0, $DD, $D3, $FE, $D6, $DE, $CD, $FE, $D4, $CF, $D4, $CB, $8C, $FE, $C2, $CD, $D0, $CB, $00
-
-	;       C    o    i    n         i    n         t    h    e         g    a    m    e    !    
-	.byte $B2, $DE, $D8, $DD, $FE, $D8, $DD, $FE, $CD, $D7, $D4, $FE, $D6, $D0, $DC, $D4, $EA, $00
-
-	;       
-	.byte $00
-
-	;       Y    o    u         a    r    e         a         S    u    p    e    r    
-	.byte $C8, $DE, $CE, $FE, $D0, $CB, $D4, $FE, $D0, $FE, $C2, $CE, $DF, $D4, $CB, $00
-
-	;       P    l    a    y    e    r    !    
-	.byte $BF, $DB, $D0, $8C, $D4, $CB, $EA, $00
-
-	;       
-	.byte $00
 
 	; Terminator
 	.byte $FF
@@ -1328,6 +1243,22 @@ PalSet_Ext:
 	.byte $FF, $16, $36, $0C, $FF, $0F, $0F, $0F, $FF, $0F, $0F, $0F, $FF, $0F, $0F, $0F	; SPR Pal 2 (10) (Game N Watch)
 	.byte $FF, $16, $36, $0F, $FF, $07, $30, $16, $FF, $0F, $36, $16, $FF, $1A, $30, $27	; SPR Pal 3 (11) (Bowser)
 
+PalSet_Sewers:
+	.byte $10, $0F, $17, $19, $10, $0F, $36, $27, $10, $00, $20, $10, $10, $01, $13, $03	; BG Pal 0 
+	.byte $0F, $0F, $30, $3C, $0F, $0F, $36, $27, $0F, $00, $20, $10, $0F, $06, $27, $16	; BG Pal 1 
+	.byte $0F, $0F, $30, $3C, $0F, $0F, $36, $27, $0F, $00, $2A, $1A, $0F, $01, $31, $12	; BG Pal 2 
+	.byte $00, $0F, $30, $3C, $00, $0F, $0F, $0F, $00, $0F, $0F, $0F, $00, $0F, $0F, $0F	; BG Pal 3 
+	.byte $21, $0F, $30, $3C, $21, $0F, $36, $27, $21, $0F, $2A, $1A, $21, $0F, $31, $12	; BG Pal 4
+	.byte $0F, $0F, $30, $3C, $0F, $0F, $36, $27, $0F, $30, $0F, $0F, $0F, $01, $31, $12	; BG Pal 5
+	.byte $0F, $0F, $30, $3C, $0F, $0F, $21, $12, $0F, $0F, $2A, $1A, $0F, $0F, $2C, $1C	; BG Pal 6
+	.byte $0F, $0F, $30, $3C, $0F, $06, $36, $27, $0F, $0B, $2A, $1A, $0F, $0F, $10, $00	; BG Pal 7
+
+	.byte $FF, $16, $36, $0F, $FF, $0F, $30, $16, $FF, $0F, $30, $2A, $FF, $0F, $36, $27	; SPR Pal 0 (8)
+	.byte $FF, $16, $36, $0C, $FF, $0C, $30, $16, $FF, $0C, $30, $2A, $FF, $0C, $36, $27	; SPR Pal 1 (9)
+	.byte $FF, $16, $36, $0C, $FF, $0C, $30, $06, $FF, $0C, $30, $0A, $FF, $0C, $21, $11	; SPR Pal 2 (10)
+	.byte $FF, $16, $36, $0F, $FF, $1A, $27, $0F, $FF, $30, $36, $0F, $FF, $16, $30, $0F	; SPR Pal 3 (11)
+
+
 
 	; Special sprite palette for ending only
 Pal_Ending:
@@ -1352,7 +1283,7 @@ Palette_By_Tileset:
 	.word PalSet_Sky	; 13 - coin heaven / sky level
 	.word PalSet_HillsUnder	; 14 - underground
 	.word PalSet_Ext	; 15 - ext
-	.word PalSet_Bonus	; 16 - spade game sliders
+	.word PalSet_Sewers	; 16 - Sewers
 	.word PalSet_Bonus	; 17 - N-spade
 	.word PalSet_2PVs	; 18 - 2P Vs
 	.word PalSet_Bonus	; 19 - bonus game intro and N-Spade

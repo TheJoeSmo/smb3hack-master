@@ -3106,6 +3106,7 @@ LEVEL3_TILESET_12	= %00001100
 LEVEL3_TILESET_13	= %00001101
 LEVEL3_TILESET_14	= %00001110
 LEVEL3_TILESET_15	= %00001111	; Included for completeness, but not valid (bonus game, can't jump in this way)
+LEVEL3_TILESET_16	= %00010000
 
 ; Sets "Level_7Vertical", i.e. states object is a vertical oriented one
 LEVEL3_VERTICAL		= %00010000
@@ -5025,6 +5026,50 @@ TILE15_LAVABOTTOM	= $DB
 
 TILE15_BRICK		= $F4
 
+
+; Tileset 16 (Sewer)
+TILE16_BG			= $00
+
+TILE16_BRIDGE_LEFT  = $FF
+TILE16_BRIDGE_MIDDLE= $FF
+TILE16_BRIDGE_RIGHT = $FF
+
+TILE16_STARCOIN1	= $50	; SB: Star coin!
+TILE16_STARCOIN2	= $51	; SB: Star coin!
+TILE16_STARCOIN3	= $52	; SB: Star coin!
+
+TILE16_SHADOW_TOP 	= $08
+TILE16_SHADOW_BTM 	= $09
+TILE16_SHADOW_LEFT 	= $0A
+TILE16_SHADOW_RIGHT	= $0B
+
+TILE16_INNER_TL		= $0C
+TILE16_INNER_TR		= $0E
+TILE16_INNER_BL		= $10
+TILE16_INNER_BR		= $12
+
+TILE16_GROUNDTL 	= $33   ; Ground Top Left
+TILE16_GROUNDTM 	= $26   ; Ground Top Middle
+TILE16_GROUNDTR 	= $35   ; Ground Top Right
+TILE16_GROUNDML 	= $34   ; Ground Middle Left
+TILE16_GROUNDMM 	= $37   ; Ground Middle Middle
+TILE16_GROUNDMR 	= $36   ; Ground Middle Right
+TILE16_GROUNDBL 	= $1C   ; Ground Bottom Left
+TILE16_GROUNDBM 	= $1E   ; Ground Bottom Middle
+TILE16_GROUNDBR 	= $1D   ; Ground Bottom Right
+
+TILE16_SANDTOP		= $7A	; Solid sand ground, top
+TILE16_SANDMID		= $7B	; Solid sand ground, middle
+
+TILE16_FLAGTOP		= $81	; SB: Flag pole top
+TILE16_FLAGPOLE		= $82	; SB: Flag pole ... pole
+
+TILE16_VINE			= $85	; Vine
+
+TILE16_SEWER_SKY	= $FF	; Sky Sewer Vent
+TILE16_SEWER_FLOOT	= $FF   ; Floor Sewer Vent 
+
+
 ; Tileset 18 (2P Vs)
 ; NOTE: Several tiles 
 TILE18_BLACK		= $02	; Black tile
@@ -5347,6 +5392,10 @@ TILE19_TABLE_LR		= $D3	; Table lower left
 	.bank 45
 	.org $A000
 	.include "PRG/prg045.asm"
+
+	.bank 46
+	.org $A000
+	.include "PRG/prg046.asm"
 	
 	; Logic code moved from prg0 for more space
 	.bank 61
@@ -5409,9 +5458,9 @@ TILE19_TABLE_LR		= $D3	; Table lower left
 	.incchr "CHR/chr042.pcx" ; Unused (Toad Help and Bonus Game)
 	.incchr "CHR/chr043.pcx" ; /
 	.incchr "CHR/chr044.pcx" ; Unused (Reward at end of level)
-	.incchr "CHR/chr045.pcx" ; |
-	.incchr "CHR/chr046.pcx" ; |
-	.incchr "CHR/chr047.pcx" ; /
+	.incchr "CHR/chr045.pcx" ; /
+	.incchr "CHR/sewer.pcx" ; Sewers
+	;.incchr "CHR/chr047.pcx" ; /
 	.incchr "CHR/chr048.pcx" ; Desert Tileset
 	.incchr "CHR/chr049.pcx" ; /
 	.incchr "CHR/chr050.pcx" ; Time Up and Game Over and Sun Graphics
