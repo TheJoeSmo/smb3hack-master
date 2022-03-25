@@ -5727,20 +5727,23 @@
 				<generator id="73" name="Shadow Right" desc="Right shadow for sewers">
 					<param name="Height"></param>	
 				</generator>
+				<generator id="74" name="Pillar" desc="Pillar for sewers">
+					<param name="Height"></param>	
+				</generator>
 			</vargenerators>
 			<fixedgenerators>
 				<generator id="0" name="Corner UL" desc="Upper-left corner tile"></generator>
 				<generator id="1" name="Inverse Corner UL" desc="Invserse upper-left corner tile"></generator>
-				<generator id="2" name="Corner UL (Water)" desc="Underwater upper-left corner tile"></generator>
+				<generator id="2" name="Slope Inner UL 45" desc="Slope Inner UL 45"></generator>
 				<generator id="3" name="Corner UR" desc="Upper-right corner tile"></generator>
 				<generator id="4" name="Inverse Corner UR" desc="Inverse upper-right corner tile"></generator>
-				<generator id="5" name="Corner UR (Water)" desc="Underwater upper-right corner tile"></generator>
+				<generator id="5" name="Slope Inner UR 45" desc="Slope Inner UR 45"></generator>
 				<generator id="6" name="Corner LL" desc="Lower-left corner tile"></generator>
 				<generator id="7" name="Inverse Corner LL" desc="Inverse lower-left corner tile"></generator>
-				<generator id="8" name="Corner LL (Water)" desc="Underwater lower-left corner tile"></generator>
+				<generator id="8" name="Slope Inner BL 45" desc="Slope Inner BL 45"></generator>
 				<generator id="9" name="Corner LR" desc="Lower-right corner tile"></generator>
 				<generator id="10" name="Inverse Corner LR" desc="Inverse lower-right corner tile"></generator>
-				<generator id="11" name="Corner LR (Water)" desc="Underwater lower-right corner tile"></generator>
+				<generator id="11" name="Slope Inner BR 45" desc="Slope Inner BR 45"></generator>
 				<generator id="12" name="Star Coin 1" desc="Star Coin 1"></generator>
 				<generator id="13" name="Star Coin 2" desc="Star Coin 2"></generator>
 				<generator id="14" name="Star Coin 3" desc="Star Coin 3"></generator>

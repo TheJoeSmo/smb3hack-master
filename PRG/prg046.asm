@@ -20,15 +20,15 @@ Tile_Layout_TS16:
 	; I.e. tiles starting at index $00, $40, $80, $C0 are each on that respective palette
 
 	; Upper left 8x8 pattern per tile
-	.byte $55, $DC, $FF, $05, $05, $E8, $05, $03, $55, $75, $55, $57, $FC, $03, $3C, $FC ; Tiles $00 - $0F
-	.byte $44, $48, $4C, $40, $42, $5E, $FC, $FC, $FC, $FC, $FC, $22, $10, $25, $24, $62 ; Tiles $10 - $1F
-	.byte $51, $6C, $5C, $5E, $6E, $55, $01, $63, $55, $1C, $1E, $55, $FF, $FF, $B8, $B8 ; Tiles $20 - $2F
-	.byte $B8, $B8, $BC, $00, $10, $01, $15, $FC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
-	.byte $DC, $05, $FC, $FC, $05, $05, $05, $30, $3C, $3C, $3C, $3D, $FC, $03, $3C, $FC ; Tiles $40 - $4F
-	.byte $F4, $F4, $F4, $30, $00, $13, $01, $62, $0A, $66, $01, $62, $FF, $FF, $FF, $D8 ; Tiles $50 - $5F
+	.byte $55, $DC, $FF, $05, $05, $E8, $05, $03, $55, $75, $55, $56, $3E, $2E, $2C, $3C ; Tiles $00 - $0F
+	.byte $4C, $FC, $FC, $4E, $70, $42, $33, $FC, $41, $42, $33, $FC, $10, $FD, $14, $62 ; Tiles $10 - $1F
+	.byte $51, $6C, $5C, $5E, $6E, $50, $01, $63, $55, $1C, $1E, $0E, $FF, $FF, $B8, $B8 ; Tiles $20 - $2F
+	.byte $B8, $B8, $BC, $00, $10, $01, $04, $FC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
+	.byte $DC, $05, $FC, $FC, $05, $05, $FF, $FF, $56, $55, $44, $75, $75, $56, $FF, $FC ; Tiles $40 - $4F
+	.byte $F4, $F4, $F4, $30, $00, $13, $01, $62, $44, $75, $56, $44, $FF, $FF, $FF, $D8 ; Tiles $50 - $5F
 	.byte $98, $98, $98, $98, $98, $98, $92, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4 ; Tiles $60 - $6F
 	.byte $B4, $B8, $98, $98, $98, $98, $A4, $EC, $E4, $C0, $5C, $5E, $E9, $30, $44, $FF ; Tiles $70 - $7F
-	.byte $05, $3A, $3E, $FF, $FF, $C4, $50, $03, $3C, $3C, $3C, $3D, $FC, $03, $3C, $FC ; Tiles $80 - $8F
+	.byte $28, $28, $67, $55, $FF, $C4, $50, $03, $3C, $3C, $3C, $3D, $FC, $03, $3C, $FC ; Tiles $80 - $8F
 	.byte $68, $6A, $1A, $1C, $6E, $0F, $6E, $0F, $0F, $55, $01, $63, $55, $1C, $1E, $55 ; Tiles $90 - $9F
 	.byte $62, $51, $6C, $5C, $5E, $6E, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $8C, $8E, $8C ; Tiles $A0 - $AF
 	.byte $8E, $8C, $8E, $8C, $8E, $76, $76, $74, $70, $72, $AC, $AE, $B8, $FF, $FF, $FF ; Tiles $B0 - $BF
@@ -38,15 +38,15 @@ Tile_Layout_TS16:
 	.byte $0E, $D7, $E0, $05, $01, $62, $0A, $66, $01, $62, $FF, $FF, $F1, $17, $F8, $FF ; Tiles $F0 - $FF
 
 	; Lower left 8x8 pattern per tile
-	.byte $65, $DD, $FF, $06, $D6, $E9, $14, $35, $45, $65, $65, $67, $FC, $23, $16, $FC ; Tiles $00 - $0F
-	.byte $45, $49, $4D, $5C, $FC, $5E, $FC, $FC, $38, $3F, $FC, $22, $20, $21, $21, $65 ; Tiles $10 - $1F
-	.byte $61, $65, $6C, $6E, $65, $60, $04, $73, $1C, $2C, $2E, $1E, $FF, $FF, $B9, $B9 ; Tiles $20 - $2F
-	.byte $B9, $B9, $BD, $10, $10, $05, $15, $FC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
-	.byte $DD, $06, $FC, $FC, $06, $06, $06, $35, $37, $37, $16, $5B, $FC, $23, $16, $FC ; Tiles $40 - $4F
-	.byte $F5, $F5, $F5, $32, $58, $18, $60, $62, $5A, $66, $60, $62, $FF, $FF, $FF, $D9 ; Tiles $50 - $5F
+	.byte $65, $DD, $FF, $06, $D6, $E9, $14, $35, $45, $65, $65, $66, $FC, $3E, $3C, $FC ; Tiles $00 - $0F
+	.byte $5C, $4C, $4E, $5E, $43, $FC, $52, $32, $43, $FC, $31, $32, $20, $21, $21, $72 ; Tiles $10 - $1F
+	.byte $61, $65, $6C, $6E, $7E, $60, $03, $73, $1C, $2C, $2E, $1E, $FF, $FF, $B9, $B9 ; Tiles $20 - $2F
+	.byte $B9, $B9, $BD, $10, $10, $FD, $04, $FC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
+	.byte $DD, $06, $FC, $FC, $06, $06, $FF, $FF, $74, $45, $66, $65, $45, $66, $FF, $FC ; Tiles $40 - $4F
+	.byte $F5, $F5, $F5, $32, $58, $18, $60, $62, $74, $45, $74, $66, $FF, $FF, $FF, $D9 ; Tiles $50 - $5F
 	.byte $99, $99, $99, $99, $99, $99, $93, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5 ; Tiles $60 - $6F
 	.byte $B5, $B9, $99, $99, $99, $99, $A5, $ED, $E4, $C1, $5E, $5E, $E8, $32, $45, $FF ; Tiles $70 - $7F
-	.byte $06, $3E, $3E, $FF, $FF, $C4, $51, $35, $37, $37, $16, $5B, $FC, $23, $16, $FC ; Tiles $80 - $8F
+	.byte $28, $38, $65, $77, $FF, $C4, $51, $35, $37, $37, $16, $5B, $FC, $23, $16, $FC ; Tiles $80 - $8F
 	.byte $6C, $0F, $1E, $0F, $6E, $0F, $0F, $0F, $0F, $60, $04, $73, $1C, $2C, $2E, $1E ; Tiles $90 - $9F
 	.byte $65, $61, $65, $6C, $6E, $65, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $9C, $9E, $9C ; Tiles $A0 - $AF
 	.byte $9E, $9C, $9E, $9C, $9E, $77, $77, $75, $71, $73, $AC, $AE, $B9, $FF, $FF, $FF ; Tiles $B0 - $BF
@@ -56,15 +56,15 @@ Tile_Layout_TS16:
 	.byte $64, $06, $E1, $06, $60, $62, $5A, $66, $60, $62, $FF, $FF, $F0, $3C, $F9, $FF ; Tiles $F0 - $FF
 
 	; Upper right 8x8 pattern per tile	
-	.byte $56, $DE, $FF, $FF, $FF, $EA, $FF, $37, $56, $76, $54, $56, $3D, $37, $04, $37 ; Tiles $00 - $0F
-	.byte $46, $4A, $4E, $41, $43, $FC, $5F, $FC, $FC, $FC, $22, $FC, $05, $12, $24, $52 ; Tiles $10 - $1F
-	.byte $61, $6D, $5D, $5F, $6F, $60, $01, $56, $56, $1D, $1F, $56, $FF, $FF, $BA, $BA ; Tiles $20 - $2F
+	.byte $55, $DE, $FF, $FF, $FF, $EA, $FF, $37, $55, $75, $54, $55, $3F, $2F, $2D, $3D ; Tiles $00 - $0F
+	.byte $4D, $FC, $FC, $4F, $43, $73, $FC, $32, $43, $40, $FC, $32, $FD, $12, $14, $52 ; Tiles $10 - $1F
+	.byte $61, $6D, $5D, $5F, $6F, $60, $01, $53, $0D, $1D, $1F, $55, $FF, $FF, $BA, $BA ; Tiles $20 - $2F
 	.byte $BA, $BA, $BE, $01, $13, $02, $12, $FC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
-	.byte $DE, $FF, $FC, $FC, $FF, $FF, $FF, $37, $04, $37, $37, $3D, $3D, $37, $04, $37 ; Tiles $40 - $4F
-	.byte $F6, $F6, $F6, $31, $12, $02, $01, $63, $01, $63, $0B, $0D, $FF, $FF, $FF, $DA ; Tiles $50 - $5F
+	.byte $DE, $FF, $FC, $FC, $FF, $FF, $FF, $FF, $55, $54, $75, $46, $75, $54, $FF, $37 ; Tiles $40 - $4F
+	.byte $F6, $F6, $F6, $31, $12, $02, $01, $63, $75, $46, $54, $46, $FF, $FF, $FF, $DA ; Tiles $50 - $5F
 	.byte $9A, $9A, $9A, $9A, $9A, $9A, $CA, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6 ; Tiles $60 - $6F
 	.byte $B6, $BA, $9A, $9A, $9A, $9A, $A6, $EE, $E5, $C2, $5D, $5F, $EB, $31, $46, $FF ; Tiles $70 - $7F
-	.byte $FF, $3B, $3F, $FF, $FF, $C6, $56, $37, $04, $37, $37, $3D, $3D, $37, $04, $37 ; Tiles $80 - $8F
+	.byte $29, $29, $55, $77, $FF, $C6, $56, $37, $04, $37, $37, $3D, $3D, $37, $04, $37 ; Tiles $80 - $8F
 	.byte $69, $6B, $1B, $1D, $0F, $6F, $0F, $6F, $0F, $60, $01, $56, $56, $1D, $1F, $56 ; Tiles $90 - $9F
 	.byte $52, $61, $6D, $5D, $5F, $6F, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $8D, $8F, $8D ; Tiles $A0 - $AF
 	.byte $8F, $8D, $8F, $8D, $8F, $7A, $7A, $78, $70, $72, $AD, $AF, $BA, $FF, $FF, $FF ; Tiles $B0 - $BF
@@ -74,15 +74,15 @@ Tile_Layout_TS16:
 	.byte $67, $D7, $E2, $FF, $01, $63, $01, $63, $0B, $0D, $FF, $FF, $F3, $18, $FA, $FF ; Tiles $F0 - $FF
 
 	; Lower right 8x8 pattern per tile
-	.byte $66, $DF, $FF, $FF, $D6, $EB, $15, $3C, $46, $66, $64, $66, $3D, $34, $25, $34 ; Tiles $00 - $0F
-	.byte $47, $4B, $4F, $FC, $5D, $FC, $5F, $3E, $38, $FC, $22, $FC, $21, $22, $21, $62 ; Tiles $10 - $1F
-	.byte $66, $66, $6D, $6F, $66, $70, $04, $63, $1D, $2D, $2F, $1F, $FF, $FF, $BB, $BB ; Tiles $20 - $2F
-	.byte $BB, $BB, $BF, $03, $13, $12, $12, $FC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
-	.byte $DF, $FF, $FC, $FC, $FF, $FF, $FF, $3C, $36, $3C, $34, $3D, $3D, $34, $25, $34 ; Tiles $40 - $4F
-	.byte $F7, $F7, $F7, $33, $19, $59, $61, $63, $61, $63, $0C, $0D, $FF, $FF, $FF, $DB ; Tiles $50 - $5F
+	.byte $65, $DF, $FF, $FF, $D6, $EB, $15, $3C, $45, $65, $64, $65, $FC, $3F, $3D, $FC ; Tiles $00 - $0F
+	.byte $5D, $4D, $4F, $5F, $FC, $42, $33, $51, $FC, $42, $33, $30, $21, $22, $21, $62 ; Tiles $10 - $1F
+	.byte $71, $7D, $6D, $6F, $65, $70, $03, $63, $1D, $2D, $2F, $1F, $FF, $FF, $BB, $BB ; Tiles $20 - $2F
+	.byte $BB, $BB, $BF, $FD, $13, $12, $12, $FC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
+	.byte $DF, $FF, $FC, $FC, $FF, $FF, $FF, $FF, $45, $76, $65, $64, $45, $64, $FF, $34 ; Tiles $40 - $4F
+	.byte $F7, $F7, $F7, $33, $19, $59, $61, $63, $45, $76, $76, $64, $FF, $FF, $FF, $DB ; Tiles $50 - $5F
 	.byte $9B, $9B, $9B, $9B, $9B, $9B, $CB, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7 ; Tiles $60 - $6F
 	.byte $B7, $BB, $9B, $9B, $9B, $9B, $A7, $EF, $E5, $C3, $5F, $5F, $EA, $33, $47, $FF ; Tiles $70 - $7F
-	.byte $FF, $3F, $3F, $FF, $FF, $C6, $57, $3C, $36, $3C, $34, $3D, $3D, $34, $25, $34 ; Tiles $80 - $8F
+	.byte $29, $39, $67, $65, $FF, $C6, $57, $3C, $36, $3C, $34, $3D, $3D, $34, $25, $34 ; Tiles $80 - $8F
 	.byte $0F, $6D, $0F, $1F, $0F, $6F, $0F, $0F, $0F, $70, $04, $63, $1D, $2D, $2F, $1F ; Tiles $90 - $9F
 	.byte $62, $66, $66, $6D, $6F, $66, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $9D, $9F, $9D ; Tiles $A0 - $AF
 	.byte $9F, $9D, $9F, $9D, $9F, $7B, $7B, $79, $71, $73, $AD, $AF, $BB, $FF, $FF, $FF ; Tiles $B0 - $BF
@@ -226,6 +226,7 @@ LoadLevel_Generator_TS16:
 	.word LevelLoad_BottomShadow46  ; 71
 	.word LevelLoad_LeftShadow46	; 72
 	.word LevelLoad_RightShadow46	; 73
+	.word LevelLoad_Pillar46	; 74 - Pillar for the sewers
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LeveLoad_FixedSizeGen_TS16
@@ -249,18 +250,18 @@ LeveLoad_FixedSizeGen_TS16:
 	JSR DynJump	 
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
-	.word LoadLevel_Corner			;  0 - Above Ground upper-left corner tile
-	.word LoadLevel_Corner			;  1 - Underground/Hills normal upper-left corner tile
-	.word LoadLevel_Corner			;  2 - Underwater upper-left corner tile
-	.word LoadLevel_Corner			;  3 - Above Ground upper-right corner tile
-	.word LoadLevel_Corner			;  4 - Underground/Hills normal upper-right corner tile
-	.word LoadLevel_Corner			;  5 - Underwater upper-right corner tile
-	.word LoadLevel_Corner			;  6 - Above Ground lower-left corner tile
-	.word LoadLevel_Corner			;  7 - Underground/Hills normal lower-left corner tile
-	.word LoadLevel_Corner			;  8 - Underwater lower-left corner tile
-	.word LoadLevel_Corner			;  9 - Above Ground lower-right corner tile
-	.word LoadLevel_Corner			; 10 - Underground/Hills normal lower-right corner tile
-	.word LoadLevel_Corner			; 11 - Underwater lower-right corner tile
+	.word LoadLevel_Corner46		;  0 - Above Ground upper-left corner tile
+	.word LoadLevel_Corner46		;  1 - Underground/Hills normal upper-left corner tile
+	.word LoadLevel_Corner46		;  2 - Underwater upper-left corner tile
+	.word LoadLevel_Corner46		;  3 - Above Ground upper-right corner tile
+	.word LoadLevel_Corner46		;  4 - Underground/Hills normal upper-right corner tile
+	.word LoadLevel_Corner46		;  5 - Underwater upper-right corner tile
+	.word LoadLevel_Corner46		;  6 - Above Ground lower-left corner tile
+	.word LoadLevel_Corner46		;  7 - Underground/Hills normal lower-left corner tile
+	.word LoadLevel_Corner46		;  8 - Underwater lower-left corner tile
+	.word LoadLevel_Corner46		;  9 - Above Ground lower-right corner tile
+	.word LoadLevel_Corner46		; 10 - Underground/Hills normal lower-right corner tile
+	.word LoadLevel_Corner46		; 11 - Underwater lower-right corner tile
 	.word LoadLevel_StarCoin1		; 12 - Star Coin 1
 	.word LoadLevel_StarCoin2		; 13 - Star Coin 2
 	.word LoadLevel_StarCoin3		; 14 - Star Coin 3
@@ -308,10 +309,10 @@ LeveLoad_FixedSizeGen_TS16:
 ; Places a single corner tile in sewer levels
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LL_Corners46:
-	.byte TILE16_GROUNDTL, $00, $00	; Upper left
-	.byte TILE16_GROUNDTR, $00, $00	; Upper right
-	.byte TILE16_GROUNDBL, $00, $00	; Lower left (not avail AG) 
-	.byte TILE16_GROUNDBR, $00, $00	; Lower right (not avail AG) 
+	.byte TILE16_GROUNDTL, TILE16_INNER_TL2, TILE16_SLOPE_45_TL	; Upper left
+	.byte TILE16_GROUNDTR, TILE16_INNER_TR2, TILE16_SLOPE_45_TR	; Upper right
+	.byte TILE16_GROUNDBL, TILE16_INNER_BL2, TILE16_SLOPE_45_BL	; Lower left (not avail AG) 
+	.byte TILE16_GROUNDBR, TILE16_INNER_BR2, TILE16_SLOPE_45_BR	; Lower right (not avail AG) 
 
 LoadLevel_Corner46:
 	LDX LL_ShapeDef		 ; LL_ShapeDef is limited 0-15 because of fixed size gen mode, so it's perfect! 
@@ -343,6 +344,330 @@ LoadLevel_DoubleBlock46:
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 
 	RTS		 ; Return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; GenerateShading
+;
+; Generates shading for the sewer tileset.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+GenerateShading:
+	LDA [Map_Tile_AddrL], Y		; Get the block stored at the current location.
+	STA <Temp_Var2
+
+	; Save offset
+	LDA TileAddr_Off
+	STA <Temp_Var3
+
+	; Save Address to contain issues.
+	LDA Map_Tile_AddrL
+	STA <Temp_Var4
+	LDA Map_Tile_AddrH
+	STA <Temp_Var5
+
+	; Save X, Y to not overwrite it.
+	TXA
+	STA <Temp_Var6
+	TYA
+	STA <Temp_Var7
+
+	JSR GenerateRightShading
+
+	; Restore X, Y
+	LDA <Temp_Var6
+	TAX
+	LDA <Temp_Var7
+	TAY
+
+	; Restore address
+	LDA <Temp_Var4
+	STA Map_Tile_AddrL
+	LDA <Temp_Var5
+	STA Map_Tile_AddrH
+
+	; Restore offset
+	LDA <Temp_Var3
+	STA TileAddr_Off
+
+	JSR GenerateLeftShading
+	;JSR GenerateTopShading
+	;JSR GenerateBottomShading
+
+	; Restore X, Y
+	LDA <Temp_Var6
+	TAX
+	LDA <Temp_Var7
+	TAY
+
+	; Restore address
+	LDA <Temp_Var4
+	STA Map_Tile_AddrL
+	LDA <Temp_Var5
+	STA Map_Tile_AddrH
+
+	; Restore offset
+	LDA <Temp_Var3
+	STA TileAddr_Off
+
+	RTS
+
+
+GenerateLeftShadingBlocksToChange:
+	.byte TILE16_BG
+	.byte TILE16_SHADOW_TOP
+	.byte TILE16_SHADOW_BTM
+	.byte TILE16_SHADOW_RIGHT
+	.byte TILE16_SHADOW_BL
+	.byte TILE16_SHADOW_TL
+	.byte TILE16_SHADOW_LEFT
+
+EndGenerateLeftShadingBlocksToChange:
+
+GenerateLeftShadingBlocksAlternative:
+	.byte TILE16_SHADOW_LEFT
+	.byte TILE16_SHADOW_TR
+	.byte TILE16_SHADOW_BR
+	.byte TILE16_SHADOW_LR
+	.byte TILE16_SHADOW_TLR
+	.byte TILE16_SHADOW_BLR
+	.byte TILE16_SHADOW_LEFT
+
+GenerateLeftShading:
+	JSR UpdateBlockIndexToPriorColumn	; Get to the left column index.
+
+	LDX #(EndGenerateLeftShadingBlocksToChange - GenerateLeftShadingBlocksToChange)
+
+GenerateLeftShadingLoop:
+		LDA [Map_Tile_AddrL], Y
+		CMP GenerateLeftShadingBlocksToChange, X
+		
+		; If the not block equal, continue looping...
+		BNE GenerateLeftShadingLoopContinue
+
+			; Apply the alternative block to index and jump out of this method.
+			LDA GenerateLeftShadingBlocksAlternative, X
+			STA [Map_Tile_AddrL], Y
+			JMP GenerateLeftShadingLoopFinish
+
+	; Continue looping while X >= 0
+GenerateLeftShadingLoopContinue:
+		DEX
+
+	BPL GenerateLeftShadingLoop	 	
+
+GenerateLeftShadingLoopFinish:
+	JMP UpdateBlockIndexToNextColumn	; Restore the column index.
+	
+
+GenerateRightShadingBlocksToChange:
+	.byte TILE16_BG
+	.byte TILE16_SHADOW_TOP
+	.byte TILE16_SHADOW_BTM
+	.byte TILE16_SHADOW_LEFT
+	.byte TILE16_SHADOW_BR
+	.byte TILE16_SHADOW_TR
+	.byte TILE16_SHADOW_RIGHT
+
+EndGenerateRightShadingBlocksToChange:
+
+GenerateRightShadingBlocksAlternative:
+	.byte TILE16_SHADOW_RIGHT
+	.byte TILE16_SHADOW_TL
+	.byte TILE16_SHADOW_BL
+	.byte TILE16_SHADOW_LR
+	.byte TILE16_SHADOW_TLR
+	.byte TILE16_SHADOW_BLR
+	.byte TILE16_SHADOW_RIGHT
+
+GenerateRightShading:
+	JSR UpdateBlockIndexToNextColumn	; Get to the right column index.
+
+	LDX #(EndGenerateRightShadingBlocksToChange - GenerateRightShadingBlocksToChange)
+
+GenerateRightShadingLoop:
+		LDA [Map_Tile_AddrL], Y
+		CMP GenerateRightShadingBlocksToChange, X
+		
+		; If the not block equal, continue looping...
+		BNE GenerateRightShadingLoopContinue
+
+			; Apply the alternative block to index and jump out of this method.
+			LDA GenerateRightShadingBlocksAlternative, X
+			STA [Map_Tile_AddrL], Y
+			JMP GenerateRightShadingLoopFinish
+
+	; Continue looping while X >= 0
+GenerateRightShadingLoopContinue:
+		DEX
+
+	BPL GenerateRightShadingLoop	 	
+
+GenerateRightShadingLoopFinish:
+	JMP UpdateBlockIndexToPriorColumn	; Restore the column index.
+
+
+
+
+
+UpdateBlockIndexToNextColumn:
+	; Increment Y
+	INY
+
+	; Check if we hit a boundry.  If did not hit boundry, terminate.
+	TYA
+	AND #$0f
+	BNE Terminate46
+
+	; Add 0x01B0 to the index
+	LDA <Map_Tile_AddrL
+	ADD #$b0	 
+	STA <Map_Tile_AddrL
+	LDA <Map_Tile_AddrH
+	ADC #$01	 
+	STA <Map_Tile_AddrH
+
+	; Get TileAddr_Off and only keep the row, but clear 'Y' lower bits since
+	; we're going to column 0 on the same row, new screen...
+	LDA TileAddr_Off
+	AND #$f0
+	TAY	
+
+Terminate46:
+	RTS
+
+
+UpdateBlockIndexToPriorColumn:
+	; Decrement Y
+	DEY
+	
+	; Check if we hit a boundry.  If did not hit boundry, terminate.
+	TYA		
+	AND #$0f	
+	CMP #$0f	
+	BNE Terminate46	 
+
+	; Subtract 0x01B0 to the index
+	LDA <Map_Tile_AddrL
+	SUB #$b0	 
+	STA <Map_Tile_AddrL
+	LDA <Map_Tile_AddrH
+	SBC #$01	 
+	STA <Map_Tile_AddrH
+
+	; Transfer 'Y' to the other side
+	INY	
+	TYA	
+	AND #$f0
+	ORA #$0f
+	TAY
+
+	RTS
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; UpdateBlockIndexToNextRow
+;
+; Moves the index to the next column.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+UpdateBlockIndexToNextRow:
+	; Go to next column by adding 16 to tile offset
+	TYA
+	ADD #16
+	TAY
+	LDA <Map_Tile_AddrH
+	ADC #$00	 
+	STA <Map_Tile_AddrH
+	RTS
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; UpdateBlockIndexToPriorRow
+;
+; Moves the index to the next column.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+UpdateBlockIndexToPriorRow:
+	; Go to next row by subtracting 16 to tile offset
+	TYA
+	SUB #16
+	TAY	
+	LDA <Map_Tile_AddrH
+	SBC #$00	 
+	STA <Map_Tile_AddrH
+	RTS
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LevelLoad_Pillar46
+;
+; Creates a pillar.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LevelLoad_Pillar46:
+	LDA #$00
+	BEQ LevelLoad_TopMiddleBottomVerticle
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LevelLoad_TopMiddleBottomVerticle
+;
+; Loads a top, middle, and bottom for a vertical block.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+TopMiddleBottomBlocks:
+	.byte TILE16_PILLAR_T, TILE16_PILLAR_M, TILE16_PILLAR_B, $00
+	.byte $00, $00, $00, $00
+
+
+; Vertical Top Middle Bottom Block Run
+LevelLoad_TopMiddleBottomVerticle:
+	ASL A
+	ASL A
+	TAX				; The provided index * 4 will become the index into the blocks
+
+	; Get the low block index
+	LDY TileAddr_Off
+
+	; Place the top block
+	LDA TopMiddleBottomBlocks, X
+	STA [Map_Tile_AddrL],Y
+
+	; Generate shading for pillar
+	JSR GenerateShading
+
+	; Get ready to place middle block
+	JSR UpdateBlockIndexToNextRow
+	INX
+
+	; Find the size 1-16 of the block run
+	LDA LL_ShapeDef
+	AND #$0f	 
+	STA <Temp_Var1	
+	
+
+	; Place middle block 1-16 times.
+	TopMiddleBottomVerticle_PlaceMiddleBlock46:
+	
+		; Place middle block
+		LDA TopMiddleBottomBlocks, X
+		STA [Map_Tile_AddrL],Y
+		
+		; Generate shading for pillar
+		JSR GenerateShading
+
+		JSR UpdateBlockIndexToNextRow
+
+		DEC <Temp_Var1
+	BPL TopMiddleBottomVerticle_PlaceMiddleBlock46	 	
+	
+	; Get ready to place bottom block
+	INX
+	
+	; Place bottom block
+	LDA TopMiddleBottomBlocks, X
+	STA [Map_Tile_AddrL],Y
+
+	; Generate shading for pillar
+	JSR GenerateShading
+	
+	RTS
 
 
 
@@ -517,13 +842,7 @@ PRG046_D811:
 	LDA <Temp_Var5
 	STA [Map_Tile_AddrL],Y	 
 
-	; Go to next row by adding 16 to tile offset
-	TYA
-	ADD #16
-	TAY	
-	LDA <Map_Tile_AddrH
-	ADC #$00	 
-	STA <Map_Tile_AddrH
+	JSR UpdateBlockIndexToNextRow
 
 	; While Temp_Var1 >= 0, loop!
 	DEC <Temp_Var1
