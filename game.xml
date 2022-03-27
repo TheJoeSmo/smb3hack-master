@@ -604,9 +604,11 @@
 			<sprite x="0" y="0" bank="79" pattern="0x26" palette="1"></sprite>
 			<sprite x="8" y="0" bank="79" pattern="0x28" palette="1"></sprite>
 		</object>
-		<object id="0x43" label="OBJ_CHEEPCHEEPPOOL2POOL2" name="Cheep Cheep Pool-to-Pool 2" desc="Pool-to-pool hopping cheep cheep">
-			<sprite x="0" y="0" bank="79" pattern="0x26" palette="1"></sprite>
-			<sprite x="8" y="0" bank="79" pattern="0x28" palette="1"></sprite>
+		<object id="0x43" label="OBJ_KURIBO" name="Kuribo" desc="Goomba inside a shoe">
+			<sprite x="0" y="-8" bank="79" pattern="0x18" palette="3" />
+            <sprite x="8" y="-8" bank="79" pattern="0x1A" palette="3" hflip="1" />
+            <sprite x="0" y="0" bank="11" pattern="0x28" palette="2" />
+            <sprite x="8" y="0" bank="11" pattern="0x2C" palette="2" />
 		</object>
 		<object id="0x44" label="OBJ_WOODENPLATUNSTABLE" name="Wood Platform Path Wait" desc="Wooden platform following path after hopping on">
 			<sprite x="0" y="8" bank="14" pattern="0x0E" palette="3"></sprite>

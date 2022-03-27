@@ -366,7 +366,7 @@ Object_AttrFlags:
 	.byte OAT_BOUNDBOX03 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $40 - OBJ_DESERTBONES
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $41 - OBJ_ENDLEVELCARD
 	.byte OAT_BOUNDBOX01 | OAT_BOUNCEOFFOTHERS	; Object $42 - OBJ_REX_PARTLYSQUASHED
-	.byte OAT_BOUNDBOX01	; Object $43
+	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY	; Object $43 - OBJ_KIRUBO
 	.byte OAT_BOUNDBOX08 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $44 - OBJ_WOODENPLATUNSTABLE
 	.byte OAT_BOUNDBOX00 | OAT_FIREIMMUNITY	; Object $45 - OBJ_HOTFOOT
 	.byte OAT_BOUNDBOX02	; Object $46 - OBJ_PIRANHASPIKEBALL
@@ -4776,7 +4776,7 @@ Object_DoHaltedAction:
 	.word ObjHalt_DoNothingNotNormal	; 5: If object is in "normal" state, do its normal routine, otherwise do nothing (COMMON)
 	.word Object_DrawWide			; 6: Draw wide sprite
 	.word ObjHalt_DoNothing			; 7: Do nothing
-	.word $0000			; 8: UNUSED
+	.word Shoe_DrawGoomba						; 8: Draw the Kuribo shoe
 	.word ObjHalt_DoNothing			; 9: Do nothing
 	.word Object_ShakeAndDrawMirrored	; 10: Draw mirrored sprite
 	.word EndLevelCard_Draw			; 11: Bank2/End Level Card ONLY
