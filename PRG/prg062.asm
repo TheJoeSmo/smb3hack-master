@@ -1529,8 +1529,6 @@ PRG062_897B:
 
 	; If Level_Tileset = 16 (Spade game sliding cards) or 17 (N-Spade), jump to PRG062_89AB
 	LDA Level_Tileset
-	CMP #16
-	BEQ PRG062_89AB
 	CMP #17
 	BEQ PRG062_89AB	
 
@@ -1571,7 +1569,7 @@ PRG062_897B:
 
 	LDY #$06	; Y = 6 (get tileset)
 	LDA [Level_LayPtr_AddrL],Y
-	AND #$0f	
+	AND #$1f	
 	STA Level_Tileset
 	JSR SetPages_ByTileset
 	
@@ -1643,11 +1641,6 @@ PRG062_89AB:
 
 PRG062_89C4:
 	STA PatTable_BankSel+1	 ; Select second bank of BG VROM
-
-	LDA Level_Tileset	
-	CMP #16
-	BEQ PRG062_89D1	 	; If Level_Tileset = 16 (Spade game sliders), jump to PRG062_89D1
-
 	JMP PRG062_8A4E	 	; Otherwise, jump to PRG062_8A4E
 
 	; Offset to LevCP values by Player index
@@ -2985,7 +2978,7 @@ PRG062_90C4:
 
 	; Toad House and bonuses jump to PRG062_9128
 	LDA Level_Tileset
-	CMP #16
+	CMP #17
 	BGE PRG062_9128	 ; If Level_Tileset >= 16 (some kind of Bonus Game), jump to PRG062_9128
 	;CMP #$07
 	;BEQ PRG062_9128	 ; If Level_Tileset = 7 (Toad House), jump to PRG062_9128

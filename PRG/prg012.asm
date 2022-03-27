@@ -705,7 +705,7 @@ Map_BonusTile_NotBonus:
 	BPL Map_BonusTile_CheckLoop
 	
 	LDA [Temp_Var1],Y	
-	AND #$0f	 	; Get "type" bits 
+	AND #$1f	 	; Get "type" bits 
 	
 Map_BonusTile_OverrideTS:
 	STA Level_Tileset	; Store into Level_Tileset
@@ -737,6 +737,36 @@ PRG012_B1BB:
 	STA <Level_ObjPtr_AddrH		 
 	STA Level_ObjPtrOrig_AddrH	 
 
+; Temporary Sewer Overwrite
+	LDA <Level_ObjPtr_AddrL
+	CMP #LOW(Sewer_Object_0)
+	BNE NoSewerOverwrite
+	LDA <Level_ObjPtr_AddrH
+	CMP #HIGH(Sewer_Object_0)
+	BNE NoSewerOverwrite
+
+; This is a sewer level so set the tileset properly.
+	LDA #$10
+	STA Level_Tileset
+
+	LDA #LOW(Sewer_Object_0)
+	STA <Level_ObjPtr_AddrL
+	STA Level_ObjPtrOrig_AddrL
+	LDA #HIGH(Sewer_Object_0)
+	STA <Level_ObjPtr_AddrH		 
+	STA Level_ObjPtrOrig_AddrH	 
+
+	LDA #LOW(Sewer_Layout_0)
+	STA <Level_LayPtr_AddrL		 
+	STA Level_LayPtrOrig_AddrL	 
+	LDA #HIGH(Sewer_Layout_0)
+	STA <Level_LayPtr_AddrH		 
+	STA Level_LayPtrOrig_AddrH	
+
+	JMP MagicSewerSkipBS
+
+NoSewerOverwrite:
+
 	; Add the page change (if any) to Temp_Var6 (applies same page change here)
 	LDA <Temp_Var8	
 	ADD <Temp_Var15	
@@ -764,7 +794,7 @@ PRG012_B1DC:
 	STA <Level_LayPtr_AddrH		 
 	STA Level_LayPtrOrig_AddrH	 
 
-
+MagicSewerSkipBS:
 	LDA <Map_EnterViaID
 	BNE Map_DoEnterViaID	 ; If Map_EnterViaID <> 0, jump to Map_DoEnterViaID
 

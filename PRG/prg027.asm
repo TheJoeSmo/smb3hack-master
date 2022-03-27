@@ -1481,7 +1481,7 @@ PRG027_B8C3:
 	BNE PRG027_B8F9	; Jump (technically always) to PRG027_B8F9
 
 NotVs_PalPatch:
-	CMP #16
+	CMP #17
 	BGE PRG027_B8F9	 	; For all Level_TileSet >= 16, don't do this next patch!
 
 	; The following patches in the correct palette for the

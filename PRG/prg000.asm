@@ -102,31 +102,6 @@ Slope_ObjectVel_Effect:
 	.byte $00,  $80,  $00,  $80, -$01, -$01,  $01,  $01	; $08-$0F
 	.byte $00, -$01, -$01,  $01,  $01			; $10-$14 (SB: These were missing in native SMB3!)
 
-	; This defines 4 values per Level_Tileset, with each of those values
-	; belonging to a tile "quadrant" (i.e. tiles beginning at $00, $40,
-	; $80, and $C0), and defines the beginning tile which should be 
-	; classified as "underwater" (Minimum Tile Under Water By Quad)
-	; A value of $FF is used to indicate that no tile in that quadrant
-	; is underwater (and for the first three quads is unreachable!)
-Level_MinTileUWByQuad:
-	; 4 values per Level_TilesetIdx, which is basically (Level_Tileset - 1)
-	; Listing by valid Level_Tileset values for consistency...
-	.byte $FF, $FF, $FF, $DA	;  1 Plains style
-	.byte $FF, $FF, $FF, $DA	;  2 Mini Fortress style
-	.byte $FF, $FF, $FF, $C1	;  3 Hills style
-	.byte $FF, $FF, $FF, $DA	;  4 High-Up style
-	.byte $FF, $FF, $FF, $DB	;  5 Ghost House
-	.byte $02, $3F, $8A, $C0	;  6 water world
-	.byte $FF, $FF, $FF, $DA	;  7 Toad House
-	.byte $FF, $FF, $8A, $DA	;  8 Vertical pipe maze
-	.byte $FF, $FF, $FF, $DA	;  9 desert levels
-	.byte $FF, $FF, $FF, $DA	; 10 Airship
-	.byte $FF, $FF, $FF, $DA	; 11 Giant World
-	.byte $FF, $FF, $FF, $DA	; 12 Ice level
-	.byte $FF, $FF, $FF, $DA	; 13 Sky level
-	.byte $FF, $FF, $FF, $C1	; 14 Underground
-	.byte $FF, $FF, $FF, $DB	; 15 ext
-
 
 	; This defines 4 values per Level_Tileset, with each of those values
 	; belonging to a tile "quadrant" (i.e. tiles beginning at $00, $40,
@@ -152,6 +127,34 @@ Level_MinTileLavaByQuad:
 	.byte $FF, $FF, $FF, $FF	; 13 Sky level
 	.byte $FF, $FF, $FF, $FF	; 14 Underground
 	.byte $FF, $FF, $FF, $FF	; 15 ext
+	.byte $FF, $FF, $FF, $FF	; 15 Sewers
+
+
+	; This defines 4 values per Level_Tileset, with each of those values
+	; belonging to a tile "quadrant" (i.e. tiles beginning at $00, $40,
+	; $80, and $C0), and defines the beginning tile which should be 
+	; classified as "underwater" (Minimum Tile Under Water By Quad)
+	; A value of $FF is used to indicate that no tile in that quadrant
+	; is underwater (and for the first three quads is unreachable!)
+Level_MinTileUWByQuad:
+	; 4 values per Level_TilesetIdx, which is basically (Level_Tileset - 1)
+	; Listing by valid Level_Tileset values for consistency...
+	.byte $FF, $FF, $FF, $DA	;  1 Plains style
+	.byte $FF, $FF, $FF, $DA	;  2 Mini Fortress style
+	.byte $FF, $FF, $FF, $C1	;  3 Hills style
+	.byte $FF, $FF, $FF, $DA	;  4 High-Up style
+	.byte $FF, $FF, $FF, $DB	;  5 Ghost House
+	.byte $02, $3F, $8A, $C0	;  6 water world
+	.byte $FF, $FF, $FF, $DA	;  7 Toad House
+	.byte $FF, $FF, $8A, $DA	;  8 Vertical pipe maze
+	.byte $FF, $FF, $FF, $DA	;  9 desert levels
+	.byte $FF, $FF, $FF, $DA	; 10 Airship
+	.byte $FF, $FF, $FF, $DA	; 11 Giant World
+	.byte $FF, $FF, $FF, $DA	; 12 Ice level
+	.byte $FF, $FF, $FF, $DA	; 13 Sky level
+	.byte $FF, $FF, $FF, $C1	; 14 Underground
+	.byte $FF, $FF, $FF, $DB	; 15 ext
+	.byte $FF, $FF, $FF, $C1	; 14 Underground
 
 
 	; Objects detect using a specific offset from this list
@@ -6261,88 +6264,7 @@ PRG000_DB7A:
 ; value rather than address, alternate dead state 3, etc.)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Enemy_Kill:
-
-	; Set timer 2 to 12
-	LDA #12
-	STA Objects_Timer2,X
-
-	; "Kick" sound
-	LDA Sound_QPlayer
-	ORA #SND_PLAYERKICK
-	STA Sound_QPlayer
-
-	LDY ObjGroupRel_Idx	 	; Y = object group relative index
-	LDA ObjectGroup_Attributes3,Y	; Get this object's attribute set 3
-	AND #OA3_DIESHELLED
-	BNE PRG000_DBB6	 		; If OA3_DIESHELLED is set, jump to PRG000_DBB6
-
-	; OA3_DIESHELLED is not set...
-
-	LDA Player_Slide
-	BNE PRG000_DBB2	 	; If Player is sliding, jump to PRG000_DBB2
-
-	LDA Kill_Tally	 	; Get current kill tally
-	JSR Score_Get100PlusPts	; Get appropriate score based on kill tally
-
-PRG000_DBB2:
-	LDA #$06	 ; A = 6 (object state 6, killed)
-	BNE PRG000_DBCF	 ; Jump (technically always) to PRG000_DBCF
-
-
-PRG000_DBB6:
-
-	; Attribute set 3 bit 6 is set...
-
-	; Y *= 2 (2 byte index)
-	TYA	
-	ASL A	
-	TAY	
-
-	LDA ObjectGroup_CollideJumpTable+1,Y	; Get upper byte of collision jump entry
-	AND #%11111000
-	CMP #%00001000	; If only bit 3 is set and 4-7 are clear, this is a new object ID to change to
-	BNE PRG000_DBC8	 ; If the above is not the case, jump to PRG000_DBC8
-
-	; SPECIAL CASE: Collide Jump table lower byte specifies a new object ID
-
-	LDA ObjectGroup_CollideJumpTable,Y 	; Get the new ID
-	STA Level_ObjectID,X			; Set the new ID
-
-PRG000_DBC8:
-	; Timer 3 set to $FF
-	LDA #$ff
-	STA Objects_Timer3,X
-
-	LDA #OBJSTATE_SHELLED	 ; A = Shelled
-
-PRG000_DBCF:
-	STA Objects_State,X	 ; Set new object state
-
-	LDA #-$30	 ; A = -$30
-
-	LDY <Temp_Var4
-
-	CPY #$0f	
-	BEQ PRG000_DBDC	 ; If Temp_Var4 = $0F, jump to PRG000_DBDC
-
-	LDA #-$50	 ; A = -$50
-
-PRG000_DBDC:
-	STA <Objects_YVel,X	 ; Set Y velocity appropriately
-
-	; Set appropriate X Velocity based on facing direction of 
-	; Player when he killed the enemy
-	JSR Level_ObjCalcXDiffs
-	LDA EnemyKill_XVels,Y
-	STA <Objects_XVel,X
-
-	; Set vertical flip on the object
-	LDA Objects_FlipBits,X
-	ORA #SPR_VFLIP
-
-	STA Objects_FlipBits,X
-
-	RTS		 ; Return
+	JMP_THUNKA 61, Enemy_Kill61
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

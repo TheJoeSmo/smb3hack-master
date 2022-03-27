@@ -5730,6 +5730,12 @@
 				<generator id="74" name="Pillar" desc="Pillar for sewers">
 					<param name="Height"></param>	
 				</generator>
+				<generator id="75" name="Chains TL to BR" desc="Chains from top left to bottom right">
+					<param name="Length"></param>	
+				</generator>
+				<generator id="76" name="Chains BL to TR" desc="Chains from bottom left to top right">
+					<param name="Length"></param>	
+				</generator>
 			</vargenerators>
 			<fixedgenerators>
 				<generator id="0" name="Corner UL" desc="Upper-left corner tile"></generator>
@@ -5780,7 +5786,7 @@
 				<generator id="51" name="Inside BR 22 Slope" desc="Inside BR 22 Slope"></generator>
 			</fixedgenerators>
 			<levels><level name="Sewers" layoutfile="Sewer_Layout_0" layoutlabel="Sewer_Layout_0" objectfile="Sewer_Object_0" objectlabel="Sewer_Object_0" desc="Subboot sewer level"></level></levels>
- 		</tileset>
+ 		 </tileset>
 
 		<tileset id="18" name="2P Vs." path="2PVs" desc="Battlefields for 2-Player Versus/Challenge mode.  Cannot be used for gameplay.">
 			<vargenerators>

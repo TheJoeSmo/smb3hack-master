@@ -2736,7 +2736,7 @@ PRG026_AF9C:
 StatusBar_Fill_Time:
 	LDA Level_Tileset
 	BEQ Timer_NoChange	 ; If Level_Tileset = 0, jump to Timer_NoChange (no timer on map EVER)
-	CMP #16
+	CMP #17
 	BGE Timer_NoChange	 ; If Level_Tileset >= 16, jump to Timer_NoChange
 	LDA Level_TimerEn
 	AND #$7f	 	; Only checking the timer disable here
@@ -3080,9 +3080,6 @@ PRG026_B114:
 	LDX #$2b	 	; X = $2B (VRAM address high if non-vertical)
 
 	LDA Level_Tileset	
-
-	CMP #16	 
-	BEQ PRG026_B13C	 	; If Level_Tileset = 16 (Spade game), jump to PRG026_B13C
 
 	CMP #17
 	BNE PRG026_B13E	 	; If Level_Tileset = 17 (N-Spade game), jump to PRG026_B13E
@@ -3843,9 +3840,6 @@ PRG026_B4CB:
 	BNE PRG026_B4EE	 	; If level is vertical, jump to PRG026_B4EE
 
 	LDA Level_Tileset
-
-	CMP #16	
-	BEQ PRG026_B4EC	 	; If Level_Tileset = 16 (Spade game), jump to PRG026_B4EC
 
 	CMP #17
 	BNE PRG026_B4F5	 	; If Level_Tileset = 17 (N-Spade game), jump to PRG026_B4F5

@@ -1373,3 +1373,96 @@ PRG000_DAAE:
 	STA <Player_FlipBits
 
 	RTS		 ; Return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Enemy_Kill
+;
+; Kills an enemy; flips them over, plays the "kick" sound
+; If attribute 3, bit 6 is SET, there's some special
+; behavior described below (using CollideJumpTable as a
+; value rather than address, alternate dead state 3, etc.)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Enemy_Kill61:
+
+	; Set timer 2 to 12
+	LDA #12
+	STA Objects_Timer2,X
+
+	; "Kick" sound
+	LDA Sound_QPlayer
+	ORA #SND_PLAYERKICK
+	STA Sound_QPlayer
+
+	LDY ObjGroupRel_Idx	 	; Y = object group relative index
+	LDA ObjectGroup_Attributes3,Y	; Get this object's attribute set 3
+	AND #OA3_DIESHELLED
+	BNE PRG000_DBB6	 		; If OA3_DIESHELLED is set, jump to PRG000_DBB6
+
+	; OA3_DIESHELLED is not set...
+
+	LDA Player_Slide
+	BNE PRG000_DBB2	 	; If Player is sliding, jump to PRG000_DBB2
+
+	LDA Kill_Tally	 	; Get current kill tally
+	JSR Score_Get100PlusPts	; Get appropriate score based on kill tally
+
+PRG000_DBB2:
+	LDA #$06	 ; A = 6 (object state 6, killed)
+	BNE PRG000_DBCF	 ; Jump (technically always) to PRG000_DBCF
+
+
+PRG000_DBB6:
+
+	; Attribute set 3 bit 6 is set...
+
+	; Y *= 2 (2 byte index)
+	TYA	
+	ASL A	
+	TAY	
+
+	LDA ObjectGroup_CollideJumpTable+1,Y	; Get upper byte of collision jump entry
+	AND #%11111000
+	CMP #%00001000	; If only bit 3 is set and 4-7 are clear, this is a new object ID to change to
+	BNE PRG000_DBC8	 ; If the above is not the case, jump to PRG000_DBC8
+
+	; SPECIAL CASE: Collide Jump table lower byte specifies a new object ID
+
+	LDA ObjectGroup_CollideJumpTable,Y 	; Get the new ID
+	STA Level_ObjectID,X			; Set the new ID
+
+PRG000_DBC8:
+	; Timer 3 set to $FF
+	LDA #$ff
+	STA Objects_Timer3,X
+
+	LDA #OBJSTATE_SHELLED	 ; A = Shelled
+
+PRG000_DBCF:
+	STA Objects_State,X	 ; Set new object state
+
+	LDA #-$30	 ; A = -$30
+
+	LDY <Temp_Var4
+
+	CPY #$0f	
+	BEQ PRG000_DBDC	 ; If Temp_Var4 = $0F, jump to PRG000_DBDC
+
+	LDA #-$50	 ; A = -$50
+
+PRG000_DBDC:
+	STA <Objects_YVel,X	 ; Set Y velocity appropriately
+
+	; Set appropriate X Velocity based on facing direction of 
+	; Player when he killed the enemy
+	JSR Level_ObjCalcXDiffs
+	LDA EnemyKill_XVels,Y
+	STA <Objects_XVel,X
+
+	; Set vertical flip on the object
+	LDA Objects_FlipBits,X
+	ORA #SPR_VFLIP
+
+	STA Objects_FlipBits,X
+
+	RTS		 ; Return
