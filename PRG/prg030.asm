@@ -716,15 +716,11 @@ LevelInit_EnableSlopes30:
 	BEQ PRG030_C347	 ; If Level_Tileset = 14 (Underground style), jump to PRG030_C347
 
 	CMP #$05
-	BNE PRG030_C345	 ; If Level_Tileset = 5 (pipe world plant infestation style), jump to PRG030_C345
+	BEQ PRG030_C347	 ; If Level_Tileset = 5 (pipe world plant infestation style), jump to PRG030_C345
 
-	; Level_Tileset = 5...
+	CMP #$10
+	BEQ PRG030_C347	 ; If Level_Tileset = 16 (Sewers), jump to PRG030_C347
 
-	LDA Level_UnusedSlopesTS5	; Never set, so this is unused...
-	CMP #$02
-	BEQ PRG030_C347	 ; If Level_UnusedSlopesTS5 = 2, jump to PRG030_C347 (force slopes to be enabled on tileset 5)
-
-PRG030_C345:
 	LDY #$00	 ; Y = 0 (do not enable slopes)
 
 PRG030_C347:

@@ -6054,6 +6054,9 @@ PRG062_9EC3:
 	CPY #3
 	BEQ PRG062_9EDB	 ; If Level_Tileset = 3 (Hills style), jump to PRG062_9EDB
 
+	CPY #16
+	BEQ PRG062_9EDB	 ; If Level_Tileset = 16 (Sewers style), jump to PRG062_9EDB
+
 	CPY #14
 	BNE PRG062_9F0D	 ; If Level_Tileset <> 14 (Underground), jump to PRG062_9F0D
 

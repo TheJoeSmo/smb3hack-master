@@ -3936,6 +3936,8 @@ PRG008_B47E:
 	BEQ PRG008_B4A2	 ; If Level_Tileset = 3 (Hills style), jump to PRG008_B4A2
 	CMP #14
 	BEQ PRG008_B4A2	 ; If Level_Tileset = 14 (Underground style), jump to PRG008_B4A2
+	CMP #$10
+	BEQ PRG008_B4A2	 ; If Level_Tileset = 16 (Sewers style), jump to PRG008_B4A2
 
 	; Non-sloped levels use this:
 	; SB: Unused, and still wrong, but same wrong as SMB3 (just getting rid of unnecessary constant in PRG000)
