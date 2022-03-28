@@ -471,6 +471,11 @@ ObjP43:
     .byte $A9, $AB, $A9, $AD
 
 
+GoombaRunningSpeeds:
+	.byte $-20, -$1C, -$18, -$14, -$10, -$0C, -$08, -$04
+	.byte $04, $08, $0C, $10, $14, $18, $1C, $20
+
+
 GoombaOperateBoot:
 	; Force sixth bank select $4F
 	LDA #$4f
@@ -480,70 +485,128 @@ GoombaOperateBoot:
 	LDA <Counter_1
 	LSR A	
 	LSR A	
-	LSR A	
+	LSR A
 	AND #$01
 	STA Objects_Frame,X
 
-	LDY <Objects_Var5,X
-	BEQ ObjNorm_GoombaGroundCheck	 ; If Var5 <> 0, jump to ObjNorm_GoombaGroundCheck
-
+	; Sometimes things need to not change directions...
 	LDA <Counter_1
-	AND #$03
-	BNE ObjNorm_GoombaInShoeFinished	 ; 1:4 chance we won't jump to ObjNorm_GoombaInShoeFinished
+	AND #$1F
+	BEQ ObjNormStopChangeMovementForced
 
-	DEY		 ; (Var5) Y-- 
-	BNE ObjNorm_GoombaApplyHitFromBottom	 ; If Var5 did not decrement to zero, jump to ObjNorm_GoombaApplyHitFromBottom
+	; Enable changing directions again
+	LDA Objects_Var2,X
+	AND #%11111101
+	STA Objects_Var2,X
+
+ObjNormStopChangeMovementForced:
+
+	; Stop any silly stuff happening in walls
+	LDA <Objects_DetStat,X
+	AND #$03
+	BNE ObjNorm_GoombaDoNotResetHop
+
+	; Only reset if hit ground!
+	LDA <Objects_DetStat,X
+	AND #$04
+	BEQ ObjNorm_GoombaDoNotResetHop
+
+	LDA Objects_Var2,X
+	AND #%11111110
+	STA Objects_Var2,X
+
+ObjNorm_GoombaDoNotResetHop:
+	
+	; Can only hop once and if falling!
+	LDA Objects_Var2,X
+	AND #$01
+	BNE ObjNorm_GoombaDoNotDoMidairHop
+	LDA <Objects_YVel,X
+	CMP #$30
+	BLS ObjNorm_GoombaDoNotDoMidairHop
+
+	; Do a big hop! 
+	LDA #-$50
+	STA <Objects_YVel,X
+
+	LDA Objects_Var2,X
+	ORA #$01
+	STA Objects_Var2,X
+
+ObjNorm_GoombaDoNotDoMidairHop:
+	LDA <Objects_DetStat,X
+	AND #$03
+	BEQ ObjNorm_ContinueMovement	 ; If object has hit a wall, so stop moving horizontally.
+
+	; Stop changing directions and do not bounce
+	LDA Objects_Var2,X
+	ORA #$02
+	STA Objects_Var2,X
+
+	JSR Object_ApplyXVel	 ; Apply X velocity
+	JSR Object_ApplyXVel	 ; Apply X velocity
+	JSR Object_ApplyXVel	 ; Apply X velocity
+	RTS
+
+ObjNorm_ContinueMovement:
+
+	; Force disable
+	LDA Objects_Var2,X
+	AND #%00000010
+	BNE ObjNorm_GoombaDoNotDetermineDirection
+
+	; Only change direction when on the ground.
+	LDA <Objects_YVel,X
+	BNE ObjNorm_GoombaDoNotDetermineDirection
 
 	; Flip to face Player
 	JSR Object_CalcCoarseXDiff
 	STA Objects_FlipBits,X
 
-	LDY #$10	 ; Y = $10 (hop to right)
-
 	ASL A
-	BMI PRG002_B090	 ; If horizontally flipped, jump to PRG002_B090
+	BMI PRG002_B090
 
-	LDY #-$10	 ; Y = -$10 (hop to left)
+	LDA Objects_Var7,X
+	BEQ ObjNorm_GoombaApplySpeed
+	DEC Objects_Var7,X
+	JMP ObjNorm_GoombaApplySpeed
 
 PRG002_B090:
-	STY <Objects_XVel,X	 ; Set proper X velocity
+	LDA Objects_Var7,X
+	CMP #$0F
+	BEQ ObjNorm_GoombaApplySpeed
+	INC Objects_Var7,X
 
-	; Hop!
-	LDA #-$50
+ObjNorm_GoombaApplySpeed:
+	LDY Objects_Var7,X
+	LDA GoombaRunningSpeeds, Y
+	STA Objects_XVel,X	 ; Set proper X velocity
+
+ObjNorm_GoombaDoNotDetermineDirection:
+
+	; Only update so often.
+	LDA <Counter_1
+	AND #%00000011
+	BNE ObjNorm_GoombaInShoeFinished
+
+	; Bump the goomba when moving left or right and on ground.
+	LDA <Objects_XVel,X
+	BEQ DoNotApplySmallBumpToGoomba
+	LDA <Objects_YVel,X
+	BNE DoNotApplySmallBumpToGoomba
+
+	LDA RandomN
+	AND #$1F
+	NEG
 	STA <Objects_YVel,X
+DoNotApplySmallBumpToGoomba:
 
-	LDY #$00	 ; Y = 0 (reset Var5)
-
-
-ObjNorm_GoombaApplyHitFromBottom:
-	CPY #$0b
-	BNE ObjNorm_GoombaDoNotApplyHitFromBottom	 ; If Var5 <> $0B, jump to ObjNorm_GoombaDoNotApplyHitFromBottom
-
-	JSR Shoe_EjectGoomba	 ; Eject the occupant of the Shoe
-	INC <Objects_Var4,X	 ; Var4++
-
-	LDY #$00	 ; Y = 0 (reset Var5)
 
 ObjNorm_GoombaDoNotApplyHitFromBottom:
 	STY <Objects_Var5,X	 ; Update Var5
 
 ObjNorm_GoombaInShoeFinished:
 	RTS		 ; Return
-
-
-ObjNorm_GoombaGroundCheck:
-	LDA <Objects_DetStat,X
-	AND #$04
-	BEQ ObjNorm_GoombaInShoeFinished	 ; If Shoe hasn't hit ground, jump to ObjNorm_GoombaInShoeFinished (RTS)
-
-	; Var5 = $0B
-	LDA #$0b
-	STA <Objects_Var5,X
-
-	; Stop horizontal movement
-	LDA #$00
-	STA <Objects_XVel,X
-	RTS
 
 
 ObjNorm_GoombaOnlyCheckForPlayer:
@@ -746,15 +809,18 @@ PRG002_B126:
 
 	; The Y offset for the Goomba riding in the shoe
 Shoe_GoombaYOff:
-	.byte $00, -$02, -$04, -$06, -$08, -$08, -$08, -$08, -$08, -$06, -$04, -$02, $F4, -$08, -$04
+	.byte -$04, -$08, -$04, -$02
+	.byte -$04, -$06, -$08, -$08
+	.byte -$08, -$08, -$08, -$06
+	.byte -$04, -$02, $00, $00
 	
 Shoe_DrawGoomba:
 	JSR Object_ShakeAndCalcSprite
 	LDA <Temp_Var3		 
 	BPL PRG002_B14E	 ; If object is not vertically flipped, jump to PRG002_B14E
 
-	LDX <SlotIndexBackup	 ; X = object slot index
-
+	; Handling the bouncing of the goomba
+	
 	LDA <Objects_Var5,X
 	TAX		 ; X = Var5
 
@@ -777,8 +843,7 @@ PRG002_B14E:
 	; Shoe is not vertically flipped...
 
 	; Add offset for Goomba inside shoe
-	LDY <Objects_Var5,X
-	ADD Shoe_GoombaYOff,Y
+	ADD #-$08
 
 PRG002_B15F:
 	STA <Temp_Var1	 ; -> Temp_Var1
@@ -792,6 +857,9 @@ PRG002_B15F:
 	STA <Temp_Var2
 
 PRG002_B16C:
+	LDA <Objects_Var4,X
+	BNE GoombaShoeFinishDraw
+
 	LDA #SPR_PAL3
 	STA <Temp_Var4	 ; Set Goomba attributes to just palette select 3
 	LDX #$00	 ; X = $70 (Goomba's starting pattern)
@@ -819,6 +887,7 @@ PRG002_B16C:
 	; Set pattern sixth bank to $4F
 	LDA #$4f	  
 	STA PatTable_BankSel+5
+GoombaShoeFinishDraw:
 	RTS		 ; Return
 
 
@@ -2172,117 +2241,15 @@ PRG002_A9C1:
 	RTS		 ; Return
 
 ObjNorm_InvisibleLift:
-	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
-	JSR Object_CalcSpriteXY_NoHi	 ; Calculate the Sprite X and Sprite Y
-
-	; SB: Not invisible anymore!
-	JSR InvisiLift_Draw	 ; Draw the lift
-
-	LDA <Objects_Var5,X
-	CMP #1
-	BEQ PRG002_A9D2	 ; If Var5 = 1 (Lift activated), jump to PRG002_A9D2
-	CMP #2
-	BEQ IPlat_NoStop	 ; If Var5 = 2 (Lift terminated), jump to IPlat_NoStop
-
-	LDA <Player_HaltGame
-	BNE PRG002_A9C1	 ; If gameplay is halted, jump to PRG002_A9C1 (RTS)
-	BEQ PRG002_A9F5	 ; Otherwise, jump to PRG002_A9F5
-
+	; Removed to save space
 PRG002_A9D2:
-
-	; Lift activated...
-
-	LDA <Player_HaltGame
-	BNE PRG002_A9C1	 ; If gameplay is halted, jump to PRG002_A9C1 (RTS)
-
-	; Lift accelerates to -$08 (SB)
-	LDA <Objects_YVel,X
-	SUB #$04
-	CMP #-$08
-	BGE PRG002_A9E4
-	LDA #-$08
 PRG002_A9E4:
-	STA <Objects_YVel,X	 ; Update Y Velocity
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
-
 PRG002_A9F5:
-
-	JSR Object_WorldDetectN1
-	
-	LDA <Objects_DetStat,X
-	AND #(4 | 8)
-	BEQ IPlat_NoStop
-	
-	INC <Objects_Var5,X
-	
-	LDA #0
-	STA <Objects_YVel,X
-
 IPlat_NoStop:
-	; Don't worry about carry since this platform doesn't move horizontally
-	LDA #$00
-	STA Object_XVelCarry
-
-	JSR PlayerPlatform_Collide
-	BCC PRG002_AA03	 ; If Player is not being carried by lift, jump to PRG002_AA03 (RTS)
-
-	LDA <Objects_Var5,X
-	BNE PRG002_AA03
-
-	; Otherwise, Var5 = 1 (lift activated)
-	INC <Objects_Var5,X
-
 PRG002_AA03:
-	RTS		 ; Return
-
-
 InvisiLift_Draw:
-	JSR Object_ShakeAndCalcSprite	 ; Calculate sprite data
-
-	; Strip any horizontal or vertical flips from flip bits
-	LDA <Temp_Var3
-	AND #%00111111
-	STA <Temp_Var3
-
-	LDA <Counter_1
-	LSR A	
-
-	PHP		 ; Save CPU state
-	BCC PRG002_AA17	 ; Every other tick, jump to PRG002_AA17
-
-	; Otherwise, use Sprite_RAM offset +8
-	TYA
-	ADC #$07
-	TAY
-
 PRG002_AA17:
-	JSR Object_Draw16x16Sprite	; Draw the first half of lift
-
-	LDA <Temp_Var7
-	PLP		 ; Restore CPU state
-	BCS PRG002_AA21	 ; Every other opposite tick, jump to PRG002_AA21
-
-	; Otherwise, use Sprite_RAM offset +8
-	ADC #$08
-
 PRG002_AA21:
-	TAY		 ; Sprite_RAM offset -> 'Y'
-
-	; X += 2 (starting sprite tile)
-	INX
-	INX
-
-	; +16 for second part of lift
-	LDA #16
-	ADD <Temp_Var2
-	STA <Temp_Var2
-
-	; Use latter horizontal visibility bits
-	ASL <Temp_Var8
-	ASL <Temp_Var8
-	JSR Object_Draw16x16Sprite	 ; Draw the second half of lift
-
-	LDX <SlotIndexBackup		 ; X = object slot index
 	RTS		 ; Return
 
 ObjInit_Albatoss:
