@@ -5449,6 +5449,11 @@ TILE19_TABLE_LR		= $D3	; Table lower left
 	.org $A000
 	.include "PRG/prg046.asm"
 	
+	; Logic code moved from prg8 for more space
+	.bank 60
+	.org $C000
+	.include "PRG/prg060.asm"
+
 	; Logic code moved from prg0 for more space
 	.bank 61
 	.org $A000

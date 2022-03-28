@@ -12,9 +12,32 @@
 ;     -> NES mode enabled
 ;---------------------------------------------------------------------------
 
+	; Airship "caught anchor" frame or general vine climbing
+Player_ClimbFrame:
+	.byte PF_CLIMB_SMALL, 	PF_CLIMB_SMALL_BACK	; Small
+	.byte PF_CLIMB_BIG, 	PF_CLIMB_BIG_BACK	; Big
+	.byte PF_CLIMB_BIG, 	PF_CLIMB_BIG_BACK	; Fire
+	.byte PF_CLIMB_BIG, 	PF_CLIMB_BIG_BACK	; Leaf
+	.byte PF_CLIMB_PENGUIN,	PF_CLIMB_BIG_BACK	; Penguin
+	.byte PF_CLIMB_BIG, 	PF_CLIMB_BIG_BACK	; Rabbit
+	.byte PF_CLIMB_BIG, 	PF_CLIMB_BIG_BACK; Hammer
+
 
 	; SB: Purged empty
+Airship_JumpFrameByPup:
+	.byte PF_JUMPFALLSMALL		; Small
+	.byte PF_JUMPBIG		; Big
+	.byte PF_JUMPBIG		; Fire
+	.byte PF_JUMPRACCOON		; Leaf
+	.byte PF_JUMPBIG	; Penguin
+	.byte PF_JUMPBIG		; Rabbit
+	.byte PF_JUMPBIG		; Hammer
 
+	; Frames used during the "power up" sequence from small -> Big
+Player_GrowFrames:
+	.byte PF_WALKBIG_BASE+2, PF_MIDGROW_HALFWAY, PF_WALKBIG_BASE+2, PF_MIDGROW_HALFWAY, PF_WALKBIG_BASE+2
+	.byte PF_MIDGROW_HALFWAY, PF_MIDGROW_SMALL, PF_MIDGROW_HALFWAY, PF_MIDGROW_SMALL, PF_MIDGROW_HALFWAY
+	.byte PF_MIDGROW_SMALL, PF_MIDGROW_HALFWAY
 
 	; This defines a table of lookups that point to the start of
 	; each Player_Frame's six patterns
@@ -452,8 +475,60 @@ PRG029_D010:
 
 PDraw_NoRevGrav:
 	LDA Player_Kuribo
-	BEQ PRG029_D050	 ; If Player is not in a Kuribo's shoe, jump to PRG029_D050
+	BNE NotNormalPDraw_NoRevGrav
+	JMP PRG029_D050	 ; If Player is not in a Kuribo's shoe or Yoshi, jump to PRG029_D050
+NotNormalPDraw_NoRevGrav:
 
+	CMP #$01
+	BEQ PDraw_NoRevGravWithYoshi
+
+PDraw_NoRevGravWithKuribo:
+	; In short, if Player is small, use Temp_Var1 = 6, otherwise Temp_Var1 = 0 (sprite vertical offset in shoe)
+	LDY #$00
+	LDA <Player_Suit
+	BNE KPRG029_D01D
+	LDY #$06
+KPRG029_D01D:
+	STY <Temp_Var1
+
+	LDA <Player_InAir
+	BEQ KPRG029_D029	 ; If Player is not mid-air, jump to KPRG029_D029
+
+	LDA <Player_YVel
+	BPL KPRG029_D029	 ; If Player is falling, jump to KPRG029_D029
+
+	EOR #$ff	 ; Otherwise negate it (sort of)
+
+KPRG029_D029:
+	LSR A
+	LSR A
+	LSR A
+	LSR A
+	SUB #$03	; The "whole" part of the Y Velocity, minus 3
+
+	EOR #$ff	 ; Negate that (sort of)
+	BPL KPRG029_D036	 ; If the result is positive, jump to KPRG029_D036
+
+	LDA #$00	 ; Otherwise if it slipped below zero, just use zero
+
+KPRG029_D036:
+	ADD <Temp_Var1	 ; Add that to the initial offset
+	ADD <Player_SpriteY	 ; And add in the Player's sprite Y position
+
+	; Store that as the new Y position on the "first row" sprites
+	STA Sprite_RAM+$0C,X
+	STA Sprite_RAM+$10,X
+	STA Sprite_RAM+$14,X
+
+	; The "second row" sprites (the shoe part in this case) use a different palette
+	LDA Sprite_RAM+$02,X
+	ORA #$02
+	STA Sprite_RAM+$02,X
+	STA Sprite_RAM+$06,X
+	JMP PRG029_D050
+
+
+PDraw_NoRevGravWithYoshi:
 	; Sprite vertical offset on Yoshi
 	LDY #-12
 	LDA <Player_Suit
@@ -3785,7 +3860,8 @@ PRG029_AF50:
 
 PRG029_AF52:
 	LDA Player_Kuribo
-	BEQ PSSFAD_NotRidingYoshi	; If Player is NOT riding Yoshi, jump to PSSFAD_NotRidingYoshi
+	CMP #$01
+	BNE PSSFAD_NotRidingYoshi	; If Player is NOT riding Yoshi, jump to PSSFAD_NotRidingYoshi
 	
 	; Set riding frame
 	LDY #PF_RIDEYOSHI_SMALL

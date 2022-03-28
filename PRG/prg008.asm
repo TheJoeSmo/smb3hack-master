@@ -12,6 +12,13 @@
 ;     -> NES mode enabled
 ;---------------------------------------------------------------------------
 
+	; Frames for when Player is in Kuribo's shoe
+Player_KuriboFrame:
+	.byte PF_KURIBO_SMALL, PF_KURIBO_BIG	; First value is for small, the other for everything else
+
+
+Player_RootJumpVel:	.byte PLAYER_JUMP
+
 	; SB: Moved from bank 0
 	; This table grants a couple (dis)abilities to certain
 	; power-ups; specifically:
@@ -30,12 +37,6 @@ Player_WalkFramesByPUp:
 	.byte PF_WALKBIG_BASE, PF_WALKBIG_BASE+1, PF_WALKBIG_BASE+2, PF_WALKBIG_BASE+1		; 4 - Penguin
 	.byte PF_WALKBIG_BASE, PF_WALKBIG_BASE+1, PF_WALKBIG_BASE+2, PF_WALKBIG_BASE+1	; 5 - Rabbit
 	.byte PF_WALKBIG_BASE, PF_WALKBIG_BASE+1, PF_WALKBIG_BASE+2, PF_WALKBIG_BASE+1		; 6 - Hammer
-
-	; Frames used during the "power up" sequence from small -> Big
-Player_GrowFrames:
-	.byte PF_WALKBIG_BASE+2, PF_MIDGROW_HALFWAY, PF_WALKBIG_BASE+2, PF_MIDGROW_HALFWAY, PF_WALKBIG_BASE+2
-	.byte PF_MIDGROW_HALFWAY, PF_MIDGROW_SMALL, PF_MIDGROW_HALFWAY, PF_MIDGROW_SMALL, PF_MIDGROW_HALFWAY
-	.byte PF_MIDGROW_SMALL, PF_MIDGROW_HALFWAY
 
 	; Stores frame to be used while traversing a pipe
 	; Order is small, small + kuribo, other, other + kuribo
@@ -73,11 +74,6 @@ Player_DuckFrame:
 Player_FireOnGround:	.byte PF_THROWONGROUND_BASE, PF_THROWONGROUND_BASE+3, PF_THROWONGROUND_BASE+2
 Player_FireInAir:	.byte PF_THROWINAIR_BASE, PF_THROWINAIR_BASE+1, PF_THROWINAIR_BASE+2
 
-	; Frames used while penguin hopping
-Player_PenguinHopFrames:
-	.byte PF_PENGUINHOP_BASE, PF_PENGUINHOP_BASE+2, PF_PENGUINHOP_BASE+1, PF_PENGUINHOP_BASE
-
-
 	; The raccoon power uses rotations of three frames based on different conditions
 Player_TailWagFlyFrames:
 	.byte PF_TAILWAGFLY_BASE+2, PF_TAILWAGFLY_BASE+1, PF_TAILWAGFLY_BASE	; Flying
@@ -89,26 +85,8 @@ Player_TailWagFlyFrames:
 	.byte PF_JUMPBIG, PF_JUMPBIG, PF_JUMPBIG			; Jump/fall
 	.byte PF_JUMPBIG, PF_BUNNYFLAP, PF_BUNNYFLAP		; Flutter wag
 
-
-	; Airship "caught anchor" frame or general vine climbing
-Player_ClimbFrame:
-	.byte PF_CLIMB_SMALL, 	PF_CLIMB_SMALL_BACK	; Small
-	.byte PF_CLIMB_BIG, 	PF_CLIMB_BIG_BACK	; Big
-	.byte PF_CLIMB_BIG, 	PF_CLIMB_BIG_BACK	; Fire
-	.byte PF_CLIMB_BIG, 	PF_CLIMB_BIG_BACK	; Leaf
-	.byte PF_CLIMB_PENGUIN,	PF_CLIMB_BIG_BACK	; Penguin
-	.byte PF_CLIMB_BIG, 	PF_CLIMB_BIG_BACK	; Rabbit
-	.byte PF_CLIMB_BIG, 	PF_CLIMB_BIG_BACK; Hammer
-
 	; Airship jump frame used by power up
-Airship_JumpFrameByPup:
-	.byte PF_JUMPFALLSMALL		; Small
-	.byte PF_JUMPBIG		; Big
-	.byte PF_JUMPBIG		; Fire
-	.byte PF_JUMPRACCOON		; Leaf
-	.byte PF_JUMPBIG	; Penguin
-	.byte PF_JUMPBIG		; Rabbit
-	.byte PF_JUMPBIG		; Hammer
+
 
 
 Player_WaterSplash:
@@ -423,7 +401,8 @@ PRG008_A3C0:
 	STA Event_Countdown	 ; Event_Countdown = Event_Countdown_Init[Y]
 
 	LDA Player_Kuribo
-	BEQ PRG008_A3C9		; If Player is not on Yoshi, jump to PRG008_A3C9
+	CMP #$01
+	BNE PRG008_A3C9		; If Player is not on Yoshi, jump to PRG008_A3C9
 	
 	; Yoshi is too much trouble to fix for pipe junctions, so we'll just skip the transition
 	LDA #1
@@ -471,7 +450,11 @@ Player_Update_JctCtl_Req_NoReq:
 	CMP #$80
 	BNE PRG008_A3DC	 ; If Player_QueueSuit <> $80 (Kuribo's shoe), jump to PRG008_A3DC
 
+	LDA Player_Kuribo
+	BNE PRG008_A3F2
+
 	; Kuribo's shoe enable!
+	INC Player_Kuribo	; Set the Player_Kuribo flag
 	INC Player_Kuribo	; Set the Player_Kuribo flag
 	BNE PRG008_A3F2	 ; Jump (expectedly always) to PRG008_A3F2
 
@@ -503,7 +486,7 @@ PRG008_A3F2:
 PRG008_A3FA:
 	LDA <Player_IsDying
 	ORA Player_HaltTick
-	BNE PRG008_A472_fix	 ; If gameplay is halted by Player_HaltTicks OR Player is dying, jump to PRG008_A472
+	BEQ PRG008_A472_fix
 
 	; Non-halted gameplay normal flow...
 
@@ -525,29 +508,10 @@ PRG008_A3FA:
 	BNE PRG008_A427_fix	 ; If Player_SpriteY < $C0 && Player_SpriteY > $CF, jump to PRG008_A427
 
 Player_FellAndDied:
-	; Fell in a pit and died
-	LDA #PLAYERSUIT_SMALL
-	STA <Player_Suit ; Player_Suit = PLAYERSUIT_SMALL
-
-	JSR Player_Die	 ; Begin death sequence
-
-	LDX Player_Current
-	LDA Player_Lives,X
-	BNE Player_PitNoGO
-	
-	LDA #4
-	STA <Player_IsDying
-	BNE PRG008_A472_fix
-	
-Player_PitNoGO:
-	; This jumps the initial part of the death sequence
-	LDA #$c0
-	STA Event_Countdown ; Event_Countdown = $C0
-	LDA #$02
-	STA <Player_IsDying	; Player_IsDying = 2 (already dropped off screen)
-
+	JSR_THUNKC 60, Player_FellAndDied60
 PRG008_A472_fix:
 	JMP PRG008_A472
+
 PRG008_A427_fix:
 	JMP PRG008_A427
 
@@ -589,9 +553,6 @@ PRG008_A427:
 	STA <Pipe_PlayerY ; Pipe_PlayerY = $FF
 
 PRG008_A44D:
-	LDA #$01	 
-	STA Player_QueueSuit	 ; Queue change to small (superfluous, Player_Die sets it to 1)
-
 	LDA #$50	 ; Event_Countdown to be set to $50
 
 	STA Event_Countdown
@@ -614,10 +575,6 @@ PRG008_A45A:
 	; Player was crushed!
 
 	JSR Player_Die	 ; Begin death sequence
-	
-	LDA #$01
-	STA <Player_IsDying	 ; Player_IsDying = 1 (superfluous, Player_Die sets it to 1)
-
 	JMP PRG008_A44D	 ; Jump to PRG008_A44D
 
 PRG008_A472:
@@ -707,7 +664,7 @@ Player_XAccelPseudoFrac:
 	.byte $20, $E0, $00, $00, 	$20, $E0, $00, $00	; Leaf
 	.byte $20, $E0, $00, $00, 	$20, $E0, $00, $00	; Penguin
 	.byte $60, $E0, $00, $00, 	$60, $E0, $00, $00	; Rabbit
-	.byte $60, $E0, $00, $00, 	$60, $E0, $00, $00	; Hammer
+	.byte $60, $E0, $00, $00, 	$60, $E0, $00, $00 	; Hammer
 
 Player_XAccelPseudoFrac_UW:
 	; If on the ground		If swimming above the ground
@@ -1490,17 +1447,16 @@ Player_YVelOK:
 PRG008_A940:
 	JSR Player_CommonGroundAnims	 ; Perform common ground animation routines
 
-	; SB: Not doing Kuribo's shoe special logic this way...
-
-	;LDA Player_Kuribo
-	;BEQ PRG008_A94C	 ; If Player is not wearing Kuribo's shoe, jump to PRG008_A94C
+	LDA Player_Kuribo
+	CMP #$02
+	BNE PRG008_A94C	 ; If Player is not wearing Kuribo's shoe, jump to PRG008_A94C
 
 	; If in Kuribo's shoe...
 
-	;LDA #14		 ; A = 14 (Kuribo's shoe code pointer)
-	;BNE PRG008_A956	 ; Jump (technically always) to PRG008_A956
+	LDA #14		 ; A = 14 (Kuribo's shoe code pointer)
+	BNE PRG008_A956	 ; Jump (technically always) to PRG008_A956
 
-;PRG008_A94C:
+PRG008_A94C:
 	LDA <Player_Suit
 
 	LDY Player_InWater
@@ -1562,7 +1518,7 @@ PowerUpMovement_JumpTable:
 	.word Swim_FireHammer	; 6 - Hammer
 
 	; Kuribo's shoe
-	;.word Move_Kuribo
+	.word Move_Kuribo
 
 
 GndMov_Small:
@@ -1866,6 +1822,64 @@ Swim_Rabbit:
 	JSR Player_SwimV ; Do Player up/down swimming action
 	JSR Player_SwimAnim ; Do Player swim animations
 	JMP Player_YoshiMove	   ; Update Yoshi
+
+
+Move_Kuribo:
+	JSR Player_GroundHControl ; Do Player left/right input control
+	JSR Player_JumpFlyFlutter ; Do Player jump, fly, flutter wag
+
+	LDA <Player_InAir
+	BNE PRG008_AAFF	 ; If Player is mid air, jump to PRG008_AAFF
+
+	STA Player_KuriboDir	 ; Clear Player_KuriboDir
+
+PRG008_AAFF:
+	LDA Player_KuriboDir
+	BNE PRG008_AB17	 ; If Kuribo's shoe is moving, jump to PRG008_AB17
+
+	LDA <Player_InAir
+	BNE PRG008_AB25	 ; If Player is mid air, jump to PRG008_AB25
+
+	LDA <Pad_Holding
+	AND #(PAD_LEFT | PAD_RIGHT)
+	STA Player_KuriboDir	 ; Store left/right pad input -> Player_KuriboDir
+	BEQ PRG008_AB25	 	; If Player is not pressing left or right, jump to PRG008_AB25
+	INC <Player_InAir	 ; Flag as in air (Kuribo's shoe bounces along)
+
+	LDY #-$20
+	STY <Player_YVel	 ; Player_YVel = -$20
+
+PRG008_AB17:
+	LDA <Pad_Input
+	BPL PRG008_AB25	 ; If Player is NOT pressing 'A', jump to PRG008_AB25
+
+	LDA #$00
+	STA Player_KuriboDir	 ; Player_KuriboDir = 0
+
+	LDY Player_RootJumpVel	 ; Get initial jump velocity
+	STY <Player_YVel	 ; Store into Y velocity
+
+PRG008_AB25:
+	LDY <Player_Suit
+	BEQ PRG008_AB2B	 ; If Player is small, jump to PRG008_AB2B
+
+	LDY #$01	 ; Otherwise, Y = 1
+
+PRG008_AB2B:
+
+	; Y = 0 if small, 1 otherwise
+
+	LDA Player_KuriboFrame,Y	; Get appropriate Kuribo's shoe frame
+	STA <Player_Frame		; Store as active Player frame
+
+	LDA <Counter_1
+	AND #$08	
+	BEQ PRG008_AB38	 	; Every 8 ticks, jump to PRG008_AB38
+
+	INC <Player_Frame	; Player_Frame++
+
+PRG008_AB38:
+	RTS		 ; Return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Player_GroundHControl
@@ -2747,26 +2761,7 @@ Player_DoClimbAnim:
 	LDA Player_IsClimbing
 	BEQ PRG008_B035	 ; If Player is NOT climbing, jump to PRG008_B035 (RTS)
 
-	; SB: Supporting "behind the scenes" alternate climb frame; now it's 2 different climb frames
-	LDA <Player_Suit
-	ASL A				; x 2
-	ADD Player_Behind	; Assuming this will only ever be 0/1
-	TAY		; -> 'Y'
-	
-	LDA Player_ClimbFrame,Y	 ; Get appropriate climbing frame
-	STA <Player_Frame	 ; Store into Player_Frame
-
-	LDA <Pad_Holding
-	AND #(PAD_UP | PAD_DOWN | PAD_LEFT | PAD_RIGHT)
-	BEQ PRG008_B035	 ; If Player is NOT pressing a direction, jump to PRG008_B035
-
-	; Every 8 ticks, flip Player horizontally
-	LDA <Counter_1
-	AND #$08
-	ASL A	
-	ASL A	
-	ASL A	
-	STA <Player_FlipBits
+	JSR_THUNKC 60, Player_DoClimbAnim60
 
 PRG008_B035:
 	RTS		 ; Return
@@ -6866,23 +6861,7 @@ PipeEntryPrepare:
 ; Register 'A' as input sets Level_ChgTileEvent
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Level_QueueChangeBlock: 
-	STA Level_ChgTileEvent	 ; Store type of block change!
-
-	; Store change Y Hi and Lo
-	LDA <Temp_Var13
-	STA Level_BlockChgYHi
-	LDA <Temp_Var14
-	AND #$F0		; Align to nearest grid coordinate
-	STA Level_BlockChgYLo
-
-	; Store change X Hi and Lo
-	LDA <Temp_Var15
-	STA Level_BlockChgXHi
-	LDA <Temp_Var16	
-	AND #$F0	 	; Align to nearest grid coordinate
-	STA Level_BlockChgXLo
-
-	RTS		 ; Return
+	JMP_THUNKC 60, Level_QueueChangeBlock60
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

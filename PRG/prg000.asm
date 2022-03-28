@@ -6010,7 +6010,8 @@ Player_GetHurt:
 	BNE PRG000_D9B7	 ; ... then jump to PRG000_D9B7 (RTS)
 
 	LDA Player_Kuribo
-	BNE PRG000_DA32	 ; If Player is in Kuribo's shoe, jump to PRG000_DA32
+	CMP #$01
+	Beq PRG000_DA32	 ; If Player is in Yoshi, jump to PRG000_DA32
 
 	LDA <Player_Suit
 	CMP #PLAYERSUIT_FIRE		; SB: Change this to "PLAYERSUIT_SUPERSUITBEGIN" and you restore Japanese version's "always shrink" code!!

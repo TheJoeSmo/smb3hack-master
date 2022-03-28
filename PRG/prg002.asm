@@ -658,6 +658,10 @@ ObjHit_GoombaInShoe:
 
 	; Goomba not in shoe...
 
+	LDA <Player_YVel
+	BMI PRG002_B118		; If Player is moving upward, do nothing
+	BEQ PRG002_B118		; If Player is not vertically moving, do nothing
+
 	LDA Player_Statue
 	BNE PRG002_B118	 ; If Player is a statue, jump to PRG002_B118
 
@@ -691,7 +695,22 @@ PRG002_B119:
 	JMP Player_GetHurt ; Hurt Player and don't come back!
 
 PRG002_B126:
-	JMP PRG000_D2B4	 ; Jump to PRG000_D2B4 (hijacks the kill routine)
+	; Set Player's Y velocity to -$40 (bounce!)
+	LDA #-$40
+	STA <Player_YVel
+
+	; Play squish sound
+	LDA Sound_QPlayer
+	ORA #SND_PLAYERSWIM
+	STA Sound_QPlayer
+
+	JSR Shoe_EjectGoomba
+	INC <Objects_Var4,X	 ; Var4++
+
+	LDY #$00	 ; Y = 0 (reset Var5)
+	STY <Objects_Var5,X	 ; Update Var5
+
+	RTS
 
 	; The Y offset for the Goomba riding in the shoe
 Shoe_GoombaYOff:
