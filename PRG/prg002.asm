@@ -471,13 +471,10 @@ ObjP43:
     .byte $A9, $AB, $A9, $AD
 
 
-ObjNorm_GoombaInShoe:
-
+GoombaOperateBoot:
 	; Force sixth bank select $4F
 	LDA #$4f
 	STA PatTable_BankSel+5
-
-	JSR Enemy_CollideWithWorld	 ; Collide with world
 
 	; Set Object frame (crank turning)
 	LDA <Counter_1
@@ -487,59 +484,15 @@ ObjNorm_GoombaInShoe:
 	AND #$01
 	STA Objects_Frame,X
 
-	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
-
-	JSR Shoe_DrawGoomba	 ; Draw the Goomba within the shoe
-
-	; Backup Player's invincibility into Shoe's Var1
-	LDA Player_StarInv
-	STA Objects_Var1,X
-
-	; Clear Player's invincibility
-	LDA #$00
-	STA Player_StarInv
-
-	JSR Object_HitTestRespond ; Do hit test and response without concerning Player's Star Man invincibility
-
-	; Restore Player's invincibility
-	LDA Objects_Var1,X
-	STA Player_StarInv
-
-	LDA Object_TileFeet2
-	CMP #TILEA_BLOCKBUMP_CLEAR
-	BNE PRG002_B06A	 ; If shoe has not been bumped underneath, jump to PRG002_B06A
-
-	LDA <Objects_Var4,X
-	BNE PRG002_B066	 ; If Var4 <> 0, jump to PRG002_B066
-
-	; Otherwise, Var5 = $0E
-	LDA #$0e
-	STA <Objects_Var5,X
-
-PRG002_B066:
-	; Bounce
-	LDA #-$38
-	STA <Objects_YVel,X
-
-PRG002_B06A:
-	LDA <Objects_Var4,X
-	BEQ PRG002_B076	 ; If Var4 <> 0, jump to PRG002_B076
-
-	LDA <Objects_DetStat,X
-	AND #$04
-	BEQ PRG002_B0B4	 ; If Shoe has not touched ground, jump to PRG002_B0B4 (RTS)
-	BNE PRG002_B0B0	 ; Otherwise, stop horizontal movement
-
-PRG002_B076:
 	LDY <Objects_Var5,X
-	BEQ PRG002_B0A6	 ; If Var5 <> 0, jump to PRG002_B0A6
+	BEQ ObjNorm_GoombaGroundCheck	 ; If Var5 <> 0, jump to ObjNorm_GoombaGroundCheck
 
 	LDA <Counter_1
 	AND #$03
-	BNE PRG002_B0B4	 ; 1:4 chance we won't jump to PRG002_B0B4
+	BNE ObjNorm_GoombaInShoeFinished	 ; 1:4 chance we won't jump to ObjNorm_GoombaInShoeFinished
 
 	DEY		 ; (Var5) Y-- 
-	BNE PRG002_B098	 ; If Var5 did not decrement to zero, jump to PRG002_B098
+	BNE ObjNorm_GoombaApplyHitFromBottom	 ; If Var5 did not decrement to zero, jump to ObjNorm_GoombaApplyHitFromBottom
 
 	; Flip to face Player
 	JSR Object_CalcCoarseXDiff
@@ -558,40 +511,110 @@ PRG002_B090:
 	; Hop!
 	LDA #-$50
 	STA <Objects_YVel,X
-	BNE PRG002_B0A1	 ; Jump (technically always) to PRG002_B0A1
 
-PRG002_B098:
+	LDY #$00	 ; Y = 0 (reset Var5)
+
+
+ObjNorm_GoombaApplyHitFromBottom:
 	CPY #$0b
-	BNE PRG002_B0A3	 ; If Var5 <> $0B, jump to PRG002_B0A3
+	BNE ObjNorm_GoombaDoNotApplyHitFromBottom	 ; If Var5 <> $0B, jump to ObjNorm_GoombaDoNotApplyHitFromBottom
 
 	JSR Shoe_EjectGoomba	 ; Eject the occupant of the Shoe
 	INC <Objects_Var4,X	 ; Var4++
 
-PRG002_B0A1:
 	LDY #$00	 ; Y = 0 (reset Var5)
 
-PRG002_B0A3:
+ObjNorm_GoombaDoNotApplyHitFromBottom:
 	STY <Objects_Var5,X	 ; Update Var5
 
+ObjNorm_GoombaInShoeFinished:
 	RTS		 ; Return
 
-PRG002_B0A6:
+
+ObjNorm_GoombaGroundCheck:
 	LDA <Objects_DetStat,X
 	AND #$04
-	BEQ PRG002_B0B4	 ; If Shoe hasn't hit ground, jump to PRG002_B0B4 (RTS)
+	BEQ ObjNorm_GoombaInShoeFinished	 ; If Shoe hasn't hit ground, jump to ObjNorm_GoombaInShoeFinished (RTS)
 
 	; Var5 = $0B
 	LDA #$0b
 	STA <Objects_Var5,X
 
-PRG002_B0B0: 
+	; Stop horizontal movement
+	LDA #$00
+	STA <Objects_XVel,X
+	RTS
+
+
+ObjNorm_GoombaOnlyCheckForPlayer:
+	JSR Object_HitTestRespond
+	RTS
+
+
+ObjNorm_GoombaInShoe:
+	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
+	JSR Shoe_DrawGoomba	 ; Draw the Goomba within the shoe
+	
+	; If the boot is standing still, it will set this variable and do essentially nothing.
+	LDA Objects_Var6, X
+	BNE ObjNorm_GoombaOnlyCheckForPlayer
+
+	JSR Enemy_CollideWithWorld	 ; Collide with world
+
+	; Backup Player's invincibility into Shoe's Var1
+	LDA Player_StarInv
+	STA Objects_Var1,X
+
+	; Clear Player's invincibility
+	LDA #$00
+	STA Player_StarInv
+
+	JSR Object_HitTestRespond ; Do hit test and response without concerning Player's Star Man invincibility
+
+	; Restore Player's invincibility
+	LDA Objects_Var1,X
+	STA Player_StarInv
+
+	LDA Object_TileFeet2
+	CMP #TILEA_BLOCKBUMP_CLEAR
+	BNE DoNotBounceTheBoot	 ; If shoe has not been bumped underneath, jump to DoNotBounceTheBoot
+
+	LDA <Objects_Var4,X
+	BNE PRG002_B066	 ; If Var4 <> 0, jump to PRG002_B066
+
+	; Otherwise, Var5 = $0E
+	LDA #$0e
+	STA <Objects_Var5,X
+
+PRG002_B066:
+	; Bounce
+	LDA #-$38
+	STA <Objects_YVel,X
+
+DoNotBounceTheBoot:
+	LDA <Objects_Var4,X
+	BNE ObjNorm_DoNormalEmptyBoot	 ; If Var4 <> 0, jump to PRG002_B076
+	JMP GoombaOperateBoot		; The goomba is controlling this operation from here.
+
+; The boot is just cruising...
+ObjNorm_DoNormalEmptyBoot:
+	LDA <Objects_DetStat,X
+	AND #$04
+	BEQ ObjNorm_GoombaInShoeFinished	 ; If Shoe has not touched ground, jump to ObjNorm_GoombaInShoeFinished (RTS)
 
 	; Stop horizontal movement
 	LDA #$00
 	STA <Objects_XVel,X
+	
+	LDA <Objects_YVel, X
+	BNE ObjNorm_GoombaInShoeFinished	; Continue, as the boot is still moving.
 
-PRG002_B0B4:
-	RTS		 ; Return
+	LDA Object_TileFeet2
+	CMP #TILEA_BLOCKBUMP_CLEAR			; The boot is on a brick, so continue to run logic.
+
+	INC Objects_Var6, X					; The boot does not need to run logic anymore.
+	
+	RTS		 
 
 
 Shoe_EjectGoomba:
@@ -649,12 +672,20 @@ PRG002_B0C1:
 
 PRG002_B0FB:
 	LDX <SlotIndexBackup		 ; X = object slot index
+
+ObjHit_GoombaInShoeDoNothing:
 	RTS		 ; Return
 
 
 ObjHit_GoombaInShoe:
 	LDA <Objects_Var4,X
 	BEQ PRG002_B119	 ; If Var4 = 0, jump to PRG002_B119
+
+	LDA Player_Statue
+	ORA Player_ISHolding_OLD
+	ORA Player_Kuribo
+	ORA Player_QueueSuit 	; Stop any magic double grabs...
+	BNE ObjHit_GoombaInShoeDoNothing
 
 	; Goomba not in shoe...
 
@@ -707,8 +738,9 @@ PRG002_B126:
 	JSR Shoe_EjectGoomba
 	INC <Objects_Var4,X	 ; Var4++
 
-	LDY #$00	 ; Y = 0 (reset Var5)
-	STY <Objects_Var5,X	 ; Update Var5
+	LDA #$00
+	STA <Objects_Var5,X	 ; Update Var5
+	STA Objects_Var6, X 	; Check for bumps again.
 
 	RTS
 

@@ -1825,61 +1825,7 @@ Swim_Rabbit:
 
 
 Move_Kuribo:
-	JSR Player_GroundHControl ; Do Player left/right input control
-	JSR Player_JumpFlyFlutter ; Do Player jump, fly, flutter wag
-
-	LDA <Player_InAir
-	BNE PRG008_AAFF	 ; If Player is mid air, jump to PRG008_AAFF
-
-	STA Player_KuriboDir	 ; Clear Player_KuriboDir
-
-PRG008_AAFF:
-	LDA Player_KuriboDir
-	BNE PRG008_AB17	 ; If Kuribo's shoe is moving, jump to PRG008_AB17
-
-	LDA <Player_InAir
-	BNE PRG008_AB25	 ; If Player is mid air, jump to PRG008_AB25
-
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
-	STA Player_KuriboDir	 ; Store left/right pad input -> Player_KuriboDir
-	BEQ PRG008_AB25	 	; If Player is not pressing left or right, jump to PRG008_AB25
-	INC <Player_InAir	 ; Flag as in air (Kuribo's shoe bounces along)
-
-	LDY #-$20
-	STY <Player_YVel	 ; Player_YVel = -$20
-
-PRG008_AB17:
-	LDA <Pad_Input
-	BPL PRG008_AB25	 ; If Player is NOT pressing 'A', jump to PRG008_AB25
-
-	LDA #$00
-	STA Player_KuriboDir	 ; Player_KuriboDir = 0
-
-	LDY Player_RootJumpVel	 ; Get initial jump velocity
-	STY <Player_YVel	 ; Store into Y velocity
-
-PRG008_AB25:
-	LDY <Player_Suit
-	BEQ PRG008_AB2B	 ; If Player is small, jump to PRG008_AB2B
-
-	LDY #$01	 ; Otherwise, Y = 1
-
-PRG008_AB2B:
-
-	; Y = 0 if small, 1 otherwise
-
-	LDA Player_KuriboFrame,Y	; Get appropriate Kuribo's shoe frame
-	STA <Player_Frame		; Store as active Player frame
-
-	LDA <Counter_1
-	AND #$08	
-	BEQ PRG008_AB38	 	; Every 8 ticks, jump to PRG008_AB38
-
-	INC <Player_Frame	; Player_Frame++
-
-PRG008_AB38:
-	RTS		 ; Return
+	JMP_THUNKC 60, Move_Kuribo60
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Player_GroundHControl
@@ -2196,7 +2142,7 @@ PRG008_AC6C:
 	; Get absolute value of Player's X velocity
 	LDA <Player_XVel
 	BPL PRG008_AC73
-	JSR Negate
+	NEG
 PRG008_AC73:
 
 	LSR A
