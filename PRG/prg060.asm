@@ -24,7 +24,8 @@ Player_PitNoGO:
     RTS
 
 
-Level_QueueChangeBlock60: 
+Level_QueueChangeBlock60:
+	LDA Temp_VarNP0			; Restore A
 	STA Level_ChgTileEvent	 ; Store type of block change!
 
 	; Store change Y Hi and Lo

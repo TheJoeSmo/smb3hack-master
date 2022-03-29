@@ -5514,8 +5514,7 @@ TILE19_TABLE_LR		= $D3	; Table lower left
 	.incchr "CHR/chr041.pcx" ; /
 	.incchr "CHR/chr042.pcx" ; Unused (Toad Help and Bonus Game)
 	.incchr "CHR/chr043.pcx" ; /
-	.incchr "CHR/chr044.pcx" ; Unused (Reward at end of level)
-	.incchr "CHR/chr045.pcx" ; /
+	.incchr "CHR/sewer_alt.pcx" ; Sewers Alt
 	.incchr "CHR/sewer.pcx" ; Sewers
 	;.incchr "CHR/chr047.pcx" ; /
 	.incchr "CHR/chr048.pcx" ; Desert Tileset

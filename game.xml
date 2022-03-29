@@ -5782,6 +5782,7 @@
 				<generator id="39" name="Invisible Orange Note" desc="Invisible note to coin heaven"></generator>
 				<generator id="40" name="P-Switch" desc="P-Switch"></generator>
 				<generator id="41" name="Goal" desc="The end goal"></generator>
+				<generator id="46" name="Action Switch" desc="Action Switch"></generator>
 				<generator id="48" name="Inside UL 22 Slope" desc="Inside UL 22 Slope"></generator>
 				<generator id="49" name="Inside UR 22 Slope" desc="Inside UR 22 Slope"></generator>
 				<generator id="50" name="Inside BL 22 Slope" desc="Inside BL 22 Slope"></generator>

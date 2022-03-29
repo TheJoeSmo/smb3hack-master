@@ -6807,6 +6807,7 @@ PipeEntryPrepare:
 ; Register 'A' as input sets Level_ChgTileEvent
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Level_QueueChangeBlock: 
+	STA Temp_VarNP0		; Stash A for later
 	JMP_THUNKC 60, Level_QueueChangeBlock60
 
 

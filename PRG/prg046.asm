@@ -25,7 +25,7 @@ Tile_Layout_TS16:
 	.byte $51, $6C, $5C, $5E, $6E, $50, $01, $63, $55, $1C, $1E, $0E, $FF, $FF, $B8, $B8 ; Tiles $20 - $2F
 	.byte $B8, $B8, $BC, $00, $10, $01, $04, $FC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DC, $05, $FC, $FC, $05, $05, $FF, $26, $56, $55, $44, $75, $75, $56, $FF, $FC ; Tiles $40 - $4F
-	.byte $F4, $F4, $F4, $30, $16, $55, $55, $55, $44, $75, $56, $44, $FF, $FF, $FF, $D8 ; Tiles $50 - $5F
+	.byte $F4, $F4, $F4, $68, $16, $55, $55, $55, $44, $75, $56, $44, $FF, $FF, $FF, $D8 ; Tiles $50 - $5F
 	.byte $98, $98, $98, $98, $98, $98, $92, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4 ; Tiles $60 - $6F
 	.byte $B4, $B8, $98, $98, $98, $98, $A4, $EC, $E4, $C0, $D5, $B2, $E9, $68, $24, $FF ; Tiles $70 - $7F
 	.byte $28, $28, $67, $55, $FF, $C4, $50, $26, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
@@ -43,7 +43,7 @@ Tile_Layout_TS16:
 	.byte $61, $65, $6C, $6E, $7E, $60, $03, $73, $1C, $2C, $2E, $1E, $FF, $FF, $B9, $B9 ; Tiles $20 - $2F
 	.byte $B9, $B9, $BD, $10, $10, $FD, $04, $FC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DD, $06, $FC, $FC, $06, $06, $FF, $36, $74, $45, $66, $65, $45, $66, $FF, $FC ; Tiles $40 - $4F
-	.byte $F5, $F5, $F5, $32, $65, $65, $06, $65, $74, $45, $74, $66, $FF, $FF, $FF, $D9 ; Tiles $50 - $5F
+	.byte $F5, $F5, $F5, $78, $65, $65, $06, $65, $74, $45, $74, $66, $FF, $FF, $FF, $D9 ; Tiles $50 - $5F
 	.byte $99, $99, $99, $99, $99, $99, $93, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5 ; Tiles $60 - $6F
 	.byte $B5, $B9, $99, $99, $99, $99, $A5, $ED, $E4, $C1, $B2, $B2, $E8, $78, $34, $FF ; Tiles $70 - $7F
 	.byte $28, $38, $65, $77, $FF, $C4, $51, $36, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
@@ -61,7 +61,7 @@ Tile_Layout_TS16:
 	.byte $61, $6D, $5D, $5F, $6F, $60, $01, $53, $0D, $1D, $1F, $55, $FF, $FF, $BA, $BA ; Tiles $20 - $2F
 	.byte $BA, $BA, $BE, $01, $13, $02, $12, $FC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DE, $FF, $FC, $FC, $FF, $FF, $FF, $27, $55, $54, $75, $46, $75, $54, $FF, $37 ; Tiles $40 - $4F
-	.byte $F6, $F6, $F6, $31, $55, $15, $55, $55, $75, $46, $54, $46, $FF, $FF, $FF, $DA ; Tiles $50 - $5F
+	.byte $F6, $F6, $F6, $69, $55, $15, $55, $55, $75, $46, $54, $46, $FF, $FF, $FF, $DA ; Tiles $50 - $5F
 	.byte $9A, $9A, $9A, $9A, $9A, $9A, $CA, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6 ; Tiles $60 - $6F
 	.byte $B6, $BA, $9A, $9A, $9A, $9A, $A6, $EE, $E5, $C2, $D5, $B2, $EB, $69, $25, $FF ; Tiles $70 - $7F
 	.byte $29, $29, $55, $77, $FF, $C6, $56, $27, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
@@ -79,7 +79,7 @@ Tile_Layout_TS16:
 	.byte $71, $7D, $6D, $6F, $65, $70, $03, $63, $1D, $2D, $2F, $1F, $FF, $FF, $BB, $BB ; Tiles $20 - $2F
 	.byte $BB, $BB, $BF, $FD, $13, $12, $12, $FC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DF, $FF, $FC, $FC, $FF, $FF, $FF, $37, $45, $76, $65, $64, $45, $64, $FF, $34 ; Tiles $40 - $4F
-	.byte $F7, $F7, $F7, $33, $65, $65, $65, $05, $45, $76, $76, $64, $FF, $FF, $FF, $DB ; Tiles $50 - $5F
+	.byte $F7, $F7, $F7, $79, $65, $65, $65, $05, $45, $76, $76, $64, $FF, $FF, $FF, $DB ; Tiles $50 - $5F
 	.byte $9B, $9B, $9B, $9B, $9B, $9B, $CB, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7 ; Tiles $60 - $6F
 	.byte $B7, $BB, $9B, $9B, $9B, $9B, $A7, $EF, $E5, $C3, $B2, $B2, $EA, $79, $35, $FF ; Tiles $70 - $7F
 	.byte $29, $39, $67, $65, $FF, $C6, $57, $37, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
@@ -164,7 +164,7 @@ LoadLevel_Generator_TS16:
 	.word LoadLevel_Slope45B2T		;  9 - Underwater 45 degree slope bottom-to-top
 	.word LoadLevel_Slope45T2BCeiling	; 10 - Underwater 45 degree ceiling slope top-to-bottom
 	.word LoadLevel_Slope45B2TCeiling	; 11 - Underwater 45 degree ceiling slope bottom-to-top
-	.word $000		; 12 - Do a run of solid ground, underwater
+	.word $0000		; 12 - Action Switch
 	.word $0000		; 13 - Run of the clouds
 	.word $0000		; 14 - Same as 9, except underwater ground tiles instead
 	.word LoadLevel_BlockRun		; 15 - Run of bricks
@@ -304,6 +304,18 @@ LeveLoad_FixedSizeGen_TS16:
 	.word DoubleBlocks
 	.word DoubleBlocks
 	.word DoubleBlocks
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LoadLevel_ActionSwitch46
+;
+; Places a single corner tile in sewer levels
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LoadLevel_ActionSwitch46: 
+	LDY TileAddr_Off
+	LDA TILEA_EXSWITCH	 ; Get switch
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	RTS
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LoadLevel_Corner

@@ -1904,13 +1904,14 @@ Level_BG_Pages1_Off:
 	.byte $48	; 25 Fire and Ice Galaxy (SB: Hills/Underground rebranded)
 	.byte $4A	; 26 Topmaniac Fortress
 	.byte $76	; 27 Castle Bleck
+	.byte $2C	; 28 Sewers
 
 ActSw_OnOff:
 	LDA Level_OnOff
 	EOR #$01
 	STA Level_OnOff
 
-	LDY Level_Tileset
+	LDY Level_BG_Page1_2
 	LDA Level_OnOff
 	BEQ DoRegularOnOffPage
 	LDA Level_BG_Pages1_Off,Y
