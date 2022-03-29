@@ -166,9 +166,9 @@ DoCheckCrumblingBlock:
 	BNE DoCheckDonutBlocks	 ; If there's already a tile change event queued, jump to PRG007_A06F (RTS)
 
 	; Check to see if we have an object, or just do the next check.
-	LDA #HIGH(DoCheckDonutBlocks)
+	LDA #HIGH(DoCheckDonutBlocks - 1)
 	PHA 
-	LDA #LOW(DoCheckDonutBlocks)
+	LDA #LOW(DoCheckDonutBlocks - 1)
 	PHA
 	JSR PrepareNewObjectOrAbort	
 	PLA 
