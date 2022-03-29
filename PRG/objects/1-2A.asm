@@ -2,8 +2,6 @@
 	.byte $00	; Unknown purpose
 
 	.byte OBJ_GREENTROOPA, $0D, $16
-	.byte OBJ_CRATE, $13, $16
-	.byte OBJ_SPRING, $17, $16
 	.byte OBJ_ALTLEVELMOD, $54, $03
 	.byte OBJ_TOUCHWARP, $54, $00
 	.byte OBJ_GOOMBA, $65, $18

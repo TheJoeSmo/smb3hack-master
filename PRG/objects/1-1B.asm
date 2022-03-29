@@ -8,6 +8,7 @@
 	.byte OBJ_NIPPER, $10, $14
 	.byte OBJ_GREENTROOPA, $1A, $01
 	.byte OBJ_GREENTROOPA, $30, $01
+	.byte OBJ_REDTROOPA, $69, $17
 	.byte OBJ_GREENPIRANHA, $81, $17
 	.byte OBJ_GREENPIRANHA, $87, $16
 	.byte OBJ_GOOMBA, $8B, $19
@@ -19,4 +20,5 @@
 	.byte OBJ_GREENPIRANHA, $D1, $17
 	.byte OBJ_GREENPIRANHA, $D5, $17
 	.byte OBJ_GREENPIRANHA, $D9, $17
+	.byte $00, $00, $00
 	.byte $FF

@@ -2625,8 +2625,33 @@ PRG000_CB10:
  
 	JSR Object_ShellDoWakeUp	 ; Handle waking up (MAY not return here, if object "wakes up"!) 
 	JSR Object_Move	 		; Perform standard object movements
+
+	LDA <Objects_DetStat,X 
+	AND #$03
+	BEQ ShelledDoNotAllignWithWall
+
+	JSR Object_AboutFace
+	JSR Object_ApplyXVel	 ; Apply X velocity
+	JSR Object_ApplyXVel	 ; Apply X velocity
+	JSR Object_ApplyXVel	 ; Apply X velocity
+	JSR Object_ApplyXVel	 ; Apply X velocity
+	
+	; Stop movement horizontally
+	LDA #$00
+	STA <Objects_XVel, X
+
+	; Force verticle movement
+	LDA Objects_Var13, X
+	STA <Objects_YVel,X
+
+	RTS		; That is enough for one frame
+
+ShelledDoNotAllignWithWall:
  	LDA <Objects_YVel,X
  	STA Objects_Var14, X
+	BEQ ShelledDoNotRememberLastYVel
+	STA Objects_Var13, X 	; Store last Y velocity that isn't zero.
+ShelledDoNotRememberLastYVel:
 
 	LDA <Objects_DetStat,X 
 	AND #$04 

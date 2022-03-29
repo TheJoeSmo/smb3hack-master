@@ -6,7 +6,6 @@
 	.byte OBJ_PARATROOPAGREENHOP, $0B, $37
 	.byte OBJ_NIPPER, $0F, $0D
 	.byte OBJ_GREENTROOPA, $14, $09
-	.byte OBJ_NIPPER, $20, $02
 	.byte OBJ_NIPPER, $23, $05
 	.byte OBJ_GREENTROOPA, $25, $32
 	.byte OBJ_GREENTROOPA, $2E, $0B
