@@ -1543,9 +1543,9 @@ CrumbleTimerLoop:
 	STX <Temp_Var16
 
 	; Try to summon an object in the poof state, or just don't spawn one
-	LDA #HIGH(FailedToSummonPoof)
+	LDA #HIGH(FailedToSummonPoof - 1)
 	PHA 
-	LDA #LOW(FailedToSummonPoof)
+	LDA #LOW(FailedToSummonPoof - 1)
 	PHA
 	JSR PrepareNewObjectOrAbort	
 	PLA 
