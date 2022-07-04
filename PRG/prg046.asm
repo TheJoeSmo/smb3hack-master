@@ -28,11 +28,11 @@ Tile_Layout_TS16:
 	.byte $F4, $F4, $F4, $68, $16, $55, $55, $55, $44, $75, $56, $44, $FF, $FF, $FF, $D8 ; Tiles $50 - $5F
 	.byte $98, $98, $98, $98, $98, $98, $92, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4 ; Tiles $60 - $6F
 	.byte $B4, $B8, $98, $98, $98, $98, $A4, $EC, $E4, $C0, $D5, $B2, $E9, $68, $24, $FF ; Tiles $70 - $7F
-	.byte $28, $28, $67, $55, $FF, $C4, $50, $26, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
-	.byte $67, $67, $56, $55, $67, $67, $55, $75, $FF, $05, $01, $63, $55, $1C, $1E, $55 ; Tiles $90 - $9F
+	.byte $28, $28, $67, $55, $FF, $C4, $50, $26, $61, $15, $06, $55, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
+	.byte $67, $67, $56, $55, $67, $67, $55, $75, $FF, $50, $01, $63, $55, $1C, $1E, $55 ; Tiles $90 - $9F
 	.byte $62, $51, $6C, $5C, $5E, $6E, $FF, $FF, $FF, $FF, $47, $30, $30, $8C, $8E, $8C ; Tiles $A0 - $AF
 	.byte $8E, $8C, $8E, $8C, $8E, $09, $09, $07, $30, $31, $AC, $AE, $B8, $FF, $FF, $FF ; Tiles $B0 - $BF
-	.byte $05, $05, $05, $27, $FC, $FC, $FC, $03, $3C, $3C, $3C, $3D, $FC, $26, $3C, $FC ; Tiles $C0 - $CF
+	.byte $3E, $2E, $2C, $3C, $4C, $FC, $FC, $4E, $70, $42, $33, $FC, $FC, $26, $3C, $FC ; Tiles $C0 - $CF
 	.byte $44, $45, $46, $48, $48, $FF, $CC, $55, $30, $80, $82, $C5, $C7, $D4, $FE, $FC ; Tiles $D0 - $DF
 	.byte $AA, $AB, $FE, $01, $3A, $FE, $4A, $6A, $FE, $2B, $51, $6C, $5C, $5E, $6E, $FF ; Tiles $E0 - $EF
 	.byte $0E, $D7, $E0, $05, $01, $62, $0A, $66, $01, $62, $FF, $FF, $F1, $48, $F8, $FF ; Tiles $F0 - $FF
@@ -46,11 +46,11 @@ Tile_Layout_TS16:
 	.byte $F5, $F5, $F5, $78, $65, $65, $06, $65, $74, $45, $74, $66, $FF, $FF, $FF, $D9 ; Tiles $50 - $5F
 	.byte $99, $99, $99, $99, $99, $99, $93, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5 ; Tiles $60 - $6F
 	.byte $B5, $B9, $99, $99, $99, $99, $A5, $ED, $E4, $C1, $B2, $B2, $E8, $78, $34, $FF ; Tiles $70 - $7F
-	.byte $28, $38, $65, $77, $FF, $C4, $51, $36, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
+	.byte $28, $38, $65, $77, $FF, $C4, $51, $36, $16, $65, $63, $50, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
 	.byte $66, $65, $77, $77, $45, $65, $77, $77, $FF, $60, $FD, $62, $1C, $2C, $2E, $1E ; Tiles $90 - $9F
 	.byte $65, $61, $65, $6C, $6E, $65, $FF, $FF, $FF, $FF, $57, $41, $41, $9C, $9E, $9C ; Tiles $A0 - $AF
 	.byte $9E, $9C, $9E, $9C, $9E, $19, $19, $17, $40, $41, $AC, $AE, $B9, $FF, $FF, $FF ; Tiles $B0 - $BF
-	.byte $5B, $06, $06, $06, $FC, $06, $FC, $35, $37, $37, $16, $5B, $FC, $36, $16, $FC ; Tiles $C0 - $CF
+	.byte $FC, $3E, $3C, $FC, $5C, $4C, $4E, $5E, $43, $FC, $52, $32, $FC, $36, $16, $FC ; Tiles $C0 - $CF
 	.byte $44, $45, $48, $48, $4A, $FF, $65, $E6, $32, $90, $92, $FE, $FE, $FE, $FE, $FE ; Tiles $D0 - $DF
 	.byte $AB, $AB, $3B, $03, $73, $4A, $2C, $2E, $6A, $FE, $61, $FE, $6C, $6E, $FE, $FF ; Tiles $E0 - $EF
 	.byte $64, $06, $E1, $06, $60, $62, $5A, $66, $60, $62, $FF, $FF, $F0, $58, $F9, $FF ; Tiles $F0 - $FF
@@ -64,11 +64,11 @@ Tile_Layout_TS16:
 	.byte $F6, $F6, $F6, $69, $55, $15, $55, $55, $75, $46, $54, $46, $FF, $FF, $FF, $DA ; Tiles $50 - $5F
 	.byte $9A, $9A, $9A, $9A, $9A, $9A, $CA, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6 ; Tiles $60 - $6F
 	.byte $B6, $BA, $9A, $9A, $9A, $9A, $A6, $EE, $E5, $C2, $D5, $B2, $EB, $69, $25, $FF ; Tiles $70 - $7F
-	.byte $29, $29, $55, $77, $FF, $C6, $56, $27, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
+	.byte $29, $29, $55, $77, $FF, $C6, $56, $27, $16, $62, $55, $50, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
 	.byte $55, $54, $77, $77, $55, $75, $77, $77, $FF, $60, $01, $53, $56, $1D, $1F, $56 ; Tiles $90 - $9F
 	.byte $52, $61, $6D, $5D, $5F, $6F, $FF, $FF, $FF, $FF, $30, $30, $47, $8D, $8F, $8D ; Tiles $A0 - $AF
 	.byte $8F, $8D, $8F, $8D, $8F, $0A, $0A, $08, $30, $31, $AD, $AF, $BA, $FF, $FF, $FF ; Tiles $B0 - $BF
-	.byte $FF, $FF, $26, $FF, $FF, $FC, $FC, $37, $04, $37, $37, $3D, $3D, $27, $04, $37 ; Tiles $C0 - $CF
+	.byte $3F, $2F, $2D, $3D, $4D, $FC, $FC, $4F, $43, $73, $FC, $32, $3D, $27, $04, $37 ; Tiles $C0 - $CF
 	.byte $44, $45, $47, $49, $49, $FF, $CD, $55, $31, $81, $83, $C5, $C7, $D4, $FE, $FC ; Tiles $D0 - $DF
 	.byte $AA, $AB, $3B, $01, $FE, $FE, $4B, $6B, $FE, $52, $61, $6D, $5D, $5F, $6F, $FF ; Tiles $E0 - $EF
 	.byte $67, $D7, $E2, $FF, $01, $63, $01, $63, $0B, $0D, $FF, $FF, $F3, $49, $FA, $FF ; Tiles $F0 - $FF
@@ -82,11 +82,11 @@ Tile_Layout_TS16:
 	.byte $F7, $F7, $F7, $79, $65, $65, $65, $05, $45, $76, $76, $64, $FF, $FF, $FF, $DB ; Tiles $50 - $5F
 	.byte $9B, $9B, $9B, $9B, $9B, $9B, $CB, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7 ; Tiles $60 - $6F
 	.byte $B7, $BB, $9B, $9B, $9B, $9B, $A7, $EF, $E5, $C3, $B2, $B2, $EA, $79, $35, $FF ; Tiles $70 - $7F
-	.byte $29, $39, $67, $65, $FF, $C6, $57, $37, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
+	.byte $29, $39, $67, $65, $FF, $C6, $57, $37, $65, $15, $06, $60, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
 	.byte $67, $67, $65, $64, $67, $67, $45, $65, $FF, $61, $FD, $63, $1D, $2D, $2F, $1F ; Tiles $90 - $9F
 	.byte $62, $66, $66, $6D, $6F, $66, $FF, $FF, $FF, $FF, $41, $41, $57, $9D, $9F, $9D ; Tiles $A0 - $AF
 	.byte $9F, $9D, $9F, $9D, $9F, $1A, $1A, $18, $40, $41, $AD, $AF, $BB, $FF, $FF, $FF ; Tiles $B0 - $BF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $3C, $36, $3C, $34, $3D, $3D, $37, $25, $34 ; Tiles $C0 - $CF
+	.byte $FC, $3F, $3D, $FC, $5D, $4D, $4F, $5F, $FC, $42, $33, $51, $3D, $37, $25, $34 ; Tiles $C0 - $CF
 	.byte $44, $45, $49, $49, $4B, $FF, $65, $E7, $33, $91, $93, $FE, $FE, $FE, $FE, $FE ; Tiles $D0 - $DF
 	.byte $AB, $AB, $70, $03, $3A, $4B, $2D, $2F, $6B, $2B, $FE, $FE, $6D, $6F, $FE, $FF ; Tiles $E0 - $EF
 	.byte $65, $FF, $E3, $FF, $61, $63, $61, $63, $0C, $0D, $FF, $FF, $F2, $59, $FB, $FF ; Tiles $F0 - $FF
@@ -152,16 +152,16 @@ LoadLevel_Generator_TS16:
 	; Regular Generators
 	JSR DynJump
 
-	.word LoadLevel_Slope45T2B		;  0 - Above ground (UG only) 45 degree slope top-to-bottom
-	.word LoadLevel_Slope45B2T		;  1 - Above ground (UG only) 45 degree slope bottom-to-top
+	.word LoadLevel_Sewer_Slope45T2B		;  0 - Above ground (UG only) 45 degree slope top-to-bottom
+	.word LoadLevel_Sewer_Slope45B2T		;  1 - Above ground (UG only) 45 degree slope bottom-to-top
 	.word LoadLevel_Slope45T2BCeiling	;  2 - Above ground (UG only) 45 degree ceiling slope top-to-bottom
 	.word LoadLevel_Slope45B2TCeiling	;  3 - Above ground (UG only) 45 degree ceiling slope bottom-to-top
-	.word LoadLevel_Slope45T2B		;  4 - Underground/Hills normal 45 degree slope top-to-bottom
-	.word LoadLevel_Slope45B2T		;  5 - Underground/Hills normal 45 degree slope bottom-to-top
+	.word LoadLevel_Sewer_Slope45T2B		;  4 - Underground/Hills normal 45 degree slope top-to-bottom
+	.word LoadLevel_Sewer_Slope45B2T		;  5 - Underground/Hills normal 45 degree slope bottom-to-top
 	.word LoadLevel_Slope45T2BCeiling	;  6 - Underground/Hills normal 45 degree ceiling slope top-to-bottom
 	.word LoadLevel_Slope45B2TCeiling	;  7 - Underground/Hills normal 45 degree ceiling slope bottom-to-top
-	.word LoadLevel_Slope45T2B		;  8 - Underwater 45 degree slope top-to-bottom
-	.word LoadLevel_Slope45B2T		;  9 - Underwater 45 degree slope bottom-to-top
+	.word LoadLevel_Sewer_Slope45T2B		;  8 - Underwater 45 degree slope top-to-bottom
+	.word LoadLevel_Sewer_Slope45B2T		;  9 - Underwater 45 degree slope bottom-to-top
 	.word LoadLevel_Slope45T2BCeiling	; 10 - Underwater 45 degree ceiling slope top-to-bottom
 	.word LoadLevel_Slope45B2TCeiling	; 11 - Underwater 45 degree ceiling slope bottom-to-top
 	.word $0000		; 12 - Action Switch
@@ -1082,6 +1082,263 @@ LL46_LongRunNextRow:
 	ADC #$00
 	STA <Map_Tile_AddrH
 	STA <Temp_Var2	 	; Update Map_Tile_AddrH backup
+	RTS		 ; Return
+
+LL_SewerInnerGround:	
+	.byte TILE16_INNER_GROUND, TILE16_BG, TILE16_INNER_GROUND
+LL_SewerMiddleGroundTR:
+	.byte TILE16_SLOPE_45_TL, TILE16_SLOPE_45_TL3, TILE16_SLOPE_45_TL2
+LL_SewerMiddleGroundTL:
+	.byte TILE16_SLOPE_45_TR, TILE16_SLOPE_45_TR3, TILE16_SLOPE_45_TR2
+LL_SewerMiddleGroundBL:
+	.byte TILE16_SLOPE_45_BL, TILE16_SLOPE_45_BL3, TILE16_SLOPE_45_BL2
+LL_SewerMiddleGroundBR:
+	.byte TILE16_SLOPE_45_BR, TILE16_SLOPE_45_BR3, TILE16_SLOPE_45_BR2
+LL_45SewersT2B:
+	.byte TILE14_ABOVE_SLOPE45T2B, TILE3_SLOPE45T2B,  TILE3_WSLOPE45T2B
+LL_45SewersB2T:
+	.byte TILE14_ABOVE_SLOPE45B2T, TILE3_SLOPE45B2T,  TILE3_WSLOPE45B2T
+LL_45SewersT2BCeiling:
+	.byte TILE14_ABOVE_S45T2B_CEIL, TILE14_SLOPE45T2B_CEIL, TILE14_WSLOPE45T2B_CEIL
+LL_45SewersB2TCeiling:
+	.byte TILE14_ABOVE_S45B2T_CEIL, TILE14_SLOPE45B2T_CEIL, TILE14_WSLOPE45B2T_CEIL
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LoadLevel_Sewer_Slope45T2B
+;
+; Adds a 1-16 length 45 degree top-to-bottom slope.  With each
+; iteration, it adds one more "midground" tile to the left of the
+; slope.  So it looks like this:
+; \
+; S\
+; MS\
+; MMS\  ... and so on
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+LoadLevel_Sewer_Slope45T2B:	
+	; Backup Map_Tile_AddrL/H into Temp_Var1/2
+	LDA <Map_Tile_AddrL
+	STA <Temp_Var1	
+	LDA <Map_Tile_AddrH
+	STA <Temp_Var2	
+
+	LDA #$00
+	STA <Temp_Var3	; Temp_Var3 = 0 (each additional slope tile we add is followed by +1 midground tiles behind it)
+
+	LDA LL_ShapeDef	 
+	PHA		 ; Save LL_ShapeDef	
+
+	AND #$0f	 
+	STA <Temp_Var4	 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (diagonal length of slope)
+
+	PLA		 ; Restore LL_ShapeDef
+	SUB #$10
+	AND #$c0
+	CLC	
+	ROL A	
+	ROL A	
+	ROL A	
+	TAX		 ; X = Relative index 
+
+	LDY TileAddr_Off	 ; Y = TileAddr_Off
+	JSR UpdateBlockIndexToPriorRow		; Prior row
+	LDA [Map_Tile_AddrL], Y		; Get the block stored at the current location.
+	CMP #TILE16_BG
+	BNE PRG046_D485 			; Only replace the background block
+	LDA #TILE16_SHADOW_S_BL	; Load a shadow
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+PRG046_D485:
+	JSR UpdateBlockIndexToNextRow
+
+PRG046_D482:
+	LDY TileAddr_Off	 ; Y = TileAddr_Off
+
+	LDA <Temp_Var3
+	STA <Temp_Var5		; Temp_Var5 = Temp_Var3 
+	BEQ PRG046_D497	 	; If Temp_Var3 is zero, we skip the middle ground addition
+	CMP #$01
+	BEQ PRG046_D490
+
+PRG046_D48B:
+	LDA LL_SewerInnerGround,X	 ; Get middle ground tile
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	JSR LoadLevel_NextColumn ; Next column
+	DEC <Temp_Var5		 ; Temp_Var5--
+	LDA <Temp_Var5
+	CMP #$01 
+	BNE PRG046_D48B	 	 ; While Temp_Var5 > 0, loop! 
+
+PRG046_D490:
+; Add the middle ground
+	LDA LL_SewerMiddleGroundTL, X
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	JSR LoadLevel_NextColumn ; Next column
+
+PRG046_D497:
+	LDA LL_45SewersT2B,X	 ; Get the 45 degree slope
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	JSR LoadLevel_NextColumn ; Next column
+
+	LDA [Map_Tile_AddrL], Y		; Get the block stored at the current location.
+	CMP #TILE16_BG
+	BNE PRG046_D4A0 			; Only replace the background block
+	LDA #TILE16_SHADOW_S_BL	; Load a shadow
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+
+PRG046_D4A0:
+	; Restore Map_Tile_Addr from backup
+	LDA <Temp_Var1
+	STA <Map_Tile_AddrL
+	LDA <Temp_Var2	
+	STA <Map_Tile_AddrH
+
+	; Go to next row by adding 16 to tile offset
+	LDA TileAddr_Off
+	ADD #16
+	STA TileAddr_Off
+	LDA <Map_Tile_AddrH
+	ADC #$00	 
+	STA <Map_Tile_AddrH
+	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
+
+	INC <Temp_Var3		 ; Temp_Var3++ (one more midground behind the slope)
+	DEC <Temp_Var4		 ; Temp_Var4-- (diagonal length decrement)
+	BPL PRG046_D482	 	; While Temp_Var4 >= 0, loop!
+
+	RTS		 ; Return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LoadLevel_Sewer_Slope45B2T
+;
+; Adds a 1-16 length 45 degree bottom-to-top slope.  With each
+; iteration, it adds one more "midground" tile to the right of
+; the slope.  So it looks like this:
+;    /
+;   /S
+;  /SM
+; /SMM  ... and so on
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LoadLevel_Sewer_Slope45B2T:
+	; Backup Map_Tile_AddrL/H into Temp_Var1/2
+	LDA <Map_Tile_AddrL
+	STA <Temp_Var1	
+	LDA <Map_Tile_AddrH
+	STA <Temp_Var2	
+
+	LDA #$00
+	STA <Temp_Var3	; Temp_Var3 = 0 (each additional slope tile we add is followed by +1 midground tiles behind it)
+
+	LDA LL_ShapeDef	 
+	PHA		 ; Save LL_ShapeDef	
+
+	AND #$0f	 
+	STA <Temp_Var4	 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (diagonal length of slope)
+
+	PLA		 ; Restore LL_ShapeDef
+	SUB #$10
+	AND #$c0
+	CLC	
+	ROL A	
+	ROL A	
+	ROL A	
+	TAX		 ; X = Relative index 
+
+	LDY TileAddr_Off	 ; Y = TileAddr_Off
+	JSR UpdateBlockIndexToPriorRow		; Prior row
+	LDA [Map_Tile_AddrL], Y		; Get the block stored at the current location.
+	CMP #TILE16_BG
+	BNE PRG046_D4D5 			; Only replace the background block
+	LDA #TILE16_SHADOW_S_BR	; Load a shadow
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+PRG046_D4D5:
+	JSR UpdateBlockIndexToNextRow
+
+PRG046_D4DB:
+	LDY TileAddr_Off	 ; Y = TileAddr_Off
+
+	LDA <Temp_Var3
+	STA <Temp_Var5		; Temp_Var5 = Temp_Var3 
+
+	JSR UpdateBlockIndexToPriorColumn	; Prior column
+	LDA [Map_Tile_AddrL], Y		; Get the block stored at the current location.
+	CMP #TILE16_BG
+	BNE PRG046_D4A0 			; Only replace the background block
+	LDA #TILE16_SHADOW_S_BR	; Load a shadow
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+
+	JSR LoadLevel_NextColumn ; Next column
+	LDA LL_45SewersB2T,X	 ; Get slope tile
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	
+	; If tiny slope, do nothing
+	LDA <Temp_Var5
+	BEQ PRG046_D4F0
+	
+	; Add the middle ground
+	JSR LoadLevel_NextColumn ; Next column
+	DEC <Temp_Var5
+	LDA LL_SewerMiddleGroundTR, X
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	JMP PRG046_D4EF	 	; Jump to PRG046_D4EF
+
+PRG046_D4EA:
+	LDA LL_SewerInnerGround,X	 ; Get mid-ground tile
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+
+PRG046_D4EF:
+	JSR LoadLevel_NextColumn ; Next column
+	DEC <Temp_Var5		 ; Temp_Var5--
+	BPL PRG046_D4EA	 	 ; While Temp_Var5 >= 0, loop!
+
+PRG046_D4F0:
+	INC <Temp_Var3		 ; Temp_Var3++ (one more midground behind the slope)
+
+	; Restore Map_Tile_Addr from backup
+	LDA <Temp_Var1
+	STA <Map_Tile_AddrL
+	LDA <Temp_Var2	
+	STA <Map_Tile_AddrH
+
+	; Go to next row by adding 15 to tile offset (we're always one column too far..)
+	LDA TileAddr_Off
+	ADD #15
+	TAY		 
+	LDA <Map_Tile_AddrH
+	ADC #$00	 
+	STA <Map_Tile_AddrH
+	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
+
+	TYA
+	AND #$0f
+	CMP #$0f	
+	BNE PRG046_D534	 	; If we haven't wrapped the screen, jump to PRG046_D534
+
+	; Move back one screen by subtracting $1B0
+	LDA <Map_Tile_AddrL
+	SUB #$b0	
+	STA <Map_Tile_AddrL
+	STA <Temp_Var1	
+	LDA <Map_Tile_AddrH
+	SBC #$01	 
+	STA <Map_Tile_AddrH
+	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
+
+	; Jump to the right side
+	TYA
+	ADD #16
+	TAY	
+	LDA <Map_Tile_AddrH
+	ADC #$00	 
+	STA <Map_Tile_AddrH
+	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
+
+PRG046_D534:
+	STY TileAddr_Off	 ; Tile_Addr_Off = Y
+	DEC <Temp_Var4		 ; Temp_Var4-- (diagonal length decrement)
+	BPL PRG046_D4DB	 	; While Temp_Var4 >= 0, loop!
 	RTS		 ; Return
 
 
