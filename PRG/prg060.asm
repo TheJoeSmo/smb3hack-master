@@ -3,7 +3,7 @@ Player_FellAndDied60:
 	LDA #PLAYERSUIT_SMALL
 	STA <Player_Suit ; Player_Suit = PLAYERSUIT_SMALL
 
-	JSR Player_Die	 ; Begin death sequence
+	JSR_THUNKA 61, Player_Die61  ; Kill the player
 
 	LDX Player_Current
 	LDA Player_Lives,X

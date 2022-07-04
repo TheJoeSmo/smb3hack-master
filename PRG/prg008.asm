@@ -486,7 +486,7 @@ PRG008_A3F2:
 PRG008_A3FA:
 	LDA <Player_IsDying
 	ORA Player_HaltTick
-	BEQ PRG008_A472_fix
+	BNE PRG008_A472_fix
 
 	; Non-halted gameplay normal flow...
 
@@ -509,6 +509,7 @@ PRG008_A3FA:
 
 Player_FellAndDied:
 	JSR_THUNKC 60, Player_FellAndDied60
+
 PRG008_A472_fix:
 	JMP PRG008_A472
 
