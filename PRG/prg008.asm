@@ -4370,10 +4370,6 @@ PRG008_B64F:
 	BNE RActSw_Entry	; Jump (technically always) to RActSw_Entry
 
 Collect_CheckActionSwitch:
-	LDY Level_Tileset
-	CPY #$03
-	BPL Collect_CheckActionSwitchReg
-
 	; Check for the upside down switch
 	CMP #TILEA_EXSWITCHR
 	BNE Collect_CheckActionSwitchReg

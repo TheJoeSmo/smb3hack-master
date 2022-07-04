@@ -2721,36 +2721,6 @@ OneTile_ChangeToTile:
 	.byte TILEA_EXSWITCHR_PRESSED  ; $19 - CHNGTILE_ACTION_STOMPED_R
 
 
-	; Defines each of the four 8x8 patterns that make up the tile
-	; Too bad Nintendo couldn't keep things like this in one spot :)
-OneTile_ChangeToPatterns:
-	.byte $FF, $FF, $FF, $FF	; $01 - CHNGTILE_DELETECOIN
-	.byte $FF, $FF, $FF, $FF	; $02 - CHNGTILE_DELETETOBG
-	.byte $B8, $BA, $B9, $BB	; $03 - CHNGTILE_TOGNOTEBLOCK
-	.byte $C0, $C2, $C1, $C3	; $04 - CHNGTILE_TOBOUNCEWOOD
-	.byte $B8, $BA, $B9, $BB	; $05 - CHNGTILE_TONOTEBLOCK
-	.byte $B8, $BA, $B9, $BB	; $06 - CHNGTILE_COINHEAVEN
-	.byte $B4, $B6, $B5, $B7	; $07 - CHNGTILE_TOBRICK
-	.byte $D8, $DA, $D9, $DB	; $08 - CHNGTILE_TOMETALPLATE
-	.byte $FF, $FF, $E6, $E7	; $09 - CHNGTILE_PSWITCHSTOMP
-	.byte $60, $61, $6D, $6F	; $0A
-	.byte $B4, $B6, $B5, $B7	; $0B - CHNGTILE_TOBRICKCOIN
-	.byte $52, $50, $62, $60	; $0C - CHNGTILE_DELETETOBGALT
-	.byte $05, $07, $06, $08	; $0D
-	.byte $18, $1A, $19, $1B	; $0E - CHNGTILE_PIPEJCT
-	.byte $5C, $5E, $5D, $5F	; $0F - CHNGTILE_DELETEDONUT
-	.byte $92, $CA, $93, $CB	; $10 - CHNGTILE_FROZENMUNCHER
-	.byte $DC, $DE, $DD, $DF	; $11 - CHNGTILE_FROZENCOIN
-	.byte $E0, $E2, $E1, $E3	; $12 - CHNGTILE_PSWITCHAPPEAR
-	.byte $F8, $FA, $F9, $FB	; $13 - CHNGTILE_ACTSWAPPEAR
-	.byte $D5, $D5, $B2, $B2	; $14 - CHNGTILE_QUICKSAND_TOP9
-	.byte $B2, $B2, $B2, $B2	; $15 - CHNGTILE_QUICKSAND_MID9
-	.byte $98, $9A, $99, $9B	; $16 - CHNGTILE_ACTQBLOCK
-	.byte $2A, $2B, $FF, $FF	; $17 - CHNGTILE_ACTQBLOCK
-	.byte $F1, $F3, $F0, $F2	; $18 - CHNGTILE_ACTSWAPPEAR_R
-	.byte $07, $08, $FF, $FF 	; $19 - CHNGTILE_ACTION_STOMPED_R
-
-
 TileChng_OneTile:
 	LDX Level_ChgTileEvent
 	DEX		 ; X = Level_ChgTileEvent - 1 (because zero is no-action)
@@ -2767,21 +2737,51 @@ TileChng_OneTile:
 	SBC <Horz_Scroll_Hi
 	BNE TileChng_OffScreen	; SB: If tile change is horizontally off-screen, jump to TileChng_OffScreen
 
-	; X *= 4 (index into OneTile_ChangeToPatterns)
-	TXA
-	ASL A
-	ASL A
-	TAX
+	; Backup existing PAGE_A000 value
+	LDA PAGE_A000
+	PHA
 
-	LDY #$00	 ; Y = 0
-PRG029_DD22:
-	LDA OneTile_ChangeToPatterns,X	 ; Get pattern
-	STA TileChng_Pats,Y	 ; Copy into TileChng_Pats
+	; Change bank
+	LDY Level_Tileset
+	LDA PAGE_A000_ByTileset,Y
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
 
-	INX		 ; X++ (next pattern)
-	INY		 ; Y++ (count of patterns)
-	CPY #$04
-	BNE PRG029_DD22	 ; While Y < 4, loop!
+	LDA Level_Tileset 
+	ASL A
+	TAY
+	LDA TileLayout_ByTileset,Y
+	STA <Temp_Var15		 
+	LDA TileLayout_ByTileset+1,Y
+	STA <Temp_Var16		 
+
+	LDY OneTile_ChangeToTile,X  ; Get the block offset
+	
+	; Upper-left
+	LDA [Temp_Var15],Y	 ; Get first 8x8
+	STA TileChng_Pats	 ; Copy into TileChng_Pats
+
+	; Lower-left
+	INC <Temp_Var16		 ; Jump to next layout chunk
+	INC <Temp_Var16		 ; Jump to next layout chunk
+	LDA [Temp_Var15],Y	 	; Get next 8x8
+	STA TileChng_Pats+1	 ; Copy into TileChng_Pats
+
+	; Upper-right
+	DEC <Temp_Var16		; Jump to next layout chunk
+	LDA [Temp_Var15],Y	 	; Get next 8x8
+	STA TileChng_Pats+2	 ; Copy into TileChng_Pats
+
+	; Lower-right
+	INC <Temp_Var16		; Jump to next layout chunk
+	INC <Temp_Var16		; Jump to next layout chunk
+	LDA [Temp_Var15],Y	 	; Get next 8x8
+	STA TileChng_Pats+3	 ; Copy into TileChng_Pats
+
+	; Restore bank
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
 
 	LDA <Temp_Var6	 ; Get tile Y (aligned to grid, so bits 0-3 are zero)
 	ASL A		 ; Bit 7 -> carry

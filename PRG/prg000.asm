@@ -154,7 +154,7 @@ Level_MinTileUWByQuad:
 	.byte $FF, $FF, $FF, $DA	; 13 Sky level
 	.byte $FF, $FF, $FF, $C1	; 14 Underground
 	.byte $FF, $FF, $FF, $DB	; 15 ext
-	.byte $FF, $FF, $FF, $C1	; 14 Underground
+	.byte $FF, $FF, $FF, $D8	; 14 Underground
 
 
 	; Objects detect using a specific offset from this list
@@ -1982,7 +1982,7 @@ ODT_Manual_EntryV:
 
 
 OnTile:		.byte TILEA_ON_BLOCK, TILEA_OFF_BLOCK
-OffTile:	.byte $00, TILEA_WOODBLOCK
+OffTile:	.byte TILEA_OFF_BLOCK, TILEA_ON_BLOCK
 OffAttr:	.byte $00, $03
 
 OnOff_SubstTileAndAddr:
