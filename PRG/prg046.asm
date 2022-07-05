@@ -305,6 +305,7 @@ LeveLoad_FixedSizeGen_TS16:
 	.word DoubleBlocks
 	.word DoubleBlocks
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LoadLevel_ActionSwitch46
 ;
@@ -317,23 +318,109 @@ LoadLevel_ActionSwitch46:
 	RTS
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; LoadLevel_Corner
-;
-; Places a single corner tile in sewer levels
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+GenerateTopLeftShadingBlocksToChange:
+	.byte TILE16_BG
+
+EndGenerateTopLeftShadingBlocksToChange:
+
+GenerateTopLeftShadingBlocksAlternative:
+	.byte TILE16_SHADOW_S_BR
+
+
+GenerateTopRightShadingBlocksToChange:
+	.byte TILE16_BG
+
+EndGenerateTopRightShadingBlocksToChange:
+
+GenerateTopRightShadingBlocksAlternative:
+	.byte TILE16_SHADOW_S_BL
+
+
+GenerateLeftShadingBlocksToChange:
+	.byte TILE16_BG
+	.byte TILE16_SHADOW_TOP
+	.byte TILE16_SHADOW_BTM
+	.byte TILE16_SHADOW_RIGHT
+	.byte TILE16_SHADOW_BL
+	.byte TILE16_SHADOW_TL
+
+EndGenerateLeftShadingBlocksToChange:
+
+GenerateLeftShadingBlocksAlternative:
+	.byte TILE16_SHADOW_LEFT
+	.byte TILE16_SHADOW_TR
+	.byte TILE16_SHADOW_BR
+	.byte TILE16_SHADOW_LR
+	.byte TILE16_SHADOW_TLR
+	.byte TILE16_SHADOW_BLR
+
+
+GenerateRightShadingBlocksToChange:
+	.byte TILE16_BG
+	.byte TILE16_SHADOW_TOP
+	.byte TILE16_SHADOW_BTM
+	.byte TILE16_SHADOW_LEFT
+	.byte TILE16_SHADOW_BR
+	.byte TILE16_SHADOW_TR
+
+EndGenerateRightShadingBlocksToChange:
+
+GenerateRightShadingBlocksAlternative:
+	.byte TILE16_SHADOW_RIGHT
+	.byte TILE16_SHADOW_TL
+	.byte TILE16_SHADOW_BL
+	.byte TILE16_SHADOW_LR
+	.byte TILE16_SHADOW_TLR
+	.byte TILE16_SHADOW_BLR
+
+
+GenerateTopShadingBlocksToChange:
+	.byte TILE16_BG
+	.byte TILE16_SHADOW_TOP
+	.byte TILE16_SHADOW_BTM
+	.byte TILE16_SHADOW_RIGHT
+	.byte TILE16_SHADOW_LEFT
+	.byte TILE16_SHADOW_BL
+	.byte TILE16_SHADOW_BR
+
+EndGenerateTopShadingBlocksToChange:
+
+GenerateTopShadingBlocksAlternative:
+	.byte TILE16_SHADOW_TOP
+	.byte TILE16_SHADOW_TOP
+	.byte TILE16_SHADOW_TB
+	.byte TILE16_SHADOW_TR
+	.byte TILE16_SHADOW_TL
+	.byte TILE16_SHADOW_TBL
+	.byte TILE16_SHADOW_TBR
+
+
+GenerateBottomShadingBlocksToChange:
+	.byte TILE16_BG
+	.byte TILE16_SHADOW_BTM
+	.byte TILE16_SHADOW_TOP
+	.byte TILE16_SHADOW_RIGHT
+	.byte TILE16_SHADOW_LEFT
+	.byte TILE16_SHADOW_TL
+	.byte TILE16_SHADOW_TR
+
+EndGenerateBottomShadingBlocksToChange:
+
+GenerateBottomShadingBlocksAlternative:
+	.byte TILE16_SHADOW_BTM
+	.byte TILE16_SHADOW_BTM
+	.byte TILE16_SHADOW_TB
+	.byte TILE16_SHADOW_BR
+	.byte TILE16_SHADOW_BL
+	.byte TILE16_SHADOW_TBL
+	.byte TILE16_SHADOW_TBR
+
+
 LL_Corners46:
 	.byte TILE16_GROUNDTL, TILE16_INNER_TL2, TILE16_SLOPE_45_TL	; Upper left
 	.byte TILE16_GROUNDTR, TILE16_INNER_TR2, TILE16_SLOPE_45_TR	; Upper right
 	.byte TILE16_GROUNDBL, TILE16_INNER_BL2, TILE16_SLOPE_45_BL	; Lower left (not avail AG) 
 	.byte TILE16_GROUNDBR, TILE16_INNER_BR2, TILE16_SLOPE_45_BR	; Lower right (not avail AG) 
-
-LoadLevel_Corner46:
-	LDX LL_ShapeDef		 ; LL_ShapeDef is limited 0-15 because of fixed size gen mode, so it's perfect! 
-	LDY TileAddr_Off
-	LDA LL_Corners46,X	 ; Get corner tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
-	RTS
 
 
 DoubleBlocks:
@@ -341,6 +428,17 @@ DoubleBlocks:
 	.byte TILE16_INNER_TR, TILE16_INNER_TR+1
 	.byte TILE16_INNER_BL, TILE16_INNER_BL+1
 	.byte TILE16_INNER_BR, TILE16_INNER_BR+1
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LoadLevel_Corner
+;
+; Places a single corner tile in sewer levels
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LoadLevel_Corner46:
+	LDX LL_ShapeDef		 ; LL_ShapeDef is limited 0-15 because of fixed size gen mode, so it's perfect! 
+	LDA LL_Corners46,X	 ; Get corner tile
+	JMP GenerateShading
 
 
 ; Two Block Generator
@@ -360,99 +458,192 @@ LoadLevel_DoubleBlock46:
 	RTS		 ; Return
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; GenerateShading
-;
-; Generates shading for the sewer tileset.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-GenerateShading:
-	LDA [Map_Tile_AddrL], Y		; Get the block stored at the current location.
-	STA <Temp_Var2
-
+GenerateTopLeftShading:
 	; Save offset
 	LDA TileAddr_Off
-	STA <Temp_Var3
+	PHA
 
 	; Save Address to contain issues.
-	LDA Map_Tile_AddrL
-	STA <Temp_Var4
-	LDA Map_Tile_AddrH
-	STA <Temp_Var5
+	LDA <Map_Tile_AddrL
+	PHA
+	LDA <Map_Tile_AddrH
+	PHA
 
-	; Save X, Y to not overwrite it.
-	TXA
+	JSR UpdateBlockIndexToPriorColumn	; Get to the left column index.
+	JSR UpdateBlockIndexToPriorRow
+
+	LDA [Map_Tile_AddrL], Y
+	CMP #TILE16_SHADOW_S_BR
+	BEQ GenerateTopLeftShadingLoopFinish
+
+	; Store it to speed up cycles
 	STA <Temp_Var6
-	TYA
-	STA <Temp_Var7
 
-	JSR GenerateRightShading
+	LDX #(EndGenerateTopLeftShadingBlocksToChange - GenerateTopLeftShadingBlocksToChange)
 
-	; Restore X, Y
-	LDA <Temp_Var6
-	TAX
-	LDA <Temp_Var7
-	TAY
+GenerateTopLeftShadingLoop:
+		LDA <Temp_Var6
+		CMP GenerateTopLeftShadingBlocksToChange, X
+		
+		; If the not block equal, continue looping...
+		BNE GenerateTopLeftShadingLoopContinue
 
+			; Apply the alternative block to index and jump out of this method.
+			LDA GenerateTopLeftShadingBlocksAlternative, X
+			STA [Map_Tile_AddrL], Y
+			JMP GenerateTopLeftShadingLoopFinish
+
+	; Continue looping while X >= 0
+GenerateTopLeftShadingLoopContinue:
+		DEX
+
+	BPL GenerateTopLeftShadingLoop	 	
+
+GenerateTopLeftShadingLoopFinish:
 	; Restore address
-	LDA <Temp_Var4
-	STA Map_Tile_AddrL
-	LDA <Temp_Var5
-	STA Map_Tile_AddrH
+	PLA
+	STA <Map_Tile_AddrH
+	PLA
+	STA <Map_Tile_AddrL
 
 	; Restore offset
-	LDA <Temp_Var3
+	PLA
 	STA TileAddr_Off
-
-	JSR GenerateLeftShading
-	;JSR GenerateTopShading
-	;JSR GenerateBottomShading
-
-	; Restore X, Y
-	LDA <Temp_Var6
-	TAX
-	LDA <Temp_Var7
-	TAY
-
-	; Restore address
-	LDA <Temp_Var4
-	STA Map_Tile_AddrL
-	LDA <Temp_Var5
-	STA Map_Tile_AddrH
-
-	; Restore offset
-	LDA <Temp_Var3
-	STA TileAddr_Off
-
 	RTS
 
 
-GenerateLeftShadingBlocksToChange:
-	.byte TILE16_BG
-	.byte TILE16_SHADOW_TOP
-	.byte TILE16_SHADOW_BTM
-	.byte TILE16_SHADOW_RIGHT
-	.byte TILE16_SHADOW_BL
-	.byte TILE16_SHADOW_TL
-	.byte TILE16_SHADOW_LEFT
+GenerateTopRightShading:
+	; Save offset
+	LDA TileAddr_Off
+	PHA
 
-EndGenerateLeftShadingBlocksToChange:
+	; Save Address to contain issues.
+	LDA <Map_Tile_AddrL
+	PHA
+	LDA <Map_Tile_AddrH
+	PHA
 
-GenerateLeftShadingBlocksAlternative:
-	.byte TILE16_SHADOW_LEFT
-	.byte TILE16_SHADOW_TR
-	.byte TILE16_SHADOW_BR
-	.byte TILE16_SHADOW_LR
-	.byte TILE16_SHADOW_TLR
-	.byte TILE16_SHADOW_BLR
-	.byte TILE16_SHADOW_LEFT
+	JSR UpdateBlockIndexToNextColumn	; Get to the right column index.
+	JSR UpdateBlockIndexToPriorRow
+
+	LDA [Map_Tile_AddrL], Y
+	CMP #TILE16_SHADOW_S_BL
+	BEQ GenerateTopRightShadingLoopFinish
+
+	; Store it to speed up cycles
+	STA <Temp_Var6
+
+	LDX #(EndGenerateTopRightShadingBlocksToChange - GenerateTopRightShadingBlocksToChange)
+
+GenerateTopRightShadingLoop:
+		LDA <Temp_Var6
+		CMP GenerateTopLeftShadingBlocksToChange, X
+		
+		; If the not block equal, continue looping...
+		BNE GenerateTopRightShadingLoopContinue
+
+			; Apply the alternative block to index and jump out of this method.
+			LDA GenerateTopRightShadingBlocksAlternative, X
+			STA [Map_Tile_AddrL], Y
+			JMP GenerateTopRightShadingLoopFinish
+
+	; Continue looping while X >= 0
+GenerateTopRightShadingLoopContinue:
+		DEX
+
+	BPL GenerateTopRightShadingLoop	 	
+
+GenerateTopRightShadingLoopFinish:
+	; Restore address
+	PLA
+	STA <Map_Tile_AddrH
+	PLA
+	STA <Map_Tile_AddrL
+
+	; Restore offset
+	PLA
+	STA TileAddr_Off
+	RTS
+
+
+GenerateBottomShading:
+	JSR UpdateBlockIndexToNextRow  ; Get the block one below the current block
+
+	LDX #(EndGenerateBottomShadingBlocksToChange - GenerateBottomShadingBlocksToChange)
+
+GenerateBottomShadingLoop:
+		LDA [Map_Tile_AddrL], Y
+		CMP GenerateBottomShadingBlocksToChange, X
+		
+		; If the not block equal, continue looping...
+		BNE GenerateBottomShadingLoopContinue
+
+			; Apply the alternative block to index and jump out of this method.
+			LDA GenerateBottomShadingBlocksAlternative, X
+			STA [Map_Tile_AddrL], Y
+			JMP GenerateBottomShadingLoopFinish
+
+	; Continue looping while X >= 0
+GenerateBottomShadingLoopContinue:
+		DEX
+
+	BPL GenerateBottomShadingLoop	 	
+
+GenerateBottomShadingLoopFinish:
+	JMP UpdateBlockIndexToPriorRow	; Restore the column index.
+
+
+GenerateTopShading:
+	JSR UpdateBlockIndexToPriorRow	; Get the block one above the current block
+
+	LDX #(EndGenerateTopShadingBlocksToChange - GenerateTopShadingBlocksToChange)
+
+GenerateTopShadingLoop:
+		LDA [Map_Tile_AddrL], Y
+		CMP GenerateTopShadingBlocksToChange, X
+		
+		; If the not block equal, continue looping...
+		BNE GenerateTopShadingLoopContinue
+
+			; Apply the alternative block to index and jump out of this method.
+			LDA GenerateTopShadingBlocksAlternative, X
+			STA [Map_Tile_AddrL], Y
+			JMP GenerateTopShadingLoopFinish
+
+	; Continue looping while X >= 0
+GenerateTopShadingLoopContinue:
+		DEX
+
+	BPL GenerateTopShadingLoop	 	
+
+GenerateTopShadingLoopFinish:
+	JMP UpdateBlockIndexToNextRow	; Restore the column index.
+
 
 GenerateLeftShading:
+	; Save offset
+	LDA TileAddr_Off
+	PHA
+
+	; Save Address to contain issues.
+	LDA <Map_Tile_AddrL
+	PHA
+	LDA <Map_Tile_AddrH
+	PHA
+
 	JSR UpdateBlockIndexToPriorColumn	; Get to the left column index.
+
+	LDA [Map_Tile_AddrL], Y
+	CMP #TILE16_SHADOW_LEFT
+	BEQ GenerateLeftShadingLoopFinish
+
+	; Store it to speed up cycles
+	STA <Temp_Var6
 
 	LDX #(EndGenerateLeftShadingBlocksToChange - GenerateLeftShadingBlocksToChange)
 
 GenerateLeftShadingLoop:
-		LDA [Map_Tile_AddrL], Y
+		LDA <Temp_Var6
 		CMP GenerateLeftShadingBlocksToChange, X
 		
 		; If the not block equal, continue looping...
@@ -470,36 +661,43 @@ GenerateLeftShadingLoopContinue:
 	BPL GenerateLeftShadingLoop	 	
 
 GenerateLeftShadingLoopFinish:
-	JMP UpdateBlockIndexToNextColumn	; Restore the column index.
+	; Restore address
+	PLA
+	STA <Map_Tile_AddrH
+	PLA
+	STA <Map_Tile_AddrL
+
+	; Restore offset
+	PLA
+	STA TileAddr_Off
+	RTS
 	
 
-GenerateRightShadingBlocksToChange:
-	.byte TILE16_BG
-	.byte TILE16_SHADOW_TOP
-	.byte TILE16_SHADOW_BTM
-	.byte TILE16_SHADOW_LEFT
-	.byte TILE16_SHADOW_BR
-	.byte TILE16_SHADOW_TR
-	.byte TILE16_SHADOW_RIGHT
-
-EndGenerateRightShadingBlocksToChange:
-
-GenerateRightShadingBlocksAlternative:
-	.byte TILE16_SHADOW_RIGHT
-	.byte TILE16_SHADOW_TL
-	.byte TILE16_SHADOW_BL
-	.byte TILE16_SHADOW_LR
-	.byte TILE16_SHADOW_TLR
-	.byte TILE16_SHADOW_BLR
-	.byte TILE16_SHADOW_RIGHT
-
 GenerateRightShading:
-	JSR UpdateBlockIndexToNextColumn	; Get to the right column index.
+	; Save offset
+	LDA TileAddr_Off
+	PHA
 
+	; Save Address to contain issues.
+	LDA <Map_Tile_AddrL
+	PHA
+	LDA <Map_Tile_AddrH
+	PHA
+
+	JSR UpdateBlockIndexToNextColumn	; Get to the right column index.
+	
+	; If we already have a shadow, do nothing
+	LDA [Map_Tile_AddrL], Y
+	CMP #TILE16_SHADOW_RIGHT
+	BEQ GenerateRightShadingLoopFinish
+
+	; Store it to speed up cycles
+	STA <Temp_Var6
+	
 	LDX #(EndGenerateRightShadingBlocksToChange - GenerateRightShadingBlocksToChange)
 
 GenerateRightShadingLoop:
-		LDA [Map_Tile_AddrL], Y
+		LDA <Temp_Var6
 		CMP GenerateRightShadingBlocksToChange, X
 		
 		; If the not block equal, continue looping...
@@ -517,7 +715,16 @@ GenerateRightShadingLoopContinue:
 	BPL GenerateRightShadingLoop	 	
 
 GenerateRightShadingLoopFinish:
-	JMP UpdateBlockIndexToPriorColumn	; Restore the column index.
+	; Restore address
+	PLA
+	STA <Map_Tile_AddrH
+	PLA
+	STA <Map_Tile_AddrL
+
+	; Restore offset
+	PLA
+	STA TileAddr_Off
+	RTS
 
 
 UpdateBlockIndexToNextColumn:
@@ -548,16 +755,13 @@ Terminate46:
 
 
 UpdateBlockIndexToPriorColumn:
-	; Decrement Y
-	DEY
-	
-	; Check if we hit a boundry.  If did not hit boundry, terminate.
-	TYA		
-	AND #$0f	
-	CMP #$0f	
-	BNE Terminate46	 
+	DEY		 ; Y--
+	TYA	
+	AND #$0F
+	CMP #$0F
+	BNE Terminate46		; If we haven't left the left edge of this screen, finish
 
-	; Subtract 0x01B0 to the index
+	; Move back one screen by subtracting $1B0 from Map_Tile_Addr
 	LDA <Map_Tile_AddrL
 	SUB #$b0	 
 	STA <Map_Tile_AddrL
@@ -568,10 +772,9 @@ UpdateBlockIndexToPriorColumn:
 	; Transfer 'Y' to the other side
 	INY	
 	TYA	
-	AND #$f0
-	ORA #$0f
+	AND #$F0
+	ORA #$0F
 	TAY
-
 	RTS
 
 
@@ -632,50 +835,46 @@ LevelLoad_TopMiddleBottomVerticle:
 	ASL A
 	ASL A
 	TAX				; The provided index * 4 will become the index into the blocks
+	STX <Temp_Var10
 
 	; Get the low block index
 	LDY TileAddr_Off
 
-	; Place the top block
+	; Place the top block and generate shading for pillar
 	LDA TopMiddleBottomBlocks, X
-	STA [Map_Tile_AddrL],Y
-
-	; Generate shading for pillar
 	JSR GenerateShading
 
 	; Get ready to place middle block
+	LDY TileAddr_Off
 	JSR UpdateBlockIndexToNextRow
-	INX
+	STY TileAddr_Off
+	INC <Temp_Var10
 
 	; Find the size 1-16 of the block run
 	LDA LL_ShapeDef
 	AND #$0f	 
-	STA <Temp_Var1	
-	
+	STA <Temp_Var11	
 
 	; Place middle block 1-16 times.
 	TopMiddleBottomVerticle_PlaceMiddleBlock46:
-	
-		; Place middle block
+		; Place middle block and generate shading for pillar
+		LDX <Temp_Var10
 		LDA TopMiddleBottomBlocks, X
-		STA [Map_Tile_AddrL],Y
-		
-		; Generate shading for pillar
 		JSR GenerateShading
 
+		LDY TileAddr_Off
 		JSR UpdateBlockIndexToNextRow
+		STY TileAddr_Off
 
-		DEC <Temp_Var1
+		DEC <Temp_Var11
 	BPL TopMiddleBottomVerticle_PlaceMiddleBlock46	 	
 	
 	; Get ready to place bottom block
-	INX
-	
-	; Place bottom block
-	LDA TopMiddleBottomBlocks, X
-	STA [Map_Tile_AddrL],Y
+	INC <Temp_Var10
 
-	; Generate shading for pillar
+	; Place bottom block and generate shading for pillar
+	LDX <Temp_Var10
+	LDA TopMiddleBottomBlocks, X
 	JSR GenerateShading
 	
 	RTS
@@ -709,7 +908,7 @@ LevelLoad_BottomShadow46:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_Ground46:
 	LDA #TILE16_GROUNDTM
-	BNE LLM46_SeTTile
+	JMP LLM46_SeTTile_WithTopShadow
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -719,7 +918,7 @@ LoadLevel_Ground46:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_Ceiling46:
 	LDA #TILE16_GROUNDBM
-	BNE LLM46_SeTTile
+	JMP LLM46_SeTTile_WithBottomShadow
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -797,6 +996,97 @@ PRG046_A6DD:
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LLM46_SeTTile_WithShadow
+;
+; Puts down 1-16 on blocks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LLM46_SeTTile_WithShadow:
+	STA <Temp_Var5
+
+	LDA LL_ShapeDef	
+	AND #$0f	
+	TAX		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
+	LDY TileAddr_Off	 ; Y = TileAddr_Off
+
+PRG046_A6DF:
+	TXA
+	PHA
+	LDA <Temp_Var5
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	PLA
+	TAX
+
+	JSR GenerateShading
+
+	JSR LoadLevel_NextColumn ; Next column
+	DEX		 	 ; X--
+	BPL PRG046_A6DF	 	 ; While X >= 0, loop!
+
+	RTS		 ; Return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LLM46_SeTTile_WithTopShadow
+;
+; Puts down 1-16 on blocks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LLM46_SeTTile_WithTopShadow:
+	STA <Temp_Var5
+
+	LDA LL_ShapeDef	
+	AND #$0f	
+	TAX		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
+	LDY TileAddr_Off	 ; Y = TileAddr_Off
+
+PRG046_A6E0:
+	TXA
+	PHA
+	JSR GenerateTopShading
+	PLA
+	TAX
+
+	LDA <Temp_Var5
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+
+	JSR LoadLevel_NextColumn ; Next column
+	DEX		 	 ; X--
+	BPL PRG046_A6E0	 	 ; While X >= 0, loop!
+
+	RTS		 ; Return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LLM46_SeTTile_WithBottomShadow
+;
+; Puts down 1-16 on blocks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LLM46_SeTTile_WithBottomShadow:
+	STA <Temp_Var5
+
+	LDA LL_ShapeDef	
+	AND #$0f	
+	TAX		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
+	LDY TileAddr_Off	 ; Y = TileAddr_Off
+
+PRG046_A6E1:
+	TXA
+	PHA
+	JSR GenerateBottomShading
+	PLA
+	TAX
+
+	LDA <Temp_Var5
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+
+	JSR LoadLevel_NextColumn ; Next column
+	DEX		 	 ; X--
+	BPL PRG046_A6E1	 	 ; While X >= 0, loop!
+
+	RTS		 ; Return
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LevelLoad_LeftShadow46
 ;
 ; Puts down 1-16 left shadows
@@ -813,26 +1103,6 @@ LevelLoad_LeftShadow46:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LevelLoad_RightShadow46:
 	LDA #TILE16_SHADOW_RIGHT
-	BNE LLM46_SeTTileV
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; LevelLoad_LeftWall46
-;
-; Puts down 1-16 left walls
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-LevelLoad_LeftWall46:
-	LDA #TILE16_GROUNDML
-	BNE LLM46_SeTTileV
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; LevelLoad_RightWall46
-;
-; Puts down 1-16 right walls
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-LevelLoad_RightWall46:
-	LDA #TILE16_GROUNDMR
 
 
 ; Vertical Block Run
@@ -1084,6 +1354,125 @@ LL46_LongRunNextRow:
 	STA <Temp_Var2	 	; Update Map_Tile_AddrH backup
 	RTS		 ; Return
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LevelLoad_LeftWall46
+;
+; Puts down 1-16 left walls
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LevelLoad_LeftWall46:
+	LDA #TILE16_GROUNDML
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LLM46_SeTTileV_LeftShadow
+;
+; Puts down 1-16 blocks with shadow
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LLM46_SeTTileV_LeftShadow:
+	STA <Temp_Var10
+
+	LDA LL_ShapeDef
+	PHA	 			 ; Save LL_ShapeDef
+	AND #$0f	 
+	STA <Temp_Var11	 ; Temp_Var11 = lower 4 bits of LL_ShapeDef
+	PLA				 ; Restore LL_ShapeDef
+	
+	LDY TileAddr_Off 	; Y = TileAddr_Off
+
+; Loop through the number of times defined by Temp_Var11 placing Temp_Var10 into level memory vertically.
+PRG046_D812:
+	JSR GenerateLeftShading
+
+	; Store into tile mem
+	LDY TileAddr_Off
+	LDA <Temp_Var10
+	STA [Map_Tile_AddrL],Y	 
+
+	JSR UpdateBlockIndexToNextRow
+	STY TileAddr_Off
+
+	; While Temp_Var11 >= 0, loop!
+	DEC <Temp_Var11
+	BPL PRG046_D812 	
+	RTS
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LevelLoad_RightWall46
+;
+; Puts down 1-16 right walls
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LevelLoad_RightWall46:
+	LDA #TILE16_GROUNDMR
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LLM46_SeTTileV_RightShadow
+;
+; Puts down 1-16 blocks with shadow
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LLM46_SeTTileV_RightShadow:
+	STA <Temp_Var10
+
+	LDA LL_ShapeDef
+	PHA	 			 ; Save LL_ShapeDef
+	AND #$0f	 
+	STA <Temp_Var11	 ; Temp_Var1 = lower 4 bits of LL_ShapeDef
+	PLA				 ; Restore LL_ShapeDef
+	
+	LDY TileAddr_Off 	; Y = TileAddr_Off
+
+; Loop through the number of times defined by Temp_Var1 placing Temp_Var10 into level memory vertically.
+LLM46_SeTTileV_RightShadow_Loop:
+	JSR GenerateRightShading
+
+	; Store into tile mem
+	LDY TileAddr_Off
+	LDA <Temp_Var10
+	STA [Map_Tile_AddrL],Y	 
+
+	JSR UpdateBlockIndexToNextRow
+	STY TileAddr_Off
+
+	; While Temp_Var1 >= 0, loop!
+	DEC <Temp_Var11
+	BPL LLM46_SeTTileV_RightShadow_Loop	
+	RTS
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; GenerateShading
+;
+; Generates shading for the sewer tileset.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+GenerateShading:
+	; Store the block into memory
+	LDY TileAddr_Off
+	STA [Map_Tile_AddrL],Y	 
+
+	LDY TileAddr_Off
+	JSR GenerateRightShading
+
+	LDY TileAddr_Off
+	JSR GenerateLeftShading
+
+	LDY TileAddr_Off
+	JSR GenerateTopShading
+	
+	LDY TileAddr_Off
+	JSR GenerateBottomShading
+
+	LDY TileAddr_Off
+	JSR GenerateTopLeftShading
+
+	LDY TileAddr_Off
+	JSR GenerateTopRightShading
+
+	RTS
+
+
+
 LL_SewerInnerGround:	
 	.byte TILE16_INNER_GROUND, TILE16_BG, TILE16_INNER_GROUND
 LL_SewerMiddleGroundTR:
@@ -1102,7 +1491,6 @@ LL_45SewersT2BCeiling:
 	.byte TILE14_ABOVE_S45T2B_CEIL, TILE14_SLOPE45T2B_CEIL, TILE14_WSLOPE45T2B_CEIL
 LL_45SewersB2TCeiling:
 	.byte TILE14_ABOVE_S45B2T_CEIL, TILE14_SLOPE45B2T_CEIL, TILE14_WSLOPE45B2T_CEIL
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
