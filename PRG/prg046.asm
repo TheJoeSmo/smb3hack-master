@@ -336,8 +336,28 @@ GenerateTopRightShadingBlocksAlternative:
 	.byte TILE16_SHADOW_S_BL
 
 
+GenerateBottomLeftShadingBlocksToChange:
+	.byte TILE16_BG
+
+EndGenerateBottomLeftShadingBlocksToChange:
+
+GenerateBottomLeftShadingBlksAlternative:
+	.byte TILE16_SHADOW_S_TR
+
+
+GenerateBottomRightShadingBlocksToChange:
+	.byte TILE16_BG
+
+EndGenerateBottomRightShadingBlocksToChange:
+
+GenerateBottomRightShadingBlksAlternative:
+	.byte TILE16_SHADOW_S_TL
+
+
 GenerateLeftShadingBlocksToChange:
 	.byte TILE16_BG
+	.byte TILE16_SHADOW_S_TR
+	.byte TILE16_SHADOW_S_TL
 	.byte TILE16_SHADOW_TOP
 	.byte TILE16_SHADOW_BTM
 	.byte TILE16_SHADOW_RIGHT
@@ -348,6 +368,8 @@ EndGenerateLeftShadingBlocksToChange:
 
 GenerateLeftShadingBlocksAlternative:
 	.byte TILE16_SHADOW_LEFT
+	.byte TILE16_SHADOW_LEFT
+	.byte TILE16_SHADOW_LEFT
 	.byte TILE16_SHADOW_TR
 	.byte TILE16_SHADOW_BR
 	.byte TILE16_SHADOW_LR
@@ -357,6 +379,8 @@ GenerateLeftShadingBlocksAlternative:
 
 GenerateRightShadingBlocksToChange:
 	.byte TILE16_BG
+	.byte TILE16_SHADOW_S_TL
+	.byte TILE16_SHADOW_S_TR
 	.byte TILE16_SHADOW_TOP
 	.byte TILE16_SHADOW_BTM
 	.byte TILE16_SHADOW_LEFT
@@ -366,6 +390,8 @@ GenerateRightShadingBlocksToChange:
 EndGenerateRightShadingBlocksToChange:
 
 GenerateRightShadingBlocksAlternative:
+	.byte TILE16_SHADOW_RIGHT
+	.byte TILE16_SHADOW_RIGHT
 	.byte TILE16_SHADOW_RIGHT
 	.byte TILE16_SHADOW_TL
 	.byte TILE16_SHADOW_BL
@@ -377,6 +403,8 @@ GenerateRightShadingBlocksAlternative:
 GenerateTopShadingBlocksToChange:
 	.byte TILE16_BG
 	.byte TILE16_SHADOW_TOP
+	.byte TILE16_SHADOW_S_BL
+	.byte TILE16_SHADOW_S_BR
 	.byte TILE16_SHADOW_BTM
 	.byte TILE16_SHADOW_RIGHT
 	.byte TILE16_SHADOW_LEFT
@@ -386,6 +414,8 @@ GenerateTopShadingBlocksToChange:
 EndGenerateTopShadingBlocksToChange:
 
 GenerateTopShadingBlocksAlternative:
+	.byte TILE16_SHADOW_TOP
+	.byte TILE16_SHADOW_TOP
 	.byte TILE16_SHADOW_TOP
 	.byte TILE16_SHADOW_TOP
 	.byte TILE16_SHADOW_TB
@@ -428,6 +458,27 @@ DoubleBlocks:
 	.byte TILE16_INNER_TR, TILE16_INNER_TR+1
 	.byte TILE16_INNER_BL, TILE16_INNER_BL+1
 	.byte TILE16_INNER_BR, TILE16_INNER_BR+1
+
+
+LL_SewerInnerGround:	
+	.byte TILE16_INNER_GROUND, TILE16_BG, TILE16_INNER_GROUND
+LL_SewerMiddleGroundTR:
+	.byte TILE16_SLOPE_45_TL, TILE16_SLOPE_45_TL3, TILE16_SLOPE_45_TL2
+LL_SewerMiddleGroundTL:
+	.byte TILE16_SLOPE_45_TR, TILE16_SLOPE_45_TR3, TILE16_SLOPE_45_TR2
+LL_SewerMiddleGroundBL:
+	.byte TILE16_SLOPE_45_BL, TILE16_SLOPE_45_BL3, TILE16_SLOPE_45_BL2
+LL_SewerMiddleGroundBR:
+	.byte TILE16_SLOPE_45_BR, TILE16_SLOPE_45_BR3, TILE16_SLOPE_45_BR2
+LL_45SewersT2B:
+	.byte TILE14_ABOVE_SLOPE45T2B, TILE3_SLOPE45T2B,  TILE3_WSLOPE45T2B
+LL_45SewersB2T:
+	.byte TILE14_ABOVE_SLOPE45B2T, TILE3_SLOPE45B2T,  TILE3_WSLOPE45B2T
+LL_45SewersT2BCeiling:
+	.byte TILE14_ABOVE_S45T2B_CEIL, TILE14_SLOPE45T2B_CEIL, TILE14_WSLOPE45T2B_CEIL
+LL_45SewersB2TCeiling:
+	.byte TILE14_ABOVE_S45B2T_CEIL, TILE14_SLOPE45B2T_CEIL, TILE14_WSLOPE45B2T_CEIL
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -554,6 +605,114 @@ GenerateTopRightShadingLoopContinue:
 	BPL GenerateTopRightShadingLoop	 	
 
 GenerateTopRightShadingLoopFinish:
+	; Restore address
+	PLA
+	STA <Map_Tile_AddrH
+	PLA
+	STA <Map_Tile_AddrL
+
+	; Restore offset
+	PLA
+	STA TileAddr_Off
+	RTS
+
+
+GenerateBottomLeftShading:
+	; Save offset
+	LDA TileAddr_Off
+	PHA
+
+	; Save Address to contain issues.
+	LDA <Map_Tile_AddrL
+	PHA
+	LDA <Map_Tile_AddrH
+	PHA
+
+	JSR UpdateBlockIndexToPriorColumn	; Get to the left column index.
+	JSR UpdateBlockIndexToNextRow
+
+	LDA [Map_Tile_AddrL], Y
+	CMP #TILE16_SHADOW_S_TR
+	BEQ GenerateBottomLeftShadingLoopFinish
+
+	; Store it to speed up cycles
+	STA <Temp_Var6
+
+	LDX #(EndGenerateBottomLeftShadingBlocksToChange - GenerateBottomLeftShadingBlocksToChange)
+
+GenerateBottomLeftShadingLoop:
+		LDA <Temp_Var6
+		CMP GenerateBottomLeftShadingBlocksToChange, X
+		
+		; If the not block equal, continue looping...
+		BNE GenerateBottomLeftShadingLoopContinue
+
+			; Apply the alternative block to index and jump out of this method.
+			LDA GenerateBottomLeftShadingBlksAlternative, X
+			STA [Map_Tile_AddrL], Y
+			JMP GenerateBottomLeftShadingLoopFinish
+
+	; Continue looping while X >= 0
+GenerateBottomLeftShadingLoopContinue:
+		DEX
+
+	BPL GenerateBottomLeftShadingLoop	 	
+
+GenerateBottomLeftShadingLoopFinish:
+	; Restore address
+	PLA
+	STA <Map_Tile_AddrH
+	PLA
+	STA <Map_Tile_AddrL
+
+	; Restore offset
+	PLA
+	STA TileAddr_Off
+	RTS
+
+
+GenerateBottomRightShading:
+	; Save offset
+	LDA TileAddr_Off
+	PHA
+
+	; Save Address to contain issues.
+	LDA <Map_Tile_AddrL
+	PHA
+	LDA <Map_Tile_AddrH
+	PHA
+
+	JSR UpdateBlockIndexToNextColumn	; Get to the right column index.
+	JSR UpdateBlockIndexToNextRow
+
+	LDA [Map_Tile_AddrL], Y
+	CMP #TILE16_SHADOW_S_TL
+	BEQ GenerateBottomRightShadingLoopFinish
+
+	; Store it to speed up cycles
+	STA <Temp_Var6
+
+	LDX #(EndGenerateBottomRightShadingBlocksToChange - GenerateBottomRightShadingBlocksToChange)
+
+GenerateBottomRightShadingLoop:
+		LDA <Temp_Var6
+		CMP GenerateBottomRightShadingBlocksToChange, X
+		
+		; If the not block equal, continue looping...
+		BNE GenerateBottomRightShadingLoopContinue
+
+			; Apply the alternative block to index and jump out of this method.
+			LDA GenerateBottomRightShadingBlksAlternative, X
+			STA [Map_Tile_AddrL], Y
+			JMP GenerateBottomRightShadingLoopFinish
+
+	; Continue looping while X >= 0
+GenerateBottomRightShadingLoopContinue:
+		DEX
+
+	BPL GenerateBottomRightShadingLoop	 	
+
+GenerateBottomRightShadingLoopFinish:
 	; Restore address
 	PLA
 	STA <Map_Tile_AddrH
@@ -1469,28 +1628,13 @@ GenerateShading:
 	LDY TileAddr_Off
 	JSR GenerateTopRightShading
 
+	LDY TileAddr_Off
+	JSR GenerateBottomLeftShading
+
+	LDY TileAddr_Off
+	JSR GenerateBottomRightShading
+
 	RTS
-
-
-
-LL_SewerInnerGround:	
-	.byte TILE16_INNER_GROUND, TILE16_BG, TILE16_INNER_GROUND
-LL_SewerMiddleGroundTR:
-	.byte TILE16_SLOPE_45_TL, TILE16_SLOPE_45_TL3, TILE16_SLOPE_45_TL2
-LL_SewerMiddleGroundTL:
-	.byte TILE16_SLOPE_45_TR, TILE16_SLOPE_45_TR3, TILE16_SLOPE_45_TR2
-LL_SewerMiddleGroundBL:
-	.byte TILE16_SLOPE_45_BL, TILE16_SLOPE_45_BL3, TILE16_SLOPE_45_BL2
-LL_SewerMiddleGroundBR:
-	.byte TILE16_SLOPE_45_BR, TILE16_SLOPE_45_BR3, TILE16_SLOPE_45_BR2
-LL_45SewersT2B:
-	.byte TILE14_ABOVE_SLOPE45T2B, TILE3_SLOPE45T2B,  TILE3_WSLOPE45T2B
-LL_45SewersB2T:
-	.byte TILE14_ABOVE_SLOPE45B2T, TILE3_SLOPE45B2T,  TILE3_WSLOPE45B2T
-LL_45SewersT2BCeiling:
-	.byte TILE14_ABOVE_S45T2B_CEIL, TILE14_SLOPE45T2B_CEIL, TILE14_WSLOPE45T2B_CEIL
-LL_45SewersB2TCeiling:
-	.byte TILE14_ABOVE_S45B2T_CEIL, TILE14_SLOPE45B2T_CEIL, TILE14_WSLOPE45B2T_CEIL
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1610,124 +1754,164 @@ PRG046_D4A0:
 ; /SMM  ... and so on
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_Sewer_Slope45B2T:
-	; Backup Map_Tile_AddrL/H into Temp_Var1/2
+	; Save offset
+	LDA TileAddr_Off
+	PHA
+
+	; Save address.
 	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
+	PHA
 	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	PHA
 
+	; Save parent variables
+	LDA <Temp_Var10
+	PHA
+	LDA <Temp_Var11
+	PHA
+	LDA <Temp_Var12
+	PHA
+	LDA <Temp_Var13
+	PHA
+	LDA <Temp_Var14
+	PHA
+	LDA <Temp_Var15
+	PHA
+	LDA <Temp_Var16
+	PHA
+
+	; Counter of the number of inner and middle grounds to place at the current location.
 	LDA #$00
-	STA <Temp_Var3	; Temp_Var3 = 0 (each additional slope tile we add is followed by +1 midground tiles behind it)
+	STA <Temp_Var10
+	STA <Temp_Var16
 
+	; Determine the size of the slope.
+	LDA LL_ShapeDef
+	AND #$0F
+	STA <Temp_Var11
+	INC <Temp_Var11  ; Makes looping easier
+
+	; Find the relative index of the slope.
 	LDA LL_ShapeDef	 
-	PHA		 ; Save LL_ShapeDef	
-
-	AND #$0f	 
-	STA <Temp_Var4	 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (diagonal length of slope)
-
-	PLA		 ; Restore LL_ShapeDef
 	SUB #$10
 	AND #$c0
 	CLC	
 	ROL A	
 	ROL A	
-	ROL A	
-	TAX		 ; X = Relative index 
+	ROL A
+	STA <Temp_Var12
 
-	LDY TileAddr_Off	 ; Y = TileAddr_Off
-	JSR UpdateBlockIndexToPriorRow		; Prior row
-	LDA [Map_Tile_AddrL], Y		; Get the block stored at the current location.
-	CMP #TILE16_BG
-	BNE PRG046_D4D5 			; Only replace the background block
-	LDA #TILE16_SHADOW_S_BR	; Load a shadow
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
-PRG046_D4D5:
-	JSR UpdateBlockIndexToNextRow
+Sewer_Slope45B2T_LoopRow:
+	; Save offset and address for looping
+	LDA TileAddr_Off
+	TAY
+	STA <Temp_Var13
+	LDA <Map_Tile_AddrL
+	STA <Temp_Var14
+	LDA <Map_Tile_AddrH
+	STA <Temp_Var15
 
-PRG046_D4DB:
-	LDY TileAddr_Off	 ; Y = TileAddr_Off
+	; Generate the shading for the current slope
+	JSR UpdateBlockIndexToNextColumn
+	JSR GenerateTopLeftShading
 
-	LDA <Temp_Var3
-	STA <Temp_Var5		; Temp_Var5 = Temp_Var3 
+	; Restore the offset and address
+	LDA <Temp_Var13
+	TAY
+	STA TileAddr_Off
+	LDA <Temp_Var14
+	STA <Map_Tile_AddrL
+	LDA <Temp_Var15
+	STA <Map_Tile_AddrH
 
-	JSR UpdateBlockIndexToPriorColumn	; Prior column
-	LDA [Map_Tile_AddrL], Y		; Get the block stored at the current location.
-	CMP #TILE16_BG
-	BNE PRG046_D4A0 			; Only replace the background block
-	LDA #TILE16_SHADOW_S_BR	; Load a shadow
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	; Place a slope block.
+	LDY TileAddr_Off
+	LDX <Temp_Var12
+	LDA LL_45SewersB2T,X
+	STA [Map_Tile_AddrL],Y
 
-	JSR LoadLevel_NextColumn ; Next column
-	LDA LL_45SewersB2T,X	 ; Get slope tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	; Jump if there are no blocks to place.
+	LDA <Temp_Var10
+	BEQ Sewer_Slope45B2T_FinishMiddleGround
 	
-	; If tiny slope, do nothing
-	LDA <Temp_Var5
-	BEQ PRG046_D4F0
-	
-	; Add the middle ground
-	JSR LoadLevel_NextColumn ; Next column
-	DEC <Temp_Var5
+	; Move to the right one
+	JSR UpdateBlockIndexToNextColumn
+
+	; Place the middle ground
+	LDX <Temp_Var12
 	LDA LL_SewerMiddleGroundTR, X
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
-	JMP PRG046_D4EF	 	; Jump to PRG046_D4EF
+	
+	; Jump if there are no blocks to place.
+	DEC <Temp_Var10
+	BEQ Sewer_Slope45B2T_FinishMiddleGround
 
-PRG046_D4EA:
+Sewer_Slope45B2T_LoopInnerGround:
+	; Move to the right one
+	JSR UpdateBlockIndexToNextColumn
+	
+	LDX <Temp_Var12
 	LDA LL_SewerInnerGround,X	 ; Get mid-ground tile
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 
-PRG046_D4EF:
-	JSR LoadLevel_NextColumn ; Next column
-	DEC <Temp_Var5		 ; Temp_Var5--
-	BPL PRG046_D4EA	 	 ; While Temp_Var5 >= 0, loop!
+	; Jump if there are no blocks to place.
+	DEC <Temp_Var10
+	BNE Sewer_Slope45B2T_LoopInnerGround
 
-PRG046_D4F0:
-	INC <Temp_Var3		 ; Temp_Var3++ (one more midground behind the slope)
+Sewer_Slope45B2T_FinishMiddleGround:
 
-	; Restore Map_Tile_Addr from backup
-	LDA <Temp_Var1
+	; Restore offset and address for looping
+	LDA <Temp_Var13
+	TAY
+	STA TileAddr_Off
+	LDA <Temp_Var14
 	STA <Map_Tile_AddrL
-	LDA <Temp_Var2	
+	LDA <Temp_Var15
 	STA <Map_Tile_AddrH
 
-	; Go to next row by adding 15 to tile offset (we're always one column too far..)
-	LDA TileAddr_Off
-	ADD #15
-	TAY		 
-	LDA <Map_Tile_AddrH
-	ADC #$00	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
+	; Go back one block and down one.
+	JSR UpdateBlockIndexToPriorColumn
+	JSR UpdateBlockIndexToNextRow
 
 	TYA
-	AND #$0f
-	CMP #$0f	
-	BNE PRG046_D534	 	; If we haven't wrapped the screen, jump to PRG046_D534
+	STA TileAddr_Off
 
-	; Move back one screen by subtracting $1B0
-	LDA <Map_Tile_AddrL
-	SUB #$b0	
+	; Each row is one larger.
+	INC <Temp_Var16
+	LDA <Temp_Var16
+	STA <Temp_Var10
+
+	; Determine if we should continue making a slope.
+	DEC <Temp_Var11
+	BNE Sewer_Slope45B2T_LoopRow
+
+Sewer_Slope45B2T_Finish:
+	; Restore parent variables
+	PLA
+	STA <Temp_Var16
+	PLA
+	STA <Temp_Var15
+	PLA
+	STA <Temp_Var14
+	PLA
+	STA <Temp_Var13
+	PLA
+	STA <Temp_Var12
+	PLA
+	STA <Temp_Var11
+	PLA
+	STA <Temp_Var10
+
+	; Restore address
+	PLA
+	STA <Map_Tile_AddrH
+	PLA
 	STA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	SBC #$01	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
 
-	; Jump to the right side
-	TYA
-	ADD #16
-	TAY	
-	LDA <Map_Tile_AddrH
-	ADC #$00	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
-
-PRG046_D534:
-	STY TileAddr_Off	 ; Tile_Addr_Off = Y
-	DEC <Temp_Var4		 ; Temp_Var4-- (diagonal length decrement)
-	BPL PRG046_D4DB	 	; While Temp_Var4 >= 0, loop!
-	RTS		 ; Return
+	; Restore offset
+	PLA
+	STA TileAddr_Off
+	RTS
 
 
 	; Broken into another file for ease of integration in NoDice editor
