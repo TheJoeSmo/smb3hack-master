@@ -1650,96 +1650,145 @@ GenerateShading:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 LoadLevel_Sewer_Slope45T2B:	
-	; Backup Map_Tile_AddrL/H into Temp_Var1/2
+	; Save offset
+	LDA TileAddr_Off
+	PHA
+
+	; Save address.
 	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
+	PHA
 	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	PHA
 
+	; Save parent variables
+	LDA <Temp_Var10
+	PHA
+	LDA <Temp_Var11
+	PHA
+	LDA <Temp_Var12
+	PHA
+	LDA <Temp_Var13
+	PHA
+	LDA <Temp_Var14
+	PHA
+	LDA <Temp_Var15
+	PHA
+	LDA <Temp_Var16
+	PHA
+
+	; Counter of the number of inner and middle grounds to place at the current location.
 	LDA #$00
-	STA <Temp_Var3	; Temp_Var3 = 0 (each additional slope tile we add is followed by +1 midground tiles behind it)
+	STA <Temp_Var10
+	STA <Temp_Var16
 
+	; Determine the size of the slope.
+	LDA LL_ShapeDef
+	AND #$0F
+	STA <Temp_Var11
+
+	; Find the relative index of the slope.
 	LDA LL_ShapeDef	 
-	PHA		 ; Save LL_ShapeDef	
-
-	AND #$0f	 
-	STA <Temp_Var4	 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (diagonal length of slope)
-
-	PLA		 ; Restore LL_ShapeDef
 	SUB #$10
 	AND #$c0
 	CLC	
 	ROL A	
 	ROL A	
-	ROL A	
-	TAX		 ; X = Relative index 
+	ROL A
+	STA <Temp_Var12
 
-	LDY TileAddr_Off	 ; Y = TileAddr_Off
-	JSR UpdateBlockIndexToPriorRow		; Prior row
-	LDA [Map_Tile_AddrL], Y		; Get the block stored at the current location.
-	CMP #TILE16_BG
-	BNE PRG046_D485 			; Only replace the background block
-	LDA #TILE16_SHADOW_S_BL	; Load a shadow
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
-PRG046_D485:
-	JSR UpdateBlockIndexToNextRow
+Sewer_Slope45T2B_LoopRow:
+	; Save offset and address for looping
+	LDA TileAddr_Off
+	TAY
+	STA <Temp_Var13
+	LDA <Map_Tile_AddrL
+	STA <Temp_Var14
+	LDA <Map_Tile_AddrH
+	STA <Temp_Var15
 
-PRG046_D482:
-	LDY TileAddr_Off	 ; Y = TileAddr_Off
-
-	LDA <Temp_Var3
-	STA <Temp_Var5		; Temp_Var5 = Temp_Var3 
-	BEQ PRG046_D497	 	; If Temp_Var3 is zero, we skip the middle ground addition
+Sewer_Slope45T2B_LoopInnerGround:
+	; Escape out of loop when one or less.
+	LDA <Temp_Var10
 	CMP #$01
-	BEQ PRG046_D490
+	BCC Sewer_Slope45T2B_FinishedLoopInnerGround
+	BEQ Sewer_Slope45T2B_FinishedLoopInnerGround
+	
+	; Place the inner ground.
+	LDX <Temp_Var12
+	LDA LL_SewerInnerGround,X
+	STA [Map_Tile_AddrL],Y
 
-PRG046_D48B:
-	LDA LL_SewerInnerGround,X	 ; Get middle ground tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
-	JSR LoadLevel_NextColumn ; Next column
-	DEC <Temp_Var5		 ; Temp_Var5--
-	LDA <Temp_Var5
-	CMP #$01 
-	BNE PRG046_D48B	 	 ; While Temp_Var5 > 0, loop! 
+	; Move to the right one.
+	JSR UpdateBlockIndexToNextColumn
 
-PRG046_D490:
-; Add the middle ground
+	DEC <Temp_Var10
+	JMP Sewer_Slope45T2B_LoopInnerGround
+
+Sewer_Slope45T2B_FinishedLoopInnerGround:
+	; If at the top of the slope, do not place middle ground
+	LDA <Temp_Var10
+	BEQ Sewer_Slope45T2B_PlaceSlope
+
+	; Add the middle ground
+	LDX <Temp_Var12
 	LDA LL_SewerMiddleGroundTL, X
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
-	JSR LoadLevel_NextColumn ; Next column
+	
+	; Move to the right one.
+	JSR UpdateBlockIndexToNextColumn
 
-PRG046_D497:
-	LDA LL_45SewersT2B,X	 ; Get the 45 degree slope
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
-	JSR LoadLevel_NextColumn ; Next column
+Sewer_Slope45T2B_PlaceSlope:
+	; Place a slope block.
+	LDX <Temp_Var12
+	LDA LL_45SewersT2B,X
+	STA [Map_Tile_AddrL],Y
 
-	LDA [Map_Tile_AddrL], Y		; Get the block stored at the current location.
-	CMP #TILE16_BG
-	BNE PRG046_D4A0 			; Only replace the background block
-	LDA #TILE16_SHADOW_S_BL	; Load a shadow
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	; Generate right shading.
+	JSR UpdateBlockIndexToPriorColumn
+	JSR GenerateTopRightShading
 
-PRG046_D4A0:
-	; Restore Map_Tile_Addr from backup
-	LDA <Temp_Var1
-	STA <Map_Tile_AddrL
-	LDA <Temp_Var2	
-	STA <Map_Tile_AddrH
-
-	; Go to next row by adding 16 to tile offset
-	LDA TileAddr_Off
-	ADD #16
+	; Restore offset and address for looping
+	LDA <Temp_Var13
+	TAY
 	STA TileAddr_Off
-	LDA <Map_Tile_AddrH
-	ADC #$00	 
+	LDA <Temp_Var14
+	STA <Map_Tile_AddrL
+	LDA <Temp_Var15
 	STA <Map_Tile_AddrH
-	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
 
-	INC <Temp_Var3		 ; Temp_Var3++ (one more midground behind the slope)
-	DEC <Temp_Var4		 ; Temp_Var4-- (diagonal length decrement)
-	BPL PRG046_D482	 	; While Temp_Var4 >= 0, loop!
+	; Go down one block.
+	JSR UpdateBlockIndexToNextRow
+	TYA
+	STA TileAddr_Off
 
-	RTS		 ; Return
+	; Each row is one larger.
+	INC <Temp_Var16
+	LDA <Temp_Var16
+	STA <Temp_Var10
+
+	; Determine if we should continue making a slope.
+	DEC <Temp_Var11
+	BNE Sewer_Slope45T2B_LoopRow
+
+; Move to the right of the slope.
+Sewer_Slope45T2B_PlaceLowerMiddleGround:
+	LDA <Temp_Var10
+	CMP #$01
+	BCC Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
+	BEQ Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
+
+	JSR UpdateBlockIndexToNextColumn
+
+	DEC <Temp_Var10
+	JMP Sewer_Slope45T2B_PlaceLowerMiddleGround
+
+Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
+	; Place the lower inner slope
+	LDX <Temp_Var12
+	LDA LL_SewerMiddleGroundTL,X
+	STA [Map_Tile_AddrL],Y
+
+	JMP Sewer_Slope45B2T_Finish
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1825,7 +1874,6 @@ Sewer_Slope45B2T_LoopRow:
 	STA <Map_Tile_AddrH
 
 	; Place a slope block.
-	LDY TileAddr_Off
 	LDX <Temp_Var12
 	LDA LL_45SewersB2T,X
 	STA [Map_Tile_AddrL],Y
@@ -1884,6 +1932,14 @@ Sewer_Slope45B2T_FinishMiddleGround:
 	; Determine if we should continue making a slope.
 	DEC <Temp_Var11
 	BNE Sewer_Slope45B2T_LoopRow
+
+	; Place the lower inner slope
+	JSR UpdateBlockIndexToNextColumn
+
+	LDX <Temp_Var12
+	LDA LL_SewerMiddleGroundTR,X
+	STA [Map_Tile_AddrL],Y
+
 
 Sewer_Slope45B2T_Finish:
 	; Restore parent variables
