@@ -2,3 +2,4 @@
 *.exe
 *.fns
 *.lua
+.vscode
