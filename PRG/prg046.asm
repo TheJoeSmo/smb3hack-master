@@ -30,7 +30,7 @@ Tile_Layout_TS16:
 	.byte $B4, $B8, $98, $98, $98, $98, $A4, $EC, $E4, $C0, $D5, $B2, $E9, $68, $24, $FF ; Tiles $70 - $7F
 	.byte $28, $28, $67, $55, $FF, $C4, $50, $26, $61, $15, $06, $55, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
 	.byte $67, $67, $56, $55, $67, $67, $55, $75, $FF, $50, $01, $63, $55, $1C, $1E, $55 ; Tiles $90 - $9F
-	.byte $62, $51, $6C, $5C, $5E, $6E, $FF, $FF, $FF, $FF, $47, $30, $30, $8C, $8E, $8C ; Tiles $A0 - $AF
+	.byte $62, $60, $6C, $5C, $5E, $6E, $FF, $FF, $FF, $FF, $47, $30, $30, $8C, $8E, $8C ; Tiles $A0 - $AF
 	.byte $8E, $8C, $8E, $8C, $8E, $09, $09, $07, $30, $31, $AC, $AE, $B8, $FF, $FF, $FF ; Tiles $B0 - $BF
 	.byte $3E, $2E, $2C, $3C, $4C, $FC, $FC, $4E, $70, $42, $33, $FC, $FC, $26, $3C, $FC ; Tiles $C0 - $CF
 	.byte $44, $45, $46, $48, $48, $FF, $CC, $55, $30, $80, $82, $C5, $C7, $D4, $FE, $FC ; Tiles $D0 - $DF
@@ -48,11 +48,11 @@ Tile_Layout_TS16:
 	.byte $B5, $B9, $99, $99, $99, $99, $A5, $ED, $E4, $C1, $B2, $B2, $E8, $78, $34, $FF ; Tiles $70 - $7F
 	.byte $28, $38, $65, $77, $FF, $C4, $51, $36, $16, $65, $63, $50, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
 	.byte $66, $65, $77, $77, $45, $65, $77, $77, $FF, $60, $FD, $62, $1C, $2C, $2E, $1E ; Tiles $90 - $9F
-	.byte $65, $61, $65, $6C, $6E, $65, $FF, $FF, $FF, $FF, $57, $41, $41, $9C, $9E, $9C ; Tiles $A0 - $AF
+	.byte $72, $61, $65, $6C, $6E, $65, $FF, $FF, $FF, $FF, $57, $41, $41, $9C, $9E, $9C ; Tiles $A0 - $AF
 	.byte $9E, $9C, $9E, $9C, $9E, $19, $19, $17, $40, $41, $AC, $AE, $B9, $FF, $FF, $FF ; Tiles $B0 - $BF
 	.byte $FC, $3E, $3C, $FC, $5C, $4C, $4E, $5E, $43, $FC, $52, $32, $FC, $36, $16, $FC ; Tiles $C0 - $CF
 	.byte $44, $45, $48, $48, $4A, $FF, $65, $E6, $32, $90, $92, $FE, $FE, $FE, $FE, $FE ; Tiles $D0 - $DF
-	.byte $AB, $AB, $3B, $03, $73, $4A, $2C, $2E, $6A, $FE, $61, $FE, $6C, $6E, $FE, $FF ; Tiles $E0 - $EF
+	.byte $AB, $AB, $3B, $03, $73, $4A, $2C, $2E, $6A, $FE, $2A, $FE, $6C, $6E, $FE, $FF ; Tiles $E0 - $EF
 	.byte $64, $06, $E1, $06, $60, $62, $5A, $66, $60, $62, $FF, $FF, $F0, $58, $F9, $FF ; Tiles $F0 - $FF
 
 	; Upper right 8x8 pattern per tile	
@@ -66,11 +66,11 @@ Tile_Layout_TS16:
 	.byte $B6, $BA, $9A, $9A, $9A, $9A, $A6, $EE, $E5, $C2, $D5, $B2, $EB, $69, $25, $FF ; Tiles $70 - $7F
 	.byte $29, $29, $55, $77, $FF, $C6, $56, $27, $16, $62, $55, $50, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
 	.byte $55, $54, $77, $77, $55, $75, $77, $77, $FF, $60, $01, $53, $56, $1D, $1F, $56 ; Tiles $90 - $9F
-	.byte $52, $61, $6D, $5D, $5F, $6F, $FF, $FF, $FF, $FF, $30, $30, $47, $8D, $8F, $8D ; Tiles $A0 - $AF
+	.byte $63, $61, $6D, $5D, $5F, $6F, $FF, $FF, $FF, $FF, $30, $30, $47, $8D, $8F, $8D ; Tiles $A0 - $AF
 	.byte $8F, $8D, $8F, $8D, $8F, $0A, $0A, $08, $30, $31, $AD, $AF, $BA, $FF, $FF, $FF ; Tiles $B0 - $BF
 	.byte $3F, $2F, $2D, $3D, $4D, $FC, $FC, $4F, $43, $73, $FC, $32, $3D, $27, $04, $37 ; Tiles $C0 - $CF
 	.byte $44, $45, $47, $49, $49, $FF, $CD, $55, $31, $81, $83, $C5, $C7, $D4, $FE, $FC ; Tiles $D0 - $DF
-	.byte $AA, $AB, $3B, $01, $FE, $FE, $4B, $6B, $FE, $52, $61, $6D, $5D, $5F, $6F, $FF ; Tiles $E0 - $EF
+	.byte $AA, $AB, $3B, $01, $FE, $FE, $4B, $6B, $FE, $52, $2A, $6D, $5D, $5F, $6F, $FF ; Tiles $E0 - $EF
 	.byte $67, $D7, $E2, $FF, $01, $63, $01, $63, $0B, $0D, $FF, $FF, $F3, $49, $FA, $FF ; Tiles $F0 - $FF
 
 	; Lower right 8x8 pattern per tile
@@ -84,7 +84,7 @@ Tile_Layout_TS16:
 	.byte $B7, $BB, $9B, $9B, $9B, $9B, $A7, $EF, $E5, $C3, $B2, $B2, $EA, $79, $35, $FF ; Tiles $70 - $7F
 	.byte $29, $39, $67, $65, $FF, $C6, $57, $37, $65, $15, $06, $60, $FF, $FF, $FF, $FF ; Tiles $80 - $8F
 	.byte $67, $67, $65, $64, $67, $67, $45, $65, $FF, $61, $FD, $63, $1D, $2D, $2F, $1F ; Tiles $90 - $9F
-	.byte $62, $66, $66, $6D, $6F, $66, $FF, $FF, $FF, $FF, $41, $41, $57, $9D, $9F, $9D ; Tiles $A0 - $AF
+	.byte $62, $71, $66, $6D, $6F, $66, $FF, $FF, $FF, $FF, $41, $41, $57, $9D, $9F, $9D ; Tiles $A0 - $AF
 	.byte $9F, $9D, $9F, $9D, $9F, $1A, $1A, $18, $40, $41, $AD, $AF, $BB, $FF, $FF, $FF ; Tiles $B0 - $BF
 	.byte $FC, $3F, $3D, $FC, $5D, $4D, $4F, $5F, $FC, $42, $33, $51, $3D, $37, $25, $34 ; Tiles $C0 - $CF
 	.byte $44, $45, $49, $49, $4B, $FF, $65, $E7, $33, $91, $93, $FE, $FE, $FE, $FE, $FE ; Tiles $D0 - $DF
@@ -154,16 +154,16 @@ LoadLevel_Generator_TS16:
 
 	.word LoadLevel_Sewer_Slope45T2B		;  0 - Above ground (UG only) 45 degree slope top-to-bottom
 	.word LoadLevel_Sewer_Slope45B2T		;  1 - Above ground (UG only) 45 degree slope bottom-to-top
-	.word LoadLevel_Slope45T2BCeiling	;  2 - Above ground (UG only) 45 degree ceiling slope top-to-bottom
-	.word LoadLevel_Slope45B2TCeiling	;  3 - Above ground (UG only) 45 degree ceiling slope bottom-to-top
+	.word LoadLevel_Sewer_Slope45T2BCeiling	;  2 - Above ground (UG only) 45 degree ceiling slope top-to-bottom
+	.word LoadLevel_Sewer_Slope45B2TCeiling	;  3 - Above ground (UG only) 45 degree ceiling slope bottom-to-top
 	.word LoadLevel_Sewer_Slope45T2B		;  4 - Underground/Hills normal 45 degree slope top-to-bottom
 	.word LoadLevel_Sewer_Slope45B2T		;  5 - Underground/Hills normal 45 degree slope bottom-to-top
-	.word LoadLevel_Slope45T2BCeiling	;  6 - Underground/Hills normal 45 degree ceiling slope top-to-bottom
-	.word LoadLevel_Slope45B2TCeiling	;  7 - Underground/Hills normal 45 degree ceiling slope bottom-to-top
+	.word LoadLevel_Sewer_Slope45T2BCeiling	;  6 - Underground/Hills normal 45 degree ceiling slope top-to-bottom
+	.word LoadLevel_Sewer_Slope45B2TCeiling	;  7 - Underground/Hills normal 45 degree ceiling slope bottom-to-top
 	.word LoadLevel_Sewer_Slope45T2B		;  8 - Underwater 45 degree slope top-to-bottom
 	.word LoadLevel_Sewer_Slope45B2T		;  9 - Underwater 45 degree slope bottom-to-top
-	.word LoadLevel_Slope45T2BCeiling	; 10 - Underwater 45 degree ceiling slope top-to-bottom
-	.word LoadLevel_Slope45B2TCeiling	; 11 - Underwater 45 degree ceiling slope bottom-to-top
+	.word LoadLevel_Sewer_Slope45T2BCeiling	; 10 - Underwater 45 degree ceiling slope top-to-bottom
+	.word LoadLevel_Sewer_Slope45B2TCeiling	; 11 - Underwater 45 degree ceiling slope bottom-to-top
 	.word $0000		; 12 - Action Switch
 	.word $0000		; 13 - Run of the clouds
 	.word $0000		; 14 - Same as 9, except underwater ground tiles instead
@@ -429,8 +429,8 @@ GenerateBottomShadingBlocksToChange:
 	.byte TILE16_BG
 	.byte TILE16_SHADOW_BTM
 	.byte TILE16_SHADOW_TOP
-	.byte TILE16_SHADOW_RIGHT
 	.byte TILE16_SHADOW_LEFT
+	.byte TILE16_SHADOW_RIGHT
 	.byte TILE16_SHADOW_TL
 	.byte TILE16_SHADOW_TR
 
@@ -466,9 +466,9 @@ LL_SewerMiddleGroundTR:
 	.byte TILE16_SLOPE_45_TL, TILE16_SLOPE_45_TL3, TILE16_SLOPE_45_TL2
 LL_SewerMiddleGroundTL:
 	.byte TILE16_SLOPE_45_TR, TILE16_SLOPE_45_TR3, TILE16_SLOPE_45_TR2
-LL_SewerMiddleGroundBL:
-	.byte TILE16_SLOPE_45_BL, TILE16_SLOPE_45_BL3, TILE16_SLOPE_45_BL2
 LL_SewerMiddleGroundBR:
+	.byte TILE16_SLOPE_45_BL, TILE16_SLOPE_45_BL3, TILE16_SLOPE_45_BL2
+LL_SewerMiddleGroundBL:
 	.byte TILE16_SLOPE_45_BR, TILE16_SLOPE_45_BR3, TILE16_SLOPE_45_BR2
 LL_45SewersT2B:
 	.byte TILE14_ABOVE_SLOPE45T2B, TILE3_SLOPE45T2B,  TILE3_WSLOPE45T2B
@@ -1646,7 +1646,8 @@ GenerateShading:
 ; \
 ; S\
 ; MS\
-; MMS\  ... and so on
+; MMS\
+;    S
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 LoadLevel_Sewer_Slope45T2B:	
@@ -1788,7 +1789,7 @@ Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
 	LDA LL_SewerMiddleGroundTL,X
 	STA [Map_Tile_AddrL],Y
 
-	JMP Sewer_Slope45B2T_Finish
+	JMP Sewer_Slope_Finish
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1800,7 +1801,8 @@ Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
 ;    /
 ;   /S
 ;  /SM
-; /SMM  ... and so on
+; /SMM
+; S
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_Sewer_Slope45B2T:
 	; Save offset
@@ -1940,8 +1942,351 @@ Sewer_Slope45B2T_FinishMiddleGround:
 	LDA LL_SewerMiddleGroundTR,X
 	STA [Map_Tile_AddrL],Y
 
+	JMP Sewer_Slope_Finish
 
-Sewer_Slope45B2T_Finish:
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LoadLevel_Sewer_Slope45T2BCeiling
+;
+; Adds a 1-16 length 45 degree bottom-to-top slope along the 
+; ceiling.  Each row packs midground tiles along the length.
+; So it looks like this:
+; S
+; \SMM
+;  \SM
+;   \S
+;    \
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LoadLevel_Sewer_Slope45T2BCeiling:
+	; Save offset
+	LDA TileAddr_Off
+	PHA
+
+	; Save address.
+	LDA <Map_Tile_AddrL
+	PHA
+	LDA <Map_Tile_AddrH
+	PHA
+
+	; Save parent variables
+	LDA <Temp_Var10
+	PHA
+	LDA <Temp_Var11
+	PHA
+	LDA <Temp_Var12
+	PHA
+	LDA <Temp_Var13
+	PHA
+	LDA <Temp_Var14
+	PHA
+	LDA <Temp_Var15
+	PHA
+	LDA <Temp_Var16
+	PHA
+
+	; Determine the size of the slope.
+	LDA LL_ShapeDef
+	AND #$0F
+	STA <Temp_Var11
+	INC <Temp_Var11  ; Makes looping easier
+
+	; Counter of the number of inner and middle grounds to place at the current location.
+	STA <Temp_Var10
+	STA <Temp_Var16
+
+	; Find the relative index of the slope.
+	LDA LL_ShapeDef	 
+	SUB #$10
+	AND #$c0
+	CLC	
+	ROL A	
+	ROL A	
+	ROL A
+	STA <Temp_Var12
+
+	; Save offset and address for looping
+	LDA TileAddr_Off
+	TAY
+	STA <Temp_Var13
+	LDA <Map_Tile_AddrL
+	STA <Temp_Var14
+	LDA <Map_Tile_AddrH
+	STA <Temp_Var15
+
+	; Place the middle ground one above the start of the slope.
+	JSR UpdateBlockIndexToPriorRow
+
+	LDX <Temp_Var12
+	LDA LL_SewerMiddleGroundBR,X
+	STA [Map_Tile_AddrL],Y
+
+Sewer_Slope45T2BCeiling_LoopRow:
+	; Save offset and address for looping
+	LDA TileAddr_Off
+	TAY
+	STA <Temp_Var13
+	LDA <Map_Tile_AddrL
+	STA <Temp_Var14
+	LDA <Map_Tile_AddrH
+	STA <Temp_Var15
+
+	; Place a slope block.
+	LDX <Temp_Var12
+	LDA LL_45SewersT2BCeiling,X
+	STA [Map_Tile_AddrL],Y
+
+	; Generate right shading.
+	JSR UpdateBlockIndexToNextColumn
+	JSR GenerateBottomLeftShading
+
+	; Restore offset and address for looping
+	LDA <Temp_Var13
+	TAY
+	STA TileAddr_Off
+	LDA <Temp_Var14
+	STA <Map_Tile_AddrL
+	LDA <Temp_Var15
+	STA <Map_Tile_AddrH
+
+	; Jump if there are no blocks to place.
+	LDA <Temp_Var10
+	BEQ Sewer_Slope45T2BC_FinishMiddleGround
+	
+	; Move to the right one
+	JSR UpdateBlockIndexToNextColumn
+
+	; Place the middle ground
+	LDX <Temp_Var12
+	LDA LL_SewerMiddleGroundBR, X
+	STA [Map_Tile_AddrL],Y
+	
+	; Jump if there are no blocks to place.
+	DEC <Temp_Var10
+	BEQ Sewer_Slope45T2BC_FinishMiddleGround
+
+Sewer_Slope45T2BC_LoopInnerGround:
+	; Move to the right one.
+	JSR UpdateBlockIndexToNextColumn
+	
+	; Place the inner ground.
+	LDX <Temp_Var12
+	LDA LL_SewerInnerGround,X
+	STA [Map_Tile_AddrL],Y
+
+	; Jump if there are no blocks to place.
+	DEC <Temp_Var10
+	BNE Sewer_Slope45T2BC_LoopInnerGround
+
+Sewer_Slope45T2BC_FinishMiddleGround:
+	; Restore offset and address for looping
+	LDA <Temp_Var13
+	TAY
+	STA TileAddr_Off
+	LDA <Temp_Var14
+	STA <Map_Tile_AddrL
+	LDA <Temp_Var15
+	STA <Map_Tile_AddrH
+
+	; Go down one block and right one.
+	JSR UpdateBlockIndexToNextColumn
+	JSR UpdateBlockIndexToNextRow
+
+	TYA
+	STA TileAddr_Off
+
+	; Each row is one smaller.
+	DEC <Temp_Var16
+	LDA <Temp_Var16
+	STA <Temp_Var10
+
+	; Determine if we should continue making a slope.
+	DEC <Temp_Var11
+	BNE Sewer_Slope45T2BCeiling_LoopRow
+
+	JMP Sewer_Slope_Finish
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LoadLevel_Sewer_Slope45B2TCeiling
+;
+; Adds a 1-16 length 45 degree bottom-to-top slope along the 
+; ceiling.  Each row packs midground tiles along the length.
+; So it looks like this:
+;    S
+; MMS/
+; MS/ 
+; S/  
+; /   
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LoadLevel_Sewer_Slope45B2TCeiling:
+	; Save offset
+	LDA TileAddr_Off
+	PHA
+
+	; Save address.
+	LDA <Map_Tile_AddrL
+	PHA
+	LDA <Map_Tile_AddrH
+	PHA
+
+	; Save parent variables
+	LDA <Temp_Var10
+	PHA
+	LDA <Temp_Var11
+	PHA
+	LDA <Temp_Var12
+	PHA
+	LDA <Temp_Var13
+	PHA
+	LDA <Temp_Var14
+	PHA
+	LDA <Temp_Var15
+	PHA
+	LDA <Temp_Var16
+	PHA
+
+	; Determine the size of the slope.
+	LDA LL_ShapeDef
+	AND #$0F
+	STA <Temp_Var11
+	INC <Temp_Var11  ; Makes looping easier
+
+	; Counter of the number of inner and middle grounds to place at the current location.
+	STA <Temp_Var10
+	STA <Temp_Var16
+
+	; Find the relative index of the slope.
+	LDA LL_ShapeDef	 
+	SUB #$10
+	AND #$c0
+	CLC	
+	ROL A	
+	ROL A	
+	ROL A
+	STA <Temp_Var12
+
+	; Save offset and address for looping
+	LDA TileAddr_Off
+	TAY
+	STA <Temp_Var13
+	LDA <Map_Tile_AddrL
+	STA <Temp_Var14
+	LDA <Map_Tile_AddrH
+	STA <Temp_Var15
+
+	; Place the middle ground one above the start of the slope.
+	JSR UpdateBlockIndexToPriorRow
+
+	; Store offset
+	TYA
+	STA TileAddr_Off
+
+	; Skip moving to the right if first slope.
+	LDA <Temp_Var10
+	BEQ Sewer_Slope45B2TCeiling_FinishedFirstMiddle
+
+; Must get all the way to the right.
+Sewer_Slope45B2TCeiling_FirstMiddleLoop
+	JSR UpdateBlockIndexToNextColumn
+
+	DEC <Temp_Var10
+	BNE Sewer_Slope45B2TCeiling_FirstMiddleLoop
+
+Sewer_Slope45B2TCeiling_FinishedFirstMiddle
+	; Reset the counter.
+	LDA <Temp_Var16
+	STA <Temp_Var10
+
+	; Place the middle ground.
+	LDX <Temp_Var12
+	LDA LL_SewerMiddleGroundBL,X
+	STA [Map_Tile_AddrL],Y
+
+	; Restore offset and address for looping
+	LDA <Temp_Var13
+	TAY
+	STA TileAddr_Off
+	LDA <Temp_Var14
+	STA <Map_Tile_AddrL
+	LDA <Temp_Var15
+	STA <Map_Tile_AddrH
+
+Sewer_Slope45B2TCeiling_LoopRow:
+	; Save offset and address for looping
+	LDA TileAddr_Off
+	TAY
+	STA <Temp_Var13
+	LDA <Map_Tile_AddrL
+	STA <Temp_Var14
+	LDA <Map_Tile_AddrH
+	STA <Temp_Var15
+
+Sewer_Slope45T2BCeiling_LoopInnerGround:
+	; Escape out of loop when one or less.
+	LDA <Temp_Var10
+	CMP #$01
+	BCC Sewer_Slope45T2BCeiling_FinishedLoopInnerGround
+	BEQ Sewer_Slope45T2BCeiling_FinishedLoopInnerGround
+	
+	; Place the inner ground.
+	LDX <Temp_Var12
+	LDA LL_SewerInnerGround,X
+	STA [Map_Tile_AddrL],Y
+
+	; Move to the right one.
+	JSR UpdateBlockIndexToNextColumn
+
+	DEC <Temp_Var10
+	JMP Sewer_Slope45T2BCeiling_LoopInnerGround
+
+Sewer_Slope45T2BCeiling_FinishedLoopInnerGround:
+	; If at the top of the slope, do not place middle ground
+	LDA <Temp_Var10
+	BEQ Sewer_Slope45T2BCeiling_PlaceSlope
+
+	; Add the middle ground
+	LDX <Temp_Var12
+	LDA LL_SewerMiddleGroundBL, X
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	
+	; Move to the right one.
+	JSR UpdateBlockIndexToNextColumn
+
+Sewer_Slope45T2BCeiling_PlaceSlope:
+	; Place a slope block.
+	LDX <Temp_Var12
+	LDA LL_45SewersB2TCeiling,X
+	STA [Map_Tile_AddrL],Y
+
+	; Generate right shading.
+	JSR UpdateBlockIndexToPriorColumn
+	JSR GenerateBottomRightShading
+
+	; Restore offset and address for looping
+	LDA <Temp_Var13
+	TAY
+	STA TileAddr_Off
+	LDA <Temp_Var14
+	STA <Map_Tile_AddrL
+	LDA <Temp_Var15
+	STA <Map_Tile_AddrH
+
+	; Go down one block.
+	JSR UpdateBlockIndexToNextRow
+	TYA
+	STA TileAddr_Off
+
+	; Each row is one smaller.
+	DEC <Temp_Var16
+	LDA <Temp_Var16
+	STA <Temp_Var10
+
+	; Determine if we should continue making a slope.
+	DEC <Temp_Var11
+	BNE Sewer_Slope45B2TCeiling_LoopRow
+
+
+Sewer_Slope_Finish:
 	; Restore parent variables
 	PLA
 	STA <Temp_Var16
