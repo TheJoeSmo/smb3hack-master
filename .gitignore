@@ -3,3 +3,4 @@
 *.fns
 *.lua
 .vscode
+.vscode-ctags
