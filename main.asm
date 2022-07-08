@@ -22,7 +22,15 @@ BLT 	.macro
 	BCC \1	; A < CMP (unsigned)
 	.endm
 
+blt 	.macro
+	BCC \1	; A < CMP (unsigned)
+	.endm
+
 BGE 	.macro
+	BCS \1	; A >= CMP (unsigned)
+	.endm
+
+bge 	.macro
 	BCS \1	; A >= CMP (unsigned)
 	.endm
 
@@ -30,7 +38,15 @@ BLS 	.macro
 	BMI \1	; A < CMP (signed)
 	.endm
 
+bls 	.macro
+	BMI \1	; A < CMP (signed)
+	.endm
+
 BGS 	.macro
+	BPL \1	; A >= CMP (signed)
+	.endm
+
+bgs 	.macro
 	BPL \1	; A >= CMP (signed)
 	.endm
 
@@ -40,7 +56,17 @@ ADD	.macro	; RegEx S&R "CLC.*\n.*?ADC" -> "ADD"
 	ADC \1
 	.endm
 
+add	.macro	; RegEx S&R "CLC.*\n.*?ADC" -> "ADD"
+	CLC
+	ADC \1
+	.endm
+
 SUB	.macro	; RegEx S&R "SEC.*\n.*?SBC" -> "SUB"
+	SEC
+	SBC \1
+	.endm
+
+sub	.macro	; RegEx S&R "SEC.*\n.*?SBC" -> "SUB"
 	SEC
 	SBC \1
 	.endm
@@ -50,11 +76,20 @@ NEG	.macro	; RegEx S&R "EOR #\$ff.*\n.*ADD #\$01" -> "NEG"
 	ADD #$01
 	.endm
 
+neg	.macro	; RegEx S&R "EOR #\$ff.*\n.*ADD #\$01" -> "NEG"
+	EOR #$ff
+	ADD #$01
+	.endm
+
 ASR .macro
 	CMP	#$80		; copy the sign bit to the carry bit		
 	ROR	A		; effectively perform a true ASR	
 	.endm
 
+asr .macro
+	CMP	#$80		; copy the sign bit to the carry bit		
+	ROR	A		; effectively perform a true ASR	
+	.endm
 
 ; This is used in video update streams; since the video address register
 ; takes the address high-then-low (contrary to 6502's normal low-then-high),
