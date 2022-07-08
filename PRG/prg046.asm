@@ -118,7 +118,7 @@ PRG046_LevelLoad_loop:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LoadLevel_Generator_TS16
 ;
-; Based on the values in Temp_Var15 and generator_index, chooses an
+; Based on the values in var15 and generator_index, chooses an
 ; appropriate generator function to builds this piece of the
 ; level.  Tedious, but saves space and is paper-design friendly.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -127,16 +127,16 @@ PRG046_A419:
 
 LoadLevel_Generator_TS16:
 	; From level loader function:
-	; * Temp_Var15, Temp_Var16, and generator_index are three bytes read from the data
+	; * var15, var16, and generator_index are three bytes read from the data
 
-	lda <Temp_Var15
+	lda <var15
 	and #%11100000
 	lsr A		
 	lsr A		
 	lsr A		
 	lsr A		
 	lsr A		
-	tax		 	; X = upper 3 bits of Temp_Var15 (0-7) (selects a multiple of 15 as the base)
+	tax		 	; X = upper 3 bits of var15 (0-7) (selects a multiple of 15 as the base)
 
 	lda generator_index
 	lsr A	
@@ -217,10 +217,10 @@ LoadLevel_Generator_TS16:
 	.word LevelLoad_OffBlocks46			; 62 - Run of off blocks
 	.word LevelLoad_SwitchUpsideDown46  ; 63 - Run of upside down switches
 	.word LevelLoad_CrumblingBlock46	; 64 - Run of crumbling blocks
-	.word LoadLevel_Ground46	; 65 - Ground for the sewers
-	.word LoadLevel_Ceiling46	; 66 - Ceiling for the sewers
-	.word LevelLoad_LeftWall46	; 67 - Left wall for the sewers
-	.word LevelLoad_RightWall46	; 68 - Right wall for the sewers
+	.word _apply_sewer_ground_generator	; 65 - Ground for the sewers
+	.word _apply_sewer_ceiling_generator	; 66 - Ceiling for the sewers
+	.word _apply_sewer_left_wall_generator	; 67 - Left wall for the sewers
+	.word _apply_sewer_right_wall_generator	; 68 - Right wall for the sewers
 	.word _apply_sewer_wall_generator		; 69 - Wall for sewers
 	.word LevelLoad_TopShadow46 	; 70
 	.word LevelLoad_BottomShadow46  ; 71
@@ -241,10 +241,10 @@ LeveLoad_FixedSizeGen_TS16:
 	; It is verified before calling this function that all of
 	; the upper 4 bits of generator_index are ZERO
 
-	; So the upper 3 bits of Temp_Var15 serve as the most significant bits
+	; So the upper 3 bits of var15 serve as the most significant bits
 	; to a value where generator_index provide the 4 least significant bits
 
-	lda <Temp_Var15
+	lda <var15
 	and #%11100000
 	lsr A		
 	add generator_index	
@@ -742,12 +742,12 @@ GenerateTopLeftShading:
 	beq GenerateTopLeftShadingLoopFinish
 
 	; Store it to speed up cycles
-	sta <Temp_Var6
+	sta <var6
 
 	ldx #(EndGenerateTopLeftShadingBlocksToChange - GenerateTopLeftShadingBlocksToChange)
 
 GenerateTopLeftShadingLoop:
-		lda <Temp_Var6
+		lda <var6
 		cmp GenerateTopLeftShadingBlocksToChange, X
 		
 		; If the not block equal, continue looping...
@@ -796,12 +796,12 @@ GenerateTopRightShading:
 	beq GenerateTopRightShadingLoopFinish
 
 	; Store it to speed up cycles
-	sta <Temp_Var6
+	sta <var6
 
 	ldx #(EndGenerateTopRightShadingBlocksToChange - GenerateTopRightShadingBlocksToChange)
 
 GenerateTopRightShadingLoop:
-		lda <Temp_Var6
+		lda <var6
 		cmp GenerateTopLeftShadingBlocksToChange, X
 		
 		; If the not block equal, continue looping...
@@ -850,12 +850,12 @@ GenerateBottomLeftShading:
 	beq GenerateBottomLeftShadingLoopFinish
 
 	; Store it to speed up cycles
-	sta <Temp_Var6
+	sta <var6
 
 	ldx #(EndGenerateBottomLeftShadingBlocksToChange - GenerateBottomLeftShadingBlocksToChange)
 
 GenerateBottomLeftShadingLoop:
-		lda <Temp_Var6
+		lda <var6
 		cmp GenerateBottomLeftShadingBlocksToChange, X
 		
 		; If the not block equal, continue looping...
@@ -904,12 +904,12 @@ GenerateBottomRightShading:
 	beq GenerateBottomRightShadingLoopFinish
 
 	; Store it to speed up cycles
-	sta <Temp_Var6
+	sta <var6
 
 	ldx #(EndGenerateBottomRightShadingBlocksToChange - GenerateBottomRightShadingBlocksToChange)
 
 GenerateBottomRightShadingLoop:
-		lda <Temp_Var6
+		lda <var6
 		cmp GenerateBottomRightShadingBlocksToChange, X
 		
 		; If the not block equal, continue looping...
@@ -1011,12 +1011,12 @@ GenerateLeftShading:
 	beq GenerateLeftShadingLoopFinish
 
 	; Store it to speed up cycles
-	sta <Temp_Var6
+	sta <var6
 
 	ldx #(EndGenerateLeftShadingBlocksToChange - GenerateLeftShadingBlocksToChange)
 
 GenerateLeftShadingLoop:
-		lda <Temp_Var6
+		lda <var6
 		cmp GenerateLeftShadingBlocksToChange, X
 		
 		; If the not block equal, continue looping...
@@ -1065,12 +1065,12 @@ GenerateRightShading:
 	beq GenerateRightShadingLoopFinish
 
 	; Store it to speed up cycles
-	sta <Temp_Var6
+	sta <var6
 	
 	ldx #(EndGenerateRightShadingBlocksToChange - GenerateRightShadingBlocksToChange)
 
 GenerateRightShadingLoop:
-		lda <Temp_Var6
+		lda <var6
 		cmp GenerateRightShadingBlocksToChange, X
 		
 		; If the not block equal, continue looping...
@@ -1125,7 +1125,7 @@ LevelLoad_TopMiddleBottomVerticle:
 	asl A
 	asl A
 	tax				; The provided index * 4 will become the index into the blocks
-	STX <Temp_Var10
+	STX <var10
 
 	; Get the low block index
 	ldy level_data_offset
@@ -1136,30 +1136,30 @@ LevelLoad_TopMiddleBottomVerticle:
 
 	; Get ready to place middle block
 	jsr update_level_data_pointer_downwards
-	inc <Temp_Var10
+	inc <var10
 
 	; Find the size 1-16 of the block run
 	lda generator_index
 	and #$0f	 
-	sta <Temp_Var11	
+	sta <var11	
 
 	; Place middle block 1-16 times.
 	TopMiddleBottomVerticle_PlaceMiddleBlock46:
 		; Place middle block and generate shading for pillar
-		ldx <Temp_Var10
+		ldx <var10
 		lda TopMiddleBottomBlocks, X
 		jsr GenerateShading
 
 		jsr update_level_data_pointer_downwards
 
-		dec <Temp_Var11
+		dec <var11
 	bpl TopMiddleBottomVerticle_PlaceMiddleBlock46	 	
 	
 	; Get ready to place bottom block
-	inc <Temp_Var10
+	inc <var10
 
 	; Place bottom block and generate shading for pillar
-	ldx <Temp_Var10
+	ldx <var10
 	lda TopMiddleBottomBlocks, X
 	jsr GenerateShading
 	
@@ -1192,7 +1192,7 @@ LevelLoad_BottomShadow46:
 ;
 ; Puts down 1-16 ground
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-LoadLevel_Ground46:
+_apply_sewer_ground_generator:
 	lda #TILE16_GROUNDTM
 	jmp LLM46_SeTTile_WithTopShadow
 
@@ -1202,7 +1202,7 @@ LoadLevel_Ground46:
 ;
 ; Puts down 1-16 ceiling
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-LoadLevel_Ceiling46:
+_apply_sewer_ceiling_generator:
 	lda #TILE16_GROUNDBM
 	jmp LLM46_SeTTile_WithBottomShadow
 
@@ -1264,15 +1264,15 @@ LevelLoad_CrumblingBlock46:
 
 ; Horizontal Block Run
 LLM46_SeTTile:
-	sta <Temp_Var5
+	sta <var5
 
 	lda generator_index	
 	and #$0f	
-	tax		 ; Temp_Var4 = lower 4 bits of generator_index
+	tax		 ; var4 = lower 4 bits of generator_index
 	ldy level_data_offset	 ; Y = level_data_offset
 
 PRG046_A6DD:
-	lda <Temp_Var5
+	lda <var5
 	sta [level_data_pointer], y	 ; Store into tile mem
 	jsr LoadLevel_NextColumn ; Next column
 	dex		 	 ; X--
@@ -1287,17 +1287,17 @@ PRG046_A6DD:
 ; Puts down 1-16 on blocks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LLM46_SeTTile_WithShadow:
-	sta <Temp_Var5
+	sta <var5
 
 	lda generator_index	
 	and #$0f	
-	tax		 ; Temp_Var4 = lower 4 bits of generator_index
+	tax		 ; var4 = lower 4 bits of generator_index
 	ldy level_data_offset	 ; Y = level_data_offset
 
 PRG046_A6DF:
 	txa
 	pha
-	lda <Temp_Var5
+	lda <var5
 	sta [level_data_pointer], y	 ; Store into tile mem
 	pla
 	tax
@@ -1317,11 +1317,11 @@ PRG046_A6DF:
 ; Puts down 1-16 on blocks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LLM46_SeTTile_WithTopShadow:
-	sta <Temp_Var5
+	sta <var5
 
 	lda generator_index	
 	and #$0f	
-	tax		 ; Temp_Var4 = lower 4 bits of generator_index
+	tax		 ; var4 = lower 4 bits of generator_index
 	ldy level_data_offset	 ; Y = level_data_offset
 
 PRG046_A6E0:
@@ -1331,7 +1331,7 @@ PRG046_A6E0:
 	pla
 	tax
 
-	lda <Temp_Var5
+	lda <var5
 	sta [level_data_pointer], y	 ; Store into tile mem
 
 	jsr LoadLevel_NextColumn ; Next column
@@ -1347,11 +1347,11 @@ PRG046_A6E0:
 ; Puts down 1-16 on blocks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LLM46_SeTTile_WithBottomShadow:
-	sta <Temp_Var5
+	sta <var5
 
 	lda generator_index	
 	and #$0f	
-	tax		 ; Temp_Var4 = lower 4 bits of generator_index
+	tax		 ; var4 = lower 4 bits of generator_index
 	ldy level_data_offset	 ; Y = level_data_offset
 
 PRG046_A6E1:
@@ -1361,7 +1361,7 @@ PRG046_A6E1:
 	pla
 	tax
 
-	lda <Temp_Var5
+	lda <var5
 	sta [level_data_pointer], y	 ; Store into tile mem
 
 	jsr LoadLevel_NextColumn ; Next column
@@ -1393,26 +1393,26 @@ LevelLoad_RightShadow46:
 
 ; Vertical Block Run
 LLM46_SeTTileV:
-	sta <Temp_Var5
+	sta <var5
 
 	lda generator_index
 	pha	 			 ; Save generator_index
 	and #$0f	 
-	sta <Temp_Var1	 ; Temp_Var1 = lower 4 bits of generator_index
+	sta <var1	 ; var1 = lower 4 bits of generator_index
 	pla				 ; Restore generator_index
 	
 	ldy level_data_offset 	; Y = level_data_offset
 
-; Loop through the number of times defined by Temp_Var1 placing Temp_Var5 into level memory vertically.
+; Loop through the number of times defined by var1 placing var5 into level memory vertically.
 PRG046_D811:
 	; Store into tile mem
-	lda <Temp_Var5
+	lda <var5
 	sta [level_data_pointer], y	 
 
 	jsr update_level_data_pointer_downwards
 
-	; While Temp_Var1 >= 0, loop!
-	dec <Temp_Var1
+	; While var1 >= 0, loop!
+	dec <var1
 	bpl PRG046_D811	 	
 	rts
 
@@ -1442,12 +1442,12 @@ LevelLoad_TL_BR_CHAIN46:
 	lda generator_index
 	pha	 			 ; Save generator_index
 	and #$0f	 
-	sta <Temp_Var1	 ; Temp_Var1 = lower 4 bits of generator_index
+	sta <var1	 ; var1 = lower 4 bits of generator_index
 	pla				 ; Restore generator_index
 	
 	ldy level_data_offset 	; Y = level_data_offset
 
-; Loop through the number of times defined by Temp_Var1 placing Temp_Var5 into level memory vertically.
+; Loop through the number of times defined by var1 placing var5 into level memory vertically.
 Loop_LLM46_SeTTileTL_BR:
 	; Store into tile mem
 
@@ -1478,8 +1478,8 @@ LLM46_SeTTileTL_BRLoopLoopFinish:
 	jsr update_level_data_pointer_downwards
 	jsr update_level_data_pointer_rightwards
 
-	; While Temp_Var1 >= 0, loop!
-	dec <Temp_Var1
+	; While var1 >= 0, loop!
+	dec <var1
 	bpl Loop_LLM46_SeTTileTL_BR	 	
 	rts
 
@@ -1509,12 +1509,12 @@ LevelLoad_BL_TR_CHAIN46:
 	lda generator_index
 	pha	 			 ; Save generator_index
 	and #$0f	 
-	sta <Temp_Var1	 ; Temp_Var1 = lower 4 bits of generator_index
+	sta <var1	 ; var1 = lower 4 bits of generator_index
 	pla				 ; Restore generator_index
 	
 	ldy level_data_offset 	; Y = level_data_offset
 
-; Loop through the number of times defined by Temp_Var1 placing Temp_Var5 into level memory vertically.
+; Loop through the number of times defined by var1 placing var5 into level memory vertically.
 Loop_LLM46_SeTTileBL_TR:
 	lda [level_data_pointer], y	 
 	ldx #(EndLevelLoad_BL_TR_CHAIN46 - LevelLoad_BL_TR_CHAIN46ToChange)
@@ -1544,8 +1544,8 @@ LLM46_SeTTileBL_TRLoopLoopFinish:
 	jsr update_level_data_pointer_upwards
 	jsr update_level_data_pointer_rightwards
 
-	; While Temp_Var1 >= 0, loop!
-	dec <Temp_Var1
+	; While var1 >= 0, loop!
+	dec <var1
 	bpl Loop_LLM46_SeTTileBL_TR 	
 	rts
 
@@ -1586,42 +1586,42 @@ _apply_sewer_extended_horizontal_generator:
 	pha
 
 	; Save parent variables
-	lda <Temp_Var10
+	lda <var10
 	pha
-	lda <Temp_Var11
+	lda <var11
 	pha
-	lda <Temp_Var12
+	lda <var12
 	pha
-	lda <Temp_Var13
+	lda <var13
 	pha
-	lda <Temp_Var14
+	lda <var14
 	pha
-	lda <Temp_Var15
+	lda <var15
 	pha
 
 	; Get the horizontal size of the generator.
 	jsr get_next_char_from_generator_data
-	sta <Temp_Var10
-	inc <Temp_Var10  ; Makes looping nicer
+	sta <var10
+	inc <var10  ; Makes looping nicer
 
 	; Determine the height of the slope.
 	lda generator_index
 	and #$0F
-	sta <Temp_Var11
+	sta <var11
 
 	; Counter of the number of the inner blocks to create.
-	sta <Temp_Var12
-	inc <Temp_Var12  ; Makes looping nicer
+	sta <var12
+	inc <var12  ; Makes looping nicer
 
 _loop_horizontal_sewer_extended_horizontal_generator:
 	; Save offset and address for looping.
 	lda level_data_offset
 	tay
-	sta <Temp_Var13
+	sta <var13
 	lda <level_data_pointer
-	sta <Temp_Var14
+	sta <var14
 	lda <level_data_pointer+1
-	sta <Temp_Var15
+	sta <var15
 
 _loop_vertical_sewer_extended_horizontal_generator:
 	lda _sewer_extended_horizontal_generator_blocks, x
@@ -1629,27 +1629,27 @@ _loop_vertical_sewer_extended_horizontal_generator:
 
 	jsr update_level_data_pointer_downwards
 
-	dec <Temp_Var12
+	dec <var12
 	bne _loop_vertical_sewer_extended_horizontal_generator
 
 	; Reset the counter for the next row.
-	lda <Temp_Var11
-	sta <Temp_Var12
-	inc <Temp_Var12  ; Makes looping nicer
+	lda <var11
+	sta <var12
+	inc <var12  ; Makes looping nicer
 
 	; Restore offset and address for looping.
-	lda <Temp_Var13
+	lda <var13
 	tay
 	sta level_data_offset
-	lda <Temp_Var14
+	lda <var14
 	sta <level_data_pointer
-	lda <Temp_Var15
+	lda <var15
 	sta <level_data_pointer+1
 
 	jsr update_level_data_pointer_rightwards
 
 	; Check if we have more blocks to place horizontally.
-	dec <Temp_Var10
+	dec <var10
 	beq _finished_loop_vertical_sewer_extended_horizontal_generator
 
 	jmp _loop_horizontal_sewer_extended_horizontal_generator
@@ -1657,17 +1657,17 @@ _loop_vertical_sewer_extended_horizontal_generator:
 _finished_loop_vertical_sewer_extended_horizontal_generator:
 	; Restore parent variables
 	pla
-	sta <Temp_Var15
+	sta <var15
 	pla
-	sta <Temp_Var14
+	sta <var14
 	pla
-	sta <Temp_Var13
+	sta <var13
 	pla
-	sta <Temp_Var12
+	sta <var12
 	pla
-	sta <Temp_Var11
+	sta <var11
 	pla
-	sta <Temp_Var10
+	sta <var10
 
 	; Restore address
 	pla
@@ -1682,11 +1682,11 @@ _finished_loop_vertical_sewer_extended_horizontal_generator:
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; LevelLoad_LeftWall46
+; _apply_sewer_left_wall_generator
 ;
 ; Puts down 1-16 left walls
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-LevelLoad_LeftWall46:
+_apply_sewer_left_wall_generator:
 	lda #TILE16_GROUNDML
 
 
@@ -1696,39 +1696,39 @@ LevelLoad_LeftWall46:
 ; Puts down 1-16 blocks with shadow
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LLM46_SeTTileV_LeftShadow:
-	sta <Temp_Var10
+	sta <var10
 
 	lda generator_index
 	pha	 			 ; Save generator_index
 	and #$0f	 
-	sta <Temp_Var11	 ; Temp_Var11 = lower 4 bits of generator_index
+	sta <var11	 ; var11 = lower 4 bits of generator_index
 	pla				 ; Restore generator_index
 	
 	ldy level_data_offset 	; Y = level_data_offset
 
-; Loop through the number of times defined by Temp_Var11 placing Temp_Var10 into level memory vertically.
+; Loop through the number of times defined by var11 placing var10 into level memory vertically.
 PRG046_D812:
 	jsr GenerateLeftShading
 
 	; Store into tile mem
 	ldy level_data_offset
-	lda <Temp_Var10
+	lda <var10
 	sta [level_data_pointer], y	 
 
 	jsr update_level_data_pointer_downwards
 
-	; While Temp_Var11 >= 0, loop!
-	dec <Temp_Var11
+	; While var11 >= 0, loop!
+	dec <var11
 	bpl PRG046_D812 	
 	rts
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; LevelLoad_RightWall46
+; _apply_sewer_right_wall_generator
 ;
 ; Puts down 1-16 right walls
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-LevelLoad_RightWall46:
+_apply_sewer_right_wall_generator:
 	lda #TILE16_GROUNDMR
 
 
@@ -1738,29 +1738,29 @@ LevelLoad_RightWall46:
 ; Puts down 1-16 blocks with shadow
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LLM46_SeTTileV_RightShadow:
-	sta <Temp_Var10
+	sta <var10
 
 	lda generator_index
 	pha	 			 ; Save generator_index
 	and #$0f	 
-	sta <Temp_Var11	 ; Temp_Var1 = lower 4 bits of generator_index
+	sta <var11	 ; var1 = lower 4 bits of generator_index
 	pla				 ; Restore generator_index
 	
 	ldy level_data_offset 	; Y = level_data_offset
 
-; Loop through the number of times defined by Temp_Var1 placing Temp_Var10 into level memory vertically.
+; Loop through the number of times defined by var1 placing var10 into level memory vertically.
 LLM46_SeTTileV_RightShadow_Loop:
 	jsr GenerateRightShading
 
 	; Store into tile mem
 	ldy level_data_offset
-	lda <Temp_Var10
+	lda <var10
 	sta [level_data_pointer], y	 
 
 	jsr update_level_data_pointer_downwards
 
-	; While Temp_Var1 >= 0, loop!
-	dec <Temp_Var11
+	; While var1 >= 0, loop!
+	dec <var11
 	bpl LLM46_SeTTileV_RightShadow_Loop	
 	rts
 
@@ -1827,30 +1827,30 @@ LoadLevel_Sewer_Slope45T2B:
 	pha
 
 	; Save parent variables
-	lda <Temp_Var10
+	lda <var10
 	pha
-	lda <Temp_Var11
+	lda <var11
 	pha
-	lda <Temp_Var12
+	lda <var12
 	pha
-	lda <Temp_Var13
+	lda <var13
 	pha
-	lda <Temp_Var14
+	lda <var14
 	pha
-	lda <Temp_Var15
+	lda <var15
 	pha
-	lda <Temp_Var16
+	lda <var16
 	pha
 
 	; Counter of the number of inner and middle grounds to place at the current location.
 	lda #$00
-	sta <Temp_Var10
-	sta <Temp_Var16
+	sta <var10
+	sta <var16
 
 	; Determine the size of the slope.
 	lda generator_index
 	and #$0F
-	sta <Temp_Var11
+	sta <var11
 
 	; Find the relative index of the slope.
 	lda generator_index	 
@@ -1860,43 +1860,43 @@ LoadLevel_Sewer_Slope45T2B:
 	rol A	
 	rol A	
 	rol A
-	sta <Temp_Var12
+	sta <var12
 
 Sewer_Slope45T2B_LoopRow:
 	; Save offset and address for looping
 	lda level_data_offset
 	tay
-	sta <Temp_Var13
+	sta <var13
 	lda <level_data_pointer
-	sta <Temp_Var14
+	sta <var14
 	lda <level_data_pointer+1
-	sta <Temp_Var15
+	sta <var15
 
 Sewer_Slope45T2B_LoopInnerGround:
 	; Escape out of loop when one or less.
-	lda <Temp_Var10
+	lda <var10
 	cmp #$01
 	bcc Sewer_Slope45T2B_FinishedLoopInnerGround
 	beq Sewer_Slope45T2B_FinishedLoopInnerGround
 	
 	; Place the inner ground.
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerInnerGround, x
 	sta [level_data_pointer], y
 
 	; Move to the right one.
 	jsr update_level_data_pointer_rightwards
 
-	dec <Temp_Var10
+	dec <var10
 	jmp Sewer_Slope45T2B_LoopInnerGround
 
 Sewer_Slope45T2B_FinishedLoopInnerGround:
 	; If at the top of the slope, do not place middle ground
-	lda <Temp_Var10
+	lda <var10
 	beq Sewer_Slope45T2B_PlaceSlope
 
 	; add the middle ground
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerMiddleGroundTL, X
 	sta [level_data_pointer], y	 ; Store into tile mem
 	
@@ -1905,7 +1905,7 @@ Sewer_Slope45T2B_FinishedLoopInnerGround:
 
 Sewer_Slope45T2B_PlaceSlope:
 	; Place a slope block.
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_45SewersT2B, x
 	sta [level_data_pointer], y
 
@@ -1914,41 +1914,41 @@ Sewer_Slope45T2B_PlaceSlope:
 	jsr GenerateTopRightShading
 
 	; Restore offset and address for looping
-	lda <Temp_Var13
+	lda <var13
 	tay
 	sta level_data_offset
-	lda <Temp_Var14
+	lda <var14
 	sta <level_data_pointer
-	lda <Temp_Var15
+	lda <var15
 	sta <level_data_pointer+1
 
 	; Go down one block.
 	jsr update_level_data_pointer_downwards
 
 	; Each row is one larger.
-	inc <Temp_Var16
-	lda <Temp_Var16
-	sta <Temp_Var10
+	inc <var16
+	lda <var16
+	sta <var10
 
 	; Determine if we should continue making a slope.
-	dec <Temp_Var11
+	dec <var11
 	bne Sewer_Slope45T2B_LoopRow
 
 ; Move to the right of the slope.
 Sewer_Slope45T2B_PlaceLowerMiddleGround:
-	lda <Temp_Var10
+	lda <var10
 	cmp #$01
 	bcc Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
 	beq Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
 
 	jsr update_level_data_pointer_rightwards
 
-	dec <Temp_Var10
+	dec <var10
 	jmp Sewer_Slope45T2B_PlaceLowerMiddleGround
 
 Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
 	; Place the lower inner slope
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerMiddleGroundTL, x
 	sta [level_data_pointer], y
 
@@ -1979,31 +1979,31 @@ LoadLevel_Sewer_Slope45B2T:
 	pha
 
 	; Save parent variables
-	lda <Temp_Var10
+	lda <var10
 	pha
-	lda <Temp_Var11
+	lda <var11
 	pha
-	lda <Temp_Var12
+	lda <var12
 	pha
-	lda <Temp_Var13
+	lda <var13
 	pha
-	lda <Temp_Var14
+	lda <var14
 	pha
-	lda <Temp_Var15
+	lda <var15
 	pha
-	lda <Temp_Var16
+	lda <var16
 	pha
 
 	; Counter of the number of inner and middle grounds to place at the current location.
 	lda #$00
-	sta <Temp_Var10
-	sta <Temp_Var16
+	sta <var10
+	sta <var16
 
 	; Determine the size of the slope.
 	lda generator_index
 	and #$0F
-	sta <Temp_Var11
-	inc <Temp_Var11  ; Makes looping easier
+	sta <var11
+	inc <var11  ; Makes looping easier
 
 	; Find the relative index of the slope.
 	lda generator_index	 
@@ -2013,73 +2013,73 @@ LoadLevel_Sewer_Slope45B2T:
 	rol A	
 	rol A	
 	rol A
-	sta <Temp_Var12
+	sta <var12
 
 Sewer_Slope45B2T_LoopRow:
 	; Save offset and address for looping
 	lda level_data_offset
 	tay
-	sta <Temp_Var13
+	sta <var13
 	lda <level_data_pointer
-	sta <Temp_Var14
+	sta <var14
 	lda <level_data_pointer+1
-	sta <Temp_Var15
+	sta <var15
 
 	; Generate the shading for the current slope
 	jsr update_level_data_pointer_rightwards
 	jsr GenerateTopLeftShading
 
 	; Restore the offset and address
-	lda <Temp_Var13
+	lda <var13
 	tay
 	sta level_data_offset
-	lda <Temp_Var14
+	lda <var14
 	sta <level_data_pointer
-	lda <Temp_Var15
+	lda <var15
 	sta <level_data_pointer+1
 
 	; Place a slope block.
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_45SewersB2T, x
 	sta [level_data_pointer], y
 
 	; Jump if there are no blocks to place.
-	lda <Temp_Var10
+	lda <var10
 	beq Sewer_Slope45B2T_FinishMiddleGround
 	
 	; Move to the right one
 	jsr update_level_data_pointer_rightwards
 
 	; Place the middle ground
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerMiddleGroundTR, X
 	sta [level_data_pointer], y	 ; Store into tile mem
 	
 	; Jump if there are no blocks to place.
-	dec <Temp_Var10
+	dec <var10
 	beq Sewer_Slope45B2T_FinishMiddleGround
 
 Sewer_Slope45B2T_LoopInnerGround:
 	; Move to the right one
 	jsr update_level_data_pointer_rightwards
 	
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerInnerGround, x	 ; Get mid-ground tile
 	sta [level_data_pointer], y	 ; Store into tile mem
 
 	; Jump if there are no blocks to place.
-	dec <Temp_Var10
+	dec <var10
 	bne Sewer_Slope45B2T_LoopInnerGround
 
 Sewer_Slope45B2T_FinishMiddleGround:
 
 	; Restore offset and address for looping
-	lda <Temp_Var13
+	lda <var13
 	tay
 	sta level_data_offset
-	lda <Temp_Var14
+	lda <var14
 	sta <level_data_pointer
-	lda <Temp_Var15
+	lda <var15
 	sta <level_data_pointer+1
 
 	; Go back one block and down one.
@@ -2087,18 +2087,18 @@ Sewer_Slope45B2T_FinishMiddleGround:
 	jsr update_level_data_pointer_downwards
 
 	; Each row is one larger.
-	inc <Temp_Var16
-	lda <Temp_Var16
-	sta <Temp_Var10
+	inc <var16
+	lda <var16
+	sta <var10
 
 	; Determine if we should continue making a slope.
-	dec <Temp_Var11
+	dec <var11
 	bne Sewer_Slope45B2T_LoopRow
 
 	; Place the lower inner slope
 	jsr update_level_data_pointer_rightwards
 
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerMiddleGroundTR, x
 	sta [level_data_pointer], y
 
@@ -2129,30 +2129,30 @@ LoadLevel_Sewer_Slope45T2BCeiling:
 	pha
 
 	; Save parent variables
-	lda <Temp_Var10
+	lda <var10
 	pha
-	lda <Temp_Var11
+	lda <var11
 	pha
-	lda <Temp_Var12
+	lda <var12
 	pha
-	lda <Temp_Var13
+	lda <var13
 	pha
-	lda <Temp_Var14
+	lda <var14
 	pha
-	lda <Temp_Var15
+	lda <var15
 	pha
-	lda <Temp_Var16
+	lda <var16
 	pha
 
 	; Determine the size of the slope.
 	lda generator_index
 	and #$0F
-	sta <Temp_Var11
-	inc <Temp_Var11  ; Makes looping easier
+	sta <var11
+	inc <var11  ; Makes looping easier
 
 	; Counter of the number of inner and middle grounds to place at the current location.
-	sta <Temp_Var10
-	sta <Temp_Var16
+	sta <var10
+	sta <var16
 
 	; Find the relative index of the slope.
 	lda generator_index	 
@@ -2162,21 +2162,21 @@ LoadLevel_Sewer_Slope45T2BCeiling:
 	rol A	
 	rol A	
 	rol A
-	sta <Temp_Var12
+	sta <var12
 
 	; Save offset and address for looping
 	lda level_data_offset
 	tay
-	sta <Temp_Var13
+	sta <var13
 	lda <level_data_pointer
-	sta <Temp_Var14
+	sta <var14
 	lda <level_data_pointer+1
-	sta <Temp_Var15
+	sta <var15
 
 	; Place the middle ground one above the start of the slope.
 	jsr update_level_data_pointer_upwards
 
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerMiddleGroundBR, x
 	sta [level_data_pointer], y
 
@@ -2184,14 +2184,14 @@ Sewer_Slope45T2BCeiling_LoopRow:
 	; Save offset and address for looping
 	lda level_data_offset
 	tay
-	sta <Temp_Var13
+	sta <var13
 	lda <level_data_pointer
-	sta <Temp_Var14
+	sta <var14
 	lda <level_data_pointer+1
-	sta <Temp_Var15
+	sta <var15
 
 	; Place a slope block.
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_45SewersT2BCeiling, x
 	sta [level_data_pointer], y
 
@@ -2200,28 +2200,28 @@ Sewer_Slope45T2BCeiling_LoopRow:
 	jsr GenerateBottomLeftShading
 
 	; Restore offset and address for looping
-	lda <Temp_Var13
+	lda <var13
 	tay
 	sta level_data_offset
-	lda <Temp_Var14
+	lda <var14
 	sta <level_data_pointer
-	lda <Temp_Var15
+	lda <var15
 	sta <level_data_pointer+1
 
 	; Jump if there are no blocks to place.
-	lda <Temp_Var10
+	lda <var10
 	beq Sewer_Slope45T2BC_FinishMiddleGround
 	
 	; Move to the right one
 	jsr update_level_data_pointer_rightwards
 
 	; Place the middle ground
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerMiddleGroundBR, X
 	sta [level_data_pointer], y
 	
 	; Jump if there are no blocks to place.
-	dec <Temp_Var10
+	dec <var10
 	beq Sewer_Slope45T2BC_FinishMiddleGround
 
 Sewer_Slope45T2BC_LoopInnerGround:
@@ -2229,22 +2229,22 @@ Sewer_Slope45T2BC_LoopInnerGround:
 	jsr update_level_data_pointer_rightwards
 	
 	; Place the inner ground.
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerInnerGround, x
 	sta [level_data_pointer], y
 
 	; Jump if there are no blocks to place.
-	dec <Temp_Var10
+	dec <var10
 	bne Sewer_Slope45T2BC_LoopInnerGround
 
 Sewer_Slope45T2BC_FinishMiddleGround:
 	; Restore offset and address for looping
-	lda <Temp_Var13
+	lda <var13
 	tay
 	sta level_data_offset
-	lda <Temp_Var14
+	lda <var14
 	sta <level_data_pointer
-	lda <Temp_Var15
+	lda <var15
 	sta <level_data_pointer+1
 
 	; Go down one block and right one.
@@ -2252,12 +2252,12 @@ Sewer_Slope45T2BC_FinishMiddleGround:
 	jsr update_level_data_pointer_downwards
 
 	; Each row is one smaller.
-	dec <Temp_Var16
-	lda <Temp_Var16
-	sta <Temp_Var10
+	dec <var16
+	lda <var16
+	sta <var10
 
 	; Determine if we should continue making a slope.
-	dec <Temp_Var11
+	dec <var11
 	bne Sewer_Slope45T2BCeiling_LoopRow
 
 	jmp Sewer_Slope_Finish
@@ -2287,30 +2287,30 @@ LoadLevel_Sewer_Slope45B2TCeiling:
 	pha
 
 	; Save parent variables
-	lda <Temp_Var10
+	lda <var10
 	pha
-	lda <Temp_Var11
+	lda <var11
 	pha
-	lda <Temp_Var12
+	lda <var12
 	pha
-	lda <Temp_Var13
+	lda <var13
 	pha
-	lda <Temp_Var14
+	lda <var14
 	pha
-	lda <Temp_Var15
+	lda <var15
 	pha
-	lda <Temp_Var16
+	lda <var16
 	pha
 
 	; Determine the size of the slope.
 	lda generator_index
 	and #$0F
-	sta <Temp_Var11
-	inc <Temp_Var11  ; Makes looping easier
+	sta <var11
+	inc <var11  ; Makes looping easier
 
 	; Counter of the number of inner and middle grounds to place at the current location.
-	sta <Temp_Var10
-	sta <Temp_Var16
+	sta <var10
+	sta <var16
 
 	; Find the relative index of the slope.
 	lda generator_index	 
@@ -2320,85 +2320,85 @@ LoadLevel_Sewer_Slope45B2TCeiling:
 	rol A	
 	rol A	
 	rol A
-	sta <Temp_Var12
+	sta <var12
 
 	; Save offset and address for looping
 	lda level_data_offset
 	tay
-	sta <Temp_Var13
+	sta <var13
 	lda <level_data_pointer
-	sta <Temp_Var14
+	sta <var14
 	lda <level_data_pointer+1
-	sta <Temp_Var15
+	sta <var15
 
 	; Place the middle ground one above the start of the slope.
 	jsr update_level_data_pointer_upwards
 
 	; Skip moving to the right if first slope.
-	lda <Temp_Var10
+	lda <var10
 	beq Sewer_Slope45B2TCeiling_FinishedFirstMiddle
 
 ; Must get all the way to the right.
 Sewer_Slope45B2TCeiling_FirstMiddleLoop
 	jsr update_level_data_pointer_rightwards
 
-	dec <Temp_Var10
+	dec <var10
 	bne Sewer_Slope45B2TCeiling_FirstMiddleLoop
 
 Sewer_Slope45B2TCeiling_FinishedFirstMiddle
 	; Reset the counter.
-	lda <Temp_Var16
-	sta <Temp_Var10
+	lda <var16
+	sta <var10
 
 	; Place the middle ground.
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerMiddleGroundBL, x
 	sta [level_data_pointer], y
 
 	; Restore offset and address for looping
-	lda <Temp_Var13
+	lda <var13
 	tay
 	sta level_data_offset
-	lda <Temp_Var14
+	lda <var14
 	sta <level_data_pointer
-	lda <Temp_Var15
+	lda <var15
 	sta <level_data_pointer+1
 
 Sewer_Slope45B2TCeiling_LoopRow:
 	; Save offset and address for looping
 	lda level_data_offset
 	tay
-	sta <Temp_Var13
+	sta <var13
 	lda <level_data_pointer
-	sta <Temp_Var14
+	sta <var14
 	lda <level_data_pointer+1
-	sta <Temp_Var15
+	sta <var15
 
 Sewer_Slope45T2BCeiling_LoopInnerGround:
 	; Escape out of loop when one or less.
-	lda <Temp_Var10
+	lda <var10
 	cmp #$01
 	bcc Sewer_Slope45T2BCeiling_FinishedLoopInnerGround
 	beq Sewer_Slope45T2BCeiling_FinishedLoopInnerGround
 	
 	; Place the inner ground.
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerInnerGround, x
 	sta [level_data_pointer], y
 
 	; Move to the right one.
 	jsr update_level_data_pointer_rightwards
 
-	dec <Temp_Var10
+	dec <var10
 	jmp Sewer_Slope45T2BCeiling_LoopInnerGround
 
 Sewer_Slope45T2BCeiling_FinishedLoopInnerGround:
 	; If at the top of the slope, do not place middle ground
-	lda <Temp_Var10
+	lda <var10
 	beq Sewer_Slope45T2BCeiling_PlaceSlope
 
 	; add the middle ground
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_SewerMiddleGroundBL, X
 	sta [level_data_pointer], y	 ; Store into tile mem
 	
@@ -2407,7 +2407,7 @@ Sewer_Slope45T2BCeiling_FinishedLoopInnerGround:
 
 Sewer_Slope45T2BCeiling_PlaceSlope:
 	; Place a slope block.
-	ldx <Temp_Var12
+	ldx <var12
 	lda LL_45SewersB2TCeiling, x
 	sta [level_data_pointer], y
 
@@ -2416,43 +2416,43 @@ Sewer_Slope45T2BCeiling_PlaceSlope:
 	jsr GenerateBottomRightShading
 
 	; Restore offset and address for looping
-	lda <Temp_Var13
+	lda <var13
 	tay
 	sta level_data_offset
-	lda <Temp_Var14
+	lda <var14
 	sta <level_data_pointer
-	lda <Temp_Var15
+	lda <var15
 	sta <level_data_pointer+1
 
 	; Go down one block.
 	jsr update_level_data_pointer_downwards
 
 	; Each row is one smaller.
-	dec <Temp_Var16
-	lda <Temp_Var16
-	sta <Temp_Var10
+	dec <var16
+	lda <var16
+	sta <var10
 
 	; Determine if we should continue making a slope.
-	dec <Temp_Var11
+	dec <var11
 	bne Sewer_Slope45B2TCeiling_LoopRow
 
 
 Sewer_Slope_Finish:
 	; Restore parent variables
 	pla
-	sta <Temp_Var16
+	sta <var16
 	pla
-	sta <Temp_Var15
+	sta <var15
 	pla
-	sta <Temp_Var14
+	sta <var14
 	pla
-	sta <Temp_Var13
+	sta <var13
 	pla
-	sta <Temp_Var12
+	sta <var12
 	pla
-	sta <Temp_Var11
+	sta <var11
 	pla
-	sta <Temp_Var10
+	sta <var10
 
 	; Restore address
 	pla

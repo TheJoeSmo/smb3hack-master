@@ -668,10 +668,10 @@ BowserJr_DoVisChecks:
 BowserJr_DrawHead:
 	JSR Object_ShakeAndCalcSprite
 
-	LDA <Temp_Var4
+	LDA <var4
 	AND #~SPR_PAL3
 	ORA #SPR_PAL1
-	STA <Temp_Var4
+	STA <var4
 
 	; Use last two standard sprites
 	TYA
@@ -683,20 +683,20 @@ BowserJr_DrawHead:
 
 Wart_Draw16x16:
 	LDA #2
-	STA <Temp_Var1
+	STA <var1
 	BNE Wart_DrawEntry
 
 Wart_Draw32x16:
 
 	LDA #4
-	STA <Temp_Var1
+	STA <var1
 
 Wart_DrawEntry:
 	JSR Wart_DrawInit
 
 WartDraw32x16_Loop:
 	; Store Y
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$00,Y
 	
 	; Store pattern
@@ -704,16 +704,16 @@ WartDraw32x16_Loop:
 	STA Sprite_RAM+$01,Y
 	
 	; Store attributes
-	LDA <Temp_Var3
+	LDA <var3
 	STA Sprite_RAM+$02,Y
 	
 	; Store X
-	LDA <Temp_Var4
+	LDA <var4
 	STA Sprite_RAM+$03,Y
 	
 	; +8 for next sprite
 	ADD #8
-	STA <Temp_Var4
+	STA <var4
 		
 	; Next sprite!
 	INY
@@ -724,8 +724,8 @@ WartDraw32x16_Loop:
 	; Next pattern!
 	INX
 
-	DEC <Temp_Var1		; Temp_Var1--
-	BNE WartDraw32x16_Loop	; While Temp_Var1 > 0, loop!
+	DEC <var1		; var1--
+	BNE WartDraw32x16_Loop	; While var1 > 0, loop!
 
 	RTS
 
@@ -734,10 +734,10 @@ Wart_DrawInit:
 	TXA
 	PHA
 	
-	; Get sprite Y/Attr/X -> Temp_Var2/3/4
+	; Get sprite Y/Attr/X -> var2/3/4
 	LDX <SlotIndexBackup
 	LDA <Objects_SpriteY,X
-	STA <Temp_Var2
+	STA <var2
 
 	LDA <Objects_Var5,X
 	CMP #5
@@ -754,10 +754,10 @@ Wart_DrawInit_NoCycle:
 	
 Wart_DrawInit_Cycle:
 	ORA Objects_FlipBits,X
-	STA <Temp_Var3
+	STA <var3
 	
 	LDA <Objects_SpriteX,X
-	STA <Temp_Var4
+	STA <var4
 	
 	; Restore 'X'
 	PLA
@@ -768,30 +768,30 @@ Wart_DrawInit_Cycle:
 
 Wart_DrawBackside:
 	LDA #3
-	STA <Temp_Var1
+	STA <var1
 	
 	JSR Wart_DrawInit
 	
 	LDX #(WartPats_Backside - ObjPE2)
 Wart_DrawBackside_Loop:
 	; Store Y
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$00,Y
 
 	; +16 for next sprite
 	ADD #16
-	STA <Temp_Var2
+	STA <var2
 
 	; Store pattern
 	LDA ObjPE2,X	; Get next pattern
 	STA Sprite_RAM+$01,Y
 	
 	; Store attributes
-	LDA <Temp_Var3
+	LDA <var3
 	STA Sprite_RAM+$02,Y
 	
 	; Store X
-	LDA <Temp_Var4
+	LDA <var4
 	ADD #32
 	STA Sprite_RAM+$03,Y
 			
@@ -804,8 +804,8 @@ Wart_DrawBackside_Loop:
 	; Next pattern!
 	INX
 
-	DEC <Temp_Var1	; Temp_Var1--
-	BNE Wart_DrawBackside_Loop	; While Temp_Var1 > 0, loop!
+	DEC <var1	; var1--
+	BNE Wart_DrawBackside_Loop	; While var1 > 0, loop!
 
 	LDX <SlotIndexBackup
 	RTS
@@ -1605,7 +1605,7 @@ Boomer_Normal:
 	;BCC Boomer_NotHit	; If Player is not colliding with the object, jump to Boomer_NotHit
 
 	;JSR Object_CalcCoarseYDiff
-	;LDA <Temp_Var15
+	;LDA <var15
 	;SUB #12
 	;CMP #4
 	;BGE Boomer_NotHit	; Not in stompable range, jump to Boomer_NotHit
@@ -1642,7 +1642,7 @@ Boomer_Normal:
 	
 	; Flip Bowser Jr the right way, assuming he's not spinning out
 	LDA Boomer_BJr_FlipDir,Y
-	STA <Temp_Var3
+	STA <var3
 	
 	LDY Objects_Var10,X		; Get BJr's handle
 
@@ -1672,14 +1672,14 @@ Boomer_Normal:
 	
 BoomerBowserJr_NotSpinOut:
 	; Set flip
-	LDA <Temp_Var3
+	LDA <var3
 	STA Objects_FlipBits,Y
 	
 BoomerJr_NotDefeated:
 	PLA
 	ASL A
 	TAY
-	STY <Temp_Var3	; Temp_Var3 = 2 if facing left, 0 if facing right
+	STY <var3	; var3 = 2 if facing left, 0 if facing right
 
 	LDA Objects_Timer,X
 	BNE Boomer_FireWait
@@ -1692,15 +1692,15 @@ BoomerJr_NotDefeated:
 	STA Objects_Var1,X
 	
 	LDA Boomer_FireOffsetY,Y
-	STA <Temp_Var2
+	STA <var2
 	LDA Boomer_FireDelay,Y
 	STA Objects_Timer,X
 
 	TYA
-	ADD <Temp_Var3
+	ADD <var3
 	TAY
 	LDA Boomer_FireOffsetX,Y
-	STA <Temp_Var1
+	STA <var1
 		
 	JSR Boomer_FireBullet
 	LDX <SlotIndexBackup
@@ -1746,16 +1746,16 @@ Boomer_SkipVel:
 
 Boomer_FireBullet:
 
-	; Temp_Var3 will be transformed into appropriate X velocity
-	; Temp_Var4 holds facing direction for Bullet Bill
-	LDA <Temp_Var3
+	; var3 will be transformed into appropriate X velocity
+	; var4 holds facing direction for Bullet Bill
+	LDA <var3
 	LSR A			; 0/1 normalized
 	TAY
 	LDA Boomer_FireSprAttr,Y
-	STA <Temp_Var4
+	STA <var4
 	
 	LDA Boomer_FireXVel,Y
-	STA <Temp_Var3
+	STA <var3
 
 	TXA
 	TAY
@@ -1768,25 +1768,25 @@ Boomer_FireBullet:
 	LDA #OBJ_BULLETBILL
 	STA Level_ObjectID,X
 	
-	LDA <Temp_Var3
+	LDA <var3
 	STA <Objects_XVel,X
 	
 	LDA Objects_X,Y
-	ADD <Temp_Var1
+	ADD <var1
 	STA <Objects_X,X
 	LDA Objects_XHi,Y
 	ADC #0
 	STA <Objects_XHi,X
 	
 	LDA Objects_Y,Y
-	ADD <Temp_Var2
+	ADD <var2
 	AND #$F0		; Tile-align
 	STA <Objects_Y,X
 	LDA Objects_YHi,Y
 	ADC #0
 	STA <Objects_YHi,X
 
-	LDA <Temp_Var4
+	LDA <var4
 	STA Objects_FlipBits,X
 	
 	; Flags for alternate patterns, Bowser Jr Compatible
@@ -2363,9 +2363,9 @@ Yoshi_Draw:
 
 Yoshi_NotToungeFrame:
 	LDA YoshiHead_YOffs,Y
-	STA <Temp_Var11
+	STA <var11
 	LDA YoshiHead_YHiOffs,Y
-	STA <Temp_Var12
+	STA <var12
 
 	; 'Y' needs to be multiplied by 2 here
 	TYA
@@ -2380,9 +2380,9 @@ Yoshi_NotToungeFrame:
 	
 YoshiDraw_NotHFlipped:
 	LDA YoshiHead_XOffs,Y
-	STA <Temp_Var9
+	STA <var9
 	LDA YoshiHead_XHiOffs,Y
-	STA <Temp_Var10
+	STA <var10
 
 
 	; Draw head of Yoshi's head
@@ -2411,20 +2411,20 @@ YoshiDraw_NotHFlipped:
 Yoshi_DrawOffsetSprite:
 	LDA <Objects_X,X
 	PHA
-	ADD <Temp_Var9
+	ADD <var9
 	STA <Objects_X,X
 	LDA <Objects_XHi,X
 	PHA
-	ADC <Temp_Var10
+	ADC <var10
 	STA <Objects_XHi,X
 
 	LDA <Objects_Y,X
 	PHA
-	ADD <Temp_Var11
+	ADD <var11
 	STA <Objects_Y,X
 	LDA <Objects_YHi,X
 	PHA
-	ADC <Temp_Var12
+	ADC <var12
 	STA <Objects_YHi,X
 
 	JSR Object_DetermineHorzVis
@@ -2521,18 +2521,18 @@ Yoshi_StillTounging:
 	SUB <Objects_Var5,X
 	
 YoshiToungeXOff_NoNegate:
-	STA <Temp_Var1
+	STA <var1
 	ASL A
-	ADD <Temp_Var1
-	STA <Temp_Var9
+	ADD <var1
+	STA <var9
 	
 	LDA Objects_FlipBits,X
 	AND #SPR_HFLIP
 	BNE YoshiToungeXOff_NoFlip
 	
-	LDA <Temp_Var9
+	LDA <var9
 	NEG
-	STA <Temp_Var9
+	STA <var9
 	
 YoshiToungeXOff_NoFlip:
 	BMI YoshiToungeXOff_Neg
@@ -2541,12 +2541,12 @@ YoshiToungeXOff_NoFlip:
 YoshiToungeXOff_Neg:
 	LDA #$FF
 YoshiToungeXOff_OK:
-	STA <Temp_Var10
+	STA <var10
 	
 	LDA #-4
-	STA <Temp_Var11
+	STA <var11
 	LDA #$FF
-	STA <Temp_Var12
+	STA <var12
 
 
 	; Draw tounge
@@ -2775,7 +2775,7 @@ Urchin_Draw:
 	; Top
 	LDA Objects_SprVVis,X
 	LSR A
-	STA <Temp_Var5
+	STA <var5
 	BCS UrchinDraw_Invis	; If top is invisible, jump to UrchinDraw_Invis (RTS)
 
 	; 'Y' += 8 (Sprite RAM 2 sprites over)
@@ -2794,7 +2794,7 @@ Urchin_Draw:
 
 	; Bottom
 	
-	LDA <Temp_Var5
+	LDA <var5
 	LSR A
 	BCS UrchinDraw_Invis	; If bottom is invisible, jump to UrchinDraw_Invis (RTS)
 	
@@ -2814,7 +2814,7 @@ Urchin_Draw:
 	STA Sprite_RAM+$06,Y
 
 	; Pattern
-	LDX <Temp_Var6	 ; X = Temp_Var6 (starting tile)
+	LDX <var6	 ; X = var6 (starting tile)
 	LDA ObjectGroup_PatternSets,X	; Get first sprite pattern index
 	STA Sprite_RAM+$01,Y	; -> Sprite RAM
 	LDA ObjectGroup_PatternSets+2,X	; Get second sprite pattern index
@@ -2862,7 +2862,7 @@ ObjNorm_Gao:
 	BNE Gao_NoSpit		; Don't actually do spit if partially off-screen	
 
 	JSR Level_ObjCalcYDiffs
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #16
 	CMP #16
 	PHP
@@ -2870,7 +2870,7 @@ ObjNorm_Gao:
 	; Only spit on frame 0...
 	; Offset not used
 	LDA #0
-	STA <Temp_Var1
+	STA <var1
 	
 	JSR Gao_SpitFire
 	
@@ -2928,13 +2928,13 @@ ObjInit_Pokey:
 	STA Objects_SprHVis,X
 	STA Objects_SprVVis,X
 
-	; Temp_Var8 will usually hold the "previous index", but initialized to 
+	; var8 will usually hold the "previous index", but initialized to 
 	; impossible $FF just as a starting value (note that the lower nibble
 	; being $F is still valuable as it will indicate "no prior" on the first
 	; segment we create, the upper nibble is kind of arbitrary other than
 	; a "BMI" instruction)
 	LDA #$FF
-	STA <Temp_Var8
+	STA <var8
 
 	LDA <Objects_YHi,X
 	AND #$02
@@ -2946,7 +2946,7 @@ _Pokey_SpawnBodySegs_Loop:
 	LDA #$03
 	
 __Pokey_SpawnBodySegs_Loop:
-	STA <Temp_Var1
+	STA <var1
 	; Reset the y hi if needed, must happen before spawning segments
 	LDA <Objects_YHi,X
 	AND #$01
@@ -2956,7 +2956,7 @@ Pokey_SpawnBodySegs_Loop:
 
 	JSR Pokey_SpawnBodySeg
 
-	DEC <Temp_Var1
+	DEC <var1
 	BNE Pokey_SpawnBodySegs_Loop
 	
 	RTS
@@ -2995,24 +2995,24 @@ Pokey_SpawnBodySeg:
 	
 	; The "Data" of the body segment is to link to its prior (high nibble)
 	; and next (low nibble) so the body can collapse...
-	LDA <Temp_Var8	; Get the previous index
+	LDA <var8	; Get the previous index
 	BMI PokeyBodySeg_NoPrev		; If we haven't had a previous body segment yet (i.e. this is the first one), jump to PokeyBodySeg_NoPrev
 	
 	; Inform previous segment of this new next segment...
 	TAX				; Previous body segment index -> 'X'
-	STY <Temp_Var9	; Current body segment index -> Temp_Var9
+	STY <var9	; Current body segment index -> var9
 	
 	; Set previous segment's prior/next pair
 	LDA SpecialObj_Data,X
 	AND #$F0		; Clear the "next" link
-	ORA <Temp_Var9	; Apply the new next
+	ORA <var9	; Apply the new next
 	STA SpecialObj_Data,X
 	
 	; Resume...
 	LDX <SlotIndexBackup
 	
 PokeyBodySeg_NoPrev:
-	LDA <Temp_Var8	; Get previous index
+	LDA <var8	; Get previous index
 	
 	; Move to upper nibble (this segment will store the previous index as this one's prior)
 	ASL A
@@ -3028,8 +3028,8 @@ PokeyBodySeg_NoPrev:
 	ADD #16
 	STA Objects_Var1,X
 
-	; Update Temp_Var8 for next time...
-	STY <Temp_Var8
+	; Update var8 for next time...
+	STY <var8
 
 	RTS
 	
@@ -3169,10 +3169,10 @@ SandFill_DoNothing:
 
 SandFill_InitialFall:
 	LDA #0
-	STA <Temp_Var1
-	STA <Temp_Var2
-	STA <Temp_Var3
-	STA <Temp_Var4
+	STA <var1
+	STA <var2
+	STA <var3
+	STA <var4
 	LDA #CHNGTILE_QUICKSAND_TOP9
 	JSR SandFill_ChangeTile
 	
@@ -3216,10 +3216,10 @@ SandFill_NoHitFloor:
 	INC Objects_Var2,X
 	
 	LDA #0
-	STA <Temp_Var1
-	STA <Temp_Var2
-	STA <Temp_Var3
-	STA <Temp_Var4
+	STA <var1
+	STA <var2
+	STA <var3
+	STA <var4
 
 	LDA #CHNGTILE_QUICKSAND_MID9
 	JSR SandFill_ChangeTile
@@ -3266,26 +3266,26 @@ SandFill_CTSQuickSandOverride:
 	RTS
 	
 	; Execute tile change, with:
-	;	Temp_Var1/2 - X Offset
-	;	Temp_Var3/4 - Y Offset
+	;	var1/2 - X Offset
+	;	var3/4 - Y Offset
 	;	'A' - target tile
 SandFill_ChangeTile:
 	PHA		; Save input value
 
 	LDA <Objects_X,X
-	ADD <Temp_Var1
+	ADD <var1
 	AND #$F0
 	STA Level_BlockChgXLo
 	LDA <Objects_XHi,X
-	ADC <Temp_Var2
+	ADC <var2
 	STA Level_BlockChgXHi
 	
 	LDA <Objects_Y,X
-	ADD <Temp_Var3
+	ADD <var3
 	AND #$F0
 	STA Level_BlockChgYLo
 	LDA <Objects_YHi,X
-	ADC <Temp_Var4
+	ADC <var4
 	STA Level_BlockChgYHi
 
 	PLA		; Restore input value
@@ -3311,8 +3311,8 @@ SandFill_Fill:
 	STA Sound_QLevel2
 
 	LDA #0
-	STA <Temp_Var1
-	STA <Temp_Var2
+	STA <var1
+	STA <var2
 	
 	; Var1 - Bit 7 set = stop going left, bit 6 set = stop going right
 	; Var3 - Last filled row, bit 7 is side toggle (0 left, 1 right)
@@ -3326,17 +3326,17 @@ SandFill_Fill:
 	
 	; -16 - (Var3 * 16)
 	LDA #-16
-	SUB <Temp_Var8
-	STA <Temp_Var3
+	SUB <var8
+	STA <var3
 	LDA #$FF
-	SUB <Temp_Var9
-	STA <Temp_Var4
+	SUB <var9
+	STA <var4
 
 	LDA <Objects_Y,X
-	ADD <Temp_Var3
+	ADD <var3
 	STA ObjTile_DetYLo
 	LDA <Objects_YHi,X
-	ADC <Temp_Var4
+	ADC <var4
 	STA ObjTile_DetYHi
 
 
@@ -3345,7 +3345,7 @@ SandFill_Fill:
 	ROL A
 	ROL A	; 0 if going left, 1 if going right
 	AND #1
-	STA <Temp_Var5	; -> Temp_Var5
+	STA <var5	; -> var5
 	BNE SandFill_DoRight
 
 	; Left side...
@@ -3376,10 +3376,10 @@ SandFill_SetTile:
 	JSR SandFill_Mul16
 
 	; Set multiplication output into tile change coordinates
-	LDA <Temp_Var8
-	STA <Temp_Var1
-	LDA <Temp_Var9
-	STA <Temp_Var2
+	LDA <var8
+	STA <var1
+	LDA <var9
+	STA <var2
 
 	; We'll be using a tile replacement of "Quicksand top and middle" by default
 	LDA #CHNGTILE_SANDTOPMID
@@ -3393,10 +3393,10 @@ SandFill_SetFill:
 
 	; Calculate tile detection X offsets
 	LDA <Objects_X,X
-	ADD <Temp_Var8
+	ADD <var8
 	STA ObjTile_DetXLo
 	LDA <Objects_XHi,X
-	ADC <Temp_Var9
+	ADC <var9
 	STA ObjTile_DetXHi
 
 	JSR Object_DetectTileManual
@@ -3404,7 +3404,7 @@ SandFill_SetFill:
 	BLT SandFill_SkipTile	; If we haven't hit a solid wall, jump to SandFill_SkipTile
 
 	; Tile-side index -> 'Y'
-	LDY <Temp_Var5
+	LDY <var5
 
 	; Stop this direction
 	LDA Objects_Var1,X
@@ -3460,31 +3460,31 @@ SandFill_NotUsingBigChange:
 		
 	RTS
 
-	; Multiplying by 16, lower byte -> Temp_Var8, higher byte -> Temp_Var9
+	; Multiplying by 16, lower byte -> var8, higher byte -> var9
 SandFill_Mul16:
 	PHA
 	ASL A
 	ASL A
 	ASL A
 	ASL A
-	STA <Temp_Var8
+	STA <var8
 	
 	PLA
 	ASR A
 	ASR A
 	ASR A
 	ASR A
-	STA <Temp_Var9
+	STA <var9
 	RTS
 
 SandFill_OweMidChange:
 
 	; We need to change the tile below to a sand mid tile to make everything look right
 	LDA #0
-	STA <Temp_Var1
-	STA <Temp_Var2
-	STA <Temp_Var3
-	STA <Temp_Var4
+	STA <var1
+	STA <var2
+	STA <var3
+	STA <var4
 
 	LDA #CHNGTILE_QUICKSAND_MID9
 	JSR SandFill_ChangeTile
@@ -4177,17 +4177,17 @@ Clyde_SpitFire:
 	ROL A
 	TAY
 	LDA Clyde_SpitFireXOff,Y
-	STA <Temp_Var1
+	STA <var1
 
 	JSR SpecialObj_FindEmptyAbort	 ; Find an empty special object slot or don't come back!
 
 	LDA <Objects_X,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA SpecialObj_XLo,Y
 
 	; Y offset
 	LDA #0
-	STA <Temp_Var1
+	STA <var1
 
 	; Venus fire trap code is good enough for me!
 	JSR_THUNKA 5, Clyde_SpitFire5
@@ -4216,7 +4216,7 @@ Clyde_DigSeek:
 	
 Clyde_SeekPlayer:
 	JSR Object_CalcCoarseXDiff
-	LDA <Temp_Var15
+	LDA <var15
 	ADD #2
 	BPL Clyde_DigSeek_Right
 
@@ -4272,9 +4272,9 @@ Cylde_Draw:
 	TAY
 
 	; X+=16
-	LDA <Temp_Var2
+	LDA <var2
 	ADD #16
-	STA <Temp_Var2
+	STA <var2
 
 	LDX #(Clyde_Body - ObjectGrExt_PatternSets)
 	JSR Object_Draw16x16Sprite
@@ -4285,9 +4285,9 @@ Cylde_Draw:
 	TAY
 
 	; Y+=16
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #16
-	STA <Temp_Var1
+	STA <var1
 
 	LDA <Counter_1
 	AND #8
@@ -4301,7 +4301,7 @@ Clyde_Tail2:
 	INX
 	JSR Object_Draw16x16Sprite
 	
-	LDA <Temp_Var3
+	LDA <var3
 	AND #SPR_HFLIP
 	BEQ Cylde_NoHFlip
 	
@@ -4336,7 +4336,7 @@ Cylde_NoHFlip:
 	BEQ CyldeDraw_NoFreeSpr
 	
 	; Y
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$00,Y
 	
 	; Pattern
@@ -4344,20 +4344,20 @@ Cylde_NoHFlip:
 	STA Sprite_RAM+$01,Y
 	
 	; Palette
-	LDA <Temp_Var3
-	ORA <Temp_Var4
+	LDA <var3
+	ORA <var4
 	STA Sprite_RAM+$02,Y
 	
 	; X
 	CLC
-	LDA <Temp_Var3
+	LDA <var3
 	AND #SPR_HFLIP
 	ROL A
 	ROL A
 	ROL A	; 0/1
 	TAX
 	
-	LDA <Temp_Var2
+	LDA <var2
 	ADD ClydeFlipGut_XOff,X
 	STA Sprite_RAM+$03,Y
 	
@@ -4481,11 +4481,11 @@ ObjHit_DelfinoSlots:
 	JMP_THUNKA 42, ObjHit_DelfinoSlots42
 
 DelfinoSlot_DrawSlot:
-	; Temp_Var1 is the Y offset
+	; var1 is the Y offset
 	
 	LDA <Objects_Y,X
 	PHA
-	ADD <Temp_Var1
+	ADD <var1
 	STA <Objects_Y,X
 	LDA <Objects_YHi,X
 	PHA
@@ -4504,39 +4504,39 @@ DelfinoSlot_DrawSlot:
 	PLA
 	STA <Objects_Y,X
 
-	LDA <Temp_Var13
+	LDA <var13
 	ASL A		 
 	ADD #(ObjPF0 - ObjectGrExt_PatternSets)
-	STA <Temp_Var6	 ; Temp_Var6 += object's frame
+	STA <var6	 ; var6 += object's frame
 	TAX		 ; -> 'X'
 
 	; Top sprite
-	LDA <Temp_Var9
-	STA <Temp_Var4
-	LDY <Temp_Var11
+	LDA <var9
+	STA <var4
+	LDY <var11
 	JSR Object_Draw16x16Sprite	 ; Draw sprite
 
-	LSR <Temp_Var5	 ; Objects_SprVVis
+	LSR <var5	 ; Objects_SprVVis
 
 	; 'Y' += 8 (Sprite RAM 2 sprites over)
 	TYA
 	ADD #$08
 	TAY	
 
-	LDA <Temp_Var14
+	LDA <var14
 	ASL A		 
 	ADD #(ObjPF0 - ObjectGrExt_PatternSets)
-	STA <Temp_Var6	 ; Temp_Var6 += object's frame
+	STA <var6	 ; var6 += object's frame
 	TAX		 ; -> 'X'
 
 	LDA #16
-	ADD <Temp_Var1	 ; Sprite Y
-	STA <Temp_Var1	 ; Temp_Var1 += 16
+	ADD <var1	 ; Sprite Y
+	STA <var1	 ; var1 += 16
 
 	; Bottom sprite
-	LDA <Temp_Var10
-	STA <Temp_Var4
-	LDY <Temp_Var12
+	LDA <var10
+	STA <var4
+	LDY <var12
 	JSR Object_Draw16x16Sprite	 ; Draw sprite
 
 	LDX <SlotIndexBackup		 ; X = object slot index
@@ -4878,7 +4878,7 @@ Magiblot_NoHands:
 Magiblot_DrawHands:
 	; Sprite offset (0 or 4)
 	LDA #0
-	STA <Temp_Var5
+	STA <var5
 	
 	JSR Magiblot_HandLoop
 	
@@ -4887,21 +4887,21 @@ Magiblot_DrawHands:
 
 	; Next sprite
 	LDA #4
-	STA <Temp_Var5
+	STA <var5
 	
 Magiblot_HandLoop:
 	
 	; X offset
 	LDA Magiblot_HandXOff,X
-	STA <Temp_Var1
+	STA <var1
 	LDA Magiblot_HandXOff+1,X
-	STA <Temp_Var2
+	STA <var2
 	
 	; Y offset
 	LDA Magiblot_HandYOff,X
-	STA <Temp_Var3
+	STA <var3
 	LDA Magiblot_HandYOff+1,X
-	STA <Temp_Var4
+	STA <var4
 	
 	TXA
 	PHA
@@ -4942,74 +4942,74 @@ Magiblot_DrawHand:
 	BEQ Magiblot_NoHFlipHand
 
 	LDA #8
-	SUB <Temp_Var1
-	STA <Temp_Var1
+	SUB <var1
+	STA <var1
 	LDA #0
-	SBC <Temp_Var2
-	STA <Temp_Var2
+	SBC <var2
+	STA <var2
 
 Magiblot_NoHFlipHand:
 	; Calc relative X for hand
 	LDA <Objects_X,X
-	ADD <Temp_Var1
-	STA <Temp_Var10		; X
+	ADD <var1
+	STA <var10		; X
 	LDA <Objects_XHi,X
-	ADC <Temp_Var2
-	STA <Temp_Var11		; XHi
+	ADC <var2
+	STA <var11		; XHi
 
 	; Calc relative Y for hand
 	LDA <Objects_Y,X
-	ADD <Temp_Var3
-	STA <Temp_Var12		; Y
+	ADD <var3
+	STA <var12		; Y
 	LDA <Objects_YHi,X
-	ADC <Temp_Var4
-	STA <Temp_Var13		; YHi
+	ADC <var4
+	STA <var13		; YHi
 
 	LDY #$F8
 
-	LDA <Temp_Var10
+	LDA <var10
 	CMP <Horz_Scroll
-	LDA <Temp_Var11
+	LDA <var11
 	SBC <Horz_Scroll_Hi
 	BNE Magiblot_HandOffH	 ; If sprite is horizontally off-screen
 
-	LDA <Temp_Var12
+	LDA <var12
 	ADD #16
 	PHA		 ; Save object Y + 16
 
-	LDA <Temp_Var13
+	LDA <var13
 	ADC #$00	 ; Apply carry
-	STA <Temp_Var14	 ; -> Temp_Var14
+	STA <var14	 ; -> var14
 
 	PLA		 ; Restore special object Y + 16
 
 	CMP Level_VertScroll
 
-	LDA <Temp_Var14
+	LDA <var14
 	SBC Level_VertScrollH
-	STA <Temp_Var14	; Temp_Var14 = 0 if special object is on same screen...
+	STA <var14	; var14 = 0 if special object is on same screen...
 
-	BNE Magiblot_HandOffH	 ; If Temp_Var14 <> 0 (not on same screen), jump to Magiblot_HandOffH
+	BNE Magiblot_HandOffH	 ; If var14 <> 0 (not on same screen), jump to Magiblot_HandOffH
 
 
-	LDA <Temp_Var12
+	LDA <var12
 	SUB <Vert_Scroll
 	TAY
 
 Magiblot_HandOffH:
-	STY <Temp_Var12	; Y
+	STY <var12	; Y
 	
 	LDA Object_SprRAM,X
-	ADD <Temp_Var5
+	ADD <var5
 	TAY
 
-	LDA <Temp_Var12
+	LDA <var12
 	STA Sprite_RAM+$00,Y
 	
 	LDA #$8D
 	STA Sprite_RAM+$01,Y
 
-	LDA <Temp_Var5
+	LDA <var5
 	ASL A	; 8
 	ASL A	; 10
 	ASL A	; 20 
@@ -5017,7 +5017,7 @@ Magiblot_HandOffH:
 	ORA #SPR_PAL1
 	STA Sprite_RAM+$02,Y
 
-	LDA <Temp_Var10
+	LDA <var10
 	SUB <Horz_Scroll
 	STA Sprite_RAM+$03,Y
 	
@@ -5202,14 +5202,14 @@ ObjNorm_ArenaCtl:
 	AND #$80
 	LSR A
 	LSR A
-	STA <Temp_Var1
+	STA <var1
 	
 	LDA <Player_X
 	AND #%11000000
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var1
+	ORA <var1
 	TAY		; Y = 0, 8, 16, ..., 56
 
 	
@@ -5267,13 +5267,13 @@ ArenaCtl_ExitBoss:
 	STA LevelJctBQ_Flag
 	
 	; Set arena completion bit!
-	LDY <Temp_Var1
+	LDY <var1
 	
 	LDA Arena_CompleteBit,Y
-	STA <Temp_Var1
+	STA <var1
 	
 	LDA Level_ArenaData
-	ORA <Temp_Var1
+	ORA <var1
 	STA Level_ArenaData
 
 	LDY #(8 * 8)	; Standard exit destination
@@ -5314,7 +5314,7 @@ Bleck_FixOffsetByHFlip:	.byte 9, 15
 Bleck_Draw:
 	LDA Objects_ColorCycle,X
 	AND #3
-	STA <Temp_Var9
+	STA <var9
 
 	; Offsets to help fit bounding box better
 	LDA <Objects_X,X
@@ -5330,8 +5330,8 @@ Bleck_Draw:
 	JSR Object_DetermineVertVis
 	JSR Object_ShakeAndCalcSprite
 
-	; Temp_Var13 = 0 (no hflip) or 3 (hflip)
-	; Temp_Var14 = 9 / 6
+	; var13 = 0 (no hflip) or 3 (hflip)
+	; var14 = 9 / 6
 	LDX <SlotIndexBackup
 	LDA Objects_FlipBits,X
 	AND #SPR_HFLIP
@@ -5340,43 +5340,43 @@ Bleck_Draw:
 	ROL A
 	TAX
 	LDA Bleck_OffsetByHFlip,X
-	STA <Temp_Var13
+	STA <var13
 	LDA Bleck_FixOffsetByHFlip,X
-	STA <Temp_Var14
+	STA <var14
 	
 	; Calculate pattern offset by frame
 	LDX <SlotIndexBackup
 	LDA Objects_Frame,X
 	TAX
 	LDA Bleck_FrameBase,X 
-	ADD <Temp_Var13
+	ADD <var13
 	ADD #(ObjPF5 - ObjectGrExt_PatternSets)
 	TAX
 
 	; Halves
 	LDA #1
-	STA <Temp_Var12
+	STA <var12
 
 	; Rows
 	LDA #1
-	STA <Temp_Var11
+	STA <var11
 
 Bleck_DrawLoop:
-	LDA <Temp_Var5	; Check sprite vertical visibility
+	LDA <var5	; Check sprite vertical visibility
 	LSR A		
 	BCS BDVOff	; If this sprite is off-screen, jump to BDVOff (RTS)
 
-	LDA <Temp_Var8	; Check horizontal sprite visibility
+	LDA <var8	; Check horizontal sprite visibility
 	ASL A		; Left shift flags value
-	STA <Temp_Var10	; -> Temp_Var10
+	STA <var10	; -> var10
 
-	LDA <Temp_Var1	; Sprite Y
+	LDA <var1	; Sprite Y
 	BCS BD_LeftOff	; If sprite is horizontally off-screen, jump to BD_LeftOff
 
 	STA Sprite_RAM+$00,Y	 ; Set sprite Y in RAM
 
 BD_LeftOff:
-	BIT <Temp_Var10	 
+	BIT <var10	 
 	BMI BD_RightOff	 ; If this sprite is off-screen, jump to BD_RightOff
 
 	STA Sprite_RAM+$04,Y	 ; Set sprite Y in RAM
@@ -5387,7 +5387,7 @@ BD_RightOff:
 	STA Sprite_RAM+$08,Y	 ; Set sprite Y in RAM
 
 BD_CenterOff:
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$03,Y	 ; Set sprite X in RAM
 	ADD #$08
 	STA Sprite_RAM+$07,Y	 ; Set sprite X in RAM (+8)
@@ -5403,14 +5403,14 @@ BD_CenterOff:
 	STA Sprite_RAM+$09,Y
 
 	; Set each sprite's attributes
-	LDA <Temp_Var9
-	ORA <Temp_Var3
-	ORA <Temp_Var4		 ; Combine attributes
+	LDA <var9
+	ORA <var3
+	ORA <var4		 ; Combine attributes
 	STA Sprite_RAM+$02,Y
 	STA Sprite_RAM+$06,Y
 	STA Sprite_RAM+$0A,Y
 
-	BIT <Temp_Var3
+	BIT <var3
 	BVC BDVOff	 ; If sprite is not horizontally flipped, jump to BDVOff
 
 	; Swap end sprites patterns
@@ -5422,9 +5422,9 @@ BD_CenterOff:
 	STA Sprite_RAM+$09,Y
 
 BDVOff:
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #16
-	STA <Temp_Var1
+	STA <var1
 
 	TYA
 	ADD #(4 * 3)
@@ -5434,39 +5434,39 @@ BDVOff:
 	ADD #6
 	TAX
 
-	DEC <Temp_Var11		; Temp_Var11--
-	BPL Bleck_DrawLoop	; While Temp_Var11 >= 0 (another row), loop!
+	DEC <var11		; var11--
+	BPL Bleck_DrawLoop	; While var11 >= 0 (another row), loop!
 	
-	LDA <Temp_Var12
+	LDA <var12
 	BEQ Bleck_DrawDone
 	
 	; Switch to other half
 	
 	; Y - 32 (restore it)
-	LDA <Temp_Var1
+	LDA <var1
 	SUB #32
-	STA <Temp_Var1
+	STA <var1
 
 	; X + 24
-	LDA <Temp_Var2
+	LDA <var2
 	ADD #24
-	STA <Temp_Var2
+	STA <var2
 
 	; Second half visibility
-	ASL <Temp_Var8
-	ASL <Temp_Var8
-	ASL <Temp_Var8
+	ASL <var8
+	ASL <var8
+	ASL <var8
 
 	; Reset row counter
 	LDA #1
-	STA <Temp_Var11
+	STA <var11
 
 	TXA
-	SUB <Temp_Var14
+	SUB <var14
 	TAX
 	
-	DEC <Temp_Var12		; Temp_Var12--
-	JMP Bleck_DrawLoop	; While Temp_Var12 >= 0 (the other half), loop!
+	DEC <var12		; var12--
+	JMP Bleck_DrawLoop	; While var12 >= 0 (the other half), loop!
 
 Bleck_DrawDone:
 	LDX <SlotIndexBackup

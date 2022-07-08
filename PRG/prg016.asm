@@ -125,7 +125,7 @@ PRG016_A416:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LoadLevel_Generator_TS3
 ;
-; Based on the values in Temp_Var15 and LL_ShapeDef, chooses an
+; Based on the values in var15 and LL_ShapeDef, chooses an
 ; appropriate generator function to builds this piece of the
 ; level.  Tedious, but saves space and is paper-design friendly.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -134,17 +134,17 @@ PRG016_A425:
 
 LoadLevel_Generator_TS3:
 	; From level loader function:
-	; * Temp_Var15, Temp_Var16, and LL_ShapeDef are three bytes read from the data
+	; * var15, var16, and LL_ShapeDef are three bytes read from the data
 
 
-	LDA <Temp_Var15
+	LDA <var15
 	AND #%11100000
 	LSR A		
 	LSR A		
 	LSR A		
 	LSR A		
 	LSR A		
-	TAX		 	; X = upper 3 bits of Temp_Var15 (0-7) (selects a multiple of 15 as the base)
+	TAX		 	; X = upper 3 bits of var15 (0-7) (selects a multiple of 15 as the base)
 
 	LDA LL_ShapeDef
 	LSR A	
@@ -259,10 +259,10 @@ LeveLoad_FixedSizeGen_TS3:
 	; It is verified before calling this function that all of
 	; the upper 4 bits of LL_ShapeDef are ZERO
 
-	; So the upper 3 bits of Temp_Var15 serve as the most significant bits
+	; So the upper 3 bits of var15 serve as the most significant bits
 	; to a value where LL_ShapeDef provide the 4 least significant bits
 
-	LDA <Temp_Var15
+	LDA <var15
 	AND #%11100000
 	LSR A		
 	ADD LL_ShapeDef	
@@ -362,4 +362,3 @@ LoadLevel_Quicksand:
 	.include "PRG/levels/Hills.asm"
 	
 ; Rest of ROM bank was empty
-

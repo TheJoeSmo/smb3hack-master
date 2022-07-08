@@ -192,7 +192,7 @@ Player_PUpRootIndex:
 Player_Draw:
 	LDX <Player_Frame
 	LDA Player_FramePageOff,X
-	STA <Temp_Var1		 ; Get VROM page offset for this animation frame -> Temp_Var1
+	STA <var1		 ; Get VROM page offset for this animation frame -> var1
 
 	LDY Player_Current		; Y = Current Player index (0 = 1P, 1 = 2P)
 	LDA Player_Character,Y	; Get this player's select character
@@ -203,7 +203,7 @@ Player_Draw:
 	TAY							; -> 'Y'
 	
 	LDA Player_PUpRootPage,Y ; Get VROM root page for this power up
-	ADD <Temp_Var1		 ; Add appropriate offset to the VROM base for the animation frame
+	ADD <var1		 ; Add appropriate offset to the VROM base for the animation frame
 
 	STA PatTable_BankSel+2	 ; Set VROM bank switch for sprites 1/4
 
@@ -280,7 +280,7 @@ PRG029_CF09:
 	AND #$03	 ; Cap it 0-3 in any case (select one of the four sprite palettes, basically)
 
 PRG029_CF0B:
-	STA <Temp_Var1	 ; Store cycle tick into Temp_Var1 (0 if not invincible, sprite palette 0)
+	STA <var1	 ; Store cycle tick into var1 (0 if not invincible, sprite palette 0)
 
 	LDA Level_PipeMove
 	LDA Player_Behind
@@ -289,8 +289,8 @@ PRG029_CF0B:
 
 	; Set priority over background (normal most game sprite behavior)
 	LDA #$20
-	ORA <Temp_Var1
-	STA <Temp_Var1
+	ORA <var1
+	STA <var1
 
 PRG029_CF1E:
 	; X = Player_Frame
@@ -338,7 +338,7 @@ PRG029_CF1E:
 
 	LDA <Player_FlipBits
 	AND #$c0
-	ORA <Temp_Var1		 ; Merge with possible other attributes (the star invincibility palette cycle)
+	ORA <var1		 ; Merge with possible other attributes (the star invincibility palette cycle)
 
 	; Store attributes to all Player sprites
 	STA Sprite_RAM+$02,X
@@ -483,13 +483,13 @@ NotNormalPDraw_NoRevGrav:
 	BEQ PDraw_NoRevGravWithYoshi
 
 PDraw_NoRevGravWithKuribo:
-	; In short, if Player is small, use Temp_Var1 = 6, otherwise Temp_Var1 = 0 (sprite vertical offset in shoe)
+	; In short, if Player is small, use var1 = 6, otherwise var1 = 0 (sprite vertical offset in shoe)
 	LDY #$00
 	LDA <Player_Suit
 	BNE KPRG029_D01D
 	LDY #$06
 KPRG029_D01D:
-	STY <Temp_Var1
+	STY <var1
 
 	LDA <Player_InAir
 	BEQ KPRG029_D029	 ; If Player is not mid-air, jump to KPRG029_D029
@@ -512,7 +512,7 @@ KPRG029_D029:
 	LDA #$00	 ; Otherwise if it slipped below zero, just use zero
 
 KPRG029_D036:
-	ADD <Temp_Var1	 ; Add that to the initial offset
+	ADD <var1	 ; Add that to the initial offset
 	ADD <Player_SpriteY	 ; And add in the Player's sprite Y position
 
 	; Store that as the new Y position on the "first row" sprites
@@ -535,7 +535,7 @@ PDraw_NoRevGravWithYoshi:
 	BNE PRG029_D01D
 	LDY #-12
 PRG029_D01D:
-	STY <Temp_Var1
+	STY <var1
 	
 	; Check if Yoshi is tounge-out; if so, need to offset a little lower
 	LDY Player_Kuribo
@@ -543,9 +543,9 @@ PRG029_D01D:
 	LDA Objects_Var5,Y
 	BEQ Yoshi_No8Offset
 
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #8
-	STA <Temp_Var1
+	STA <var1
 
 Yoshi_No8Offset:
 	LDA <Player_InAir
@@ -569,7 +569,7 @@ PRG029_D029:
 	LDA #$00	 ; Otherwise if it slipped below zero, just use zero
 
 PRG029_D036:
-	ADD <Temp_Var1	 ; Add that to the initial offset
+	ADD <var1	 ; Add that to the initial offset
 	ADD <Player_SpriteY	 ; And add in the Player's sprite Y position
 
 	; Store that as the new Y position on the "first row" sprites
@@ -907,9 +907,9 @@ PRG029_D224:
 	LDY <Player_Suit ; Y = Player_Suit
 	BNE PRG029_D238	 ; If Y <> 0 (small), jump to PRG029_D238
 
-	STX <Temp_Var1
+	STX <var1
 	LDA #$0b
-	SUB <Temp_Var1
+	SUB <var1
 	TAX		 ; Otherwise, X = $0B - (Player_Grow >> 2)
 
 PRG029_D238:
@@ -1377,23 +1377,23 @@ PRG029_D415:
 	ADD #$08		; +8
 	STA Sprite_RAM+$07,Y	; -> Sprite X
 
-	; Temp_Var1 = Player_YHi
+	; var1 = Player_YHi
 	LDA <Player_YHi
-	STA <Temp_Var1
+	STA <var1
 
 	LDA Wand_YOff_BySuit,X
 	BPL PRG029_D42C	 	; If Y offset is positive, jump to PRG029_D42C
 
-	DEC <Temp_Var1		; Otherwise, Temp_Var1--
+	DEC <var1		; Otherwise, var1--
 
 PRG029_D42C:
 	ADD <Player_SpriteY	; Add offset to Player Y
 	BCC PRG029_D433	 	; If no carry, jump to PRG029_D433
 
-	INC <Temp_Var1		; Otherwise, apply carry
+	INC <var1		; Otherwise, apply carry
 
 PRG029_D433:
-	LDX <Temp_Var1		; X = Temp_Var1
+	LDX <var1		; X = var1
 	CPX #$01
 	BPL PRG029_D454	 	; If off-screen, jump to PRG029_D454
 
@@ -1451,7 +1451,7 @@ PRG029_D468:
 	LDA <Counter_1
 	AND #$06	
 	LSR A		
-	STA <Temp_Var1	 ; Temp_Var1 = (Counter_1 & 6) >> 1  (0-3)
+	STA <var1	 ; var1 = (Counter_1 & 6) >> 1  (0-3)
 
 
 PRG029_D47E:	; Jump point for horizontal pipe-walking
@@ -1459,8 +1459,8 @@ PRG029_D47E:	; Jump point for horizontal pipe-walking
 	LDA <Player_Suit
 	ASL A
 	ASL A		
-	ORA <Temp_Var1
-	TAY		; Y = (Player_Suit << 2) | Temp_Var1 (0 to 3)
+	ORA <var1
+	TAY		; Y = (Player_Suit << 2) | var1 (0 to 3)
 	LDA Player_WalkFramesByPUp,Y	; Get appropriate frame
 
 PRG029_D49B:
@@ -1507,10 +1507,10 @@ Level_PipeTransitOrExit:
 
 	; Dynamic jump based on Level_PipeExitDir index into Pipe_Move_JumpTable table 
 	LDA Pipe_Move_JumpTable,Y
-	STA <Temp_Var1	
+	STA <var1	
 	LDA Pipe_Move_JumpTable+1,Y
-	STA <Temp_Var2		
-	JMP [Temp_Var1]
+	STA <var2		
+	JMP [var1]
 
 Player_Die_NotDying:
 	RTS		 ; Return
@@ -1720,10 +1720,10 @@ PRG029_D59B:
 	; X = 0 (going down) or 1 (going up)
 
 	LDA PipeTransit_YOff,X
-	STA <Temp_Var10	 ; Temp_Var10 = PipeTransit_YOff[X] (appropriate Y offset)
+	STA <var10	 ; var10 = PipeTransit_YOff[X] (appropriate Y offset)
 
 	LDA #$08
-	STA <Temp_Var11	 ; Temp_Var11 = 8
+	STA <var11	 ; var11 = 8
 
 	JSR Player_GetTileAndSlope	; Get tile
 	SUB #TILE1_PIPETB4_L	 	
@@ -1883,13 +1883,13 @@ PRG029_D651:
 
 PRG029_D65B:
 	LDA PipeTransit_XYOffsets,Y
-	STA <Temp_Var10	 ; Temp_Var10 = Y offset
+	STA <var10	 ; var10 = Y offset
 
 	LDA PipeTransit_XYOffsets+1,Y
-	STA <Temp_Var11	 ; Temp_Var11 = X offset
+	STA <var11	 ; var11 = X offset
 
 	JSR Player_GetTileAndSlope	; Get tile
-	STA <Temp_Var1		 ; Store into Temp_Var1
+	STA <var1		 ; Store into var1
 
 	SUB #TILE8_SCENPIPE_ENDVR
 	CMP #$02	
@@ -1898,24 +1898,24 @@ PRG029_D65B:
 	JMP PRG029_D69C	 ; Otherwise, jump to PRG029_D69C
 
 PRG029_D674:
-	LDA <Temp_Var1	 
+	LDA <var1	 
 	CMP #TILE8_SCENPIPE_ENDH1B
 	BNE PRG029_D67D	 ; If tile is NOT a horizontal scenery pipe's bottom tile, jump to PRG029_D67D
 
 	JMP PRG029_D69C	 ; Otherwise, jump to PRG029_D69C
 
 PRG029_D67D:
-	LDA <Temp_Var1
+	LDA <var1
 	SUB #TILE8_PIPEELBOW_CUL
 	CMP #$04	 
 	BGE PRG029_D696	 ; If tile is NOT a pipe elbow corner tile, jump to PRG029_D696
 
 	; Otherwise...
-	STX <Temp_Var1	 	; Temp_Var1 = 1 OR 0 (depending which iteration, which will change which way it rotates)
+	STX <var1	 	; var1 = 1 OR 0 (depending which iteration, which will change which way it rotates)
 	LDA Level_PipeMove
 	AND #%10000010		; Keep only the up/down vs left/right bit and the "in-transit" bit
 	EOR #%00000010		; Turn corner 
-	ORA <Temp_Var1		; -> Temp_Var1
+	ORA <var1		; -> var1
 
 	STA Level_PipeMove	; Update Level_PipeMove
 	LDX #$00	 	; X = 0
@@ -1970,11 +1970,11 @@ PRG029_D6BC:
 	TAY		 ; Y = Player_IsDying << 1
 
 	LDA Player_Die_JumpTable,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA Player_Die_JumpTable+1,Y
-	STA <Temp_Var2
+	STA <var2
 
-	JMP [Temp_Var1]	 ; Jump to appropriate "Player is dying" routine...
+	JMP [var1]	 ; Jump to appropriate "Player is dying" routine...
 
 Player_Die_Dying_RevChk:
 	LDA Player_AboveTop
@@ -2386,7 +2386,7 @@ PipeMove_LeftRight:
 	AND #$0c	
 	LSR A		
 	LSR A		 
-	STA <Temp_Var1	 ; Temp_Var1 = (Counter_1 & $C) >> 2 (0 to 3, walking animation)
+	STA <var1	 ; var1 = (Counter_1 & $C) >> 2 (0 to 3, walking animation)
 
 	JSR PRG029_D47E	 ; Do walking animation and draw Player
 
@@ -2436,12 +2436,12 @@ Player_SuitLost_DoPoof:
 	TAY		 ; Y = 0-3, changing every 4 ticks
 
 	LDA SuitLost_Poof_Patterns,Y	; Get poof pattern
-	STA <Temp_Var2		 ; Store into Temp_Var2
+	STA <var2		 ; Store into var2
 
 	LDY Player_SprOff	 ; Y = Player_SprOff (Player sprite beginning offset)
 
 	LDA #%11000001	; Flipped horizontal and vertical, and palette 1
-	STA <Temp_Var1	; -> Temp_Var1
+	STA <var1	; -> var1
 
 PRG029_D7D3:
 	; Sprite Y
@@ -2450,11 +2450,11 @@ PRG029_D7D3:
 	STA Sprite_RAM+$00,Y	 ; Store into sprite Y
 
 	; Poof pattern
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$01,Y
 
 	; Attribute
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$02,Y
 
 	; Sprite X
@@ -2462,7 +2462,7 @@ PRG029_D7D3:
 	SUB <Horz_Scroll
 	STA Sprite_RAM+$03,Y
 
-	LDA <Temp_Var1
+	LDA <var1
 	AND #$f0	
 	BEQ PRG029_D7FC	 ; If we're the unflipped one, jump to PRG029_D7FC
 
@@ -2478,9 +2478,9 @@ PRG029_D7FC:
 	INY		 ; Y += 4
 
 	; Other sprite is not H/V flipped
-	LDA <Temp_Var1
+	LDA <var1
 	SUB #%11000000
-	STA <Temp_Var1
+	STA <var1
 
 	BCS PRG029_D7D3	 ; Loop if not the second sprite
 
@@ -2511,23 +2511,23 @@ BlockChange_Do:
 	LDA Tile_Mem_AddrVH,Y
 	STA <level_data_pointer+1
 
-	; Temp_Var6 = block change screen Y aligned to grid
+	; var6 = block change screen Y aligned to grid
 	LDA Level_BlockChgYLo
 	AND #$f0
-	STA <Temp_Var6
+	STA <var6
 
-	; Build row/column offset value -> Temp_Var5
+	; Build row/column offset value -> var5
 	LDA Level_BlockChgXLo
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var6
-	STA <Temp_Var5
+	ORA <var6
+	STA <var5
 
-	; Temp_Var7 = 0
+	; var7 = 0
 	LDA #$00
-	STA <Temp_Var7
+	STA <var7
 
 	BEQ PRG029_DC7C	 ; Jump (technically always) to PRG029_DC7C
 
@@ -2545,9 +2545,9 @@ PRG029_DC36:
 	LDA Tile_Mem_Addr+1,X
 	STA <level_data_pointer+1
 
-	; Temp_Var7 = 0
+	; var7 = 0
 	LDA #$00
-	STA <Temp_Var7
+	STA <var7
 
 	LDA Level_BlockChgYHi
 	BEQ PRG029_DC50	 ; If block change is not on the lower part of the screen, jump to PRG029_DC50
@@ -2556,17 +2556,17 @@ PRG029_DC36:
 
 PRG029_DC50:
 
-	; Construct a row/column offset -> Temp_Var5
+	; Construct a row/column offset -> var5
 	LDA Level_BlockChgYLo
 	AND #$f0
-	STA <Temp_Var6
+	STA <var6
 	LDA Level_BlockChgXLo
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var6
-	STA <Temp_Var5
+	ORA <var6
+	STA <var5
 
 	LDA Level_BlockChgYHi
 	BNE PRG029_DC70	 ; If Level_BlockChgYHi <> 0 (block change is down low on the lower screen space), jump to PRG029_DC70
@@ -2585,14 +2585,14 @@ PRG029_DC70:
 	; applies the tile change needs to have a 32 byte jump to the next line,
 	; and use $F0 would overflow back to $10 and misalign the tile change!!
 
-	; Temp_Var6 = 0-ish
+	; var6 = 0-ish
 	LDA Level_BlockChgYLo
 	ADD #$10
-	STA <Temp_Var6
+	STA <var6
 
-	; Temp_Var7 = 1 (carry)
+	; var7 = 1 (carry)
 	LDA #$01
-	STA <Temp_Var7
+	STA <var7
 
 PRG029_DC7C:
 	LDA Level_ChgTileEvent
@@ -2725,7 +2725,7 @@ TileChng_OneTile:
 	LDX Level_ChgTileEvent
 	DEX		 ; X = Level_ChgTileEvent - 1 (because zero is no-action)
 
-	LDY <Temp_Var5	 ; Y = Temp_Var5 (row/column offset value)
+	LDY <var5	 ; Y = var5 (row/column offset value)
 
 	; Change the tile to the proper target tile
 	LDA OneTile_ChangeToTile,X
@@ -2751,31 +2751,31 @@ TileChng_OneTile:
 	ASL A
 	TAY
 	LDA TileLayout_ByTileset,Y
-	STA <Temp_Var15		 
+	STA <var15		 
 	LDA TileLayout_ByTileset+1,Y
-	STA <Temp_Var16		 
+	STA <var16		 
 
 	LDY OneTile_ChangeToTile,X  ; Get the block offset
 	
 	; Upper-left
-	LDA [Temp_Var15],Y	 ; Get first 8x8
+	LDA [var15],Y	 ; Get first 8x8
 	STA TileChng_Pats	 ; Copy into TileChng_Pats
 
 	; Lower-left
-	INC <Temp_Var16		 ; Jump to next layout chunk
-	INC <Temp_Var16		 ; Jump to next layout chunk
-	LDA [Temp_Var15],Y	 	; Get next 8x8
+	INC <var16		 ; Jump to next layout chunk
+	INC <var16		 ; Jump to next layout chunk
+	LDA [var15],Y	 	; Get next 8x8
 	STA TileChng_Pats+1	 ; Copy into TileChng_Pats
 
 	; Upper-right
-	DEC <Temp_Var16		; Jump to next layout chunk
-	LDA [Temp_Var15],Y	 	; Get next 8x8
+	DEC <var16		; Jump to next layout chunk
+	LDA [var15],Y	 	; Get next 8x8
 	STA TileChng_Pats+2	 ; Copy into TileChng_Pats
 
 	; Lower-right
-	INC <Temp_Var16		; Jump to next layout chunk
-	INC <Temp_Var16		; Jump to next layout chunk
-	LDA [Temp_Var15],Y	 	; Get next 8x8
+	INC <var16		; Jump to next layout chunk
+	INC <var16		; Jump to next layout chunk
+	LDA [var15],Y	 	; Get next 8x8
 	STA TileChng_Pats+3	 ; Copy into TileChng_Pats
 
 	; Restore bank
@@ -2783,7 +2783,7 @@ TileChng_OneTile:
 	STA PAGE_A000
 	JSR PRGROM_Change_A000
 
-	LDA <Temp_Var6	 ; Get tile Y (aligned to grid, so bits 0-3 are zero)
+	LDA <var6	 ; Get tile Y (aligned to grid, so bits 0-3 are zero)
 	ASL A		 ; Bit 7 -> carry
 	ADC #$00	 ; Set as bit 0
 	ASL A		 ; Bit 7 -> carry
@@ -2793,8 +2793,8 @@ TileChng_OneTile:
 	AND #%00001111	 ; Only keep lower 4 bits (bits 2 and 3 are still zero)
 	ORA #$20	 ; Set high part of video address
 
-	LDY <Temp_Var7
-	BEQ PRG029_DD41	 ; If Temp_Var7 not set (set if tile was on the fringe between upper and lower screen space), jump to PRG029_DD41
+	LDY <var7
+	BEQ PRG029_DD41	 ; If var7 not set (set if tile was on the fringe between upper and lower screen space), jump to PRG029_DD41
 
 	ORA #$08	 ; Set $28 high address
 
@@ -2803,13 +2803,13 @@ PRG029_DD41:
 
 	PLA		; Restore value from before
 	AND #%11110000	; Keep the upper 4 bits
-	STA <Temp_Var2	; -> Temp_Var2
+	STA <var2	; -> var2
 
 	LDA Level_BlockChgXLo
 	LSR A
 	LSR A
 	LSR A		; A = Level_BlockChgXLo / 8
-	ORA <Temp_Var2	
+	ORA <var2	
 	STA TileChng_VRAM_L	 ; Store the low byte of the tile change base address
 
 TileChng_OffScreen:
@@ -2833,7 +2833,7 @@ TileChng_DoorAppear:
 	LDA #$00
 	STA Level_ChgTileEvent
 
-	LDY <Temp_Var5	 ; Y = Temp_Var5 (row/column offset value)
+	LDY <var5	 ; Y = var5 (row/column offset value)
 
 	; Set upper tile of door
 	LDA #TILEA_DOOR1
@@ -2870,7 +2870,7 @@ PRG029_DD80:
 
 	LDX Graphics_BufCnt	 ; X = Graphics_BufCnt
 
-	LDA <Temp_Var6	 ; Get tile Y (aligned to grid, so bits 0-3 are zero)
+	LDA <var6	 ; Get tile Y (aligned to grid, so bits 0-3 are zero)
 	ASL A		 ; Bit 7 -> carry
 	ADC #$00	 ; Set as bit 0
 	ASL A		 ; Bit 7 -> carry
@@ -2880,8 +2880,8 @@ PRG029_DD80:
 	AND #%00001111	 ; Only keep lower 4 bits (bits 2 and 3 are still zero)
 	ORA #$20	 ; Set high part of video address
 
-	LDY <Temp_Var7
-	BEQ PRG029_DDA2	 ; If Temp_Var7 not set (set if tile was on the fringe between upper and lower screen space), jump to PRG029_DDA2
+	LDY <var7
+	BEQ PRG029_DDA2	 ; If var7 not set (set if tile was on the fringe between upper and lower screen space), jump to PRG029_DDA2
 
 	ORA #$08	 ; Set $28 high address
 
@@ -2893,13 +2893,13 @@ PRG029_DDA2:
 
 	PLA		; Restore value from before
 	AND #%11110000	; Keep the upper 4 bits
-	STA <Temp_Var2	; -> Temp_Var2
+	STA <var2	; -> var2
 
 	LDA Level_BlockChgXLo
 	LSR A
 	LSR A
 	LSR A		; A = Level_BlockChgXLo / 8
-	ORA <Temp_Var2	
+	ORA <var2	
 
 	; Set low address for left column of patterns of door
 	STA Graphics_Buffer+$01,X
@@ -3009,7 +3009,7 @@ ChngTile_32x32:
 
 	; 4-way cannon change only...
 
-	LDY <Temp_Var5	 ; Y = Temp_Var5 (row/column offset value)
+	LDY <var5	 ; Y = var5 (row/column offset value)
 
 	LDA [level_data_pointer],Y	 ; Get tile currently here
 	CMP #TILE10_4WAYCANNON_45_UL
@@ -3029,13 +3029,13 @@ PRG029_DEF8:
 PRG029_DEF9:
 	LDY CBig_Offsets,X	 ; Y = initial command offset
 
-	STX <Temp_Var11		 ; Temp_Var11 = X (index into CBig_Offsets)
+	STX <var11		 ; var11 = X (index into CBig_Offsets)
 
 	LDX Graphics_BufCnt	 ; X = graphics buffer count
 
-	; Temp_Var1 = total number of bytes we're going to copy (CBIG_BCSize)
+	; var1 = total number of bytes we're going to copy (CBIG_BCSize)
 	LDA #CBIG_BCSize
-	STA <Temp_Var1
+	STA <var1
 
 PRG029_DF05:
 	LDA Chng4Way_90Degrees,Y	; Get next command byte
@@ -3044,37 +3044,37 @@ PRG029_DF05:
 	INX		 ; X++ (one more byte in the graphics buffer)
 	INY		 ; Y++ (next command byte)
 
-	DEC <Temp_Var1	 ; Temp_Var1--
-	BNE PRG029_DF05	 ; While Temp_Var1 > 0, loop!
+	DEC <var1	 ; var1--
+	BNE PRG029_DF05	 ; While var1 > 0, loop!
 
-	; Temp_Var11 (index into CBig_Offsets) multiplied by 4
-	LDA <Temp_Var11
+	; var11 (index into CBig_Offsets) multiplied by 4
+	LDA <var11
 	ASL A
 	ASL A
-	STA <Temp_Var11
+	STA <var11
 
-	; Temp_Var3 = 0
+	; var3 = 0
 	LDA #$00
-	STA <Temp_Var3
+	STA <var3
 
 PRG029_DF1B:
-	LDA <Temp_Var5	; A = Temp_Var5 (row/column offset value)
+	LDA <var5	; A = var5 (row/column offset value)
 	AND #$f0	; Just keep the row part
 
-	LDY <Temp_Var7	; Y = Temp_Var7
-	BEQ PRG029_DF26	 ; If Temp_Var7 not set (set if tile was on the fringe between upper and lower screen space), jump to PRG029_DF26
+	LDY <var7	; Y = var7
+	BEQ PRG029_DF26	 ; If var7 not set (set if tile was on the fringe between upper and lower screen space), jump to PRG029_DF26
 
 	ADD #$10	 ; Next row
 
 PRG029_DF26:
-	STA <Temp_Var6	 ; -> Temp_Var6
+	STA <var6	 ; -> var6
 
-	LDA <Temp_Var5	; A = Temp_Var5 (row/column offset value)
+	LDA <var5	; A = var5 (row/column offset value)
 	AND #$0f	; Just keep the column part
 	ASL A		; Multiply by 2
-	STA <Temp_Var8	; -> Temp_Var8
+	STA <var8	; -> var8
 
-	LDA <Temp_Var6	 ; Get tile Y (aligned to grid, so bits 0-3 are zero)
+	LDA <var6	 ; Get tile Y (aligned to grid, so bits 0-3 are zero)
 	ASL A		 ; Bit 7 -> carry
 	ADC #$00	 ; Set as bit 0
 	ASL A		 ; Bit 7 -> carry
@@ -3084,18 +3084,18 @@ PRG029_DF26:
 	AND #%00000011	 ; Only keep lower 2 bits
 	ORA #$20	 ; Set high part of video address
 
-	LDY <Temp_Var7	; Y = Temp_Var7
-	BEQ PRG029_DF42	 ; If Temp_Var7 not set (set if tile was on the fringe between upper and lower screen space), jump to PRG029_DF42
+	LDY <var7	; Y = var7
+	BEQ PRG029_DF42	 ; If var7 not set (set if tile was on the fringe between upper and lower screen space), jump to PRG029_DF42
 
 	ORA #$08	 ; Set $28 high address
 
 PRG029_DF42:
-	STA <Temp_Var9	 ; -> Temp_Var9
+	STA <var9	 ; -> var9
 
 	LDX #$00	 ; X = 0 (first tile row buffer offset)
 
-	LDA <Temp_Var3
-	BEQ PRG029_DF4C	 ; If Temp_Var3 = 0 (loop first pass), jump to PRG029_DF4C
+	LDA <var3
+	BEQ PRG029_DF4C	 ; If var3 = 0 (loop first pass), jump to PRG029_DF4C
 
 	LDX #$0e	 ; Otherwise, X = $0E (second tile row buffer offset)
 
@@ -3107,14 +3107,14 @@ PRG029_DF4C:
 	TAX
 
 	; Commit high addresses to graphics buffer
-	LDA <Temp_Var9
+	LDA <var9
 	STA Graphics_Buffer,X
 	STA Graphics_Buffer+$07,X
 
 	PLA		; Restore value from before
 	AND #%11110000	; Keep the upper 4 bits
-	ORA <Temp_Var8	; The column value
-	STA <Temp_Var4	; -> Temp_Var4
+	ORA <var8	; The column value
+	STA <var4	; -> var4
 
 	; Set low address in graphics buffer
 	STA Graphics_Buffer+$01,X
@@ -3124,8 +3124,8 @@ PRG029_DF4C:
 	; Set low address in graphics buffer
 	STA Graphics_Buffer+$08,X
 
-	LDY <Temp_Var5	 ; Y = Temp_Var5
-	LDX <Temp_Var11	 ; X = Temp_Var11
+	LDY <var5	 ; Y = var5
+	LDX <var11	 ; X = var11
 
 	LDA CBig_ChngTiles,X	 ; Get tile 
 	STA [level_data_pointer],Y	 ; Set tile
@@ -3133,25 +3133,25 @@ PRG029_DF4C:
 	LDA CBig_ChngTiles+1,X	 ; Get tile
 	STA [level_data_pointer],Y	 ; Set tile
 
-	; Temp_Var5 += 16 (next tile row)
-	LDA <Temp_Var5
+	; var5 += 16 (next tile row)
+	LDA <var5
 	ADD #16
-	STA <Temp_Var5
+	STA <var5
 
 	; Apply carry if needed
 	LDA <level_data_pointer+1
 	ADC #$00
 	STA <level_data_pointer+1
 
-	; Temp_Var11 += 2
-	INC <Temp_Var11
-	INC <Temp_Var11
+	; var11 += 2
+	INC <var11
+	INC <var11
 
-	INC <Temp_Var3	; Temp_Var3++
+	INC <var3	; var3++
 
-	LDA <Temp_Var3
+	LDA <var3
 	CMP #$02
-	BNE PRG029_DF1B	 ; While Temp_Var3 < 2, loop!
+	BNE PRG029_DF1B	 ; While var3 < 2, loop!
 
 	; Add array size -1 to graphics buffer count
 	LDA Graphics_BufCnt
@@ -3172,7 +3172,7 @@ TileChng_OneTile_FixAttr:
 
 	; Will be used as offset if on lower screen
 	LDA #0
-	STA <Temp_Var6
+	STA <var6
 
 	; SB: Due to the shape of the nametable (256 x 240), this makes it not evenly divisible by 32
 	; in the total vertical size.  This means if we're working with a tile that is on the lower 
@@ -3187,7 +3187,7 @@ FixAttr_Lower:
 
 	; Lower screen offset:
 	LDA #$10
-	STA <Temp_Var6
+	STA <var6
 
 	; Take value
 	; Add $10
@@ -3200,7 +3200,7 @@ FixAttr_Lower:
 	; $10 -> $10
 	; $20 -> $10
 	; etc...
-	LDA <Temp_Var5
+	LDA <var5
 	ADD #$10
 	AND #%11101110
 	SUB #$10
@@ -3227,7 +3227,7 @@ FixAttr_NotLower:
 	; To align, mask off bit 0 of column and bit 0 of row, so...
 
 	; Get four tiles in affected quad
-	LDA <Temp_Var5	 ; A = Temp_Var5 (row/column offset value)
+	LDA <var5	 ; A = var5 (row/column offset value)
 	AND #%11101110	; 'Y' now points to the appropriate upper left corner of affected attribute zone
 
 FixAttr_Cont:
@@ -3238,11 +3238,11 @@ FixAttr_Cont:
 	; multiplying by 8 (shifting left 3) so net shift is right 2
 
 	LDA Level_BlockChgYLo	; 111. ....
-	ADD <Temp_Var6		; Offset if appropriate
+	ADD <var6		; Offset if appropriate
 	LSR A			; .111 ....
 	LSR A			; ..11 1...
 	AND #%00111000		; Keep row bits only
-	STA <Temp_Var5		; -> Temp_Var5
+	STA <var5		; -> var5
 
 
 	; Each "column" of attribute is 1 byte.  A "col" is found by taking
@@ -3254,16 +3254,16 @@ FixAttr_Cont:
 	ROL A			; .... ..11 1
 	ROL A			; .... .111 .
 	AND #%00000111		; Keep column bits only
-	ORA <Temp_Var5		; Combine with "row" bits
-	STA <Temp_Var5		; -> Temp_Var5 (this is the offset into the attribute table)
+	ORA <var5		; Combine with "row" bits
+	STA <var5		; -> var5 (this is the offset into the attribute table)
 
 
 	; Get top two tiles of affected zone
 	LDA [level_data_pointer],Y
-	STA <Temp_Var1
+	STA <var1
 	INY
 	LDA [level_data_pointer],Y
-	STA <Temp_Var2
+	STA <var2
 
 	TYA
 	ADD #15
@@ -3276,25 +3276,25 @@ FixAttr_TileNoCarry:
 
 	; Get bottom two tiles of affected zone
 	LDA [level_data_pointer],Y
-	STA <Temp_Var3
+	STA <var3
 	INY
 	LDA [level_data_pointer],Y
-	STA <Temp_Var4
+	STA <var4
 
 	; Pack an attribute quadrant
 
-	; Upper left tile will be implicitly shifted over since we're using Temp_Var1
+	; Upper left tile will be implicitly shifted over since we're using var1
 
 	; Upper right tile
-	LDA <Temp_Var2
+	LDA <var2
 	JSR TileUpdAttr_MergeAndShift
 
 	; Lower left tile
-	LDA <Temp_Var3
+	LDA <var3
 	JSR TileUpdAttr_MergeAndShift
 
 	; Lower right tile
-	LDA <Temp_Var4
+	LDA <var4
 	JSR TileUpdAttr_MergeAndShift
 
 	; Finally time to build graphics buffer...
@@ -3302,13 +3302,13 @@ FixAttr_TileNoCarry:
 
 
 	; If Level_BlockChgYHi set, we're on the "lower" screen (so use NT2)
-	LSR <Temp_Var6	; ... is now 0 or 8
+	LSR <var6	; ... is now 0 or 8
 	LDA #$23
-	ADD <Temp_Var6	; $23 for upper screen or $2B for lower
+	ADD <var6	; $23 for upper screen or $2B for lower
 	STA Graphics_Buffer+$00,X
 
 	; Set the offset
-	LDA <Temp_Var5
+	LDA <var5
 	ADD #$C0
 	STA Graphics_Buffer+$01,X
 
@@ -3317,7 +3317,7 @@ FixAttr_TileNoCarry:
 	STA Graphics_Buffer+$02,X	
 
 	; Insert the attribute byte
-	LDA <Temp_Var1
+	LDA <var1
 	;LDA #0
 	STA Graphics_Buffer+$03,X
 
@@ -3335,13 +3335,13 @@ FixAttr_TileNoCarry:
 
 TileUpdAttr_MergeAndShift:
 	; Move over top two attribute bits (make room for next tile)
-	LSR <Temp_Var1	; .11. ....
-	LSR <Temp_Var1	; ..11 ....
+	LSR <var1	; .11. ....
+	LSR <var1	; ..11 ....
 
 	; For the new tile...
 	AND #%11000000	; Attribute bits only
-	ORA <Temp_Var1	; Merge with existing bits
-	STA <Temp_Var1	; Update Temp_Var1
+	ORA <var1	; Merge with existing bits
+	STA <var1	; Update var1
 	RTS
 
 
@@ -3392,13 +3392,13 @@ ChngTile_FenceRot:
 	
 	LDY FROT_Offsets,X	 ; Y = initial command offset
 
-	STX <Temp_Var11		 ; Temp_Var11 = X (index into FROT_Offsets)
+	STX <var11		 ; var11 = X (index into FROT_Offsets)
 
 	LDX Graphics_BufCnt	 ; X = graphics buffer count
 
-	; Temp_Var1 = total number of bytes we're going to copy (FROT_BCSize)
+	; var1 = total number of bytes we're going to copy (FROT_BCSize)
 	LDA #FROT_BCSize
-	STA <Temp_Var1
+	STA <var1
 
 	; Initial buffer copy loop
 FenceRot_DF05:
@@ -3408,33 +3408,33 @@ FenceRot_DF05:
 	INX		 ; X++ (one more byte in the graphics buffer)
 	INY		 ; Y++ (next command byte)
 
-	DEC <Temp_Var1	 ; Temp_Var1--
-	BNE FenceRot_DF05	 ; While Temp_Var1 > 0, loop!
+	DEC <var1	 ; var1--
+	BNE FenceRot_DF05	 ; While var1 > 0, loop!
 	; End initial buffer copy loop
 
-	; Temp_Var3 = 0 (tile row count)
+	; var3 = 0 (tile row count)
 	LDA #$00
-	STA <Temp_Var3
+	STA <var3
 
 FenceRot_DF1B:
-	LDA <Temp_Var5	; A = Temp_Var5 (row/column offset value)
+	LDA <var5	; A = var5 (row/column offset value)
 	AND #$f0	; Just keep the row part
 
-	LDY <Temp_Var7	; Y = Temp_Var7
-	BEQ FenceRot_DF26	 ; If Temp_Var7 not set (set if tile was on the fringe between upper and lower screen space), jump to FenceRot_DF26
+	LDY <var7	; Y = var7
+	BEQ FenceRot_DF26	 ; If var7 not set (set if tile was on the fringe between upper and lower screen space), jump to FenceRot_DF26
 
 	ADD #$10	 ; Fringe offset fix
 
 FenceRot_DF26:
-	STA <Temp_Var6	 ; -> Temp_Var6
+	STA <var6	 ; -> var6
 
-	LDA <Temp_Var5	; A = Temp_Var5 (row/column offset value)
+	LDA <var5	; A = var5 (row/column offset value)
 	AND #$0f	; Just keep the column part
 	ASL A		; Multiply by 2
-	STA <Temp_Var8	; -> Temp_Var8
+	STA <var8	; -> var8
 
 	; Calculate high video address
-	LDA <Temp_Var6	 ; Get tile Y (aligned to grid, so bits 0-3 are zero)
+	LDA <var6	 ; Get tile Y (aligned to grid, so bits 0-3 are zero)
 	ASL A		 ; Bit 7 -> carry
 	ADC #$00	 ; Set as bit 0
 	ASL A		 ; Bit 7 -> carry
@@ -3443,16 +3443,16 @@ FenceRot_DF26:
 	AND #%00000011	 ; Only keep lower 2 bits
 	ORA #$20	 ; Set high part of video address
 
-	LDY <Temp_Var7	; Y = Temp_Var7
-	BEQ FenceRot_DF42	 ; If Temp_Var7 not set (set if tile was on the fringe between upper and lower screen space), jump to FenceRot_DF42
+	LDY <var7	; Y = var7
+	BEQ FenceRot_DF42	 ; If var7 not set (set if tile was on the fringe between upper and lower screen space), jump to FenceRot_DF42
 
 	ORA #$08	 ; Set $28 high address
 
 FenceRot_DF42:
-	STA <Temp_Var9	 ; -> Temp_Var9 (high video address)
+	STA <var9	 ; -> var9 (high video address)
 
 	; Get offset into buffer for this tile row
-	LDX <Temp_Var3	; X = Temp_Var3 (tile row count)
+	LDX <var3	; X = var3 (tile row count)
 	LDA Chng_FenceRot_TileBufOffset,X
 	TAX
 
@@ -3463,14 +3463,14 @@ FenceRot_DF42:
 	TAX
 
 	; Commit high addresses to graphics buffer
-	LDA <Temp_Var9
+	LDA <var9
 	STA Graphics_Buffer,X
 	STA Graphics_Buffer+$09,X
 
 	PLA		; Restore value from before
 	AND #%11110000	; Keep the upper 4 bits
-	ORA <Temp_Var8	; The column value
-	STA <Temp_Var4	; -> Temp_Var4
+	ORA <var8	; The column value
+	STA <var4	; -> var4
 
 	; Set low address in graphics buffer
 	STA Graphics_Buffer+$01,X
@@ -3480,17 +3480,17 @@ FenceRot_DF42:
 	; Set low address in graphics buffer
 	STA Graphics_Buffer+$0A,X
 
-	; Temp_Var5 += 16 (next tile row)
-	LDA <Temp_Var5
+	; var5 += 16 (next tile row)
+	LDA <var5
 	ADD #16
-	STA <Temp_Var5
+	STA <var5
 
 	; Next tile row
-	INC <Temp_Var3	; Temp_Var3++
+	INC <var3	; var3++
 
-	LDA <Temp_Var3
+	LDA <var3
 	CMP #$03
-	BNE FenceRot_DF1B	 ; While Temp_Var3 < 3, loop!
+	BNE FenceRot_DF1B	 ; While var3 < 3, loop!
 
 	; Add array size -1 to graphics buffer count
 	LDA Graphics_BufCnt
@@ -3930,7 +3930,7 @@ PRG029_AF85:
 	LDY #$08	 ; Y = 8 (base value otherwise)
 
 PRG029_AF87:
-	STY <Temp_Var1	 ; Temp_Var1 = 0, 4, or 8
+	STY <var1	 ; var1 = 0, 4, or 8
 
 	LDA <Counter_1
 	AND #$0c	 ; Cap value 0 - 11
@@ -3945,7 +3945,7 @@ PRG029_AF87:
 
 	PLA		 ; Restore (0 - 2)
 
-	ADD <Temp_Var1	 ; Add base index
+	ADD <var1	 ; Add base index
 	TAY		 ; -> 'Y'
 
 	LDA Player_TwisterSpinFrames,Y	 ; Get appropriate spin frame

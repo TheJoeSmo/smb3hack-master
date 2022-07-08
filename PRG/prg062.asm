@@ -528,20 +528,20 @@ IntReset_Part2:
 
 	; Note: This is setting up the address $7F00 @ $00/$01, the last page of SRAM
 	LDY #$00	 ; Y = $00
-	STY <Temp_Var1	 ; <Temp_Var1 = $00
+	STY <var1	 ; <var1 = $00
 	LDA #$7D	 ; A = $7D		(SB: NOT clearing $7E00-$7FFF -- that's my save data now!!)
-	STA <Temp_Var2	 ; <Temp_Var2 = $7D
+	STA <var2	 ; <var2 = $7D
 
 	; The following loop clears all of $6000 - $7FFF ... a lot of RAM!
 PRG062_8437:
 	LDA #$00	 	; A = 0
-	STA [Temp_Var1],Y	; Clear 
+	STA [var1],Y	; Clear 
 	DEY			; Y--
 	BNE PRG062_8437	 	; While Y is not zero, loop (since Y started at 0, this does a full 256 bytes)
 
 	; This decrement then moves to $7E, $7D ... $60
-	DEC <Temp_Var2	 ; Next lower page
-	LDA <Temp_Var2	 ; Get page -> A
+	DEC <var2	 ; Next lower page
+	LDA <var2	 ; Get page -> A
 	CMP #$5f	 ; 
 	BNE PRG062_8437	 ; If A <> $5F, loop again (clears down to $6000)
 
@@ -962,10 +962,10 @@ PRG062_8670:
 
 	LDY Player_Current
 	LDA Player_Character,Y
-	STA <Temp_Var1
+	STA <var1
 
 	TXA		 	; A = X ($0E/$11)
-	ADD <Temp_Var1
+	ADD <var1
 	JSR Video_Do_Update	; Do the World X intro box!
 
 	JSR Map_ConfigWorldIntro	; Apply the world number and lives count
@@ -1291,20 +1291,20 @@ PRG062_884C:
 
 	; Left/right edge sprite removal check...
 
-	; This calculates the border's relative X position -> Temp_Var1
+	; This calculates the border's relative X position -> var1
 	LDA Map_EntTran_BVAddrL,X
 	ASL A
 	ASL A
 	ASL A
 	SUB <Horz_Scroll
-	STA <Temp_Var1		; Temp_Var1 = (Map_EntTran_BVAddrL[X] << 3) - Horz_Scroll
+	STA <var1		; var1 = (Map_EntTran_BVAddrL[X] << 3) - Horz_Scroll
 
 	; This goes through all system sprites and removes them as the encroaching black border hits them
 	LDX #$00	 	; X = 0
 PRG062_8868:
 	LDA Sprite_RAM+$03,X	; Get this sprite's X coordinate
 	AND #$f8	 	; Only considering its nearest-8 position (aligned to the pattern-based border)
-	CMP <Temp_Var1		
+	CMP <var1		
 	BNE PRG062_8876	 	; If this sprite hasn't been touched yet, jump to PRG062_8876
 
 	LDA #$f8	 
@@ -1322,21 +1322,21 @@ PRG062_8876:
 PRG062_887F:
 	; Top/bottom edge sprite removal check...
 
-	; This calculates the border's relative Y position -> Temp_Var1
+	; This calculates the border's relative Y position -> var1
 	LDA Map_EntTran_BVAddrL,X
 	AND #$c0	
-	STA <Temp_Var1
+	STA <var1
 	LDA Map_EntTran_BVAddrH,X
 	LSR A		
-	ROR <Temp_Var1	
+	ROR <var1	
 	LSR A		
-	ROR <Temp_Var1	
+	ROR <var1	
 
 	LDX #$00	 	; X = 0
 PRG062_8891:
 	LDA Sprite_RAM+$00,X	; Get this sprite's Y position
 	AND #$f0	 	; Only check its nearest-16 position (16 because of 16 pixel tall sprites)
-	CMP <Temp_Var1
+	CMP <var1
 	BNE PRG062_889F	 	; If this sprite hasn't been touched yet, jump to PRG062_889F
 
 	LDA #$f8	 
@@ -1392,19 +1392,19 @@ PRG062_88C8:
 	STA Map_BonusCoinsReqd	 ; Clear the "coins required for bonus"
 	STA Map_BonusType	 ; Clear the "bonus type"
 
-	STA <Temp_Var1	; Temp_Var1 = 0
+	STA <var1	; var1 = 0
 
 	LDX #$05	
-	STX <Temp_Var2	; Temp_Var2 = 5
+	STX <var2	; var2 = 5
 
 	; Going to clear memory from $9D to $01
 	LDY #$9d	; Y = $9D
 PRG062_88E9:
-	STA [Temp_Var1],Y	; Clear this byte
+	STA [var1],Y	; Clear this byte
 	DEY		 	; Y--
 	BNE PRG062_88E9	 	; While Y <> 0, loop!
 
-	STA [Temp_Var1],Y	; And address $00 is cleared too (though this is technically unnecessary)
+	STA [var1],Y	; And address $00 is cleared too (though this is technically unnecessary)
 
 	LDA <Map_Enter2PFlag
 	BEQ PRG062_891A	 	; If not entering 2P Vs mode, jump to PRG062_891A
@@ -1762,9 +1762,9 @@ PRG062_8A55:
 	LDA #$0E
 	STA Card_Index
 
-	; Temp_Var1 = $20 (VRAM High Address for Clear_Nametable_Short)
+	; var1 = $20 (VRAM High Address for Clear_Nametable_Short)
 	LDA #$20
-	STA <Temp_Var1
+	STA <var1
 	JSR Clear_Nametable_Short
 
 	; Generate the candystripe background of the N-Spade game
@@ -2162,16 +2162,16 @@ PRG062_8B9A:
 ;	DEX		 		; X-- (counter decrement)
 ;	BMI PRG062_8CAA	 		; If X < 0, jump to PRG062_8CAA
 
-;	INC <Temp_Var14		 ; Temp_Var14++ (tile pattern layout high, jump to next pattern)
+;	INC <var14		 ; var14++ (tile pattern layout high, jump to next pattern)
 
 ;	LDA Map_EntTran_VRAMGap
 ;	AND #$01	
 ;	BEQ PRG062_8C9D	 	; If Map_EntTran_VRAMGap & 1 jump to PRG062_8C9D
 
-;	INC <Temp_Var14		 ; Temp_Var14++ (tile pattern layout high, jump to next pattern)
+;	INC <var14		 ; var14++ (tile pattern layout high, jump to next pattern)
 
 ;PRG062_8C9D:
-;	LDA [Temp_Var13],Y	 ; Get 8x8 pattern
+;	LDA [var13],Y	 ; Get 8x8 pattern
 ;	STA <Scroll_ColorStrip,X	 ; Store into strip
 
 ;	JSR BoxOut_SetThisBorderVRAM	; Set border VRAM
@@ -2430,7 +2430,7 @@ Page0_SafeClear:	; SB: Used to be inline, broke out for reuse
 	LDY #$fd	 ; Y = $FD
 	LDA #$00	 ; A = 0
 PRG062_BDA6:
-	STA Temp_Var1,Y	 ; Clear this byte
+	STA var1,Y	 ; Clear this byte
 
 PRG062_BDA9:
 	DEY		 ; Y--
@@ -3370,15 +3370,15 @@ PRG062_92B6:
 
 ;PRG062_92FE:
 	;LDA #(Inventory_Coins - Inventory_Cards)
-	;STA <Temp_Var1		 ; Temp_Var1 = total bytes to clear
+	;STA <var1		 ; var1 = total bytes to clear
 
 	;LDA #$00	 ; A = 0
 ;PRG062_9304:
 	;STA Inventory_Cards,Y	 ; Clear cards/coins
 
 	;DEY		 ; Y--
-	;DEC <Temp_Var1	 ; Temp_Var1--
-	;BPL PRG062_9304	 ; While Temp_Var1 >= 0, loop
+	;DEC <var1	 ; var1--
+	;BPL PRG062_9304	 ; While var1 >= 0, loop
 
 	;LDY #$3f	 ; Y = $3F (End of Mario's Map Completions)
 
@@ -3389,7 +3389,7 @@ PRG062_92B6:
 
 ;PRG062_9314:
 	;LDA #$3f
-	;STA <Temp_Var1	 ; Temp_Var1 = $3F
+	;STA <var1	 ; var1 = $3F
  
 ;PRG062_9318:
 	;TYA
@@ -3402,8 +3402,8 @@ PRG062_92B6:
 	;STA Map_Completions,Y
 
 	;DEY		 ; Y--
-	;DEC <Temp_Var1	 ; Temp_Var1--
-	;BPL PRG062_9318	 ; While Temp_Var1 >= 0, loop!
+	;DEC <var1	 ; var1--
+	;BPL PRG062_9318	 ; While var1 >= 0, loop!
 
 PRG062_932A:
 	;LDY Total_Players	 ; Y = Total_Players
@@ -3761,15 +3761,15 @@ Fill_Tile_AttrTable_ByTileset:
 	ASL A		 
 	TAY		 	; Y = Level_Tileset << 1
 
-	; Index into TileAttribute_ByTileset and store address to [Temp_Var2][Temp_Var1]
+	; Index into TileAttribute_ByTileset and store address to [var2][var1]
 	LDA TileAttribute_ByTileset,Y
-	STA <Temp_Var1		
+	STA <var1		
 	LDA TileAttribute_ByTileset+1,Y
-	STA <Temp_Var2		
+	STA <var2		
 
 	LDY #$07		; Y = 7
 PRG062_952C:
-	LDA [Temp_Var1],Y	
+	LDA [var1],Y	
 	STA Tile_AttrTable,Y	
 	DEY			; Y--
 	BPL PRG062_952C	 	; While Y >= 0, loop!
@@ -3899,8 +3899,8 @@ PRG062_95F3:
 ; X = X coordinate on map (e.g. MapPoof_X)
 ; A = Y coordinate on map (e.g. MapPoof_Y)
 ;
-; High byte of address is in Temp_Var15
-; Low byte of address is in Temp_Var16
+; High byte of address is in var15
+; Low byte of address is in var16
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Map_Calc_NT2Addr_By_XY:
 
@@ -3911,23 +3911,23 @@ Map_Calc_NT2Addr_By_XY:
 	ADC #$00
 	ASL A	
 	ADC #$00
-	STA <Temp_Var13	 	; Stored into Temp_Var13
+	STA <var13	 	; Stored into var13
 
 	TXA		 	; A = X coordinate
 	LSR A
 	LSR A
 	LSR A
-	STA <Temp_Var14 	; Temp_Var14 = X coord >> 3
+	STA <var14 	; var14 = X coord >> 3
  
-	LDA <Temp_Var13		; A = Temp_Var13
+	LDA <var13		; A = var13
 	AND #%11		; Get just the lower 2 bits (which are the upper 2 bits of Y coordinate)
 	ORA #$28		; OR $28 (upper byte of video address for Nametable 2)
-	STA <Temp_Var15		; Store into Temp_Var15
+	STA <var15		; Store into var15
 
-	LDA <Temp_Var13		; A = Temp_Var13
-	AND #%11000000		; Get just the upper 2 bits of Temp_Var13
-	ORA <Temp_Var14	; OR in Temp_Var14
-	STA <Temp_Var16	; Store into Temp_Var16
+	LDA <var13		; A = var13
+	AND #%11000000		; Get just the upper 2 bits of var13
+	ORA <var14	; OR in var14
+	STA <var16	; Store into var16
 
 	RTS		 ; Return
 
@@ -3955,9 +3955,9 @@ Bonus_Prize1:
 	TXA
 	PHA
 
-	; Temp_Var16 = 0 (offset to Mario's Inventory)
+	; var16 = 0 (offset to Mario's Inventory)
 	LDA #$00
-	STA <Temp_Var16
+	STA <var16
 
 	LDY Player_Current
 	CPY #$00
@@ -3967,10 +3967,10 @@ PRG062_9622:
 	; SB: This is dead code anyway, maybe redo??
 
 	; Offset to Luigi's Inventory
-	LDA <Temp_Var16
+	LDA <var16
 	;ADD #(Inventory_Cards2 - Inventory_Cards)
 	ADD #0
-	STA <Temp_Var16
+	STA <var16
 
 	DEY		 ; Y will equal 1 here, so this just makes Y zero
 	BNE PRG062_9622	 ; Jump technically NEVER to PRG062_9622 (?!)
@@ -3978,7 +3978,7 @@ PRG062_9622:
 PRG062_962C:
 	TXA		 ; Input value -> 'A'
 
-	ADD <Temp_Var16	 ; Add to offset value
+	ADD <var16	 ; Add to offset value
 	TAX		 ; -> 'X'
 
 	INC Inventory_Cards,X	 ; The intention of this is unclear!
@@ -4030,20 +4030,20 @@ PRG062_962C:
 ;	ASL A		
 ;	TAY		 
 
-;	; Set Temp_Var13/14 to point to the layout data for this Tileset
+;	; Set var13/14 to point to the layout data for this Tileset
 ;	LDA TileLayout_ByTileset,Y
-;	STA <Temp_Var13	
+;	STA <var13	
 ;	LDA TileLayout_ByTileset+1,Y
-;	STA <Temp_Var14	
+;	STA <var14	
 
 ;	LDY Map_EntTran_TileOff
 ;	LDA [level_data_pointer],Y	 ; Get the tile we're working on
 
 ;	TAY		 
 ;	LDA Map_EntTran_Tile8x8
-;	ADD <Temp_Var14		
-;	STA <Temp_Var14		
-;	LDA [Temp_Var13],Y	 ; Get the specific 8x8 tile of the tile we're working on
+;	ADD <var14		
+;	STA <var14		
+;	LDA [var13],Y	 ; Get the specific 8x8 tile of the tile we're working on
 
 ;	STA <Scroll_ColorStrip,X ; Store into the strip
 ;	RTS		 ; Return
@@ -4124,22 +4124,22 @@ PRG062_96CB:
 	; (except the stack space) $YY00 to $0000
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Clear_RAM_thru_ZeroPage:
-	STY <Temp_Var2	 ; Save Y in <Temp_Var2
+	STY <var2	 ; Save Y in <var2
 	LDY #$00	 ; Y = 0
-	STY <Temp_Var1	 ; Clear <Temp_Var1
+	STY <var1	 ; Clear <var1
 	TYA		 ; A = 0
 
 	; Y is the initial input as the high byte of the address
-	; low first then high, so [Temp_Var2][Temp_Var1]
+	; low first then high, so [var2][var1]
 PRG062_96D5:
-	LDX <Temp_Var2	 ; X = current high byte of address in this case
+	LDX <var2	 ; X = current high byte of address in this case
 	CPX #$01	 ; If we've reached the $01xx bank...
 	BEQ PRG062_96DD	 ; ... skip the next line (don't clear the stack space!)
-	STA [Temp_Var1],Y	 ; Otherwise, clear this byte
+	STA [var1],Y	 ; Otherwise, clear this byte
 PRG062_96DD:
 	DEY		 ; Y--
 	BNE PRG062_96D5	 ; While Y <> 0, loop around again (goes $00, $FF, $FE, ... back to $00) again
-	DEC <Temp_Var2	 ; Next lower bank
+	DEC <var2	 ; Next lower bank
 	BPL PRG062_96D5	 ; While we're >= bank $00
 	RTS		 ; Return
 
@@ -4677,11 +4677,11 @@ PRG062_98EE:
 	BEQ PRG062_9934	 		; If $FF, jump to PRG062_9934 (RTS)
 
 	; Otherwise...
-	STA <Temp_Var15			; Store byte into Temp_Var15
+	STA <var15			; Store byte into var15
 
 	INY		 		; Y++
 	LDA [Level_LayPtr_AddrL],Y	; Get next byte
-	STA <Temp_Var16		 	; Store into Temp_Var16
+	STA <var16		 	; Store into var16
 
 	INY				; Y++
 	LDA [Level_LayPtr_AddrL],Y	; Get next byte
@@ -4697,33 +4697,33 @@ PRG062_98EE:
 	ADC #$00	 
 	STA <Level_LayPtr_AddrH
 	
-	LDA <Temp_Var15		 	; Retrieve first byte we read
+	LDA <var15		 	; Retrieve first byte we read
 	AND #$e0	 
 	CMP #$e0	 
 	BNE PRG062_991E	 		; If its upper 3 bits are not all set, jump to PRG062_991E
 
 	; *****************
-	; Upper 3 bits of Temp_Var15 are ALL set... i.e. Temp_Var15 = 111x xxxx
+	; Upper 3 bits of var15 are ALL set... i.e. var15 = 111x xxxx
 	; *****************
 
-	JSR LoadLevel_StoreJctStart 	; Temp_Var16 and LL_ShapeDef define junction start positions
+	JSR LoadLevel_StoreJctStart 	; var16 and LL_ShapeDef define junction start positions
 	JMP PRG062_98EE	 		; Loop around
 
 PRG062_991E:
 
 	; *****************
-	; Upper 3 bits of Temp_Var15 are NOT ALL set... i.e. Temp_Var15 DOES *NOT follow* the mask 111x xxxx
+	; Upper 3 bits of var15 are NOT ALL set... i.e. var15 DOES *NOT follow* the mask 111x xxxx
 	; *****************
 
-	; Temp_Var15 and Temp_Var16 are the input parameters to LoadLevel_Set_TileMemAddr,
+	; var15 and var16 are the input parameters to LoadLevel_Set_TileMemAddr,
 	; which set, most importantly, "Map_Tile_Addr" to some root screen address, and
 	; set "TileAddr_Off" as an offset value within that screen.
 
-	; "Map_Tile_Addr" is formed Tile_Mem_Addr[ (Temp_Var16 & $F0) >> 3 ]
-	;	- The upper 4 bits of Temp_Var16 select the starting screen
+	; "Map_Tile_Addr" is formed Tile_Mem_Addr[ (var16 & $F0) >> 3 ]
+	;	- The upper 4 bits of var16 select the starting screen
 	;
-	; "TileAddr_Off" is formed (Temp_Var15 << 4) | (Temp_Var16 & $f)
-	;	- The lower 4 bits of Temp_Var15, and lower 4 bits of Temp_Var16
+	; "TileAddr_Off" is formed (var15 << 4) | (var16 & $f)
+	;	- The lower 4 bits of var15, and lower 4 bits of var16
 	JSR LoadLevel_Set_TileMemAddr
 
 	LDA LL_ShapeDef
@@ -4762,51 +4762,51 @@ PRG062_9934:
 ; to a specified "screen", and also sets TileAddr_Off to an offset
 ; within that screen.
 ;
-; Takes input parameters of Temp_Var15 and Temp_Var16 and from 
+; Takes input parameters of var15 and var16 and from 
 ; there generates:
 ;
 ; Guide to help visualize the input:
-; Temp_Var15 Temp_Var16
+; var15 var16
 ; FEDC BA98  7654 3210	<-- bits
 ;
 ;
-; * level_data_pointer/H points to Tile_Mem_Addr(V)[7654 0] <-- '0' is a one-up shift, not bit 0 of Temp_Var16; (V) is the "Vertical" table, used if applicable
+; * level_data_pointer/H points to Tile_Mem_Addr(V)[7654 0] <-- '0' is a one-up shift, not bit 0 of var16; (V) is the "Vertical" table, used if applicable
 ;
-; * If 'C' (bit 4) of Temp_Var15 is set, then level_data_pointer+1 is incremented
+; * If 'C' (bit 4) of var15 is set, then level_data_pointer+1 is incremented
 ;
-; * Temp_Var5 = level_data_pointer+1 + 1 -- Pre-'C' increment, ONLY WHEN NOT VERTICAL (otherwise unassigned)
+; * var5 = level_data_pointer+1 + 1 -- Pre-'C' increment, ONLY WHEN NOT VERTICAL (otherwise unassigned)
 ;
-; * Temp_Var6 = level_data_pointer+1 -- Post-'C' increment (i.e. equals whatever level_data_pointer+1 does at end of function)
+; * var6 = level_data_pointer+1 -- Post-'C' increment (i.e. equals whatever level_data_pointer+1 does at end of function)
 ;
-; * TileAddr_Off = BA98 3210 -OR- (Temp_Var15 << 4) | (Temp_Var16 & $f)
+; * TileAddr_Off = BA98 3210 -OR- (var15 << 4) | (var16 & $f)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_Set_TileMemAddr:
 	; Upper 3 bits of first byte were all set...
 
 
-	LDA <Temp_Var15	 ; Get that first byte
+	LDA <var15	 ; Get that first byte
 	ASL A		
 	ASL A		
 	ASL A		
 	ASL A		
-	STA <Temp_Var7	 ; Temp_Var7 = Temp_Var15 << 4 (take lower 4 bits and multiply by 16)
+	STA <var7	 ; var7 = var15 << 4 (take lower 4 bits and multiply by 16)
 
-	LDA <Temp_Var16	 ; Second byte
+	LDA <var16	 ; Second byte
 	AND #$0f	 ; Lower 4 bits
-	ORA <Temp_Var7	 ; Applied to Temp_Var7
+	ORA <var7	 ; Applied to var7
 	STA TileAddr_Off	 ; Stored into TileAddr_Off
 
 	; TileAddr_Off = BA98 3210 -OR- (first byte << 4) | (second byte & $f)
 
 
-	LDA <Temp_Var16	 ; Second byte
+	LDA <var16	 ; Second byte
 	AND #$f0	 ; Upper 4 bits
 	LSR A		 
 	LSR A		 
 	LSR A		 
-	TAX		 ; X = (Temp_Var16 & $F0) >> 3 (value in upper 4 bits times 2, 2 byte index for Tile_Mem_Addr)
+	TAX		 ; X = (var16 & $F0) >> 3 (value in upper 4 bits times 2, 2 byte index for Tile_Mem_Addr)
 
-	; X = 7654 0 <-- '0' is a one-up shift, not bit 0 of Temp_Var16
+	; X = 7654 0 <-- '0' is a one-up shift, not bit 0 of var16
 
 	LDA Level_7Vertical
 	BEQ PRG062_9963	 ; If not a vertical level, jump to PRG062_9963
@@ -4844,10 +4844,10 @@ PRG062_9969:
 	LDA Tile_Mem_Addr+1,X
 	STA <level_data_pointer+1
 
-	STA <Temp_Var5	
-	INC <Temp_Var5		; Temp_Var5 = level_data_pointer+1 + 1
+	STA <var5	
+	INC <var5		; var5 = level_data_pointer+1 + 1
 
-	LDA <Temp_Var15	
+	LDA <var15	
 	AND #$10	
 	BEQ PRG062_997F		; If bit 4 of the first byte is not set, jump to PRG062_997F
 
@@ -4856,7 +4856,7 @@ PRG062_9969:
 
 PRG062_997F:
 	LDA <level_data_pointer+1
-	STA <Temp_Var6		; Temp_Var6 = level_data_pointer+1
+	STA <var6		; var6 = level_data_pointer+1
 
 	RTS		 ; Return
 
@@ -4871,10 +4871,10 @@ Randomize:
 	LDY #$09	
 	LDA Random_Pool	
 	AND #$02	
-	STA <Temp_Var1	
+	STA <var1	
 	LDA RandomN	
 	AND #$02	
-	EOR <Temp_Var1	
+	EOR <var1	
 	CLC		
 	BEQ PRG062_999A	
 	SEC		
@@ -4901,9 +4901,9 @@ RecordBlockHitBits:
 
 Level_RecordBlockHit:
 
-	; Currently Temp_Var13-16 are defined as follows:
-	; Temp_Var13 / Temp_Var14 -- Y Hi and Lo
-	; Temp_Var15 / Temp_Var16 -- X Hi and Lo
+	; Currently var13-16 are defined as follows:
+	; var13 / var14 -- Y Hi and Lo
+	; var15 / var16 -- X Hi and Lo
 	; ... of Player detection coordinates
 
 	TYA
@@ -4912,58 +4912,58 @@ Level_RecordBlockHit:
 	TXA
 	PHA		 ; Save 'X'
 
-	LDA <Temp_Var16
-	PHA		 ; Save Temp_Var16
+	LDA <var16
+	PHA		 ; Save var16
 
-	LDA <Temp_Var13
-	PHA		 ; Save Temp_Var13
+	LDA <var13
+	PHA		 ; Save var13
 
-	; This converts Temp_Var15/Temp_Var16 into a tile row stored in Temp_Var16
+	; This converts var15/var16 into a tile row stored in var16
 	; Essentially a 16-bit right shift 4 bits
-	LDA <Temp_Var16
+	LDA <var16
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	STA <Temp_Var16
-	LDA <Temp_Var15
+	STA <var16
+	LDA <var15
 	ASL A
 	ASL A
 	ASL A
 	ASL A
-	ORA <Temp_Var16
-	STA <Temp_Var16
+	ORA <var16
+	STA <var16
 
-	; This turns Temp_Var13 into an index into Level_BlockGrabHitMem
-	LDA <Temp_Var16
+	; This turns var13 into an index into Level_BlockGrabHitMem
+	LDA <var16
 	AND #%11111000
 	LSR A
 	LSR A
-	ORA <Temp_Var13
-	STA <Temp_Var13
+	ORA <var13
+	STA <var13
 
 	LDA Level_JctFlag
 	BEQ PRG062_99DC	 ; If we're not junctioning, jump to PRG062_99DC
 
-	; If junctioning, Temp_Var13 += $40
-	LDA <Temp_Var13
+	; If junctioning, var13 += $40
+	LDA <var13
 	ADD #$40
-	STA <Temp_Var13
+	STA <var13
 
 PRG062_99DC:
-	LDA <Temp_Var16
+	LDA <var16
 	AND #$07
 	TAX
-	LDY <Temp_Var13
+	LDY <var13
 	LDA Level_BlockGrabHitMem,Y
 	ORA RecordBlockHitBits,X
 	STA Level_BlockGrabHitMem,Y
 
 	; Restore everything we saved
 	PLA
-	STA <Temp_Var13
+	STA <var13
 	PLA
-	STA <Temp_Var16
+	STA <var16
 	PLA
 	TAX
 	PLA
@@ -5038,11 +5038,11 @@ LevelLoad_ByTileset:
 ; DEC <Temp_Var(.)		 ; .*
 ; DEC <Temp_Var\1		 ; Temp_Var\1--
 
-; LDA <level_data_pointer.*\n.*STA <Temp_Var1.*\n.*LDA <level_data_pointer+1.*\n.*STA <Temp_Var2.*
-;; Backup level_data_pointer/H into Temp_Var1/2\n\tLDA <level_data_pointer\n\tSTA <Temp_Var1\n\tLDA <level_data_pointer+1\n\tSTA <Temp_Var2
+; LDA <level_data_pointer.*\n.*STA <var1.*\n.*LDA <level_data_pointer+1.*\n.*STA <var2.*
+;; Backup level_data_pointer/H into var1/2\n\tLDA <level_data_pointer\n\tSTA <var1\n\tLDA <level_data_pointer+1\n\tSTA <var2
 
-; LDA <Temp_Var1.*\n.*STA <level_data_pointer.*\n.*LDA <Temp_Var2.*\n.*STA <level_data_pointer+1.*
-;; Restore Map_Tile_Addr from backup\n\tLDA <Temp_Var1\n\tSTA <level_data_pointer\n\tLDA <Temp_Var2\n\tSTA <level_data_pointer+1
+; LDA <var1.*\n.*STA <level_data_pointer.*\n.*LDA <var2.*\n.*STA <level_data_pointer+1.*
+;; Restore Map_Tile_Addr from backup\n\tLDA <var1\n\tSTA <level_data_pointer\n\tLDA <var2\n\tSTA <level_data_pointer+1
 
 LeveLoad_Generators:
 	LDA Level_Tileset
@@ -5408,13 +5408,13 @@ PRG062_9C06:
 	; 02
 	; 13
 
-	; Store the low byte of the address into Temp_Var11/Temp_Var13
+	; Store the low byte of the address into var11/var13
 	; This defines addresses used to look up the construction of a tile
 	; by its index number; note that top and bottom half use a common
 	; low byte.
 	LDA TileLayout_ByTileset,Y
-	STA <Temp_Var11		 
-	STA <Temp_Var13		 
+	STA <var11		 
+	STA <var13		 
 
 	; The following takes the high byte of the "TileLayout_ByTileset"
 	; and either adds nothing or a jump of 512, and still adds a jump of
@@ -5426,9 +5426,9 @@ PRG062_9C06:
 	INX		 		; +256 (block 2) beginning of the right half
 
 PRG062_9C1B:
-	STX <Temp_Var12		; High byte [?] into Temp_Var12
+	STX <var12		; High byte [?] into var12
 	INX		 		; block 1 or 3, depending on Scroll_OddEven
-	STX <Temp_Var14		; High byte [?] into Temp_Var14
+	STX <var14		; High byte [?] into var14
 
 	LDX <Scroll_LastDir		; X = Scroll_LastDir
 	LDA <Scroll_ColumnR,X	 	; A = appropriate current column (right or left)
@@ -5440,40 +5440,40 @@ PRG062_9C1B:
 
 	; Set the address of the tiles we need to modify!
 	LDA Tile_Mem_Addr,Y
-	STA <Temp_Var15	
+	STA <var15	
 	LDA Tile_Mem_Addr+1,Y
-	STA <Temp_Var16	
+	STA <var16	
 
 	LDA #26	 		; Number of rows to update (NTSC res of 224, two screens tall, is 448 / 16px-per-tile = 26)
-	STA <Temp_Var1		; Temp_Var1 = 26 (see immediately above)
+	STA <var1		; var1 = 26 (see immediately above)
 	LDA <Scroll_ColumnR,X	; Get the column we're on
 	AND #$0f	 	; Make it relative to THIS screen, 0-15
-	STA <Temp_Var2		; Temp_Var2 stores this value
+	STA <var2		; var2 stores this value
 
 	LDX #$00	 	; X = 0
 PRG062_9C40:
-	LDY <Temp_Var2		; Y = Temp_Var2 (screen relative column)
-	LDA [Temp_Var15],Y	; Get tile to display
+	LDY <var2		; Y = var2 (screen relative column)
+	LDA [var15],Y	; Get tile to display
 	TAY		 	; Tile becomes offset 'Y'
 
 	; Store the top block for this tile
-	LDA [Temp_Var11],Y
+	LDA [var11],Y
 	STA Scroll_PatStrip,X
 
 	; Store the bottom block for this tile
-	LDA [Temp_Var13],Y
+	LDA [var13],Y
 	STA Scroll_PatStrip+1,X
 
-	LDA <Temp_Var2
+	LDA <var2
 	ADD #16	
-	STA <Temp_Var2	 	; Temp_Var2 += 16 (next row in this column is 16 bytes down)
+	STA <var2	 	; var2 += 16 (next row in this column is 16 bytes down)
 	BCC PRG062_9C5A	 	; If we haven't overflowed, jump to PRG062_9C5A
-	INC <Temp_Var16	; Otherwise we need to increment the upper part of the tile address
+	INC <var16	; Otherwise we need to increment the upper part of the tile address
 PRG062_9C5A:
 	INX		 
 	INX		 ; X += 2 (two tiles added)
 
-	DEC <Temp_Var1	 ; Temp_Var1--
+	DEC <var1	 ; var1--
 	BPL PRG062_9C40	 ; If more tiles to go, loop!
 
 
@@ -5514,12 +5514,12 @@ Scroll_Do_AttrColumn:
 	TAY		 	; Y = A
 
 PRG062_9C87:
-	STY <Temp_Var1		; column, possibly offset, into Temp_Var1
+	STY <var1		; column, possibly offset, into var1
 	LDA #$00	 	
-	STA <Temp_Var2		; Temp_Var2 = 0
+	STA <var2		; var2 = 0
 
 PRG062_9C8D:
-	LDA <Temp_Var1		; A = Temp_Var1 (column, possibly offset)
+	LDA <var1		; A = var1 (column, possibly offset)
 	AND #$f0	 	; Figure out which SCREEN we're on
 	LSR A		 
 	LSR A		 
@@ -5528,26 +5528,26 @@ PRG062_9C8D:
 
 	; Setup pointer to tile memory we need to be focusing on!
 	LDA Tile_Mem_Addr,Y	
-	STA <Temp_Var15		
+	STA <var15		
 	LDA Tile_Mem_Addr+1,Y	
-	STA <Temp_Var16	
+	STA <var16	
 
-	LDX <Temp_Var2	 	; X = Temp_Var2
-	LDA <Temp_Var1	 	; A = Temp_Var1
+	LDX <var2	 	; X = var2
+	LDA <var1	 	; A = var1
 	AND #$0f	 	; Current screen-relative column
 	TAY		 	; Y = A (screen relative column)
 PRG062_9CA6:
-	LDA [Temp_Var15],Y	; Get next tile
+	LDA [var15],Y	; Get next tile
 	AND #$c0	 	; Set attributes based on the "range" of the tile, like palette 0 for tiles 00-3f, palette 1 for tiles 40-7f, etc.
 	STA <Scroll_ColorStrip,X	; Store this into the attribute strip
 	TYA		 	; A = Y (the tile offset)
 	ADD #16		 	; A += 16 (every tile row is 16 bytes)
 	TAY		 	; Y = A
 	BCC PRG062_9CB5	 	; If we didn't overflow, jump to PRG062_9CB5
-	INC <Temp_Var16	; Increment the high byte
+	INC <var16	; Increment the high byte
 PRG062_9CB5:
 	INX			; X++ (next byte in the Scroll_ColorStrip)
-	STX <Temp_Var2		; Temp_Var2 = X
+	STX <var2		; var2 = X
 	CPX #27	
 	BNE PRG062_9CD0	 	; If X <> 27, jump to PRG062_9CD0
 
@@ -5561,7 +5561,7 @@ PRG062_9CB5:
 	ADD PRG062_9C74,X
 	TAY		 	; -> 'Y'
 PRG062_9CCB:
-	STY <Temp_Var1		; -> Temp_Var1
+	STY <var1		; -> var1
 	JMP PRG062_9C8D	 	; Loop around again...
 
 PRG062_9CD0:
@@ -5679,48 +5679,48 @@ VScroll_DoPatternAndAttrRow:
 	LDA Tile_Mem_AddrVH,Y
 	STA <level_data_pointer+1
 
-	; Temp_Var9 = offset at leftmost column in current row
+	; var9 = offset at leftmost column in current row
 	LDA <Scroll_VOffsetT,X
 	AND #$f0
-	STA <Temp_Var9
+	STA <var9
 
-	; Temp_Var10 = 0
+	; var10 = 0
 	LDA #$00
-	STA <Temp_Var10
+	STA <var10
 
 PRG062_9D5A:
-	LDY <Temp_Var9		 ; Y = current offset along row
+	LDY <var9		 ; Y = current offset along row
 	LDA [level_data_pointer],Y	 ; Get tile here
-	STA <Temp_Var11		 ; -> Temp_Var11
+	STA <var11		 ; -> var11
 
-	INC <Temp_Var9		 ; Temp_Var9++ (next column)
+	INC <var9		 ; var9++ (next column)
 
-	JSR TileLayout_GetBaseAddr	 ; Get tile layout address -> Temp_Var13/14
+	JSR TileLayout_GetBaseAddr	 ; Get tile layout address -> var13/14
 
-	LDX <Temp_Var10		 ; X = Temp_Var10
+	LDX <var10		 ; X = var10
 
 	LDA <Vert_Scroll
 	AND #$08
 	BEQ PRG062_9D6F	 ; If not vertically halfway on the tile, jump to PRG062_9D6F
 
-	INC <Temp_Var14		 ; Otherwise, Temp_Var14++ (next row of layout)
+	INC <var14		 ; Otherwise, var14++ (next row of layout)
 
 PRG062_9D6F:
-	LDA [Temp_Var13],Y	 ; Get pattern of tile
+	LDA [var13],Y	 ; Get pattern of tile
 	STA Scroll_PatStrip,X	 ; Store into pattern strip
 
 	INX		 ; X++ (next pattern strip byte)
 
-	; Temp_Var14 += 2 (next adjacent tile pattern)
-	INC <Temp_Var14
-	INC <Temp_Var14
+	; var14 += 2 (next adjacent tile pattern)
+	INC <var14
+	INC <var14
 
-	LDA [Temp_Var13],Y	 ; Get pattern of tile
+	LDA [var13],Y	 ; Get pattern of tile
 	STA Scroll_PatStrip,X	 ; Store into pattern strip
 
 	INX		 ; X++ (next pattern strip byte)
 
-	STX <Temp_Var10		 ; X -> Temp_Var10
+	STX <var10		 ; X -> var10
 
 	CPX #$20
 	BLT PRG062_9D5A	 ; If not at end of strip row, loop
@@ -5795,26 +5795,26 @@ Scroll_Do_AttrRow:
 	LDA Tile_Mem_AddrVH,Y
 	STA <level_data_pointer+1
 
-	; Temp_Var9 = offset at leftmost column in current row
+	; var9 = offset at leftmost column in current row
 	LDA <Scroll_VOffsetT,X
 	AND #$f0
-	STA <Temp_Var9
+	STA <var9
 
 	AND #$10
 	BNE PRG062_9DDE
 
-	LDA <Temp_Var9
+	LDA <var9
 	ADD #$10
-	STA <Temp_Var9 
+	STA <var9 
 
 PRG062_9DDE:
-	INC <Temp_Var9		 ; Temp_Var9++ (next column)
+	INC <var9		 ; var9++ (next column)
 
-	; Temp_Var8 = 0
+	; var8 = 0
 	LDA #$00
-	STA <Temp_Var8
+	STA <var8
 PRG062_9DE4:
-	LDY <Temp_Var9		 ; Y = current offset along row
+	LDY <var9		 ; Y = current offset along row
 	JSR VScroll_TileQuads2Attrs	 ; Create attribute bits out of tile values
 
 	; Y -= 15 (previous row; 15 because VScroll_TileQuads2Attrs already subtracted 1)
@@ -5824,14 +5824,14 @@ PRG062_9DE4:
 
 	JSR VScroll_TileQuads2Attrs	 ; Create attribute bits out of tile values
 
-	; Temp_Var9 += 2 (next 2 columns over)
-	INC <Temp_Var9
-	INC <Temp_Var9
+	; var9 += 2 (next 2 columns over)
+	INC <var9
+	INC <var9
 
-	; Temp_Var8++ (next Scroll_AttrStrip byte)
-	INC <Temp_Var8
+	; var8++ (next Scroll_AttrStrip byte)
+	INC <var8
 
-	LDA <Temp_Var8
+	LDA <var8
 	CMP #$08
 	BLT PRG062_9DE4	 ; While not at end of row, loop
 
@@ -5855,27 +5855,27 @@ PRG062_9E11:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; TileLayout_GetBaseAddr
 ;
-; Set layout pointer for the active tileset -> Temp_Var13/14
-; also reloads 'Y' with the tile in Temp_Var11
+; Set layout pointer for the active tileset -> var13/14
+; also reloads 'Y' with the tile in var11
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 TileLayout_GetBaseAddr:
 	LDA Level_Tileset 
 	ASL A
 	TAX		 ; X = Level_Tileset * 2
 
-	; Set Temp_Var13/14 to point to the layout data for this Tileset
+	; Set var13/14 to point to the layout data for this Tileset
 	LDA TileLayout_ByTileset,X
-	STA <Temp_Var13
+	STA <var13
 	LDA TileLayout_ByTileset+1,X
-	STA <Temp_Var14
+	STA <var14
 
-	LDY <Temp_Var11		 ; Y = tile temp
+	LDY <var11		 ; Y = tile temp
 
 	RTS		 ; Return
 
 
 VScroll_TileQuads2Attrs:
-	LDX <Temp_Var8		 ; X = Temp_Var8 (Scroll_AttrStrip offset)
+	LDX <var8		 ; X = var8 (Scroll_AttrStrip offset)
 
 	LDA [level_data_pointer],Y	 ; Get the tile
 
@@ -5905,19 +5905,19 @@ VScroll_TileQuads2Attrs:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_GetTileV:	; $9E3C 
 
-	; Temp_Var13 / Temp_Var14 -- Y Hi and Lo
-	; Temp_Var15 / Temp_Var16 -- X Hi and Lo
+	; var13 / var14 -- Y Hi and Lo
+	; var15 / var16 -- X Hi and Lo
 
-	LDA <Temp_Var13	 ; A = Temp_Var13 (Y Hi)
+	LDA <var13	 ; A = var13 (Y Hi)
 	PHA		 ; Save it
 	TAY		 ; Y = Y Hi
 
-	LDA <Temp_Var14	 ; A = Temp_Var14 (Y Lo)
+	LDA <var14	 ; A = var14 (Y Lo)
 	PHA		 ; Save it
 
 	JSR LevelJct_GetVScreenH
 
-	STA <Temp_Var14	 ; Adjusted Y for vertical -> Temp_Var14
+	STA <var14	 ; Adjusted Y for vertical -> var14
 
 	; Select root offset into tile memory
 	LDA Tile_Mem_AddrVL,Y
@@ -5925,25 +5925,25 @@ Player_GetTileV:	; $9E3C
 	LDA Tile_Mem_AddrVH,Y
 	STA <level_data_pointer+1
 
-	; Combine positions into Temp_Var15 to form tile mem offset
-	LDA <Temp_Var14
+	; Combine positions into var15 to form tile mem offset
+	LDA <var14
 	AND #$f0
-	STA <Temp_Var15
+	STA <var15
 
-	LDA <Temp_Var16
+	LDA <var16
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var15
+	ORA <var15
 
 	TAY		 ; Offset -> 'Y'
 
-	PLA		 ; Restore original value for Temp_Var14
-	STA <Temp_Var14	 ; Store it
+	PLA		 ; Restore original value for var14
+	STA <var14	 ; Store it
 
-	PLA		 ; Restore original value for Temp_Var13
-	STA <Temp_Var13	 ; Store it
+	PLA		 ; Restore original value for var13
+	STA <var13	 ; Store it
 
 	LDA [level_data_pointer],Y	 ; Get tile
 	STA <Level_Tile	 ; Store into Level_Tile
@@ -6005,26 +6005,26 @@ PRG062_9E9A:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_GetTileAndSlope_Normal:	; $9E9D
 
-	; Temp_Var13 / Temp_Var14 -- Y Hi and Lo
-	; Temp_Var15 / Temp_Var16 -- X Hi and Lo
+	; var13 / var14 -- Y Hi and Lo
+	; var15 / var16 -- X Hi and Lo
 
 	; Clear slope array
 	LDA #$00	
 	STA <Player_Slopes
-	STA <Player_Slopes+1	; Not used; see below with Temp_Var1 assignment
-	STA <Player_Slopes+2	; Not used; see below with Temp_Var1 assignment
+	STA <Player_Slopes+1	; Not used; see below with var1 assignment
+	STA <Player_Slopes+2	; Not used; see below with var1 assignment
 
-	LDA <Temp_Var16
+	LDA <var16
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	STA <Level_TileOff	 ; Level_TileOff = Temp_Var16 >> 4 (current column Player is in)
+	STA <Level_TileOff	 ; Level_TileOff = var16 >> 4 (current column Player is in)
 
-	LDA <Temp_Var15
+	LDA <var15
 	AND #$0f	
 	ASL A		
-	TAX		 ; X = (Temp_Var15 & $0F) << 1 (current "high" part of Player X shifted up by 1, indexing Tile Mem)
+	TAX		 ; X = (var15 & $0F) << 1 (current "high" part of Player X shifted up by 1, indexing Tile Mem)
 
 	; Set level_data_pointer/H to appropriate screen based on Player's position
 	LDA Tile_Mem_Addr,X
@@ -6032,19 +6032,19 @@ Player_GetTileAndSlope_Normal:	; $9E9D
 	LDA Tile_Mem_Addr+1,X
 	STA <level_data_pointer+1
 
-	LDA <Temp_Var13
-	BEQ PRG062_9EC3	 ; If Temp_Var13 (Y Hi) = 0, jump to PRG062_9EC3
+	LDA <var13
+	BEQ PRG062_9EC3	 ; If var13 (Y Hi) = 0, jump to PRG062_9EC3
 
 	INC <level_data_pointer+1 ; Otherwise, go to second half of screen
 
 PRG062_9EC3:
-	LDA <Temp_Var14
+	LDA <var14
 	AND #$f0
 	ORA <Level_TileOff	 ; Level_TileOff gets the Player's current row in the upper 4 bits
 
 	; Level_TileOff is now Player's current offset in Tile Mem from the selected pointer
 
-	STA <Temp_Var12		 ; ... and copied into Temp_Var12
+	STA <var12		 ; ... and copied into var12
 
 	TAY		 	; Y = current offset
 	LDA [level_data_pointer],Y	; Get tile here
@@ -6061,17 +6061,17 @@ PRG062_9EC3:
 	BNE PRG062_9F0D	 ; If Level_Tileset <> 14 (Underground), jump to PRG062_9F0D
 
 PRG062_9EDB:
-	; NOTE: Temp_Var1 = 0 and is used directly; at one time there was probably some kind
+	; NOTE: var1 = 0 and is used directly; at one time there was probably some kind
 	; of loop here that would have implicated Player_Slopes+1 and Player_Slopes+2
 	LDA #$00
-	STA <Temp_Var1		 ; Temp_Var1 = 0
+	STA <var1		 ; var1 = 0
 
-	LDY <Temp_Var12		 ; Y = current offset in Tile Mem
+	LDY <var12		 ; Y = current offset in Tile Mem
 	LDA [level_data_pointer],Y	 ; Get tile here
-	STA <Temp_Var2		 ; Store into Temp_Var2
+	STA <var2		 ; Store into var2
 
 PGSAT_GetSlope:
-	LDA <Temp_Var2		 ; Re-get tile
+	LDA <var2		 ; Re-get tile
 	AND #$c0
 	CLC
 	ROL A
@@ -6079,7 +6079,7 @@ PGSAT_GetSlope:
 	ROL A
 	TAY		; Y = tile quadrant (0 to 3)
 
-	LDA <Temp_Var2		 ; Re-get tile
+	LDA <var2		 ; Re-get tile
 	CMP Tile_AttrTable,Y
 	BLT PRG062_9F0D	 	; If it's less than the tile specified in Tile_AttrTable[Y], jump to PRG062_9F0D
 
@@ -6087,18 +6087,18 @@ PGSAT_GetSlope:
 	ASL A
 	TAX		 ; X = Y (tile quadrant) << 1 (two byte index)
 
-	; Temp_Var3/4 are loaded with address inside PRG000_C000
+	; var3/4 are loaded with address inside PRG000_C000
 	LDA Level_SlopeSetByQuad,X
-	STA <Temp_Var3
+	STA <var3
 	LDA Level_SlopeSetByQuad+1,X
-	STA <Temp_Var4
+	STA <var4
 
-	LDX <Temp_Var1	 	; X = Temp_Var1 (always 0)
-	LDA <Temp_Var2	 	; A = Temp_Var2 (the retrieved tile)
+	LDX <var1	 	; X = var1 (always 0)
+	LDA <var2	 	; A = var2 (the retrieved tile)
 	SUB Tile_AttrTable,Y	; Subtract the root tile value
 	TAY		 	; Y = result
 
-	LDA [Temp_Var3],Y		; Get value 
+	LDA [var3],Y		; Get value 
 	STA <Player_Slopes,X	; Store into Player_Slopes
 
 PRG062_9F0D:
@@ -6269,17 +6269,17 @@ Input_ReverseUpDown:
 	; Reverse up/down bits
 	AND #PAD_UP		; Take current "up" status...
 	LSR A			; ... move it into "down" bit...
-	STA <Temp_Var1	; -> Temp_Var1
+	STA <var1	; -> var1
 	
 	PLA		; Restore input (Pad_Input or Pad_Holding)
 	AND #PAD_DOWN	; Take current "down" status...
 	ASL A			; ... move it into "up" bit...
-	ORA <Temp_Var1	; ... combine with reversed up
-	STA <Temp_Var1	; -> Temp_Var1
+	ORA <var1	; ... combine with reversed up
+	STA <var1	; -> var1
 
 	PLA		; Restore input (Pad_Input or Pad_Holding)
 	AND #~(PAD_UP | PAD_DOWN)
-	ORA <Temp_Var1
+	ORA <var1
 	RTS
 
 
@@ -6340,21 +6340,21 @@ Save_DataSlotOffsets:	.word SAVE_SLOT_SIZE*0, SAVE_SLOT_SIZE*1, SAVE_SLOT_SIZE*2
 	; 32-bit sum
 
 	; Save data copy loop
-	; Temp_Var3/4 point to source
-	; Temp_Var5 is length
+	; var3/4 point to source
+	; var5 is length
 Save_CopyLoop:
 	LDY #0
 Save_MapCompCopyLoop:
-	LDA [Temp_Var3],Y
+	LDA [var3],Y
 	JSR Save_CopyByte
 	
 	INY
-	CPY <Temp_Var5
+	CPY <var5
 	BLT Save_MapCompCopyLoop
 	RTS
 
 Save_CopyByte:
-	STA <Temp_Var10
+	STA <var10
 
 	TYA
 	PHA
@@ -6362,8 +6362,8 @@ Save_CopyByte:
 	TXA
 	TAY 	; FIXME: Better way than swapping X into Y?
 	
-	LDA <Temp_Var10
-	STA [Temp_Var1],Y
+	LDA <var10
+	STA [var1],Y
 	
 	PLA
 	TAY
@@ -6405,57 +6405,57 @@ Save_GetTotalStarsAndHighWorld:
 
 
 	; Calculate checksum for the given save slot
-	; Result is in Temp_Var3/4
+	; Result is in var3/4
 Save_CalcChecksum:
-	; Calculate save base address -> Temp_Var1/2
+	; Calculate save base address -> var1/2
 	ASL A
 	TAY
 	
 	LDA #LOW(SaveData)
 	ADD Save_DataSlotOffsets,Y
-	STA <Temp_Var1 
+	STA <var1 
 	LDA #HIGH(SaveData)
 	ADC Save_DataSlotOffsets+1,Y
-	STA <Temp_Var2
+	STA <var2
 
-	; 32-bit sum will be in Temp_Var3-6
+	; 32-bit sum will be in var3-6
 	LDA #0
-	STA <Temp_Var3
-	STA <Temp_Var4
-	STA <Temp_Var5
-	STA <Temp_Var6
+	STA <var3
+	STA <var4
+	STA <var5
+	STA <var6
 	
 	LDY #0
 Save_SummationLoop:
 	; Adds 16-bit component to 32-bit sum
-	LDA <Temp_Var3
-	ADD [Temp_Var1],Y
+	LDA <var3
+	ADD [var1],Y
 	INY
-	STA <Temp_Var3
-	LDA <Temp_Var4
-	ADC [Temp_Var1],Y
+	STA <var3
+	LDA <var4
+	ADC [var1],Y
 	INY
-	STA <Temp_Var4
-	LDA <Temp_Var5
+	STA <var4
+	LDA <var5
 	ADC #0
-	STA <Temp_Var5
-	LDA <Temp_Var6
+	STA <var5
+	LDA <var6
 	ADC #0
-	STA <Temp_Var6
+	STA <var6
 
 	CPY #(SAVE_SLOT_SIZE - 2)	; -2: Do not include checksum itself!
 	BLT Save_SummationLoop
 	
 	; Now we "fold" sum by summing upper 16-bit with lower 16-bit
 	; and take 1s complement
-	LDA <Temp_Var3
-	ADD <Temp_Var5
+	LDA <var3
+	ADD <var5
 	EOR #$FF
-	STA <Temp_Var3
-	LDA <Temp_Var4
-	ADC <Temp_Var6
+	STA <var3
+	LDA <var4
+	ADC <var6
 	EOR #$FF
-	STA <Temp_Var4
+	STA <var4
 	
 	RTS
 	
@@ -6471,22 +6471,22 @@ Game_SaveData:
 	
 	JSR Save_GetTotalStarsAndHighWorld
 	
-	; Calculate save base address -> Temp_Var1/2
+	; Calculate save base address -> var1/2
 	LDA SaveData_Index
 	ASL A
 	TAY
 	
 	LDA #LOW(SaveData)
 	ADD Save_DataSlotOffsets,Y
-	STA <Temp_Var1 
+	STA <var1 
 	LDA #HIGH(SaveData)
 	ADC Save_DataSlotOffsets+1,Y
-	STA <Temp_Var2
+	STA <var2
 	
 	; X will be running index into SaveData
 	LDX #0
 	
-	LDA <Temp_Var10
+	LDA <var10
 	JSR Save_CopyByte
 	
 	LDA Map_StarCoin_Got
@@ -6501,20 +6501,20 @@ Game_SaveData:
 	
 	; Copy Map_Completions
 	LDA #LOW(Map_Completions)
-	STA <Temp_Var3
+	STA <var3
 	LDA #HIGH(Map_Completions)
-	STA <Temp_Var4
+	STA <var4
 	LDA #(Map_ObjCompletions - Map_Completions)
-	STA <Temp_Var5
+	STA <var5
 	JSR Save_CopyLoop
 
 	; Copy Map_ObjCompletions
 	LDA #LOW(Map_ObjCompletions)
-	STA <Temp_Var3
+	STA <var3
 	LDA #HIGH(Map_ObjCompletions)
-	STA <Temp_Var4
+	STA <var4
 	LDA #(Map_CometMode - Map_ObjCompletions)
-	STA <Temp_Var5
+	STA <var5
 	JSR Save_CopyLoop
 	
 	; Copy Map_CometMode
@@ -6523,29 +6523,29 @@ Game_SaveData:
 	
 	; Copy Inventory_Items
 	LDA #LOW(Inventory_Items)
-	STA <Temp_Var3
+	STA <var3
 	LDA #HIGH(Inventory_Items)
-	STA <Temp_Var4
+	STA <var4
 	LDA #9
-	STA <Temp_Var5
+	STA <var5
 	JSR Save_CopyLoop
 
 	; Copy Inventory_Score
 	LDA #LOW(Inventory_Score)
-	STA <Temp_Var3
+	STA <var3
 	LDA #HIGH(Inventory_Score)
-	STA <Temp_Var4
+	STA <var4
 	LDA #3
-	STA <Temp_Var5
+	STA <var5
 	JSR Save_CopyLoop
 	
 	; Copy Inventory_Score2
 	LDA #LOW(Inventory_Score2)
-	STA <Temp_Var3
+	STA <var3
 	LDA #HIGH(Inventory_Score2)
-	STA <Temp_Var4
+	STA <var4
 	LDA #3
-	STA <Temp_Var5
+	STA <var5
 	JSR Save_CopyLoop
 
 	; ... FIXME: anymore? ...
@@ -6558,11 +6558,11 @@ Game_SaveData:
 	
 	; Checksum is ready! Will be last 2 bytes of save slot.
 	LDY #(SAVE_SLOT_SIZE - 2)
-	LDA <Temp_Var3
-	STA [Temp_Var1],Y
+	LDA <var3
+	STA [var1],Y
 	INY
-	LDA <Temp_Var4
-	STA [Temp_Var1],Y
+	LDA <var4
+	STA [var1],Y
 	
 	RTS
 	

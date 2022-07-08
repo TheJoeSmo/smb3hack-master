@@ -443,31 +443,31 @@ Inventory_DoFlipVideoUpd:
 	ASL A
 	TAX		 	; X = Inventory_Open << 1
 
-	; Store address to video data into Temp_Var15 based on Inventory_Open status
+	; Store address to video data into var15 based on Inventory_Open status
 	LDA InvGBuf_By_Open,X
-	STA <Temp_Var15	
+	STA <var15	
 	LDA InvGBuf_By_Open+1,X
-	STA <Temp_Var16
+	STA <var16
 
 	; InvFlip_Frame indexes which block of video data we'll be using...
 
 	LDY InvFlip_Frame		; Y = InvFlip_Frame
 	LDA Flip_Video_Ends,Y		; Get offset value that is the END of the video data
-	STA <Temp_Var13			; Store into Temp_Var13
+	STA <var13			; Store into var13
 
 	LDA Flip_Video_Offsets,Y	; Get offset value that is the BEGINNING of the video data
 	TAY		 		; Y = A
 
 	LDX Graphics_BufCnt	
-	STX <Temp_Var9			; Temp_Var9 = Graphics_BufCnt (where in Graphics_Buffer we begin)
+	STX <var9			; var9 = Graphics_BufCnt (where in Graphics_Buffer we begin)
 
 	; Copy all of the video update data into the Graphics_Buffer
 PRG026_A2E4:
-	LDA [Temp_Var15],Y	; Get next byte 
+	LDA [var15],Y	; Get next byte 
 	STA Graphics_Buffer,X	; Store it into the buffer
 	INX		 	; X++
 	INY		 	; Y++
-	CPY <Temp_Var13		
+	CPY <var13		
 	BNE PRG026_A2E4	 	; While Y <> end of update data, loop!
 
 	; *** MAGIC 12 OFFSET ***
@@ -487,7 +487,7 @@ InvFlip_NotQuantOff:
 InvFlip_QuantOff:
 	LDA Inventory_PatEditOff,Y
 	ADD Graphics_BufCnt
-	STA <Temp_Var13		; Temp_Var13 = Offset to 12 bytes in from where we started the graphics buffer
+	STA <var13		; var13 = Offset to 12 bytes in from where we started the graphics buffer
 	DEX		 
 	STX Graphics_BufCnt	; Update Graphics_BufCnt with where the buffer actually is
 
@@ -543,11 +543,11 @@ Inventory_DrawItemsOrCards:
 	; Inventory is closing!  Set up for cards
 	LDA #(Inventory_Cards - Inventory_Items)
 
-	STA <Temp_Var14		; Store this into Temp_Var14 (offset to first pattern in card layout)
+	STA <var14		; Store this into var14 (offset to first pattern in card layout)
 
-	LDA <Temp_Var13		; A = 12 bytes into the graphics buffer we just did
+	LDA <var13		; A = 12 bytes into the graphics buffer we just did
 	ADD #$0d	 	
-	STA <Temp_Var13		; Temp_Var13 += $D
+	STA <var13		; var13 += $D
 
 	LDA #$02	 	; A = 2
 	JMP PRG026_A355	 	; Jump to PRG026_A355...
@@ -558,28 +558,28 @@ PRG026_A344:
 	LDA #1	; SB: Inventory is quantity based, always want to start at 1 (Mushroom)
 
 	ADD InvStart_Item	; Offset to the starting item
-	STA <Temp_Var14		; Store this into Temp_Var14 (offset to first pattern in item layout)
+	STA <var14		; Store this into var14 (offset to first pattern in item layout)
 
 	LDA #$07	 	; Number of items to display minus one
 
 PRG026_A355:
-	STA <Temp_Var11		; Store number of items to display...
+	STA <var11		; Store number of items to display...
 
 	; Set pointer to proper render items
 	LDA Inventory_Open
 	ASL A		 
 	TAX		 ; X = Inventory_Open * 2 (2 byte index)
 	LDA InvFlip_TileLayout_Sel,X
-	STA <Temp_Var15	
+	STA <var15	
 	LDA InvFlip_TileLayout_Sel+1,X
-	STA <Temp_Var16		; Temp_Var15/16 point to start of pattern data for inventory items / cards
+	STA <var16		; var15/16 point to start of pattern data for inventory items / cards
 
 	LDA InvFlip_Frame
 	CMP #14
 	BEQ InvFlip_DrawQuantity	; If drawing the top bar of inventory, jump to InvFlip_DrawQuantity (draw quantities special)
 
 PRG026_A366:
-	LDY <Temp_Var14	; Starting item/card offset
+	LDY <var14	; Starting item/card offset
 
 	; SB: In quantity inventory style, we actually display incremental pictures
 	; So if inventory is open, we want incremental pictures, not lookup vals
@@ -616,9 +616,9 @@ PRG026_A37D:
 	; This loop copies two bytes of the item/card
 	; into the buffer; the graphic is made up of 4 bytes,
 	; but in a single row of 8x8s, it's two at a time :)
-	LDX <Temp_Var13		; X = Temp_Var13 (offset into the graphics buffer)
+	LDX <var13		; X = var13 (offset into the graphics buffer)
 PRG026_A37F:
-	LDA [Temp_Var15],Y	; Get next tile for this power-up
+	LDA [var15],Y	; Get next tile for this power-up
 	STA Graphics_Buffer,X	; Store it into the graphics buffer
 	INX		 	; X++
 	INY		 	; Y++
@@ -627,12 +627,12 @@ PRG026_A37F:
 	BNE PRG026_A37F	 	; If A <> 0, loop (loops for two bytes)
 
 PRG026_A38B:
-	LDA <Temp_Var13		; X = Temp_Var13 (offset into the graphics buffer)
+	LDA <var13		; X = var13 (offset into the graphics buffer)
 	ADD #$03
-	STA <Temp_Var13		; Temp_Var13 += 3 (2 for the power-up, 1 for spacing)
-	INC <Temp_Var14	; Next item!
-	DEC <Temp_Var11		; One less item left to display...
-	BPL PRG026_A366	 	; While Temp_Var11 >= 0, loop!
+	STA <var13		; var13 += 3 (2 for the power-up, 1 for spacing)
+	INC <var14	; Next item!
+	DEC <var11		; One less item left to display...
+	BPL PRG026_A366	 	; While var11 >= 0, loop!
 
 PRG026_A398:
 
@@ -645,48 +645,48 @@ InvFlip_DrawQuantity:
 Quant_A366:
 	; This loop copies two bytes of the item quantity value into the buffer
 
-	; Temp_Var1/2 will hold the high and low value of the quantity
+	; var1/2 will hold the high and low value of the quantity
 	; No modulus built-in to 6502, so we must calulate it manually
 	LDA #0
-	STA <Temp_Var1
+	STA <var1
 
 	LDA Inventory_Items,Y
 Quant_Mod10Loop:
 	CMP #10		
 	BMI Quant_Mod10
 	SUB #10	 	
-	INC <Temp_Var1
+	INC <var1
 	JMP Quant_Mod10Loop
 
 Quant_Mod10:
 	; What's left in 'A' should be less than 10 and so we can just keep the lower part of it
 	AND #$0F
-	STA <Temp_Var2
+	STA <var2
 
-	LDX <Temp_Var13		; X = Temp_Var13 (offset into the graphics buffer)
+	LDX <var13		; X = var13 (offset into the graphics buffer)
 
 	; Most significant digit
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #$F0	; Base tile
 	STA Graphics_Buffer,X	; Store it into the graphics buffer
 	INX		 	; X++
 
 	; Least significant digit
-	LDA <Temp_Var2
+	LDA <var2
 	ADD #$F0	; Base tile
 	STA Graphics_Buffer,X	; Store it into the graphics buffer
 	INX		 	; X++
 
 	INY		 	; Y++ (next inventory item)
 
-	LDA <Temp_Var13		; X = Temp_Var13 (offset into the graphics buffer)
+	LDA <var13		; X = var13 (offset into the graphics buffer)
 	ADD #$03
-	STA <Temp_Var13		; Temp_Var13 += 3 (2 for the power-up quantity, 1 for spacing)
+	STA <var13		; var13 += 3 (2 for the power-up quantity, 1 for spacing)
 
-	INC <Temp_Var14		; Next item quantity!
+	INC <var14		; Next item quantity!
 
-	DEC <Temp_Var11		; One less item quantity left to display...
-	BPL Quant_A366	 	; While Temp_Var11 >= 0, loop!
+	DEC <var11		; One less item quantity left to display...
+	BPL Quant_A366	 	; While var11 >= 0, loop!
 
 	RTS
 
@@ -714,7 +714,7 @@ InvFlipFrame_DrawWorldCoins:
 
 	JSR StatusBar_Fill_Coins ; Put coins in status bar
 
-	LDX <Temp_Var9		 ; X = Temp_Var9
+	LDX <var9		 ; X = var9
 
 	LDA StatusBar_CoinH
 	STA Graphics_Buffer+$15,X
@@ -732,7 +732,7 @@ InvFlipFrame_DrawMLLivesScore:
 	JSR StatusBar_Fill_MorL	 ; Put <M> or <L> in status bar
 	JSR StatusBar_Fill_Lives ; Put lives in status bar
 
-	LDX <Temp_Var9		 ; X = Temp_Var9
+	LDX <var9		 ; X = var9
 
 	LDA StatusBar_LivesH
 	STA Graphics_Buffer+8,X
@@ -742,7 +742,7 @@ InvFlipFrame_DrawMLLivesScore:
 	JSR StatusBar_Fill_Score ; Put score in status bar
 
 	; Patch in all of the digits of score
-	LDX <Temp_Var9	 ; X = Temp_Var9
+	LDX <var9	 ; X = var9
 	LDY #$00	 ; Y = 0
 PRG026_A3EF:
 	LDA StatusBar_Score,Y
@@ -1101,10 +1101,10 @@ RockBreak_TileFix:
 
 Inv_UseItem_Hammer: 
 	LDA #$03
-	STA <Temp_Var1	 ; Temp_Var1 = 3 (checking all 4 directions around Player)
+	STA <var1	 ; var1 = 3 (checking all 4 directions around Player)
 
 PRG026_A6BF:
-	LDY <Temp_Var1	 		; Y = LDY <Temp_Var1
+	LDY <var1	 		; Y = LDY <var1
 	JSR MapTile_Get_By_Offset	; Get map tile nearby player (on page 10)
 
 	; Rock tiles:
@@ -1112,7 +1112,7 @@ PRG026_A6BF:
 	CMP #$02	 ; See if value is less than 2 (rock to break)
 	BLT PRG026_A6D2	 ; If rock, jump to PRG026_A6D2
 
-	DEC <Temp_Var1		; Temp_Var1--
+	DEC <var1		; var1--
 	BPL PRG026_A6BF	 	; While directions to search, loop!
 
 	JMP Inv_UseItem_Denial	; No way to use hammer; deny!
@@ -1120,8 +1120,8 @@ PRG026_A6BF:
 PRG026_A6D2:
 	; Rock to break...
 
-	STX <Temp_Var2		; Store screen high byte -> Temp_Var2
-	LSR <Temp_Var2		; Temp_Var2 >>= 1 (previously used as index into Map_Tile_Addr, now back to just a screen index)
+	STX <var2		; Store screen high byte -> var2
+	LSR <var2		; var2 >>= 1 (previously used as index into Map_Tile_Addr, now back to just a screen index)
 	PHA		 	; Save 'A' (map tile minus TILE_ROCKBREAKH, either 0 or 1)
 	TAX		 	; X = A
 	LDA RockBreak_Replace,X	; Get the tile number that replaces this rock
@@ -1134,13 +1134,13 @@ PRG026_A6D2:
 	ASL A
 	ASL A		; Multiply by 16 for X
 	STA <MapPoof_X
-	STA <Temp_Var3	; Temp_Var3 = MapPoof_X
+	STA <var3	; var3 = MapPoof_X
 
 	TYA		
 	AND #$f0	
 	ADD #$10	; Decouple a Y
 	STA <MapPoof_Y
-	STA <Temp_Var1	; Temp_Var1 = MapPoof_Y
+	STA <var1	; var1 = MapPoof_Y
 
 	; SB: Going to "cheat" a little... we'll assume that the locks
 	; are only ever opened in order and just set the next bit...
@@ -1169,10 +1169,10 @@ Map_WZeroLock_UnlockFree:
 
 	; Buffer in the rock replacement tiles
 	LDY Graphics_BufCnt
-	LDA <Temp_Var15	
+	LDA <var15	
 	STA Graphics_Buffer,Y
 	STA Graphics_Buffer+5,Y
-	LDA <Temp_Var16	
+	LDA <var16	
 	STA Graphics_Buffer+1,Y	
 	ADD #$01
 	STA Graphics_Buffer+6,Y
@@ -1404,7 +1404,7 @@ Map_SetCompletion_By_Poof:	; $A8D4
 	; This loop will determine what row to mark completion on based on
 	; the Y coordinate of the "map poof"
 	LDY #6	
-	LDA <Temp_Var1		; A = Temp_Var1 (Map Poof Y)
+	LDA <var1		; A = var1 (Map Poof Y)
 PRG026_A8D8:
 	CMP Map_Poof_To_Row,Y	; Compare Map Poof Y to this value
 	BEQ PRG026_A8E2		; If it matches, jump to PRG026_A8E2
@@ -1414,19 +1414,19 @@ PRG026_A8D8:
 	; If it doesn't match, use Y = 7 (which amounts to the last row anyway, but SHOULDN'T HAPPEN)
 	LDY #7
 PRG026_A8E2:
-	STY <Temp_Var5		; Temp_Var5 = Y
-	LDA <Temp_Var2		; A = current screen (map X Hi byte)
+	STY <var5		; var5 = Y
+	LDA <var2		; A = current screen (map X Hi byte)
 	ASL A
 	ASL A
 	ASL A
 	ASL A
-	STA <Temp_Var4		; Temp_Var4 = Temp_Var2 << 4
-	LDA <Temp_Var3		
+	STA <var4		; var4 = var2 << 4
+	LDA <var3		
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var4	 	; A = Temp_Var3 >> 3 (Map Poof X, div 16) OR'd with Temp_Var4 (row is upper 4 bits, column is lower 4 bits)
+	ORA <var4	 	; A = var3 >> 3 (Map Poof X, div 16) OR'd with var4 (row is upper 4 bits, column is lower 4 bits)
 	TAY		 	; Y = A
 	LDX Player_Current	; X = Player_Current
 	BEQ PRG026_A8FF	 	; If Player_Current = 0 (Mario), jump to PRG026_A8FF
@@ -1435,7 +1435,7 @@ PRG026_A8E2:
 	TAY		 	; Y += $40 for Luigi (Luigi's clear bits are 64 ahead of Mario's)
 
 PRG026_A8FF:
-	LDX <Temp_Var5		; X = row on which the rock existed
+	LDX <var5		; X = row on which the rock existed
 
 	; FIXME broken
 	;LDA Map_Completions,Y	; Get current "completion" byte for this spot
@@ -2957,7 +2957,7 @@ PRG026_B0AA:
 	STA StatusBar_CoinL	; Store into StatusBar_CoinL
 	TYA		 	; A = Y (most significant digit)
 	BNE PRG026_B0B8	 	; If it's anything but zero, jump to PRG026_B0B8
-	LDA #Temp_Var15	 	; Otherwise, we're going to use a blank, instead of a leading zero
+	LDA #var15	 	; Otherwise, we're going to use a blank, instead of a leading zero
 PRG026_B0B8:
 	ADD #$f0	 	; Offset to proper MSD tile
 	STA StatusBar_CoinH	; Store into StatusBar_CoinH
@@ -3055,7 +3055,7 @@ SBFMOL_NotAToad:
 	ASL A		 	; A = Player_Current << 1
 	TAX		 	; X = A
 	LDA #$01	 	; A = 1
-	STA <Temp_Var15		; Temp_Var15 = 1
+	STA <var15		; var15 = 1
 	LDY Graphics_BufCnt	; Y = Graphics_BufCnt
 
 	; Loop to copy the two tiles
@@ -3065,8 +3065,8 @@ PRG026_B114:
  
 	INX		 	; X++
 	INY		 	; Y++
-	DEC <Temp_Var15		; Temp_Var15--
-	BPL PRG026_B114	 	; While Temp_Var15 > 0, loop!
+	DEC <var15		; var15--
+	BPL PRG026_B114	 	; While var15 > 0, loop!
 
 	LDA #$00	 	
 	STA Graphics_Buffer+3,Y	; Add a terminator
@@ -3128,17 +3128,17 @@ StatusBar_Fill_Score:
 	LDA Player_Score+2	; Get least significant byte of score
 	ADD Score_Earned	; Add in any earned points 
 	STA Player_Score+2	; Store into least significant digit
-	STA <Temp_Var1		; Keep LSD in Temp_Var1	 
+	STA <var1		; Keep LSD in var1	 
 
 	LDA Player_Score+1	; Get next higher byte
 	ADC Score_Earned+1 	; Add score and carry to of earned high byte to middle score byte
 	STA Player_Score+1	; Store result
-	STA <Temp_Var2		; Keep middle digit in Temp_Var2
+	STA <var2		; Keep middle digit in var2
 
 	LDA Player_Score	; Get most significant byte of score
 	ADC #$00	 	; Add in any carry
 	STA Player_Score	; Store result
-	STA <Temp_Var3		; Keep MSD in Temp_Var3
+	STA <var3		; Keep MSD in var3
 
 	; This giant loop is how you use an 8-bit CPU to display
 	; 6* digits of score from a 3-byte integer :)
@@ -3147,17 +3147,17 @@ StatusBar_Fill_Score:
 	LDY #$00	 ; Y = 0
 	LDX #$05	 ; X = 5	0-5, 6 digits
 PRG026_B19A:
-	LDA <Temp_Var1	 ; Get LSD -> A
+	LDA <var1	 ; Get LSD -> A
 
 	; I haven't taken time yet to discern this magic yet
 	SUB PRG026_B16C,X
-	STA <Temp_Var1	
-	LDA <Temp_Var2	
+	STA <var1	
+	LDA <var2	
 	SBC PRG026_B166,X
-	STA <Temp_Var2	
-	LDA <Temp_Var3	
+	STA <var2	
+	LDA <var3	
 	SBC PRG026_B160,X
-	STA <Temp_Var3	
+	STA <var3	
 
 	BCC PRG026_B1B8	 	; If the subtraction didn't go negative, jump to PRG026_B1B8
 
@@ -3166,17 +3166,17 @@ PRG026_B19A:
 	JMP PRG026_B19A	 ; Jump to PRG026_B19A
 
 PRG026_B1B8:
-	LDA <Temp_Var1
+	LDA <var1
 
 	; I haven't taken time yet to discern this magic yet
 	ADD PRG026_B16C,X
-	STA <Temp_Var1	
-	LDA <Temp_Var2	
+	STA <var1	
+	LDA <var2	
 	ADC PRG026_B166,X
-	STA <Temp_Var2	
-	LDA <Temp_Var3	
+	STA <var2	
+	LDA <var3	
 	ADC PRG026_B160,X
-	STA <Temp_Var3	
+	STA <var3	
 
 	LDA Score_Temp	 
 	ADD #$f0	 	; A = Score_Temp + $F0 (tile to display)
@@ -3301,29 +3301,29 @@ StatusBar_Fill_PowerMT:
 StatusBar_PMT_NotMap:
 	LDY #$00		; Y = 0
 	LDA #$01		; A = 1
-	STA <Temp_Var15		; <Temp_Var15 = 1
+	STA <var15		; <var15 = 1
 
 	; This checks each bit of Player_Power to see if it's set or not,
 	; and produces the proper state of the '>' in the array StatusBar_PMT
 PRG026_B25C:
 	LDX #$ef		; X = $EF (dark '>')
 	LDA Player_Power	; Player's current "Power" charge (each "unit" of power sets one more bit in this field)
-	AND <Temp_Var15		; A = Player_Power & Temp_Var15
+	AND <var15		; A = Player_Power & var15
 	BEQ PRG026_B267	 	; If Player_Power bit not set, jump to PRG026_B267
 	LDX #$ee		; Otherwise, X = $EE (glowing '>')
 PRG026_B267:
 	TXA		 	; A = X ($EF dark or $EE glowing)
 	STA StatusBar_PMT,Y	; Store this tile into the buffer
 	INY		 	; Y++
-	ASL <Temp_Var15		; Shift up to next power bit
-	LDA <Temp_Var15		; A = Temp_Var15
+	ASL <var15		; Shift up to next power bit
+	LDA <var15		; A = var15
 	CMP #$40	 	
-	BNE PRG026_B25C	 	; If Temp_Var15 <> $40, loop!
+	BNE PRG026_B25C	 	; If var15 <> $40, loop!
 
-	; Temp_Var15 is $40...
+	; var15 is $40...
 	LDX #$3c	 	; X = $3C (dark [P])
 	LDA Player_Power	; A = Player_Power
-	AND <Temp_Var15		; Checking bit 7 or 8...
+	AND <var15		; Checking bit 7 or 8...
 	BEQ PRG026_B289	 	; Not set, jump to PRG026_B289
 
 	; Player is at max power!  Set [P] flash state
@@ -3897,5 +3897,3 @@ PRG026_B506:
 
 PRG026_B51F:
 	RTS		 ; Return
-
-

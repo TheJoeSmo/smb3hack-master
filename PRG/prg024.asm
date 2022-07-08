@@ -131,7 +131,7 @@ PRG024_A0CD:
 
 	LDA #(DiagBox_R2 - DiagBox_R1)	; run count per row
 	STA Graphics_Buffer+2,X
-	STA <Temp_Var1		 ; -> Temp_Var1
+	STA <var1		 ; -> var1
 
 	LDY ToadTalk_CPos	 ; Y = current dialog box row
 	LDA DiagBox_RowOffs,Y
@@ -145,8 +145,8 @@ PRG024_A0DB:
 	INY		 ; Y++ (next pattern for dialog box)
 	INX		 ; X++ (next index in graphics buffer)
 
-	DEC <Temp_Var1	 ; Temp_Var1--
-	BNE PRG024_A0DB	 ; While Temp_Var1 > 0, loop!
+	DEC <var1	 ; var1--
+	BNE PRG024_A0DB	 ; While var1 > 0, loop!
 
 	; Insert terminator
 	LDA #$00
@@ -457,18 +457,18 @@ PRG024_A3B5:
 	LDA King_PatTableByWorld,Y
 	STA PatTable_BankSel+5	
 
-	; King's Y -> Temp_Var1
+	; King's Y -> var1
 	LDA King_Y
-	STA <Temp_Var1
+	STA <var1
 
-	; King's palette select -> Temp_Var2
+	; King's palette select -> var2
 	LDA King_PalByWorld,Y
-	STA <Temp_Var2
+	STA <var2
 
-	; King's number of patterns (sprites) -> Temp_Var4 and 5
+	; King's number of patterns (sprites) -> var4 and 5
 	LDA King_NumPatsByWorld,Y
-	STA <Temp_Var4
-	STA <Temp_Var5
+	STA <var4
+	STA <var5
 
 	TYA		; A = Y (World_Num)
 	ASL A		; A = World_Num * 2
@@ -480,12 +480,12 @@ PRG024_A3B5:
 	LDY #$60	; Y = $60
 PRG024_A3E8:
 	; Set King Sprite Y
-	LDA <Temp_Var1
+	LDA <var1
 	ADD King_SprDataYOff,X
 	STA Sprite_RAM,Y
 
 	; Set King Sprite Attributes
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$02,Y
 
 	; Set King Sprite X
@@ -500,8 +500,8 @@ PRG024_A3E8:
 	INY
 	INY
 
-	DEC <Temp_Var4	 ; Temp_Var4--
-	BPL PRG024_A3E8	 ; While Temp_Var4 >= 0, loop
+	DEC <var4	 ; var4--
+	BPL PRG024_A3E8	 ; While var4 >= 0, loop
 
 	PLA		 ; Restore A = (World_Num * 2) | CineKing_Frame
 	TAY		 ; -> 'Y'
@@ -521,8 +521,8 @@ PRG024_A40C:
 	INY
 	INY
 
-	DEC <Temp_Var5	 ; Temp_Var5--
-	BNE PRG024_A40C	 ; While Temp_Var5 <> 0, loop
+	DEC <var5	 ; var5--
+	BNE PRG024_A40C	 ; While var5 <> 0, loop
 
 	LDY World_Num
 	CPY #$05
@@ -558,18 +558,18 @@ PRG024_A439:
 	LDA #$80
 	STA Sprite_RAM+$60
 
-	; Temp_Var4 = CineKing_DialogState
+	; var4 = CineKing_DialogState
 	LDA <CineKing_DialogState
-	STA <Temp_Var4
+	STA <var4
 
-	; Temp_Var3 = $10
+	; var3 = $10
 	LDA #$10
-	STA <Temp_Var3
+	STA <var3
 
 	LDY #$80	 ; Y = $80
 PRG024_A44C:
-	LDA <Temp_Var4
-	BEQ PRG024_A466	 ; If Temp_Var4 (CineKing_DialogState) = 0, jump to PRG024_A466
+	LDA <var4
+	BEQ PRG024_A466	 ; If var4 (CineKing_DialogState) = 0, jump to PRG024_A466
 
 	LDX #$03	 ; X = 3
 
@@ -581,17 +581,17 @@ PRG024_A44C:
 	TAX		 ; X = ToadTalk_CPos / 2
 
 PRG024_A45B:
-	LDA <Temp_Var3
+	LDA <var3
 	CMP #$20
-	BLT PRG024_A466	 ; If Temp_Var3 < $20, jump to PRG024_A466
+	BLT PRG024_A466	 ; If var3 < $20, jump to PRG024_A466
 
 	CMP PRG024_A36C,X
-	BLT PRG024_A47E	 ; If Temp_Var3 < PRG024_A36C[X], jump to PRG024_A47E
+	BLT PRG024_A47E	 ; If var3 < PRG024_A36C[X], jump to PRG024_A47E
 
 PRG024_A466:
 
 	; Set web sprite Y
-	LDA <Temp_Var3
+	LDA <var3
 	STA Sprite_RAM,Y
 
 	; Set web sprite pattern
@@ -599,7 +599,7 @@ PRG024_A466:
 	STA Sprite_RAM+$01,Y
 
 	; Set web sprite attribute
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$02,Y
 
 	; Set web sprite X
@@ -614,13 +614,13 @@ PRG024_A466:
 
 PRG024_A47E:
 
-	; Temp_Var3 += $10
-	LDA <Temp_Var3
+	; var3 += $10
+	LDA <var3
 	ADD #$10
-	STA <Temp_Var3
+	STA <var3
 
-	CMP <Temp_Var1	
-	BLT PRG024_A44C	 ; While Temp_Var3 < Temp_Var1, loop!
+	CMP <var1	
+	BLT PRG024_A44C	 ; While var3 < var1, loop!
 
 	RTS		 ; Return
 
@@ -628,7 +628,7 @@ PRG024_A48A:
 	LDY <CineKing_Frame2
 
 	; Set crown sprite Y
-	LDA <Temp_Var1	; King Sprite Y
+	LDA <var1	; King Sprite Y
 	ADD King_W6Crown_YOff,Y
 	STA Sprite_RAM+$60
 
@@ -929,7 +929,7 @@ Do_Title_Screen:	; $A8AF
 	LDX #$f5	 ; X = 245
 PRG024_A8BF:
 	LDA #$00	 	; A = $00
-	STA <Temp_Var1,X	; Clear this byte
+	STA <var1,X	; Clear this byte
 	DEX		 	; X--
 	BNE PRG024_A8BF	 	; Loop...
 
@@ -1378,10 +1378,10 @@ SelectChar_X:		.byte $50, $78, $A0
 
 Title_DrawCharacterSelect:
 	LDA #%00000100
-	STA <Temp_Var8	; Bit to check in Title_CM_EvFlags
+	STA <var8	; Bit to check in Title_CM_EvFlags
 
 	LDA #0
-	STA <Temp_Var2	; This flags whether all heroes are in position for selection or not (zero = yes)
+	STA <var2	; This flags whether all heroes are in position for selection or not (zero = yes)
 
 	LDX #2
 CharSelect_Loop:
@@ -1413,8 +1413,8 @@ CharSelect_Loop:
 	
 	LDA #5	; Use jump frame
 	
-	; Out of position, set Temp_Var2
-	INC <Temp_Var2
+	; Out of position, set var2
+	INC <var2
 	
 	PLP	; restore flags
 	BLT Title_DCS_OutPositionUpdFrame
@@ -1425,12 +1425,12 @@ CharSelect_Loop:
 	
 	; Flag Player as running off...
 	LDA Title_CM_EvFlags
-	ORA <Temp_Var8
+	ORA <var8
 	STA Title_CM_EvFlags
 
 Title_DCS_NotJumping:
 	LDA Title_CM_EvFlags
-	AND <Temp_Var8
+	AND <var8
 	BEQ Title_DCS_UseCharPos	; If bit not set, hero is not running off yet, jump to Title_DCS_UseCharPos
 	
 	; Hero is running off... use extreme right!
@@ -1450,8 +1450,8 @@ Title_DCS_CheckXBound:
 	ADD #2
 	STA <Title_ObjX,X
 
-	; Out of position, set Temp_Var2
-	INC <Temp_Var2
+	; Out of position, set var2
+	INC <var2
 
 	LDA <Counter_1
 	AND #1
@@ -1472,15 +1472,15 @@ Title_DCS_OutPositionUpdFrame:
 	STA <Title_ObjMLFrame,X
 
 Title_DCS_OutPosition:	
-	; Shift Temp_Var1 for next character
-	LSR <Temp_Var8
+	; Shift var1 for next character
+	LSR <var8
 		
 	JSR Title_DrawMarioLuigi
 	
 	DEX
 	BPL CharSelect_Loop
 	
-	LDA <Temp_Var2
+	LDA <var2
 	RTS
 
 
@@ -1633,24 +1633,24 @@ TISM_FillSaveSlotData:
 	; Calculate the checksum for this slot
 	LDA <Title_InitSaveMCnt
 	SUB #1
-	JSR Save_CalcChecksum	; -> Temp_Var3/4
+	JSR Save_CalcChecksum	; -> var3/4
 	
 	; Check the stored checksum versus the needed checksum;
 	; if there's a mismatch, this slot is invalid.
 	LDY #(SAVE_SLOT_SIZE - 2)
-	LDA [Temp_Var1],Y
-	STA <Temp_Var5
+	LDA [var1],Y
+	STA <var5
 	INY
-	LDA [Temp_Var1],Y
-	STA <Temp_Var6
+	LDA [var1],Y
+	STA <var6
 	INY
 	
 	; Compare checksum to what is expected
-	LDA <Temp_Var3
-	CMP <Temp_Var5
+	LDA <var3
+	CMP <var5
 	BNE TISM_SlotEmpty
-	LDA <Temp_Var4
-	CMP <Temp_Var6
+	LDA <var4
+	CMP <var6
 	BNE TISM_SlotEmpty
 	
 	; Wx *yyy
@@ -1660,7 +1660,7 @@ TISM_FillSaveSlotData:
 	STA Graphics_Buffer+19
 
 	LDY #0
-	LDA [Temp_Var1],Y	; Get World
+	LDA [var1],Y	; Get World
 	INY
 	CMP #9
 	BNE TISM_PrintWorldZero
@@ -1678,17 +1678,17 @@ TISM_PrintWorldZero:
 	LDA #$8C
 	STA Graphics_Buffer+22
 
-	LDA [Temp_Var1],Y	; Get Star Low
+	LDA [var1],Y	; Get Star Low
 	INY
 	PHA
-	LDA [Temp_Var1],Y	; Get Star High
+	LDA [var1],Y	; Get Star High
 	INY
 	PHA
 	
 	PLA
-	STA <Temp_Var2
+	STA <var2
 	PLA
-	STA <Temp_Var1
+	STA <var1
 
 	JMP Save_Print3Digits
 
@@ -1697,9 +1697,9 @@ TISM_SlotEmpty:
 	; Empty slot; set checksum to $0000
 	LDA #$00
 	LDY #(SAVE_SLOT_SIZE-2)
-	STA [Temp_Var1],Y
+	STA [var1],Y
 	INY
-	STA [Temp_Var1],Y
+	STA [var1],Y
 	RTS
 
 PRG024_B166:	.byte $00, $00, $00
@@ -1712,14 +1712,14 @@ Save_Print3Digits:
 	LDY #0
 	LDX #$02	 ; X = 2 (3 digits remain)
 PRG024_B19A:
-	LDA <Temp_Var1	 ; Get LSD -> A
+	LDA <var1	 ; Get LSD -> A
 
 	; I haven't taken time yet to discern this magic yet
 	SUB PRG024_B16C,X
-	STA <Temp_Var1	
-	LDA <Temp_Var2	
+	STA <var1	
+	LDA <var2	
 	SBC PRG024_B166,X
-	STA <Temp_Var2	
+	STA <var2	
 
 	BCC PRG024_B1B8	 	; If the subtraction didn't go negative, jump to PRG024_B1B8
 
@@ -1728,14 +1728,14 @@ PRG024_B19A:
 	JMP PRG024_B19A	 ; Jump to PRG024_B19A
 
 PRG024_B1B8:
-	LDA <Temp_Var1
+	LDA <var1
 
 	; I haven't taken time yet to discern this magic yet
 	ADD PRG024_B16C,X
-	STA <Temp_Var1	
-	LDA <Temp_Var2	
+	STA <var1	
+	LDA <var2	
 	ADC PRG024_B166,X
-	STA <Temp_Var2	
+	STA <var2	
 
 	LDA Score_Temp	 
 	ADD #$1A	 	; A = Score_Temp + $F0 (tile to display)
@@ -1862,17 +1862,17 @@ Save_TestChecksum:
 	TAY
 	LDA #LOW(SaveData)
 	ADD Save_DataSlotOffsets,Y
-	STA <Temp_Var1 
+	STA <var1 
 	LDA #HIGH(SaveData)
 	ADC Save_DataSlotOffsets+1,Y
-	STA <Temp_Var2
+	STA <var2
 	
 	
 	; If checksum was invalid (thus slot is "empty"), it was automatically set to $0000
 	LDY #(SAVE_SLOT_SIZE - 2)	; Checksum offset
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
-	ORA [Temp_Var1],Y
+	ORA [var1],Y
 	RTS
 
 TDSM_ClearSave:
@@ -1887,7 +1887,7 @@ TDSM_ClearCont:
 	LDY #(SAVE_SLOT_SIZE - 1)
 	LDA #0
 TDSM_ClearLoop:
-	STA [Temp_Var1],Y
+	STA [var1],Y
 	DEY
 	CPY #-1
 	BNE TDSM_ClearLoop
@@ -1933,7 +1933,7 @@ Title_PrepForWorldMap:
 	LDY #0
 	
 	; World to start
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA World_Num
 	STA Map_Previous_World
@@ -1946,7 +1946,7 @@ Title_PrepForWorldMap:
 	; Completion data
 	LDX #0
 TPFWM_CopyCompData:
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Map_Completions,X
 	INX
@@ -1956,7 +1956,7 @@ TPFWM_CopyCompData:
 	; Map object completion data
 	LDX #0
 TPFWM_CopyObjCompData:
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Map_ObjCompletions,X
 	INX
@@ -1964,14 +1964,14 @@ TPFWM_CopyObjCompData:
 	BLT TPFWM_CopyObjCompData
 	
 	; Comet mode
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Map_CometMode
 	
 	; Inventory Items
 	LDX #0
 TPFWM_CopyInventoryLoop:
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Inventory_Items,X
 	INX
@@ -1981,7 +1981,7 @@ TPFWM_CopyInventoryLoop:
 	; Score 1
 	LDX #0
 TPFWM_CopyScore1Loop:
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Inventory_Score,X
 	INX
@@ -1991,7 +1991,7 @@ TPFWM_CopyScore1Loop:
 	; Score 2
 	LDX #0
 TPFWM_CopyScore2Loop:
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Inventory_Score2,X
 	INX
@@ -2034,7 +2034,7 @@ Title_ConfigMenu:
 	CMP ConfigMenu_BothSel,X
 	BNE PRG024_AD9C				; If Player selections are NOT done, jump to PRG024_AD9C
 
-	LDA <Temp_Var2
+	LDA <var2
 	BNE PRG024_AD9C
 
 	;LDA <Pad_Input
@@ -2130,19 +2130,19 @@ ConfigMenu_2PJoin:
 ConfigMenu_DrawCursors:
 	; Player selection cursors
 	LDA #0
-	STA <Temp_Var1	; Temp_Var1 = 0 (for each Player)
+	STA <var1	; var1 = 0 (for each Player)
 
 	LDY #$80	; Y = $80 (Sprite_RAM offset)
 
 ConfigMenu_DrawCursor_Loop:
-	LDX <Temp_Var1		; X = current Player index
+	LDX <var1		; X = current Player index
 
 	TXA		; A = 0 or 1
 	ADD #1	; A = 1 or 2
 	ROR A	; Bit 0 -> C
 	ROR A	; C -> Bit 7
 	ROR A	; Bit 0/1 -> 6/7
-	STA <Temp_Var8	; Will hold a bit to set or check if 1P/2P already made a selection
+	STA <var8	; Will hold a bit to set or check if 1P/2P already made a selection
 
 	AND <Title_CM_EvFlags
 	BEQ ConfigMenu_PlayerNoSelect	; If Player hasn't made a selection yet, jump to ConfigMenu_PlayerNoSelect
@@ -2167,7 +2167,7 @@ ConfigMenu_PlayerNoSelect:
 	STA Sound_QPlayer
 	
 	LDA <Title_CM_EvFlags
-	ORA <Temp_Var8
+	ORA <var8
 	STA <Title_CM_EvFlags	; Update event flags
 	BNE ConfigMenu_NoSelChange	; Jump (technically always) to ConfigMenu_NoSelChange
 	
@@ -2178,13 +2178,13 @@ Title_ConfigMenu_NotA:
 	TAX		; X = 1 if Right, 2 if Left
 	
 	LDA ConfigMenu_SelLR-1,X	; -1 because control is off by 1
-	STA <Temp_Var3				; -> Temp_Var3
+	STA <var3				; -> var3
 	
 	; Move cursor
-	LDX <Temp_Var1				; X = current Player index
+	LDX <var1				; X = current Player index
 	LDA Player_Character,X		; Get current Player character
-	ADD <Temp_Var3				; Offset cursor
-	STA <Temp_Var2				; -> Temp_Var2
+	ADD <var3				; Offset cursor
+	STA <var2				; -> var2
 	
 	; Check wrap
 	JSR ConfigMenu_CursorCheckWrap
@@ -2210,18 +2210,18 @@ Title_ConfigMenu_NotA:
 
 	PLA		; Restore it
 	
-	CMP <Temp_Var2
+	CMP <var2
 	BNE ConfigMenu_NotPOverlap
 	
 	; Overlap!  Move one more time to dodge the other player's selection...
-	ADD <Temp_Var3				; Offset cursor
-	STA <Temp_Var2		; -> Temp_Var2
+	ADD <var3				; Offset cursor
+	STA <var2		; -> var2
 	
 	JSR ConfigMenu_CursorCheckWrap
 	
 ConfigMenu_NotPOverlap:	
 	
-	LDA <Temp_Var2
+	LDA <var2
 	STA Player_Character,X		; Set current Player character
 	
 	LDA #SND_LEVELBLIP
@@ -2233,7 +2233,7 @@ ConfigMenu_NoSelChange:
 	STA Sprite_RAM+$00,Y
 	STA Sprite_RAM+$04,Y
 	
-	LDA <Temp_Var1		; A = current Player index
+	LDA <var1		; A = current Player index
 	TAX					; X = current Player index
 	ASL A
 	ADD #$FB	; $FB for P1, $FD for P2
@@ -2241,11 +2241,11 @@ ConfigMenu_NoSelChange:
 	LDA #$FF
 	STA Sprite_RAM+$05,Y
 	
-	LDA <Temp_Var1		; X = current Player index
+	LDA <var1		; X = current Player index
 	STA Sprite_RAM+$02,Y
 	STA Sprite_RAM+$06,Y
 	
-	LDX <Temp_Var1		; X = current Player index
+	LDX <var1		; X = current Player index
 	LDA Player_Character,X
 	TAX
 	LDA SelectChar_X,X
@@ -2259,8 +2259,8 @@ ConfigMenu_PlayerSelected:
 	ADD #8
 	TAY
 	
-	INC <Temp_Var1
-	LDA <Temp_Var1
+	INC <var1
+	LDA <var1
 	SUB #1
 	CMP Total_Players
 	BGS ConfigMenu_DrawCursor_Done
@@ -2270,7 +2270,7 @@ ConfigMenu_DrawCursor_Done:
 	RTS		 ; Return
 
 ConfigMenu_CursorCheckWrap:
-	LDA <Temp_Var2		; Get Player selection...
+	LDA <var2		; Get Player selection...
 	BPL ConfigMenu_NotNeg
 	
 	; Went negative!  Reset to max...
@@ -2285,7 +2285,7 @@ ConfigMenu_NotNeg:
 	LDA #0
 
 ConfigMenu_Set:
-	STA <Temp_Var2
+	STA <var2
 	RTS
 
 ConfigMenu_SelLR:		.byte 1, -1		; Left/Right movement
@@ -2364,7 +2364,7 @@ Title_AddVel_toPos:
 	ASL A
 	ASL A
 	ASL A
-	STA <Temp_Var12	; Temp_Var12 = velocity << 4 (multiplied by 16)
+	STA <var12	; var12 = velocity << 4 (multiplied by 16)
 
 	LDY #$00	 	; Y = 0
 	PLA		 	; Restore A (as velocity)
@@ -2382,29 +2382,29 @@ Title_AddVel_toPos:
 	ORA #$f0	 	; Simulates carrying the negative sign bit across the value, like an ASR instruction would
 
 PRG024_B088: 
-	STA <Temp_Var11		; Store resultant value into Temp_Var11
+	STA <var11		; Store resultant value into var11
 
 	; Register 'Y' also contains an additional level of high bits 
 	; (i.e. is zero if this is positive, $FF if negative, carrying the sign across)
-	STY <Temp_Var13		; Y -> Temp_Var13
+	STY <var13		; Y -> var13
 
 	; So essentially what happened at this point is that the X velocity
 	; has become a 24-bit value, shifted up 4 bits from its original
-	; [Temp_Var13][Temp_Var11][Temp_Var12] = XVel << 4
+	; [var13][var11][var12] = XVel << 4
 
 	; Title_XPosFrac works as an fractional accumulator
 	LDA <Title_XPosFrac,X
-	ADD <Temp_Var12
-	STA <Title_XPosFrac,X	; Title_XPosFrac += Temp_Var12
+	ADD <var12
+	STA <Title_XPosFrac,X	; Title_XPosFrac += var12
 
 	; ... which, as it overflows, provides a carry into the "whole" part
 	LDA <Title_ObjX,X
-	ADC <Temp_Var11	
-	STA <Title_ObjX,X	; Title_ObjX += Temp_Var11 + Carry
+	ADC <var11	
+	STA <Title_ObjX,X	; Title_ObjX += var11 + Carry
 
 	; ... and if that overflows, the carry goes into the "high" part...
 	LDA <Title_XPosHi,X	
-	ADC <Temp_Var13	
+	ADC <var13	
 	STA <Title_XPosHi,X	; Further precision of the X position stored here
 
 	RTS		 	; Return...
@@ -2479,18 +2479,18 @@ Title_DrawMarioLuigi:
 	CMP #$04
 	BGE PRG024_B21E	 		; If VROM page >= 4, jump to PRG024_B21E
 
-	STA <Temp_Var1		 	; Store VROM Page in Temp_Var1
+	STA <var1		 	; Store VROM Page in var1
 	
 	LDY <Title_ObjMLPower,X	 	; Power level -> Y
 	LDA Title_SpriteVROMPwrOff,Y	; Get VROM page offset for this power level
 	ADD Title_SpriteVROMCharOff,X
-	ADD <Temp_Var1		 	; Add Temp_Var1
+	ADD <var1		 	; Add var1
 
 PRG024_B21E:
 	STA PatTable_BankSel+2,X 	; Set this VROM page (first quarter of sprite VROM)
 
 	LDA #$00	 
-	STA <Temp_Var12		; Clear Temp_Var12
+	STA <var12		; Clear var12
 
 	LDA <Title_ObjMLPower,X	 	
 	BNE PRG024_B232	 		; If power level > 0 (small), jump to PRG024_B232
@@ -2501,28 +2501,28 @@ PRG024_B21E:
 
 	; This will set BG priority over the sprite
 	ASL A		 		; AND $10 means we're $10 before, and $20 after
-	STA <Temp_Var12		; Temp_Var12 = $20 (sprite priority bit)
+	STA <var12		; var12 = $20 (sprite priority bit)
 
 PRG024_B232: 
-	; Store Y coordinate -> <Temp_Var15
+	; Store Y coordinate -> <var15
 	LDA <Title_ObjY,X
-	STA <Temp_Var15	
+	STA <var15	
 
-	; Store X coordinate -> <Temp_Var16
+	; Store X coordinate -> <var16
 	LDA <Title_ObjX,X
-	STA <Temp_Var16
+	STA <var16
 
-	; Store flags -> Temp_Var14 
+	; Store flags -> var14 
 	LDA <Title_ObjMLFlags,X	 
-	STA <Temp_Var14		
+	STA <var14		
 
-	; Store Title_ObjMLSprVis -> Temp_Var13
+	; Store Title_ObjMLSprVis -> var13
 	LDA <Title_ObjMLSprVis,X
-	STA <Temp_Var13		
+	STA <var13		
  
 	LDY <Title_ObjMLFrame,X	; Get the sprite index again
 	LDA Title_SpritePatternIndex,Y	; Get the appropriate sprite tile index (CHECKME?) 
-	STA <Temp_Var1		 	; Store into Temp_Var1
+	STA <var1		 	; Store into var1
 
 	LDA <Title_ObjMLSprRAMOff,X 	; Get Mario/Luigi's sprite RAM offset
 	PHA		 		; Save 'A' (Title_ObjMLSprRAMOff)
@@ -2535,7 +2535,7 @@ PRG024_B24F:
 	TYA		 		; A = 2 (loop counter, Mario/Luigi are 2-3 sprites across [top vs bottom])
 	PHA		 		; Save 'A' 
 
-	LDY <Temp_Var1		 	; Y = sprite tile index
+	LDY <var1		 	; Y = sprite tile index
 
 	LDA Title_SpritePattern,Y	 	; Get tile for this sprite index
 	STA Sprite_RAM+$0D,X	 	; Set pattern number of sprite
@@ -2546,10 +2546,10 @@ PRG024_B24F:
 	PLA		 		; Restore 'A'
 	TAY		 		; Y = A (amounts to sprite offset of 0 @ 2, 8 @ 1, 16 @ 0)
 
-	LDA <Temp_Var14		; Get flags value
+	LDA <var14		; Get flags value
 	;AND #%11000000	 		; Only caring about the horizontal / vertical flip
 	ORA <Title_CurMLIndex		; Set appropriate palette by using the index value, which works out
-	ORA <Temp_Var12		; 0 or $20 (choosing priority)
+	ORA <var12		; 0 or $20 (choosing priority)
 
 	; Apply same "byte 2" to both sprites
 	STA Sprite_RAM+$02,X	
@@ -2557,19 +2557,19 @@ PRG024_B24F:
 
 	; Only set the Y coordinates if this part of the sprite is visible (as determined by Title_MLDetermineSpriteVis)
 	; If the carry is set by the shift, we know NOT to draw this "sliver" of the sprite
-	ASL <Temp_Var13		; Shift Title_ObjMLSprVis value left (updates Temp_Var13)
+	ASL <var13		; Shift Title_ObjMLSprVis value left (updates var13)
 	BCS PRG024_B27E	 	; If bit 7 was set, jump to PRG024_B27E
 
 	; Optionally skipped part...
 
-	LDA <Temp_Var15		; Get Y coordinate
+	LDA <var15		; Get Y coordinate
 	STA Sprite_RAM+$0C,X	; Set Y coordinate of sprite
 	ADD #16
 	STA Sprite_RAM,X	; Set Y coordinate of adjacent sprite, 16 pixels beneath the one above
 
 PRG024_B27E:
 
-	LDA <Temp_Var16	; Get X coordinate
+	LDA <var16	; Get X coordinate
 	ADD Title_SpriteOffX,Y	; Add offset of 16, 8, or 0 as appropriate by 'Y'
 	STA Sprite_RAM+$03,X	; Store X coordinate
 	STA Sprite_RAM+$0F,X	; Store X coordinate
@@ -2579,14 +2579,14 @@ PRG024_B27E:
 	INX
 	INX			; X += 4
 
-	INC <Temp_Var1		; Increment the sprite tile index
+	INC <var1		; Increment the sprite tile index
 	DEY		 	; Decrement Y
 	BPL PRG024_B24F	 	; As long as Y >= 0, loop
 
 	PLA		 	; Restore 'A' (Title_ObjMLSprRAMOff)
 	TAX		 	; X = A
 
-	LDA <Temp_Var14	; Get flags
+	LDA <var14	; Get flags
 	AND #%01000000	 	
 	BEQ PRG024_B2C3	 	; If not horizontally flipped, jump to PRG024_B2C3
 
@@ -2646,7 +2646,7 @@ PRG024_B2DE:
 	; This refers to whether Mario / Luigi is horizontally flipped, but seems wrong?
 	; Should only check if NOT h-flipped?
 
-	LDY <Temp_Var14	; Y = Flags
+	LDY <var14	; Y = Flags
 	BEQ PRG024_B2F6		; If flags = 0 (?? this is unlikely?), jump to PRG024_B2F6
 
 	; Facing right, foot is to the right
@@ -3055,10 +3055,10 @@ Ending_MusicSet:
 	
 	LDA Ending_Levels+3,Y	; Low scroll is lower bits
 	AND #$0F
-	STA <Temp_Var1
+	STA <var1
 	
 	PLA		; Restore scroll Hi
-	CMP <Temp_Var1
+	CMP <var1
 	BEQ Ending_NextLevel
 
 	LDA #1
@@ -3097,9 +3097,9 @@ Ending_UpdateText:
 
 	; World Zero's ending
 	LDA #LOW(Ending2_Text1)
-	STA <Temp_Var1
+	STA <var1
 	LDA #HIGH(Ending2_Text1)
-	STA <Temp_Var2
+	STA <var2
 	BNE EUT_EndingCont
 
 EUT_NormalEnding:
@@ -3110,14 +3110,14 @@ EUT_NormalEnding:
 
 	LDA #LOW(Ending_Text1)
 	ADD Ending_Texts,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA #HIGH(Ending_Text1)
 	ADC Ending_Texts+1,Y
-	STA <Temp_Var2
+	STA <var2
 		
 EUT_EndingCont:
 	LDY Ending_TextPos
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	BNE EUT_NotLineBreak
 	
 	; Line break!
@@ -3450,8 +3450,8 @@ DebugMenu_NoSelChange:
 	.word DebugMenu_Start			; 6
 
 
-	; Temp_Var1 - vaddr high
-	; Temp_Var2 - vaddr low
+	; var1 - vaddr high
+	; var2 - vaddr low
 	; A - var to print
 Debug_Print2DHex:
 	PHA
@@ -3459,9 +3459,9 @@ Debug_Print2DHex:
 
 	LDY Graphics_BufCnt	 ; Y = graphics buffer counter
 	
-	LDA <Temp_Var1
+	LDA <var1
 	STA Graphics_Buffer,Y	; address high
-	LDA <Temp_Var2
+	LDA <var2
 	STA Graphics_Buffer+1,Y	; address low
 	LDA #$02
 	STA Graphics_Buffer+2,Y	; run length
@@ -3492,17 +3492,17 @@ Debug_Print2DHex:
 	RTS
 
 
-	; Temp_Var1 - vaddr high
-	; Temp_Var2 - vaddr low
-	; A (Temp_Var3) - char to print
+	; var1 - vaddr high
+	; var2 - vaddr low
+	; A (var3) - char to print
 Debug_PrintChar:
 	PHA
 
 	LDY Graphics_BufCnt	 ; Y = graphics buffer counter
 	
-	LDA <Temp_Var1
+	LDA <var1
 	STA Graphics_Buffer,Y	; address high
-	LDA <Temp_Var2
+	LDA <var2
 	STA Graphics_Buffer+1,Y	; address low
 	LDA #$01
 	STA Graphics_Buffer+2,Y	; run length
@@ -3533,9 +3533,9 @@ Debug_Sound_PrintVars:
 	
 	; Video address
 	LDA #$20
-	STA <Temp_Var10
+	STA <var10
 	LDA DSPV_VAddrLow,Y
-	STA <Temp_Var11
+	STA <var11
 	
 	TYA
 	JSR DynJump
@@ -3551,11 +3551,11 @@ Debug_Sound_PrintVars:
 	.word DSPV_None
 
 DSPV_Print:
-	; DynJump corrupts Temp_Var1/2, d'oh
-	LDY <Temp_Var10
-	STY <Temp_Var1
-	LDY <Temp_Var11
-	STY <Temp_Var2
+	; DynJump corrupts var1/2, d'oh
+	LDY <var10
+	STY <var1
+	LDY <var11
+	STY <var2
 
 	JMP Debug_Print2DHex
 
@@ -3622,9 +3622,9 @@ DMDST_NotSkip10:
 	STA Music_RestH_Off
 
 	LDA #$20
-	STA <Temp_Var1
+	STA <var1
 	LDA #$5A
-	STA <Temp_Var2
+	STA <var2
 	LDA #$FC	; Erase 'H'
 	JSR Debug_PrintChar
 
@@ -3653,9 +3653,9 @@ DMDST_LowOK:
 	STA Sound_QMusic1
 
 	LDA #$20
-	STA <Temp_Var1
+	STA <var1
 	LDA #$5A
-	STA <Temp_Var2
+	STA <var2
 	LDA #$07	; 'H'
 	JSR Debug_PrintChar
 	
@@ -3672,9 +3672,9 @@ DMDST_NotHurryUp:
 
 	; Print/erase 'I'
 	LDA #$20
-	STA <Temp_Var1
+	STA <var1
 	LDA #$5C
-	STA <Temp_Var2
+	STA <var2
 	LDA Music_InvertEn
 	AND #$08
 	LSR A
@@ -3712,9 +3712,9 @@ DMDST_NotHigh:
 
 	; Update music index
 	LDY #$20
-	STY <Temp_Var1
+	STY <var1
 	LDY #$50
-	STY <Temp_Var2
+	STY <var2
 	JSR Debug_Print2DHex
 
 	RTS
@@ -3831,9 +3831,9 @@ DMDGS_NotHigh:
 	ASL A	; Mult 2
 	PHA		; Save it
 	ASL A	; Mult 4
-	STA <Temp_Var1	; -> Temp_Var1
+	STA <var1	; -> var1
 	PLA		; Mult 2
-	ADD <Temp_Var1	; += Temp_Var1
+	ADD <var1	; += var1
 	TAX		; -> 'X'
 
 	LDY Graphics_BufCnt	 ; Y = graphics buffer counter
@@ -3908,9 +3908,9 @@ DMDCW_NotHigh:
 DMDCW_NoZeroAdj:
 
 	LDY #$22
-	STY <Temp_Var1
+	STY <var1
 	LDY #$30
-	STY <Temp_Var2
+	STY <var2
 	
 	ADD #$1B
 	JSR Debug_PrintChar
@@ -3955,9 +3955,9 @@ DMDWE_NotHigh:
 DMDWE_NoZeroAdj:
 
 	LDY #$20
-	STY <Temp_Var1
+	STY <var1
 	LDY #$F0
-	STY <Temp_Var2
+	STY <var2
 	
 	ADD #$1B
 	JSR Debug_PrintChar

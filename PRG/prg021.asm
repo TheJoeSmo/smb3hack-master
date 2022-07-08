@@ -176,7 +176,7 @@ TS21Clear_Vert:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LoadLevel_Generator_TS2
 ;
-; Based on the values in Temp_Var15 and LL_ShapeDef, chooses an
+; Based on the values in var15 and LL_ShapeDef, chooses an
 ; appropriate generator function to builds this piece of the
 ; level.  Tedious, but saves space and is paper-design friendly.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -185,17 +185,17 @@ PRG021_A455:
 
 LoadLevel_Generator_TS2:
 	; From level loader function:
-	; * Temp_Var15, Temp_Var16, and LL_ShapeDef are three bytes read from the data
+	; * var15, var16, and LL_ShapeDef are three bytes read from the data
 
 
-	LDA <Temp_Var15
+	LDA <var15
 	AND #%11100000
 	LSR A		
 	LSR A		
 	LSR A		
 	LSR A		
 	LSR A		
-	TAX		 	; X = upper 3 bits of Temp_Var15 (0-7) (selects a multiple of 15 as the base)
+	TAX		 	; X = upper 3 bits of var15 (0-7) (selects a multiple of 15 as the base)
 
 	LDA LL_ShapeDef
 	LSR A	
@@ -295,7 +295,7 @@ LoadLevel_Generator_TS2:
 ; complex ones exist in here as well)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LeveLoad_FixedSizeGen_TS2:
-	LDA <Temp_Var15
+	LDA <var15
 	AND #%11100000
 	LSR A		 
 	ADD LL_ShapeDef	
@@ -367,7 +367,7 @@ LoadLevel_ShadowBGBrick:
 
 	PLA		 ; Restore LL_ShapeDef
 	AND #$0f	
-	STA <Temp_Var3	 ; Temp_Var3 = lower 4 bits of LL_ShapeDef
+	STA <var3	 ; var3 = lower 4 bits of LL_ShapeDef
 
 	LDY TileAddr_Off ; Y = TileAddr_Off
 
@@ -375,8 +375,8 @@ PRG021_A565:
 	LDA LL_ShadowBrick,X	 ; Get BGBRICK shadow tile
 	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
-	DEC <Temp_Var3		 ; Temp_Var3--
-	BPL PRG021_A565	 	; While Temp_Var3 >= 0, loop!
+	DEC <var3		 ; var3--
+	BPL PRG021_A565	 	; While var3 >= 0, loop!
 
 	RTS		 ; Return
 
@@ -404,23 +404,23 @@ LoadLevel_WindowTall:
 	LDX #$01	 ; X = 1 (tall window)
 
 PRG021_A57A:
-	STX <Temp_Var12		 ; Temp_Var12 = 'X' (0 or 1)
+	STX <var12		 ; var12 = 'X' (0 or 1)
 
-	; Backup level_data_pointer/H into Temp_Var1/2
+	; Backup level_data_pointer/H into var1/2
 	LDA <level_data_pointer	
-	STA <Temp_Var1		
+	STA <var1		
 	LDA <level_data_pointer+1	
-	STA <Temp_Var2		
+	STA <var2		
 
 	LDA LL_ShapeDef
 	AND #$0f	
-	STA <Temp_Var4		; Temp_Var4 = lower 4 bits of LL_ShapeDef (Width of run)
+	STA <var4		; var4 = lower 4 bits of LL_ShapeDef (Width of run)
 
 PRG021_A58B:
-	LDX <Temp_Var12		; X = Temp_Var12 (0 or 1)
+	LDX <var12		; X = var12 (0 or 1)
 
 	LDA LL_WindowHeight,X	 ; Get height of this window
-	STA <Temp_Var3		 ; Store into Temp_Var3
+	STA <var3		 ; Store into var3
  
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
@@ -439,16 +439,16 @@ PRG021_A5A0:
 	; Move to next row by adding 16 to tile offset
 	JSR LoadLevel_TileMemNextRow
 
-	DEC <Temp_Var3		 ; Temp_Var3-- (window height counter)
-	BNE PRG021_A59C	 	; While Temp_Var3 <> 0, loop!
+	DEC <var3		 ; var3-- (window height counter)
+	BNE PRG021_A59C	 	; While var3 <> 0, loop!
 
 	LDA #TILE2_WINDOWBOT	 ; Bottom of window
 	STA [level_data_pointer],Y	 ; Store into tile mem
 
 	; Restore Map_Tile_Addr from backup
-	LDA <Temp_Var1
+	LDA <var1
 	STA <level_data_pointer
-	LDA <Temp_Var2	
+	LDA <var2	
 	STA <level_data_pointer+1
 
 	LDX #$03	 ; X = 3  (three tile spacing between windows)
@@ -466,11 +466,11 @@ PRG021_A5C0:
 	LDA <level_data_pointer
 	ADD #$b0	 
 	STA <level_data_pointer
-	STA <Temp_Var1		 ; Update level_data_pointer backup
+	STA <var1		 ; Update level_data_pointer backup
 	LDA <level_data_pointer+1
 	ADC #$01	 
 	STA <level_data_pointer+1
-	STA <Temp_Var2		 ; Update level_data_pointer+1 backup
+	STA <var2		 ; Update level_data_pointer+1 backup
 
 	; Get TileAddr_Off and only keep the row, but clear 'Y' lower bits since
 	; we're going to column 0 on the same row, new screen...
@@ -484,8 +484,8 @@ PRG014_A5DD:
 
 	STY TileAddr_Off	 ; Y = TileAddr_Off
 
-	DEC <Temp_Var4		 ; Temp_Var4-- (run count)
-	BPL PRG021_A58B	 	; While Temp_Var4 >= 0, loop!
+	DEC <var4		 ; var4-- (run count)
+	BPL PRG021_A58B	 	; While var4 >= 0, loop!
 
 	RTS		 ; Return
 
@@ -499,7 +499,7 @@ PRG014_A5DD:
 LoadLevel_WindowVeryShort:
 	LDA LL_ShapeDef	 
 	AND #$0f	 
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
+	STA <var3		; var3 = lower 4 bits of LL_ShapeDef (width of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 PRG021_A5F2:
@@ -514,8 +514,8 @@ PRG021_A5FB:
 	BPL PRG021_A5FB	 	; While X >= 0, loop!
 
 	STY TileAddr_Off	 ; Y = TileAddr_Off
-	DEC <Temp_Var3		 ; Temp_Var3--
-	BPL PRG021_A5F2	 	; While Temp_Var3 >= 0, loop...
+	DEC <var3		 ; var3--
+	BPL PRG021_A5F2	 	; While var3 >= 0, loop...
 
 	RTS		 ; Return
 
@@ -533,7 +533,7 @@ PRG021_A5FB:
 LoadLevel_HangingGlobes:
 	LDA LL_ShapeDef
 	AND #$0f	
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef
+	STA <var3		; var3 = lower 4 bits of LL_ShapeDef
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -567,8 +567,8 @@ PRG021_A632:
 
 	STY TileAddr_Off	 ; TileAddr_Off = Y
 
-	DEC <Temp_Var3		 ; Temp_Var3--
-	BPL PRG014_A613	 	; While Temp_Var3 >= 0, loop!
+	DEC <var3		 ; var3--
+	BPL PRG014_A613	 	; While var3 >= 0, loop!
 	RTS		 ; Return
 
 
@@ -597,22 +597,22 @@ PRG021_A678:
 	JSR LL21_InitLongRun	 ; Get setup for long run
 
 PRG021_A67B:
-	LDA <Temp_Var3		 
-	STA <Temp_Var5		 ; Temp_Var5 = Temp_Var3 (backup run width)
+	LDA <var3		 
+	STA <var5		 ; var5 = var3 (backup run width)
 
 PRG021_A67F:
 	LDA LL_DiamondBrick,X	 ; Get appropriate tile
 	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
-	DEC <Temp_Var5		 ; Temp_Var5-- (width decrement)
+	DEC <var5		 ; var5-- (width decrement)
 
-	LDA <Temp_Var5
+	LDA <var5
 	CMP #$ff
-	BNE PRG021_A67F	 	; While Temp_Var5 >= 0, loop!
+	BNE PRG021_A67F	 	; While var5 >= 0, loop!
 
 	JSR LL21_LongRunNextRow	 ; Go to next row
-	DEC <Temp_Var4		 ; Temp_Var4-- (height decrement)
-	BPL PRG021_A67B	 	; While Temp_Var4 >= 0, loop!
+	DEC <var4		 ; var4-- (height decrement)
+	BPL PRG021_A67B	 	; While var4 >= 0, loop!
 	RTS		 ; Return
 
 
@@ -621,7 +621,7 @@ PRG021_A67F:
 LL21_InitLongRun:
 	LDY #$00	 ; Y = 0
 	LDA [Level_LayPtr_AddrL],Y	 ; Get another byte from layout
-	STA <Temp_Var3		 	; Store into Temp_Var3
+	STA <var3		 	; Store into var3
 
 	; Level_LayPtr_Addr++
 	LDA <Level_LayPtr_AddrL
@@ -631,15 +631,15 @@ LL21_InitLongRun:
 	ADC #$00	 
 	STA <Level_LayPtr_AddrH
 
-	; Backup level_data_pointer/H into Temp_Var1/2
+	; Backup level_data_pointer/H into var1/2
 	LDA <level_data_pointer
-	STA <Temp_Var1	
+	STA <var1	
 	LDA <level_data_pointer+1
-	STA <Temp_Var2	
+	STA <var2	
 
 	LDA LL_ShapeDef	
 	AND #$0f	
-	STA <Temp_Var4		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
+	STA <var4		 ; var4 = lower 4 bits of LL_ShapeDef
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 	RTS		 	; Return
 
@@ -647,9 +647,9 @@ LL21_InitLongRun:
 	; This routine goes to the next row of the long run
 LL21_LongRunNextRow:
 	; Restore Map_Tile_Addr from backup
-	LDA <Temp_Var1		 
+	LDA <var1		 
 	STA <level_data_pointer	
-	LDA <Temp_Var2		
+	LDA <var2		
 	STA <level_data_pointer+1	
 
 	; Go to next row by adding 16 to tile offset
@@ -660,7 +660,7 @@ LL21_LongRunNextRow:
 	LDA <level_data_pointer+1
 	ADC #$00
 	STA <level_data_pointer+1
-	STA <Temp_Var2	 	; Update level_data_pointer+1 backup
+	STA <var2	 	; Update level_data_pointer+1 backup
 	RTS		 ; Return
 
 
@@ -673,22 +673,22 @@ LoadLevel_BrightDiamondLong:
 	LDA #TILE2_DIAMONDBRIGHT ; Bright diamond block
 	
 LL_BDL_Entry:
-	STA <Temp_Var5
+	STA <var5
 
 	JSR LL21_InitLongRun	 ; Get setup for long run
 
 PRG021_A6DB:
-	LDX <Temp_Var4		 ; X = Temp_Var4 (with of run)
+	LDX <var4		 ; X = var4 (with of run)
 PRG021_A6DD:
-	LDA <Temp_Var5
+	LDA <var5
 	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEX		 	 ; X--
 	BPL PRG021_A6DD	 	 ; While X >= 0, loop!
 
 	JSR LL21_LongRunNextRow	 ; Next row
-	DEC <Temp_Var3		 ; Temp_Var3--
-	BPL PRG021_A6DB	 	; While Temp_Var3 >= 0, loop!
+	DEC <var3		 ; var3--
+	BPL PRG021_A6DB	 	; While var3 >= 0, loop!
 
 	RTS		 ; Return
 	
@@ -720,7 +720,7 @@ LoadLevel_SpikeDown:
 PRG021_A6F7:
 	LDA LL_ShapeDef	 
 	AND #$0f	 
-	STA <Temp_Var4		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
+	STA <var4		 ; var4 = lower 4 bits of LL_ShapeDef (width of run)
 
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
@@ -728,8 +728,8 @@ PRG021_A701:
 	LDA LL_Spike,X	 	 ; Get appropriate spike tile
 	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
-	DEC <Temp_Var4		 ; Temp_Var4--
-	BPL PRG021_A701	 	; While Temp_Var4 >= 0, loop!
+	DEC <var4		 ; var4--
+	BPL PRG021_A701	 	; While var4 >= 0, loop!
 	RTS		 	; Return...
 
 
@@ -740,20 +740,20 @@ PRG021_A701:
 ; (11 rows of this) at the specified width 1-16
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_ShadowFlood:
-	; Backup level_data_pointer/H into Temp_Var1/2
+	; Backup level_data_pointer/H into var1/2
 	LDA <level_data_pointer
-	STA <Temp_Var1	
+	STA <var1	
 	LDA <level_data_pointer+1
-	STA <Temp_Var2	
+	STA <var2	
 
 	LDA LL_ShapeDef	 
 	AND #$0f	 
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef
+	STA <var3		; var3 = lower 4 bits of LL_ShapeDef
 
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 PRG021_A720:
-	LDX <Temp_Var3		 	; X = Temp_Var3
+	LDX <var3		 	; X = var3
 PRG021_A722:
 	LDA #TILE2_BGBRICK_SHADOW2	; Shadow tile
 	STA [level_data_pointer],Y	 	; Store into tile mem
@@ -780,7 +780,7 @@ LoadLevel21_Background:
 	LDY #$00	 	; Y = 0 
 
 	LDA [Level_LayPtr_AddrL],Y	 ; Get byte from layout data
-	STA <Temp_Var3		 	; Store into Temp_Var3
+	STA <var3		 	; Store into var3
 
 	; Level_LayPtr_Addr++
 	LDA <Level_LayPtr_AddrL
@@ -790,11 +790,11 @@ LoadLevel21_Background:
 	ADC #$00	
 	STA <Level_LayPtr_AddrH
 
-	; Backup level_data_pointer/H into Temp_Var1/2
+	; Backup level_data_pointer/H into var1/2
 	LDA <level_data_pointer	
-	STA <Temp_Var1		
+	STA <var1		
 	LDA <level_data_pointer+1	
-	STA <Temp_Var2		
+	STA <var2		
 
 	LDA LL_ShapeDef	
 	PHA		 ; Save LL_ShapeDef
@@ -809,26 +809,26 @@ LoadLevel21_Background:
 	PLA		 ; Restore LL_ShapeDef
 
 	AND #$0f	 
-	STA <Temp_Var4		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (height of run)
+	STA <var4		 ; var4 = lower 4 bits of LL_ShapeDef (height of run)
 
 PRG021_A762:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
-	LDA <Temp_Var3	
-	STA <Temp_Var5		 ; Temp_Var5 = Temp_Var3 (restore original width)
+	LDA <var3	
+	STA <var5		 ; var5 = var3 (restore original width)
 
 PRG021_A769:
 	LDA LL21_Background,X	 ; Get appropriate background tile
 	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 
-	DEC <Temp_Var5		 ; Temp_Var5-- (width decrement)
-	LDA <Temp_Var5		 
+	DEC <var5		 ; var5-- (width decrement)
+	LDA <var5		 
 	CMP #$ff	 
-	BNE PRG021_A769	 	; While Temp_Var5 >= 0, loop!
+	BNE PRG021_A769	 	; While var5 >= 0, loop!
 	JSR LL21_LongRunNextRow	 ; Next row
-	DEC <Temp_Var4		 ; Temp_Var4-- (height decrement)
-	BPL PRG021_A762	 	; While Temp_Var4 >= 0, loop!
+	DEC <var4		 ; var4-- (height decrement)
+	BPL PRG021_A762	 	; While var4 >= 0, loop!
 	RTS		 ; Return
 
 
@@ -890,23 +890,23 @@ LoadLevel_Candle:
 ; Inserts a 3x3 flippable fence segment
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_FenceFlip:
-	; Temp_Var3 = 2 (3 rows)
+	; var3 = 2 (3 rows)
 	LDA #2
-	STA <Temp_Var3
+	STA <var3
 
 	LDX #TILE2_FENCE_UL	 	; X = TILE2_FENCE_UL
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 LL_FenceFlip_Loop:
 
-	; Backup level_data_pointer/H into Temp_Var1/2
+	; Backup level_data_pointer/H into var1/2
 	LDA <level_data_pointer	
-	STA <Temp_Var1		
+	STA <var1		
 	LDA <level_data_pointer+1	
-	STA <Temp_Var2		
+	STA <var2		
 
-	; Temp_Var4 = 2 (3 columns)
+	; var4 = 2 (3 columns)
 	LDA #2
-	STA <Temp_Var4
+	STA <var4
 
 LL_FenceFlip_InnerLoop:
 	TXA	 ; Get fence tile
@@ -916,13 +916,13 @@ LL_FenceFlip_InnerLoop:
 	
 	INX		 	; X++ (next fence tile)
 
-	DEC <Temp_Var4	; One less column...
-	BPL LL_FenceFlip_InnerLoop	; While Temp_Var4 >= 0, loop!
+	DEC <var4	; One less column...
+	BPL LL_FenceFlip_InnerLoop	; While var4 >= 0, loop!
 
 	; Restore Map_Tile_Addr from backup
-	LDA <Temp_Var1		 
+	LDA <var1		 
 	STA <level_data_pointer	
-	LDA <Temp_Var2		
+	LDA <var2		
 	STA <level_data_pointer+1	
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
@@ -931,8 +931,8 @@ LL_FenceFlip_InnerLoop:
 
 	STY TileAddr_Off
 	
-	DEC <Temp_Var3	; One less row...
-	BPL LL_FenceFlip_Loop	; While Temp_Var3 >= 0, loop!
+	DEC <var3	; One less row...
+	BPL LL_FenceFlip_Loop	; While var3 >= 0, loop!
 
 	RTS		 ; Return
 
@@ -1008,7 +1008,7 @@ LL_TMZ_Mid:	.byte TILE2_ZAPPER_L, TILE2_ZAPPER_R
 LoadLevel_TopManiacZapper:
 	LDA LL_ShapeDef	 
 	AND #$0f	 
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (width of run)
+	STA <var3		; var3 = lower 4 bits of LL_ShapeDef (width of run)
 
 	LDA LL_ShapeDef	 
 	LSR A	
@@ -1029,8 +1029,8 @@ LL_TMZ_Loop:
 	LDA LL_TMZ_Mid,X
 	STA [level_data_pointer],Y
 
-	DEC <Temp_Var3		 ; Temp_Var3--
-	BPL LL_TMZ_Loop	 	; While Temp_Var3 >= 0, loop...
+	DEC <var3		 ; var3--
+	BPL LL_TMZ_Loop	 	; While var3 >= 0, loop...
 
 	RTS		 ; Return
 
@@ -1089,15 +1089,15 @@ LevelLoad_CrumblingBlock21:
 	LDA #TILEA_CRUMBLINGBLOCK
 
 LLM21_SeTTile:
-	STA <Temp_Var5
+	STA <var5
 
 	LDA LL_ShapeDef	
 	AND #$0f	
-	TAX		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
+	TAX		 ; var4 = lower 4 bits of LL_ShapeDef
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 PRG021_SimpleGenLoop:
-	LDA <Temp_Var5
+	LDA <var5
 	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEX		 	 ; X--

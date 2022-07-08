@@ -117,7 +117,7 @@ PRG015_A40A:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LoadLevel_Generator_TS1
 ;
-; Based on the values in Temp_Var15 and LL_ShapeDef, chooses an
+; Based on the values in var15 and LL_ShapeDef, chooses an
 ; appropriate generator function to builds this piece of the
 ; level.  Tedious, but saves space and is paper-design friendly.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -126,17 +126,17 @@ PRG015_A419:
 
 LoadLevel_Generator_TS1:
 	; From level loader function:
-	; * Temp_Var15, Temp_Var16, and LL_ShapeDef are three bytes read from the data
+	; * var15, var16, and LL_ShapeDef are three bytes read from the data
 
 
-	LDA <Temp_Var15
+	LDA <var15
 	AND #%11100000
 	LSR A		
 	LSR A		
 	LSR A		
 	LSR A		
 	LSR A		
-	TAX		 	; X = upper 3 bits of Temp_Var15 (0-7) (selects a multiple of 15 as the base)
+	TAX		 	; X = upper 3 bits of var15 (0-7) (selects a multiple of 15 as the base)
 
 	LDA LL_ShapeDef
 	LSR A	
@@ -224,10 +224,10 @@ LeveLoad_FixedSizeGen_TS1:
 	; It is verified before calling this function that all of
 	; the upper 4 bits of LL_ShapeDef are ZERO
 
-	; So the upper 3 bits of Temp_Var15 serve as the most significant bits
+	; So the upper 3 bits of var15 serve as the most significant bits
 	; to a value where LL_ShapeDef provide the 4 least significant bits
 
-	LDA <Temp_Var15
+	LDA <var15
 	AND #%11100000
 	LSR A		
 	ADD LL_ShapeDef	
@@ -287,7 +287,7 @@ LeveLoad_FixedSizeGen_TS1:
 LoadLevel_BGHauntPillar:
 	LDA LL_ShapeDef
 	AND #$0f	
-	STA <Temp_Var3		; Temp_Var3 = lower 4 bits of LL_ShapeDef (height of run)
+	STA <var3		; var3 = lower 4 bits of LL_ShapeDef (height of run)
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
@@ -304,8 +304,8 @@ BGHauntPillar_Loop:
 
 	JSR LoadLevel_TileMemNextRow
 
-	DEC <Temp_Var3		; Temp_Var3--
-	BNE BGHauntPillar_Loop 	; While Temp_Var3 > 0, loop!
+	DEC <var3		; var3--
+	BNE BGHauntPillar_Loop 	; While var3 > 0, loop!
 
 	; Store bottom of pillar
 	LDA #TILE1_HAUNTPILLARB
@@ -379,15 +379,15 @@ LoadLevel_EmptyBoxesLong15:
 	LDA #TILEA_BLOCKEMPTY
 	
 LLM15_SeTTile:
-	STA <Temp_Var5
+	STA <var5
 
 	LDA LL_ShapeDef	
 	AND #$0f	
-	TAX		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
+	TAX		 ; var4 = lower 4 bits of LL_ShapeDef
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 PRG015_A6DD:
-	LDA <Temp_Var5
+	LDA <var5
 	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEX		 	 ; X--

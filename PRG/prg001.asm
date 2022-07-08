@@ -669,24 +669,24 @@ ObjNorm_BounceDU:
 	LDA #CHNGTILE_FROZENCOIN	 ; Otherwise, A = CHNGTILE_FROZENCOIN (same as "frozen coin" thawing, replace coin)
 
 PRG001_A527:
-	STA <Temp_Var12  ; -> Temp_Var12
+	STA <var12  ; -> var12
 
-	; Temp_Var15 = bumper X Hi
+	; var15 = bumper X Hi
 	LDA <Objects_XHi,X
-	STA <Temp_Var15	 
+	STA <var15	 
 
-	; Temp_Var16 = bumper X
+	; var16 = bumper X
 	LDA <Objects_X,X
-	STA <Temp_Var16	 
+	STA <var16	 
 
-	; Temp_Var13 = bumper Y Hi
+	; var13 = bumper Y Hi
 	LDA <Objects_YHi,X
-	STA <Temp_Var13
+	STA <var13
 
-	; Temp_Var14 = bumper Y, grid aligned
+	; var14 = bumper Y, grid aligned
 	LDA <Objects_Y,X
 	AND #$f0	
-	STA <Temp_Var14	
+	STA <var14	
 
 	JSR BlockBump_Init
 
@@ -739,12 +739,12 @@ PRG001_A56F:
 	LDA Bouncer_PUp,Y
 	BEQ PRG001_A5BB	 ; If value is zero (no power up), jump to PRG001_A5BB
 
-	STA <Temp_Var1	 ; Store value -> Temp_Var1
+	STA <var1	 ; Store value -> var1
 
 	LDY #$05	 ; Y = 5 (power-up always in slot 5)
 
 	; Set the ID
-	LDA <Temp_Var1
+	LDA <var1
 	STA Level_ObjectID,Y
 
 	LDA Objects_Var1,X
@@ -772,49 +772,49 @@ Bouncer_Not_SuperSuit:
 
 	; Set Y Hi
 	LDA <Objects_YHi,X
-	STA <Temp_Var1
+	STA <var1
 
 	LDA #$08	 ; A = 8
 
-	STY <Temp_Var2		 ; Backup 'Y' -> Temp_Var2
+	STY <var2		 ; Backup 'Y' -> var2
 
 	LDY Objects_Var2,X
 	BEQ PRG001_A5AA	 ; If var2 = 0, jump to PRG001_A5AA
 
-	DEC <Temp_Var1	 ; Temp_Var1-- (Y Hi)
+	DEC <var1	 ; var1-- (Y Hi)
 	LDA #-1		 ; A = -1
 
 PRG001_A5AA:
-	LDY <Temp_Var2	 ; Restore 'Y'
+	LDY <var2	 ; Restore 'Y'
 
 	ADD <Objects_Y,X ; Apply Y offset
 	STA Objects_Y,Y	 ; -> Object's Y
  
 	BCC PRG001_A5B6	 ; If no carry, jump to PRG001_A5B6
 
-	INC <Temp_Var1	 ; Apply carry
+	INC <var1	 ; Apply carry
 
 PRG001_A5B6:
 	; Set Y Hi
-	LDA <Temp_Var1
+	LDA <var1
 	STA Objects_YHi,Y
 
 PRG001_A5BB:
-	; Backup Y Hi -> Temp_Var13 
+	; Backup Y Hi -> var13 
 	LDA <Objects_YHi,X
-	STA <Temp_Var13
+	STA <var13
 
-	; Backup Y -> Temp_Var14
+	; Backup Y -> var14
 	LDA <Objects_Y,X
-	STA <Temp_Var14
+	STA <var14
 
-	; Backup X Hi -> Temp_Var15
+	; Backup X Hi -> var15
 	LDA <Objects_XHi,X
-	STA <Temp_Var15
+	STA <var15
 
-	; Backup X -> Temp_Var16
+	; Backup X -> var16
 	LDA <Objects_X,X
-	STA <Temp_Var16
+	STA <var16
 
 	LDA Objects_Var2,X
 	BEQ PRG001_A5D5	 ; If Var2 = 0, jump to PRG001_A5D5
@@ -893,31 +893,31 @@ BounceBlock_Update:
 	LSR A		; Get kind of block that is getting bounced
 	TAY		; -> Y
 
-	; Temp_Var1 stores palette of object
+	; var1 stores palette of object
 	LDA BounceBlock_Pal,Y	
-	STA <Temp_Var1
+	STA <var1
 
 	; Y *= 2
 	TYA
 	ASL A
 	TAY
 
-	; Temp_Var2/3 store the tiles that make up the sprites of the bounce block
+	; var2/3 store the tiles that make up the sprites of the bounce block
 	LDA BounceBlock_Tile,Y
-	STA <Temp_Var2		
+	STA <var2		
 	LDA BounceBlock_Tile+1,Y
-	STA <Temp_Var3		
+	STA <var3		
 
 	LDA #$00	 ; A = 0 (do not flip second sprite)
 
-	LDY <Temp_Var2
-	CPY <Temp_Var3
+	LDY <var2
+	CPY <var3
 	BNE PRG001_A63F	 ; If tiles are NOT the same, jump to PRG001_A63F
 
 	LDA #SPR_HFLIP	 ; A = SPR_HFLIP (flip second sprite)
 
 PRG001_A63F:
-	STA <Temp_Var4	 ; Store the selected sprite attribute
+	STA <var4	 ; Store the selected sprite attribute
 
 	LDA #$05
 	ADD Counter_7to0
@@ -957,16 +957,16 @@ PRG001_A63F:
 	STA Sprite_RAM+4,Y
 
 	; Build the other parts of sprites
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+1,Y
 
-	LDA <Temp_Var3
+	LDA <var3
 	STA Sprite_RAM+5,Y
 
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+2,Y
 
-	ORA <Temp_Var4
+	ORA <var4
 	STA Sprite_RAM+6,Y
 
 	RTS		 ; Return
@@ -1350,7 +1350,7 @@ ObjHit_PUpMush:
 
 	; Temp_Var = 1
 	LDA #$01
-	STA <Temp_Var1
+	STA <var1
 
 PRG001_A897:
 	JSR PowerUp_PlaySound	 ; Play Power Up sound
@@ -1470,7 +1470,7 @@ PRG001_A8F7:
 
 	; This puts on the masking sprite over the raising powerup
 
-	STY <Temp_Var1	; Backup 'Y'
+	STY <var1	; Backup 'Y'
 
 	LDY Objects_ReverseGrav,X	; Y = 0 or 1
 
@@ -1479,7 +1479,7 @@ PRG001_A8F7:
 	ADD DoRaise_MaskYOff,Y	; Apply appropriate offset
 	SUB Level_VertScroll	; Calc relative to vertical scroll
 
-	LDY <Temp_Var1	; Restore 'Y'
+	LDY <var1	; Restore 'Y'
 
 	; Set for both sprite halves Y
 	STA Sprite_RAM,Y
@@ -1625,10 +1625,10 @@ PRG001_A993:
 	LDY #$03	 ; Otherwise, Y = 3 (oops?)
 
 PRG001_A9A7:
-	STY <Temp_Var1	 ; Temp_Var1 = 3 (because the above does nothing, heh)
-	ADD <Temp_Var1	 ; Temp_Var1 = 6
+	STY <var1	 ; var1 = 3 (because the above does nothing, heh)
+	ADD <var1	 ; var1 = 6
 	CMP #$08	 
-	BGE PRG001_A9B1	 ; If Temp_Var1 >= 8 (never gonna happen), jump to PRG001_A9B1
+	BGE PRG001_A9B1	 ; If var1 >= 8 (never gonna happen), jump to PRG001_A9B1
 
 	RTS		 ; Return
 
@@ -1785,23 +1785,23 @@ ObjNorm_BounceLR:
 	TAY		 ; Y = var >> 4
 
 	LDA Bounce_TileReplacements,Y
-	STA <Temp_Var12
+	STA <var12
 
-	; Temp_Var15 = Bouncer X Hi
+	; var15 = Bouncer X Hi
 	LDA <Objects_XHi,X
-	STA <Temp_Var15
+	STA <var15
 
-	; Temp_Var16 = Bouncer X
+	; var16 = Bouncer X
 	LDA <Objects_X,X
-	STA <Temp_Var16
+	STA <var16
 
-	; Temp_Var13 = Bouncer Y Hi
+	; var13 = Bouncer Y Hi
 	LDA <Objects_YHi,X
-	STA <Temp_Var13
+	STA <var13
 
-	; Temp_Var14 = Bouncer Y
+	; var14 = Bouncer Y
 	LDA <Objects_Y,X
-	STA <Temp_Var14
+	STA <var14
 
 	JSR BlockBump_Init
 
@@ -1855,14 +1855,14 @@ PRG001_AAC5:
 	LDA Bouncer_PUp,Y ; Get power-up for this block
 	BEQ PRG001_AAFE	 ; If no Power Up for this block, jump to PRG001_AAFE
 
-	STA <Temp_Var1	 ; Power Up type -> Temp_Var1
+	STA <var1	 ; Power Up type -> var1
 
 	LDY #$05	 ; Y = 5 (power-up always in slot 5)
 
 	LDA Objects_State,Y	; ? Maybe they were going to check first?
 
 	; Set the ID
-	LDA <Temp_Var1
+	LDA <var1
 	STA Level_ObjectID,Y
 
 	; Set X
@@ -1931,12 +1931,12 @@ PRG001_AB24:
 	LDY #$00	 ; Y = 0 (Player will be aligned to left side of bouncer)
 
 PRG001_AB33:
-	STY <Temp_Var1	 ; Temp_Var1 = $00 or $0F
+	STY <var1	 ; var1 = $00 or $0F
 	PLA		 ; Restore Player_X
 
 
 	AND #$f0	 ; Keep only upper 4 bits of Player's position
-	ORA <Temp_Var1	 ; Apply the alignment
+	ORA <var1	 ; Apply the alignment
 	STA <Player_X	 ; -> Player_X
 
 	RTS		 ; Return
@@ -2189,32 +2189,32 @@ Vine_Set8x8s:
 
 	; Get address of screen Vine is on (NOTE: Non-vertical level only!)
 	LDA Tile_Mem_Addr,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA Tile_Mem_Addr+1,Y
-	STA <Temp_Var2	
+	STA <var2	
 
 	LDA <Objects_YHi,X
 	BEQ PRG001_ACA9	 ; If vine is not on lower area of screen, jump to PRG001_ACA9
 
-	INC <Temp_Var2	 ; Select address of lower tiles
+	INC <var2	 ; Select address of lower tiles
 
 PRG001_ACA9:
 	LDA <Objects_Y,X
 	AND #$f0	 ; Get current "row" of vine object
-	STA <Temp_Var3	 ; -> Temp_Var3
+	STA <var3	 ; -> var3
 
 	LDA <Objects_X,X
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var3	 ; Merge column into lower 4 bits
+	ORA <var3	 ; Merge column into lower 4 bits
 
 	TAY		 ; -> 'Y'
 
 	; Change tile to vine tile
 	LDA #TILE1_VINE
-	STA [Temp_Var1],Y
+	STA [var1],Y
 
 	LDA Objects_SprHVis,X
 	CMP #$03
@@ -2253,14 +2253,14 @@ PRG001_ACD1:
 	PLA		 ; Restore VRAM column offset
  
 	AND #$c0
-	STA <Temp_Var1
+	STA <var1
 
 	; Store left column update
 	LDA <Objects_X,X
 	LSR A	
 	LSR A	
 	LSR A	
-	ORA <Temp_Var1
+	ORA <var1
 	STA Graphics_Buffer+1,Y
 
 	; Store right column update
@@ -2324,14 +2324,14 @@ ObjNorm_PDoor:
 
 	; If Player is NOT within range of the door X-wise, jump to PRG001_ADBB
 	JSR Object_CalcCoarseXDiff	 
-	LDA <Temp_Var15	
+	LDA <var15	
 	ADD #$02	
 	CMP #$04	
 	BGE PRG001_ADBB
 
 	; If Player is NOT within range of the door Y-wise, jump to PRG001_ADBB
 	JSR Object_CalcCoarseYDiff
-	INC <Temp_Var15		
+	INC <var15		
 	BNE PRG001_ADBB	 
 
 	LDY #$01	 ; Y = 1
@@ -2364,7 +2364,7 @@ PRG001_ADBB:
 ;Object_CalcHomingVels:
 ;	
 ;	LDA #$14
-;	STA <Temp_Var2	 ; Temp_Var2 = $14
+;	STA <var2	 ; var2 = $14
 ;	
 ;	; Backup 'X' and 'Y'
 ;	TXA
@@ -2385,94 +2385,94 @@ PRG001_ADBB:
 ;
 ;PRG001_B08F:
 ;	JSR Level_ObjCalcYDiffs
-;	STY <Temp_Var3		 ; Store above/below flag -> Temp_Var3
+;	STY <var3		 ; Store above/below flag -> var3
 ;
-	; Get absolute value of Temp_Var16 (Y difference between Player and Koopaling)
-;	LDA <Temp_Var16	
+	; Get absolute value of var16 (Y difference between Player and Koopaling)
+;	LDA <var16	
 ;	BPL PRG001_B09B	 
 ;	JSR Negate	 
 ;PRG001_B09B:
-;	STA <Temp_Var13		 ; -> Temp_Var13
+;	STA <var13		 ; -> var13
 ;
 ;	JSR Level_ObjCalcXDiffs
-;	STY <Temp_Var4		 ; Store left/right of flag -> Temp_Var4
+;	STY <var4		 ; Store left/right of flag -> var4
 ;
-	; Get absolute value of Temp_Var16 (X difference between Player and Koopaling)
-;	LDA <Temp_Var16	
+	; Get absolute value of var16 (X difference between Player and Koopaling)
+;	LDA <var16	
 ;	BPL PRG001_B0A9	
 ;	JSR Negate
 ;PRG001_B0A9:
-;	STA <Temp_Var14		 ; -> Temp_Var14
+;	STA <var14		 ; -> var14
 ;
 ;	LDY #$00	 ; Y = 0
 ;
-;	LDA <Temp_Var14
-;	CMP <Temp_Var13
-;	BGE PRG001_B0BC	 ; If Temp_Var14 (Player vs Koopaling X diff) >= Temp_Var13 (Player vs Koopaling Y diff), jump to PRG001_B0BC
+;	LDA <var14
+;	CMP <var13
+;	BGE PRG001_B0BC	 ; If var14 (Player vs Koopaling X diff) >= var13 (Player vs Koopaling Y diff), jump to PRG001_B0BC
 ;
 ;	INY		 ; Y = 1
 ;
-	; Swap Temp_Var13 and Temp_Var14
+	; Swap var13 and var14
 ;	PHA
-;	LDA <Temp_Var13
-;	STA <Temp_Var14
+;	LDA <var13
+;	STA <var14
 ;	PLA
-;	STA <Temp_Var13
+;	STA <var13
 ;
 ;PRG001_B0BC:
 ;
-	; At this point, Temp_Var13 >= Temp_Var14, guaranteed
+	; At this point, var13 >= var14, guaranteed
 ;
 	; What follows is some kind of algorithm that can "aim" a projectile
 ;	; towards a Player (e.g., Koopaling wand shots) but I'm not going to
 ;	; research the "why" at this time... it "just works"
 ;
 ;	LDA #$00
-;	STA <Temp_Var12		; Temp_Var12 = 0
-;	STA <Temp_Var1		; Temp_Var1 = 0
-;	LDX <Temp_Var2		; X = Temp_Var2 (starts at $14)
+;	STA <var12		; var12 = 0
+;	STA <var1		; var1 = 0
+;	LDX <var2		; X = var2 (starts at $14)
 ;
 ;PRG001_B0C4:
-;	LDA <Temp_Var12
-;	ADD <Temp_Var13
-;	CMP <Temp_Var14
-;	BLT PRG001_B0D1		; If (Temp_Var12 + Temp_Var13) < Temp_Var14, jump to PRG001_B0D1
+;	LDA <var12
+;	ADD <var13
+;	CMP <var14
+;	BLT PRG001_B0D1		; If (var12 + var13) < var14, jump to PRG001_B0D1
 ;
 	; Otherwise...
-;	SBC <Temp_Var14		; Subtract Temp_Var14 from Temp_Var12
-;	INC <Temp_Var1		; Temp_Var1++
+;	SBC <var14		; Subtract var14 from var12
+;	INC <var1		; var1++
 ;
 ;PRG001_B0D1:
-;	STA <Temp_Var12 	; Update Temp_Var12
+;	STA <var12 	; Update var12
 ;	DEX		 	; X--
 ;	BNE PRG001_B0C4	 	; While X > 0, loop!
 ;
 ;	TYA
 ;	BEQ PRG001_B0E3	 ; If Y = 0, jump to PRG001_B0E3
 ;
-	; Swap Temp_Var1 and Temp_Var2
-;	LDA <Temp_Var1
+	; Swap var1 and var2
+;	LDA <var1
 ;	PHA		
-;	LDA <Temp_Var2	
-;	STA <Temp_Var1	
+;	LDA <var2	
+;	STA <var1	
 ;	PLA		
-;	STA <Temp_Var2	
+;	STA <var2	
 ;
 ;PRG001_B0E3:
-;	LDA <Temp_Var1	
-;	LDY <Temp_Var3	
+;	LDA <var1	
+;	LDY <var3	
 ;	BEQ PRG001_B0EE	
 ;
 ;	JSR Negate	
-;	STA <Temp_Var1	
+;	STA <var1	
 ;
 ;PRG001_B0EE:
-;	LDA <Temp_Var2	
-;	LDY <Temp_Var4	
+;	LDA <var2	
+;	LDY <var4	
 ;	BEQ PRG001_B0F9	
 ;
 ;	JSR Negate	
-;	STA <Temp_Var2	
+;	STA <var2	
 ;
 ;PRG001_B0F9:
 ;
@@ -2487,12 +2487,12 @@ PRG001_ADBB:
 ;	TAX
 ;
 
-;	; Temp_Var1 contains the "homing in" Y velocity
-;	LDA <Temp_Var1
+;	; var1 contains the "homing in" Y velocity
+;	LDA <var1
 ;	STA Objects_TargetingYVal,X
 ;
-	; Temp_Var2 contains the "homing in" X velocity
-;	LDA <Temp_Var2
+	; var2 contains the "homing in" X velocity
+;	LDA <var2
 ;	STA Objects_TargetingXVal,X
 ;
 ;	RTS		 ; Return
@@ -3198,10 +3198,10 @@ PRG001_B9BF:
 	STA <Objects_YVel,X
  
 	JSR Bowser_CalcPlayersSide 
-	STY <Temp_Var1		 ; Temp_Var1 = 0 or 1, depending on side Player is on
+	STY <var1		 ; var1 = 0 or 1, depending on side Player is on
  
 	; Get absolute value of X difference
-	LDA <Temp_Var16 
+	LDA <var16 
 	BPL PRG001_B9DE 
 	JSR Negate 
 PRG001_B9DE:
@@ -3216,7 +3216,7 @@ PRG001_B9DE:
  
 	; Calculate Bowser's X velocity to target Player!
 	LDA Bowser_XVelByDist,Y
-	LDY <Temp_Var1 
+	LDY <var1 
 	DEY	
 	BNE PRG001_B9F0 
 	JSR Negate
@@ -3250,12 +3250,12 @@ PRG001_B9F2:
 	LDA #-$30
 	STA SpecialObj_YVel,Y
 
-	STY <Temp_Var1		 ; Temp_Var1 = Special Object slot index
+	STY <var1		 ; var1 = Special Object slot index
 
 	JSR Level_ObjCalcXDiffs
 
 	LDA BHammer_XVel,Y	; Hammer towards Player X Vel
-	LDY <Temp_Var1		 ; Y = Special Object slot index
+	LDY <var1		 ; Y = Special Object slot index
 	STA SpecialObj_XVel,Y	 ; Set X Velocity
 
 	LDA #SOBJ_HAMMER ; Hammer Bro hammer
@@ -3641,7 +3641,7 @@ PRG001_BB5E:
 	ROL A
 	AND #$01
 	TAX	
-	STX <Temp_Var1		; X = 0 or 1, depending on if Bowser's horizontally flipped
+	STX <var1		; X = 0 or 1, depending on if Bowser's horizontally flipped
 
 	; Set X Velocity as appropriate
 	LDA Bowser_FireballXVel,X
@@ -3655,7 +3655,7 @@ PRG001_BB5E:
 
 	; Set X appropriately offset from Bowser
 	LDA <Objects_X,X
-	LDX <Temp_Var1		
+	LDX <var1		
 	ADD Bowser_FireballXOff,X
 	STA Objects_X,Y	
 
@@ -3924,26 +3924,26 @@ Bowser_SprRAMOff:
 Bowser_Draw:
 	JSR Object_CalcSpriteXY_NoHi	; Calculate the Sprite X and Y Low parts	 
 
-	; Temp_Var1 = Bowser's Sprite Y
+	; var1 = Bowser's Sprite Y
 	LDA <Objects_SpriteY,X
-	STA <Temp_Var1
+	STA <var1
 
-	; Temp_Var2 = Bowser's Sprite X
+	; var2 = Bowser's Sprite X
 	LDA <Objects_SpriteX,X
-	STA <Temp_Var2	
+	STA <var2	
 
-	; Temp_Var3 and Temp_Var4 = Bowser's FlipBits
+	; var3 and var4 = Bowser's FlipBits
 	LDA Objects_FlipBits,X
-	STA <Temp_Var3		
-	STA <Temp_Var4		
+	STA <var3		
+	STA <var4		
 
-	; Temp_Var5 = Bowser's horizontal visibility flags
+	; var5 = Bowser's horizontal visibility flags
 	LDA Objects_SprHVis,X
-	STA <Temp_Var5	
+	STA <var5	
 
-	; Temp_Var6 = Bowser's vertical visibility flags
+	; var6 = Bowser's vertical visibility flags
 	LDA Objects_SprVVis,X
-	STA <Temp_Var6
+	STA <var6
 
 	LDY Objects_Frame,X
 	CPY #$01
@@ -3956,9 +3956,9 @@ PRG001_BDB4:
 
 	; Frame 7 is slightly lower than the others
 
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #$04
-	STA <Temp_Var1
+	STA <var1
 
 PRG001_BDBB:
 	CPY #$08
@@ -3976,10 +3976,10 @@ PRG001_BDC7:
 
 	LDA Objects_FlipBits,X
 	AND #SPR_VFLIP
-	STA <Temp_Var3	 ; Temp_Var3 = $00 or SPR_VFLIP, depending whether Bowser is flipped vertically
+	STA <var3	 ; var3 = $00 or SPR_VFLIP, depending whether Bowser is flipped vertically
 
 	ORA #SPR_HFLIP
-	STA <Temp_Var4	 ; Always set horizontal flip in Temp_Var4
+	STA <var4	 ; Always set horizontal flip in var4
 
 PRG001_BDD2:
 	LDA Objects_Frame,X
@@ -3987,10 +3987,10 @@ PRG001_BDD2:
 	ASL A
 	ASL A
 	ASL A
-	STA <Temp_Var15	 ; Temp_Var15 = frame * 16
+	STA <var15	 ; var15 = frame * 16
 
 	LDA #$00
-	STA <Temp_Var16
+	STA <var16
 
 PRG001_BDDF:
 
@@ -4002,15 +4002,15 @@ PRG001_BDDF:
 	ASL A	
 	ASL A	
 	ASL A	
-	ADD <Temp_Var16	 ; Temp_Var16 = current sprite we're on
+	ADD <var16	 ; var16 = current sprite we're on
 	TAY		 ; -> 'Y'
 
 	LDA Bowser_SprRAMOff,Y
 	TAY		 ; Index -> 'Y'
 
-	LDX <Temp_Var16	 ; X = current sprite
+	LDX <var16	 ; X = current sprite
 
-	LDA <Temp_Var6	 	; Get Bowser's vertical visibility flags
+	LDA <var6	 	; Get Bowser's vertical visibility flags
 	AND Bowser_SprVVisLUT,X	
 	BNE PRG001_BE49	 	; If this sprite should not be drawn due to vertically being off-screen, jump to PRG001_BE49
 
@@ -4018,22 +4018,22 @@ PRG001_BDDF:
 	TXA
 	AND #$03	; Essentially mod 4
 	TAX
-	LDA <Temp_Var5	 ; Temp_Var5 = 0 to 3 based on which horizontal sprite we're doing
+	LDA <var5	 ; var5 = 0 to 3 based on which horizontal sprite we're doing
 
 	AND Bowser_SprHVisLUT,X
 	BNE PRG001_BE49	 ; If this sprite should not be drawn due to beging horizontally off-screen, jump to PRG001_BE49
 
-	LDA <Temp_Var15	
-	ADD <Temp_Var16	 ; Temp_Var16 = (Bowser's frame * 16 [Temp_Var15]) + (which sprite we're on)
+	LDA <var15	
+	ADD <var16	 ; var16 = (Bowser's frame * 16 [var15]) + (which sprite we're on)
 	TAX		 ; -> 'X'
 
 	; Store pattern of this Bowser sprite
 	LDA Bowser_SprPats,X
 	STA Sprite_RAM+1,Y
 
-	LDX <Temp_Var16	 ; X = Temp_Var16
+	LDX <var16	 ; X = var16
 
-	LDA <Temp_Var3
+	LDA <var3
 	BPL PRG001_BE1A	 ; If Bowser is not vertically flipped, jump to PRG001_BE1A
 
 	; Otherwise, use the vertically flipped lookups
@@ -4042,25 +4042,25 @@ PRG001_BDDF:
 	TAX
 
 PRG001_BE1A:
-	LDA <Temp_Var1	 	; A = Temp_Var1 (Bowser's Sprite Y)
+	LDA <var1	 	; A = var1 (Bowser's Sprite Y)
 	ADD Bowser_SprYNotVFlipped,X	; Offset Y as appropriate for this sprite
 	STA Sprite_RAM,Y	; Set sprite Y
 
-	LDX <Temp_Var16		; X = Temp_Var16
+	LDX <var16		; X = var16
 	TXA		 	
 	AND #$03	 	; Get which horizontal sprite (of 4) we're on
 	CMP #$02	 	; Horizontal sprite 2 would be the beginning of the "right half" of Bowser
 
-	LDA <Temp_Var3		; A = Temp_Var3 (Bowser's flip bits)
+	LDA <var3		; A = var3 (Bowser's flip bits)
 	BLT PRG001_BE30	 	; If we are on the left half of Bowser, jump to PRG001_BE30
 
-	LDA <Temp_Var4		; A = Temp_Var4 (Bowser's flip bits alternate)
+	LDA <var4		; A = var4 (Bowser's flip bits alternate)
 
 PRG001_BE30:
 	ORA #SPR_PAL3	 	; Lock in palette 3
 	STA Sprite_RAM+2,Y	; Store sprite attributes
 
-	LDA <Temp_Var3
+	LDA <var3
 	AND #SPR_HFLIP
 	BEQ PRG001_BE40	 ; If Bowser is not horizontally flipped, jump to PRG001_BE40
 
@@ -4070,17 +4070,17 @@ PRG001_BE30:
 	TAX
 
 PRG001_BE40:
-	LDA <Temp_Var2		 ; A = Temp_Var2 (Bowser's Sprite X)
+	LDA <var2		 ; A = var2 (Bowser's Sprite X)
 	ADD Bowser_SprXNotHFlipped,X	 ; Offset X as appropriate for this sprite
 	STA Sprite_RAM+3,Y	 ; Set sprite X
 
 PRG001_BE49:
-	INC <Temp_Var16		 ; Temp_Var16++ (next sprite)
+	INC <var16		 ; var16++ (next sprite)
 
 	; Bowser is made of a total of 12 sprites (4x3)
-	LDA <Temp_Var16
+	LDA <var16
 	CMP #12	 
-	BNE PRG001_BDDF	 ; If Temp_Var16 <> 12, loop!
+	BNE PRG001_BDDF	 ; If var16 <> 12, loop!
 
 	LDX <SlotIndexBackup	 ; Restore 'X' as Bowser's object slot index
 
@@ -4329,7 +4329,7 @@ Bowser_DoTimeBonus:
 
 	; Clear Arena Door 7
 	LDA #7
-	STA <Temp_Var1
+	STA <var1
 	JSR_THUNKA 41, ArenaCtl_ExitBoss
 	JMP Object_Delete
 
@@ -4669,18 +4669,18 @@ CoinSnake_JustDraw:
 
 	; Coin snake lead is simple 8x16 sprite
 
-	; Grab pattern -> Temp_Var1
+	; Grab pattern -> var1
 	LDA Objects_Frame,X
 	TAY
 	LDA ObjP20,Y
-	STA <Temp_Var1
+	STA <var1
 
 	LDY Object_SprRAM,X		 ; Y = starting Sprite_RAM offset
 
 	LDA <Objects_SpriteY,X
 	STA Sprite_RAM+$00,Y
 
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$01,Y
 
 	LDA Objects_SprAttr,X
@@ -4776,10 +4776,10 @@ CPStars_UseGiantAlt:
 
 	; Set X and Y positions on 4 sprites if/until we hit an off-screen one
 	LDA #3
-	STA <Temp_Var1
+	STA <var1
 
 	LDA <Objects_SpriteX,X
-	STA <Temp_Var2
+	STA <var2
 
 Checkpoint_SetV:
 	ASL Objects_SprHVis,X
@@ -4789,10 +4789,10 @@ Checkpoint_SetV:
 	STA Sprite_RAM+$00,Y
 
 	; Set X positions
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$03,Y
 	ADD #8
-	STA <Temp_Var2
+	STA <var2
 
 	; Y += 4 (next sprite)
 	INY
@@ -4800,8 +4800,8 @@ Checkpoint_SetV:
 	INY
 	INY
 
-	DEC <Temp_Var1		; Temp_Var1--
-	BPL Checkpoint_SetV	; While Temp_Var1 >= 0, loop!
+	DEC <var1		; var1--
+	BPL Checkpoint_SetV	; While var1 >= 0, loop!
 
 Checkpoint_OffV:
 	RTS
@@ -4905,7 +4905,7 @@ CPF_Cont:
 	; Tileset and packed star coin value
 	LDA Level_Tileset
 	AND #$0F
-	STA <Temp_Var2	; Tileset -> Temp_Var2
+	STA <var2	; Tileset -> var2
 	
 	; Backup 'Y'
 	TYA
@@ -4915,7 +4915,7 @@ CPF_Cont:
 	LDY #2	; Y = 2 (loop counter)
 	
 	LDA #$40		; Right-most bit for star coin pack
-	STA <Temp_Var1	; -> Temp_Var1
+	STA <var1	; -> var1
 	
 
 CPHit_SCLoop:
@@ -4923,12 +4923,12 @@ CPHit_SCLoop:
 	BEQ CPHit_SCLoop_NoCoin	; If Player does not have this coin, jump to CPHit_SCLoop_NoCoin
 	
 	; Player has this coin!  Pack it!
-	LDA <Temp_Var2
-	ORA <Temp_Var1
-	STA <Temp_Var2
+	LDA <var2
+	ORA <var1
+	STA <var2
 	
 CPHit_SCLoop_NoCoin:
-	LSR <Temp_Var1		; Next bit weight
+	LSR <var1		; Next bit weight
 
 	DEY					; Y--
 	BPL CPHit_SCLoop	; While Y >= 0, loop!
@@ -4938,7 +4938,7 @@ CPHit_SCLoop_NoCoin:
 	TAY
 	
 	; Merge results into LevCP_TSSCBackup
-	LDA <Temp_Var2
+	LDA <var2
 	STA LevCP_TSSCBackup,Y
 	
 	
@@ -5084,13 +5084,13 @@ ObjInit_ChangeMusic:
 	ASL A
 	ASL A
 	ASL A
-	STA <Temp_Var1
+	STA <var1
 	LDA <Objects_Y,X
 	LSR A
 	LSR A
 	LSR A
 	LSR A	; Completes divide-by-16 (makes grid row position)
-	ORA <Temp_Var1
+	ORA <var1
 
 	CMP SndCur_Music2
 	BEQ ChangeMusic_DoNothing
@@ -5145,7 +5145,7 @@ Draw_ParaDryBones:
 	ROL A
 	ROL A		 ; Effectively, shift bit 6 to bit 0 (i.e. if $40, now 1)
 	AND #$01	 ; Capping value to be sure
-	STA <Temp_Var15
+	STA <var15
 
 	; Save Dry Bones' Y/Hi
 	LDA <Objects_YHi,X
@@ -5165,7 +5165,7 @@ PRG001_B6F2:
 	JSR Object_DetermineVertVisY
 	JSR Object_Draw16x32Sprite
 
-	LDY <Temp_Var15
+	LDY <var15
 	LDA Object_SprRAM,X
 	ADD Wing_YSprOff,Y		; Use Y coordinate from first or second sprite so wing is properly hidden
 	TAY
@@ -5184,7 +5184,7 @@ PRG001_B6F2:
 	LDA Sprite_RAM+$06,Y
 	STA Sprite_RAM-$02,Y
 
-	LDX <Temp_Var15
+	LDX <var15
 	LDA Sprite_RAM+$07,Y
 	ADD Wing_XOff,X
 	STA Sprite_RAM-$01,Y
@@ -5265,31 +5265,31 @@ LSDraw_NotReverse:
 	; Calc additional offset here
 	LDA Objects_Frame,X
 	ASL A
-	STA <Temp_Var15
+	STA <var15
 
 	JSR Object_ShakeAndCalcSprite
 
 	TXA
-	ADD <Temp_Var15
+	ADD <var15
 	TAX
 
 	JSR Object_Draw16x16Sprite
 
-	LDA <Temp_Var7	 ; Get Sprite_RAM offset (as determined by Object_ShakeAndCalcSprite)
+	LDA <var7	 ; Get Sprite_RAM offset (as determined by Object_ShakeAndCalcSprite)
 	ADD #(4*2)
 	TAY
 
 	INX
 	INX	; X += 2 (starting tiles index)
 
-	; Temp_Var2 (Sprite X) += 16
+	; var2 (Sprite X) += 16
 	LDA #16
-	ADD <Temp_Var2
-	STA <Temp_Var2
+	ADD <var2
+	STA <var2
 
 	; Consider horizontal visiblity 2 sprites over...
-	ASL <Temp_Var8
-	ASL <Temp_Var8
+	ASL <var8
+	ASL <var8
 
 	JSR Object_Draw16x16Sprite
 
@@ -5316,7 +5316,7 @@ OHLS_PlayingSound:
 	
 	; Get player centered vertically
 	JSR Object_CalcCoarseYDiff
-	LDA <Temp_Var15
+	LDA <var15
 	SUB #5
 	ASL A
 	ASL A 
@@ -5332,7 +5332,7 @@ OHLS_PlayingSound:
 
 OHLS_PlayerNotReverse:
 	JSR Object_CalcCoarseXDiff
-	LDA <Temp_Var15
+	LDA <var15
 	ADD #2
 	ASL A
 	ASL A
@@ -5435,7 +5435,7 @@ Topmaniac_Chase:
 	STA Objects_Frame,X
 	
 	JSR Object_CalcCoarseXDiff
-	LDA <Temp_Var15
+	LDA <var15
 	ASL A
 	ASL A
 	NEG
@@ -5559,27 +5559,27 @@ Topmaniac_StillKO:
 	BNE Topmaniac_AsBoss
 
 	; Topman is sharing this code, but the ranges are shorter
-	LDA <Temp_Var15
+	LDA <var15
 	CMP #2
-	BEQ Topmaniac_KickRight	; If Temp_Var15 = 2, jump to Topmaniac_KickRight
+	BEQ Topmaniac_KickRight	; If var15 = 2, jump to Topmaniac_KickRight
 	BGS Topmaniac_OORKick
 	
 	CMP #-2
-	BEQ Topmaniac_KickLeft	; If Temp_Var15 = -6, jump to Topmaniac_KickLeft
+	BEQ Topmaniac_KickLeft	; If var15 = -6, jump to Topmaniac_KickLeft
 	BLS Topmaniac_OORKick
 
 Topmaniac_AsBoss:
-	LDA <Temp_Var15
+	LDA <var15
 
 	; < -6 > 2
 	; +2, bounce XVel
 	
 	CMP #2
-	BEQ Topmaniac_KickRight	; If Temp_Var15 = 2, jump to Topmaniac_KickRight
+	BEQ Topmaniac_KickRight	; If var15 = 2, jump to Topmaniac_KickRight
 	BGS Topmaniac_OORKick
 	
 	CMP #-6
-	BEQ Topmaniac_KickLeft	; If Temp_Var15 = -6, jump to Topmaniac_KickLeft
+	BEQ Topmaniac_KickLeft	; If var15 = -6, jump to Topmaniac_KickLeft
 	BLS Topmaniac_OORKick
 
 Topmaniac_KickRight:
@@ -5590,7 +5590,7 @@ Topmaniac_KickLeft:
 	LDA #-$20
 
 Topmanic_Kick:
-	STA <Temp_Var1		; Potential kick velocity
+	STA <var1		; Potential kick velocity
 	
 	JSR Object_CalcCoarseYDiff
 
@@ -5598,7 +5598,7 @@ Topmanic_Kick:
 	; 4 is safe for kicking
 	; higher is too high
 
-	LDA <Temp_Var15
+	LDA <var15
 	CMP #5
 	BLT Topmanic_KickOK	; TV < 4, jump to Topmanic_KickOK
 	
@@ -5621,7 +5621,7 @@ Topmanic_KickOK:
 	LDA #$0c
 	STA Player_Kick
 
-	LDA <Temp_Var1
+	LDA <var1
 	STA <Objects_XVel,X
 	
 	LDA #0
@@ -5767,9 +5767,9 @@ Topmaniac_SpinUp:
 	
 	; Spit out topmans
 	LDA #0
-	STA <Temp_Var1
+	STA <var1
 	JSR Topmaniac_SpitTopmans
-	INC <Temp_Var1
+	INC <var1
 	JSR Topmaniac_SpitTopmans
 
 Topmaniac_NoSpit:
@@ -5838,11 +5838,11 @@ Topmaniac_Poof:
 
 	LDA RandomN
 	AND #$0F
-	STA <Temp_Var1
+	STA <var1
 	
 	LDA RandomN+1
 	AND #$07
-	STA <Temp_Var2
+	STA <var2
 
 	LDA #SOBJ_POOF
 	STA SpecialObj_ID,Y
@@ -5853,14 +5853,14 @@ Topmaniac_Poof:
 	
 	; Set X/Y
 	LDA <Objects_Y,X
-	ADD <Temp_Var2
+	ADD <var2
 	STA SpecialObj_YLo,Y
 	LDA <Objects_YHi,X
 	ADC #0
 	STA SpecialObj_YHi,Y
 
 	LDA <Objects_X,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA SpecialObj_XLo,Y
 
 	; Ba-bam!
@@ -5893,7 +5893,7 @@ Topmaniac_DeadTimeout:
 	BNE Topmaniac_NoWZeroExit
 
 	LDA #6
-	STA <Temp_Var1
+	STA <var1
 	JSR_THUNKA 41, ArenaCtl_ExitBoss
 	JMP Object_Delete
 
@@ -5978,7 +5978,7 @@ Topmaniac_SpitTopmans:
 	LDA #-$30
 	STA <Objects_YVel,X
 		
-	LDY <Temp_Var1
+	LDY <var1
 	LDA TopmanicSpit_XVel,Y
 	STA <Objects_XVel,X
 	

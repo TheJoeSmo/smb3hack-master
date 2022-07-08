@@ -330,7 +330,7 @@ Bonus_LayoutData:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LoadLevel_Generator_TS151617
 ;
-; Based on the values in Temp_Var15 and LL_ShapeDef, chooses an
+; Based on the values in var15 and LL_ShapeDef, chooses an
 ; appropriate generator function to builds this piece of the
 ; level.  Tedious, but saves space and is paper-design friendly.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -366,7 +366,7 @@ LeveLoad_FixedSizeGen_TS151617:
 	; It is verified before calling this function that all of
 	; the upper 4 bits of LL_ShapeDef are ZERO
 
-	; So the upper 3 bits of Temp_Var15 serve as the most significant bits
+	; So the upper 3 bits of var15 serve as the most significant bits
 	; to a value where LL_ShapeDef provide the 4 least significant bits
 
 	; NOTE: This is not a "complete" Generator as in the other level banks,
@@ -391,34 +391,34 @@ BonusTable_Tiles:
 	
 LoadLevel_Table:
 
-	; Temp_Var1 = 0
+	; var1 = 0
 	LDA #$00
-	STA <Temp_Var1
+	STA <var1
 PRG022_C4B2:
-	LDX <Temp_Var1	 ; X = Temp_Var1
+	LDX <var1	 ; X = var1
 
-	; Left table tile -> Temp_Var2
+	; Left table tile -> var2
 	LDA BonusTable_Tiles,X
-	STA <Temp_Var2	
+	STA <var2	
 
-	; Middle table tile -> Temp_Var3
+	; Middle table tile -> var3
 	LDA BonusTable_Tiles+1,X
-	STA <Temp_Var3	
+	STA <var3	
 
-	; Right table tile -> Temp_Var4
+	; Right table tile -> var4
 	LDA BonusTable_Tiles+2,X
-	STA <Temp_Var4	
+	STA <var4	
 
-	; Temp_Var1 += 3
+	; var1 += 3
 	TXA
 	ADD #$03
-	STA <Temp_Var1
+	STA <var1
 
 	LDX #$00	 ; X = 0
 	LDY TileAddr_Off ; Y = TileAddr_Off
 
 	; Place left tile
-	LDA <Temp_Var2
+	LDA <var2
 	STA [BonusText_BaseL],Y
 
 PRG022_C4D2:
@@ -426,7 +426,7 @@ PRG022_C4D2:
 	INX		 ; X++
 
 	; Place middle tile (repeated)
-	LDA <Temp_Var3
+	LDA <var3
 	STA [BonusText_BaseL],Y
 
 	TXA
@@ -435,7 +435,7 @@ PRG022_C4D2:
 	BNE PRG022_C4D2	 ; If X is not at the fifth iteration, loop!
 
 	; Place right tile
-	LDA <Temp_Var4
+	LDA <var4
 	STA [BonusText_BaseL],Y
 
 	; TileAddr_Off += 16 (next row)
@@ -443,9 +443,9 @@ PRG022_C4D2:
 	ADD #16
 	STA TileAddr_Off
 
-	LDA <Temp_Var1
+	LDA <var1
 	CMP #$06
-	BNE PRG022_C4B2	 ; While Temp_Var1 <> 6, loop!
+	BNE PRG022_C4B2	 ; While var1 <> 6, loop!
 
 	RTS		 ; Return
 
@@ -469,14 +469,14 @@ Background_Tiles:
 LoadLevel_Background:
 	LDY TileAddr_Off ; Y = TileAddr_Off
 
-	; Temp_Var12 = 0
+	; var12 = 0
 	LDX #$00
-	STX <Temp_Var12
+	STX <var12
 PRG022_C51E:
-	LDX <Temp_Var12	
+	LDX <var12	
 
 	LDA Background_Layout,X
-	STA <Temp_Var1	
+	STA <var1	
 
 	CMP #$ff
 	BNE PRG022_C52A	 ; If not yet hit $FF value, jump to PRG022_C52A
@@ -494,7 +494,7 @@ PRG022_C52A:
 	STA TileAddr_Off
 	TAY	; -> 'Y'
 
-	INC <Temp_Var12	 ; Temp_Var12++
+	INC <var12	 ; var12++
 
 	JMP PRG022_C51E	 ; Jump to PRG022_C51E
 
@@ -505,10 +505,10 @@ PRG022_C53D:
 	LSR A
 	TAX		 ; X = upper 4 bits, shifted down
 
-	; Lower 4 bits -> Temp_Var11
-	LDA <Temp_Var1
+	; Lower 4 bits -> var11
+	LDA <var1
 	AND #$0f
-	STA <Temp_Var11
+	STA <var11
 
 PRG022_C548:
 	LDA Background_Tiles,X
@@ -516,10 +516,10 @@ PRG022_C548:
 
 	INY		 ; Y++ (next tile, DANGEROUS)
 
-	DEC <Temp_Var11	; Temp_Var11-- (repeat)
-	BPL PRG022_C548	 ; While Temp_Var11 >= 0, loop!
+	DEC <var11	; var11-- (repeat)
+	BPL PRG022_C548	 ; While var11 >= 0, loop!
 
-	INC <Temp_Var12	 ; Temp_Var12++
+	INC <var12	 ; var12++
 
 	JMP PRG022_C51E	 ; Jump to PRG022_C51E
 
@@ -557,16 +557,16 @@ LoadLevel_BonusPlayer:
 	LDA PlayerSuit_TileBaseIndex,X	; Get current Player's power
 	TAX		 ; -> 'X'
 
-	; Temp_Var3 = 0
+	; var3 = 0
 	LDA #$00
-	STA <Temp_Var3
+	STA <var3
 
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
 PRG022_C59C:
-	; Temp_Var1 = 1
+	; var1 = 1
 	LDA #$01
-	STA <Temp_Var1
+	STA <var1
 
 PRG022_C5A0:
 	; Get tile for Player -> grid
@@ -576,10 +576,10 @@ PRG022_C5A0:
 	INY		 ; Y++ (next grid tile, DANGEROUS!)
 	INX		 ; X++ (next Player tile)
 
-	INC <Temp_Var3	 ; Temp_Var3++
-	DEC <Temp_Var1	 ; Temp_Var1--
+	INC <var3	 ; var3++
+	DEC <var1	 ; var1--
 
-	BPL PRG022_C5A0	 ; While Temp_Var1 >= 0, loop
+	BPL PRG022_C5A0	 ; While var1 >= 0, loop
 
 	; Go to next row of tiles
 	LDA TileAddr_Off
@@ -587,7 +587,7 @@ PRG022_C5A0:
 	STA TileAddr_Off
 	TAY		 ; -> 'Y'
 
-	LDA <Temp_Var3
+	LDA <var3
 	CMP #(Player_BonusTiles_Luigi - Player_BonusTiles_Mario)
 	BNE PRG022_C59C	 ; If we have more tiles to go, loop!
 
@@ -606,9 +606,9 @@ LoadLevel_UNKTALL:
 	LDY TileAddr_Off	; Y = TileAddr_Off
 
 PRG022_C5CB:
-	; Temp_Var1 = 1
+	; var1 = 1
 	LDA #$01
-	STA <Temp_Var1
+	STA <var1
 
 PRG022_C5CF:
 	LDA BonusUNKTALL_Tiles,X
@@ -617,8 +617,8 @@ PRG022_C5CF:
 	INY		 ; Y++ (next grid tile, DANGEROUS!)
 	INX		 ; X++
 
-	DEC <Temp_Var1	 ; Temp_Var1--
-	BPL PRG022_C5CF	 ; While Temp_Var1 >= 0, loop
+	DEC <var1	 ; var1--
+	BPL PRG022_C5CF	 ; While var1 >= 0, loop
 
 	; Next tile row
 	LDA TileAddr_Off
@@ -705,9 +705,9 @@ LoadLevel_QBoxOrange:
 	LDY TileAddr_Off ; Y = TileAddr_Off
 PRG022_C62F:
 
-	; Temp_Var1 = 1
+	; var1 = 1
 	LDA #$01
-	STA <Temp_Var1
+	STA <var1
 
 PRG022_C633:
 
@@ -718,8 +718,8 @@ PRG022_C633:
 	INY		 ; Y++ (next tile, DANGEROUS)
 	INX		 ; X++ (next prize box tile)
 
-	DEC <Temp_Var1	; Temp_Var1--
-	BPL PRG022_C633 ; While Temp_Var1 >= 0, loop!
+	DEC <var1	; var1--
+	BPL PRG022_C633 ; While var1 >= 0, loop!
 
 	; Next row
 	LDA TileAddr_Off
@@ -742,9 +742,9 @@ LoadLevel_QBoxBlue:
 	LDY TileAddr_Off ; Y = TileAddr_Off
 PRG022_C656:
 
-	; Temp_Var1 = 1
+	; var1 = 1
 	LDA #$01
-	STA <Temp_Var1
+	STA <var1
 
 PRG022_C65A:
 
@@ -755,8 +755,8 @@ PRG022_C65A:
 	INY		 ; Y++ (next tile, DANGEROUS)
 	INX		 ; X++ (next prize box tile)
 
-	DEC <Temp_Var1	; Temp_Var1--
-	BPL PRG022_C65A ; While Temp_Var1 >= 0, loop!
+	DEC <var1	; var1--
+	BPL PRG022_C65A ; While var1 >= 0, loop!
 
 	; Next row
 	LDA TileAddr_Off
@@ -772,9 +772,9 @@ PRG022_C65A:
 
 LoadLevel_BonusFloor:
 
-	; Temp_Var1 = 1
+	; var1 = 1
 	LDA #$01
-	STA <Temp_Var1
+	STA <var1
 
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
@@ -798,8 +798,8 @@ PRG022_C681:
 	STA TileAddr_Off
 	TAY		 ; -> 'Y'
 
-	DEC <Temp_Var1	 ; Temp_Var1--
-	BPL PRG022_C67B	 ; While Temp_Var1 >= 0, loop
+	DEC <var1	 ; var1--
+	BPL PRG022_C67B	 ; While var1 >= 0, loop
 
 	RTS		 ; Return
 
@@ -819,7 +819,7 @@ PRG022_C681:
 
 ; FIXME: Anyone want to claim this?
 ; $C6A4
-	LDA <Temp_Var6		 
+	LDA <var6		 
 	STA <BonusText_BaseH
 
 	LDY TileAddr_Off
@@ -830,24 +830,24 @@ PRG022_C681:
 
 	LDY #$00
 
-	LDA <Temp_Var15
+	LDA <var15
 	AND #$10
 	BEQ PRG022_C6BA
 
 	INY	
 
 PRG022_C6BA:
-	STY <Temp_Var10
+	STY <var10
 
 	LDA <BonusText_BaseL
 	ADD #$b0
 	STA <BonusText_BaseL
 	LDA <BonusText_BaseH
-	ADC <Temp_Var10	
+	ADC <var10	
 	STA <BonusText_BaseH
-	STA <Temp_Var6
+	STA <var6
 
-	LDA <Temp_Var16
+	LDA <var16
 	AND #$f0
 	LSR A
 	LSR A
@@ -858,9 +858,9 @@ PRG022_C6BA:
 	INY
 
 	LDA Tile_Mem_Addr+1,Y
-	STA <Temp_Var5
+	STA <var5
 
-	INC <Temp_Var5
+	INC <var5
 
 	LDA TileAddr_Off
 	AND #$f0
@@ -910,9 +910,9 @@ HostToad_SpriteXs:
 
 HostToad_DrawSprites:
 
-	; Temp_Var11 = $95 (starting pattern of Toad Host sprites)
+	; var11 = $95 (starting pattern of Toad Host sprites)
 	LDA #$95	 
-	STA <Temp_Var11
+	STA <var11
 
 	LDY #$00	 ; Y = 0
 	LDX #(HostToad_SpriteYs_End - HostToad_SpriteYs - 1)
@@ -925,7 +925,7 @@ PRG022_C727:
 	INY		 ; Y++ (next sprite RAM byte)
 
 	; Set pattern of this sprite of the Toad Host
-	LDA <Temp_Var11
+	LDA <var11
 	STA Sprite_RAM+$10,Y
 
 	INY		 ; Y++ (next sprite RAM byte)
@@ -942,9 +942,9 @@ PRG022_C727:
 
 	INY		 ; Y++ (next sprite RAM byte)
 
-	; Temp_Var11 -= 2 (two patterns backward)
-	DEC <Temp_Var11
-	DEC <Temp_Var11
+	; var11 -= 2 (two patterns backward)
+	DEC <var11
+	DEC <var11
 
 	DEX		 ; X--
 	BPL PRG022_C727	 ; While X >= 0, loop
@@ -959,9 +959,9 @@ HostTroopa_SpriteXs:
 	.byte $C0, $C8, $D0, $C0, $C8, $D0, $D8, $C8, $D0, $D8
 
 HostTroopa_DrawSprites:
-	; Temp_Var11 = $A9 (starting pattern of Koopa Troopa Host sprites)
+	; var11 = $A9 (starting pattern of Koopa Troopa Host sprites)
 	LDA #$A9
-	STA <Temp_Var11
+	STA <var11
 
 	LDY #$00	 ; Y = 0
 	LDX #(HostTroopa_SpriteYs_End - HostTroopa_SpriteYs - 1)
@@ -974,7 +974,7 @@ PRG022_C765:
 	INY		 ; Y++ (next sprite RAM byte)
 
 	; Set pattern of this sprite of the Koopa Troopa Host
-	LDA <Temp_Var11
+	LDA <var11
 	STA Sprite_RAM+$10,Y
 
 	INY		 ; Y++ (next sprite RAM byte)
@@ -991,9 +991,9 @@ PRG022_C765:
 
 	INY		 ; Y++ (next sprite RAM byte)
 
-	; Temp_Var11 -= 2 (two patterns backward)
-	DEC <Temp_Var11
-	DEC <Temp_Var11
+	; var11 -= 2 (two patterns backward)
+	DEC <var11
+	DEC <var11
 
 	DEX		 ; X--
 	BPL PRG022_C765	 ; While X >= 0, loop
@@ -1010,9 +1010,9 @@ HostHammerBro_SpriteXs:
 
 
 HostHammerBro_DrawSprites:
-	; Temp_Var11 = $BF (starting pattern of Koopa Troopa Host sprites)
+	; var11 = $BF (starting pattern of Koopa Troopa Host sprites)
 	LDA #$BF
-	STA <Temp_Var11
+	STA <var11
 
 	LDY #$00	 ; Y = 0
 	LDX #(HostHammerBro_SpriteYs_End - HostHammerBro_SpriteYs - 1)
@@ -1024,7 +1024,7 @@ PRG022_C7A5:
 	INY		 ; Y++ (next sprite RAM byte)
 
 	; Set pattern of this sprite of the Hammer Bro Host
-	LDA <Temp_Var11
+	LDA <var11
 	STA Sprite_RAM+$10,Y
 
 	INY		 ; Y++ (next sprite RAM byte)
@@ -1041,9 +1041,9 @@ PRG022_C7A5:
 
 	INY		 ; Y++ (next sprite RAM byte)
 
-	; Temp_Var11 -= 2 (two patterns backward)
-	DEC <Temp_Var11
-	DEC <Temp_Var11
+	; var11 -= 2 (two patterns backward)
+	DEC <var11
+	DEC <var11
 
 	DEX		 ; X--
 	BPL PRG022_C7A5	 ; While X >= 0, loop
@@ -1065,7 +1065,7 @@ Bonus_KTPrizePattern:
 
 	; Draws the box and the "prize" for Koopa Troopa's "Prize" Game
 Draw_KTPrizeGameBox:
-	STA <Temp_Var11	 
+	STA <var11	 
 
 
 	; Draw the game box first
@@ -1080,7 +1080,7 @@ PRG022_C7E1:
 	INY		 ; Y++ (next sprite RAM byte)
 
 	; Set pattern of this sprite
-	LDA <Temp_Var11
+	LDA <var11
 	STA Sprite_RAM+$10,Y
 
 	INY		 ; Y++ (next sprite RAM byte)
@@ -1097,9 +1097,9 @@ PRG022_C7E1:
 
 	INY		 ; Y++ (next sprite RAM byte)
 
-	; Temp_Var11 -= 2 (two patterns backward)
-	DEC <Temp_Var11
-	DEC <Temp_Var11
+	; var11 -= 2 (two patterns backward)
+	DEC <var11
+	DEC <var11
 
 	DEX		 ; X--
 	BPL PRG022_C7E1	 ; While X >= 0, loop
@@ -1111,13 +1111,13 @@ PRG022_C7E1:
 
 	LDX Bonus_KTPrize	; X = Bonus_KTPrize
 
-	; Store pattern for prize -> Temp_Var11
+	; Store pattern for prize -> var11
 	LDA Bonus_KTPrizePattern,X
-	STA <Temp_Var11
+	STA <var11
 
-	; Temp_Var12 = Bonus_PrizeX
+	; var12 = Bonus_PrizeX
 	LDA Bonus_PrizeX
-	STA <Temp_Var12	
+	STA <var12	
 
 	LDX #$01	 ; X = 1 (the two sprites that make up the prize)
 PRG022_C818:
@@ -1129,7 +1129,7 @@ PRG022_C818:
 	INY		 ; Y++ (next sprite byte)
 
 	; Store prize pattern
-	LDA <Temp_Var11
+	LDA <var11
 	STA Sprite_RAM+$10,Y
 
 	INY		 ; Y++ (next sprite byte)
@@ -1141,15 +1141,15 @@ PRG022_C818:
 	INY		 ; Y++ (next sprite byte)
 
 	; Store prize sprite X
-	LDA <Temp_Var12	
+	LDA <var12	
 	STA Sprite_RAM+$10,Y
 
 	INY		 ; Y++ (next sprite byte)
 
-	; Temp_Var12 += 8
-	LDA <Temp_Var12	
+	; var12 += 8
+	LDA <var12	
 	ADD #$08
-	STA <Temp_Var12
+	STA <var12
 
 	DEX		 ; X--
 	BPL PRG022_C818	 ; While X >= 0, loop
@@ -1882,10 +1882,10 @@ Bonus_Return2Col:	.byte $50, $A0, $40, $A0	; Upper bits is column, lower bits is
 
 Bonus_Return2_SetMapPos:
 
-	; Temp_Var1 = Bonus_KTPrize * 2
+	; var1 = Bonus_KTPrize * 2
 	LDA Bonus_KTPrize	; <-- !! A reference to Bonus_KTPrize
 	ASL A
-	STA <Temp_Var1
+	STA <var1
 
 	LDY Player_Current	 ; Y = Player_Current
 
@@ -1893,10 +1893,10 @@ Bonus_Return2_SetMapPos:
 	AND #$0a
 	BEQ PRG022_CBDD	 ; If Player didn't move up or left, jump to PRG022_CBDD
 
-	INC <Temp_Var1		 ; Temp_Var1++
+	INC <var1		 ; var1++
 
 PRG022_CBDD:
-	LDX <Temp_Var1		 ; X = Temp_Var1
+	LDX <var1		 ; X = var1
 
 	LDA Bonus_Return2Row,X
 	STA Map_Previous_Y,Y
@@ -2152,7 +2152,7 @@ PRG022_CD0E:
 	ASL A		 
 	ASL A		 
 	ASL A		 	; Fractional part shifted up
-	STA <Temp_Var1		; -> Temp_Var1
+	STA <var1		; -> var1
 
 	LDA <BonusDie_YVel	; Get Velocity
 	LSR A
@@ -2163,16 +2163,16 @@ PRG022_CD0E:
 	BLT PRG022_CD22	 ; If the value was not negatively signed, jump to PRG022_CD22
 	ORA #%11110000	 ; Apply a sign extension
 PRG022_CD22:
-	STA <Temp_Var2	 ; -> Temp_Var2
+	STA <var2	 ; -> var2
 
 	; Add to die's velocity fractional accumulator
 	LDA <BonusDie_YVelFrac
-	ADD <Temp_Var1
+	ADD <var1
 	STA <BonusDie_YVelFrac
 
 	; Add appropriately to die's Y
 	LDA <BonusDie_Y
-	ADC <Temp_Var2
+	ADC <var2
 	STA <BonusDie_Y
  
 	LDA <BonusDie_Y
@@ -2280,13 +2280,13 @@ PRG022_CD7C:
 	LDX #$00	; Otherwise, X = $00
 PRG022_CD8F:
 
-	; Temp_Var1 = -$10 or $00
+	; var1 = -$10 or $00
 	TXA
-	STA <Temp_Var1
+	STA <var1
 
 	PLA		 	; Restore random value
 	AND #$0f	 	; Keep lower 4 bits
-	ORA <Temp_Var1	 	; OR onto Temp_Var1
+	ORA <var1	 	; OR onto var1
 	STA Bonus_CoinsXVel,Y	; -> Bonus_CoinsXVel
 
 	LDA RandomN,Y
@@ -2367,7 +2367,7 @@ BonusCoin_ApplyVel:
 	ASL A		 
 	ASL A		 
 	ASL A		 	; Fractional part shifted up
-	STA <Temp_Var1		; -> Temp_Var1
+	STA <var1		; -> var1
 
 	LDX #$00	 ; X = 0 (positive high part)
 
@@ -2381,16 +2381,16 @@ BonusCoin_ApplyVel:
 	DEX		 ; X = $FF (negative high part)
 	ORA #%11110000	 ; Apply a sign extension
 PRG022_CE09:
-	STA <Temp_Var2	 ; -> Temp_Var2
+	STA <var2	 ; -> var2
 
 	; Add to coin's velocity fractional accumulator
 	LDA Bonus_CoinsYVelFrac,Y
-	ADD <Temp_Var1
+	ADD <var1
 	STA Bonus_CoinsYVelFrac,Y
 
 	; Add appropriately to coin's Y
 	LDA Bonus_CoinsY,Y
-	ADC <Temp_Var2
+	ADC <var2
 	STA Bonus_CoinsY,Y
 
 	RTS		 ; Return
@@ -2471,15 +2471,15 @@ Roulette_BorderSprites:
 
 Roulette_DrawBorderSprites:
 
-	; Temp_Var1 = 31 (Sprite Y start)
+	; var1 = 31 (Sprite Y start)
 	LDA #31
-	STA <Temp_Var1
+	STA <var1
 
 	LDY #$60	; Y = $60 (Sprite RAM offset)
 PRG022_CE83:
 
 	; Set Sprite Ys
-	LDA <Temp_Var1	
+	LDA <var1	
 	STA Sprite_RAM+$04,Y
 	STA Sprite_RAM+$08,Y
 	STA Sprite_RAM+$0C,Y
@@ -2507,10 +2507,10 @@ PRG022_CE83:
 	LDA #248
 	STA Sprite_RAM+$0F,Y
 
-	; Temp_Var1 (Sprite Y) += 16
-	LDA <Temp_Var1
+	; var1 (Sprite Y) += 16
+	LDA <var1
 	ADD #16
-	STA <Temp_Var1
+	STA <var1
 
 	TYA
 	SUB #12		; -12 (3 sprites prior)
@@ -2623,15 +2623,15 @@ UpdSel_Roulette:
 	LDX #$00	 ; X = 0
 	LDY #$02	 ; Y = 2
 
-	; Temp_Var1 = 0 or 2, random
+	; var1 = 0 or 2, random
 	LDA Random_Pool
 	AND #$02
-	STA <Temp_Var1
+	STA <var1
 
-	; Temp_Var1 = 0 or 2, random
+	; var1 = 0 or 2, random
 	LDA RandomN
 	AND #$02
-	EOR <Temp_Var1
+	EOR <var1
 
 	CLC		 ; Clear carry
 
@@ -2672,11 +2672,11 @@ PRG022_CF7C:
 
 	; Pull (pop) the three temp vars from the stack 
 	PLA
-	STA <Temp_Var3
+	STA <var3
 	PLA
-	STA <Temp_Var2
+	STA <var2
 	PLA
-	STA <Temp_Var1
+	STA <var1
 
 	; This pulls (pops) all the registers from the stack...
 	PLA
@@ -3020,12 +3020,12 @@ RouletteRow_LockDecide:
 	ADD #$20
 	AND #$80
 	STA Roulette_Pos,X
-	STA <Temp_Var1		 ; -> Temp_Var1
+	STA <var1		 ; -> var1
 	LDA Roulette_PosHi,X
 	ADC #$00
 	STA Roulette_PosHi,X
 
-	ASL <Temp_Var1
+	ASL <var1
 	ROL A
 	AND #$03
 	STA Roulette_ShapeLock,X
@@ -3354,7 +3354,7 @@ Roulette_MoveRow:
 	ASL A		 
 	ASL A		 
 	ASL A		 	; Fractional part shifted up
-	STA <Temp_Var2		; -> Temp_Var2
+	STA <var2		; -> var2
 
 	LDA Roulette_Speed,X	; Get this Roulette row speed
 	LSR A
@@ -3365,7 +3365,7 @@ Roulette_MoveRow:
 	BLT PRG022_D353	 ; If the value was not negatively signed, jump to PRG000_DD19
 	ORA #%11110000	 ; Otherwise, apply a sign extension
 PRG022_D353:
-	STA <Temp_Var1	 ; -> Temp_Var1
+	STA <var1	 ; -> var1
 
 	; NOTE: Other versions of the fractional accumulator usually merge this
 	; part up with the sign extension application, which is probably better :)
@@ -3374,19 +3374,19 @@ PRG022_D353:
 	BPL PRG022_D35C	 ; If the whole part is positive, jump to PRG022_D35C
 	DEY		 ; Y = $FF (negative high part)
 PRG022_D35C:
-	STY <Temp_Var3	 ; -> Temp_Var3
+	STY <var3	 ; -> var3
 
 	; Fractional accumulation
 	LDA Roulette_PosFrac,X
-	ADD <Temp_Var2
+	ADD <var2
 	STA Roulette_PosFrac,X
 
 	; Add to Pos/Hi
 	LDA Roulette_Pos,X
-	ADC <Temp_Var1
+	ADC <var1
 	STA Roulette_Pos,X
 	LDA Roulette_PosHi,X
-	ADC <Temp_Var3
+	ADC <var3
 	STA Roulette_PosHi,X
 
 	RTS		 ; Return
@@ -3457,9 +3457,9 @@ Roulette_DrawShapes:
 
 PRG022_D57D:
 
-	; Temp_Var1 = $80
+	; var1 = $80
 	LDA #$80
-	STA <Temp_Var1
+	STA <var1
 PRG022_D581:
 	LDA PPU_STAT
 
@@ -3467,7 +3467,7 @@ PRG022_D581:
 	STY PPU_VRAM_ADDR
 
 	; Set VRAM address low
-	LDA <Temp_Var1
+	LDA <var1
 	STA PPU_VRAM_ADDR
 
 	; Fills in a row with the pinkish "background" color
@@ -3482,10 +3482,10 @@ PRG022_D58E:
 	BPL PRG022_D58E	 ; While X >= 0, loop!
 
 
-	; Temp_Var1 += 32 (next row of patterns)
-	LDA <Temp_Var1
+	; var1 += 32 (next row of patterns)
+	LDA <var1
 	ADD #32
-	STA <Temp_Var1
+	STA <var1
 	BCC PRG022_D5A0	 ; If no carry, jump to PRG022_D5A0
 	INY		 ; Otherwise, apply carry
 PRG022_D5A0:
@@ -3495,7 +3495,7 @@ PRG022_D5A0:
 	CMP #$02
 	BNE PRG022_D581	 ; If not on every third, jump to PRG022_D581
 
-	LDA <Temp_Var1
+	LDA <var1
 	CMP #$e0
 	BNE PRG022_D581	 ; If not at end column, jump to PRG022_D581
 
@@ -3503,44 +3503,44 @@ PRG022_D5A0:
 
 	; VRAM high address
 	LDA #$20
-	STA <Temp_Var1
+	STA <var1
 
-	; Temp_Var5 = 0 (current shape from Roulette_Shapes)
+	; var5 = 0 (current shape from Roulette_Shapes)
 	LDA #$00
-	STA <Temp_Var5
+	STA <var5
 
 PRG022_D5B5:
 
 	; VRAM low address
 	LDA #$c0
-	STA <Temp_Var2
+	STA <var2
 
 	LDY #$06
 PRG022_D5BB:
 
-	; X = Temp_Var5 * 2 (2 byte index for Roulette shape pointer)
-	LDA <Temp_Var5
+	; X = var5 * 2 (2 byte index for Roulette shape pointer)
+	LDA <var5
 	ASL A
 	TAX
 
 	; Load starting address of Roulette shape 
 	LDA Roulette_Shapes,X
-	STA <Temp_Var3
+	STA <var3
 	LDA Roulette_Shapes+1,X
-	STA <Temp_Var4
+	STA <var4
 
 PRG022_D5C9:
 	LDA PPU_STAT
 
 	; Set VRAM address
-	LDA <Temp_Var1
+	LDA <var1
 	STA PPU_VRAM_ADDR
-	LDA <Temp_Var2
+	LDA <var2
 	STA PPU_VRAM_ADDR
 
 	LDX #$00	; X = 0
 PRG022_D5D8:
-	LDA [Temp_Var3],Y	; Get pattern for shape
+	LDA [var3],Y	; Get pattern for shape
 	STA PPU_VRAM_DATA	; Store into VRAM
 
 	INY		; Y++ (next shape pattern)
@@ -3555,31 +3555,31 @@ PRG022_D5D8:
 	ADD #$06
 	TAY
 
-	; Temp_Var1/2 += 32 (go to next row)
-	LDA <Temp_Var2
+	; var1/2 += 32 (go to next row)
+	LDA <var2
 	ADD #32		; +32 next row
 	BCC PRG022_D5F1	; If no carry, jump to PRG022_D5F1
-	INC <Temp_Var1	; Apply carry
+	INC <var1	; Apply carry
 PRG022_D5F1:
-	STA <Temp_Var2
+	STA <var2
 
 	AND #$e0
 	CMP #$80
 	BNE PRG022_D5C9
 
-	LDA <Temp_Var1
+	LDA <var1
 	AND #$03
 	CMP #$02
 	BNE PRG022_D5C9
 
-	DEC <Temp_Var1
-	DEC <Temp_Var1
+	DEC <var1
+	DEC <var1
 
-	LDA <Temp_Var2
+	LDA <var2
 	ADD #$46
-	STA <Temp_Var2
+	STA <var2
 
-	LDA <Temp_Var5
+	LDA <var5
 	CMP #$01
 	BNE PRG022_D61A
 
@@ -3589,29 +3589,29 @@ PRG022_D5F1:
 	LDY #$06
 	BNE PRG022_D5C9
 PRG022_D61A:
-	LDA <Temp_Var2
+	LDA <var2
 	ADD #$04
-	STA <Temp_Var2
+	STA <var2
 
 	LDY #$00
 
-	LDA <Temp_Var1
+	LDA <var1
 	CMP #$24
 	BEQ PRG022_D635
 
-	INC <Temp_Var5
-	LDA <Temp_Var5
+	INC <var5
+	LDA <var5
 	CMP #$03
 	BNE PRG022_D5BB
 
 	LDA #$24
-	STA <Temp_Var1
+	STA <var1
 
 PRG022_D635:
-	DEC <Temp_Var5
+	DEC <var5
 	BMI PRG022_D642
 
-	LDA <Temp_Var5
+	LDA <var5
 	CMP #$02
 	BEQ PRG022_D643
 
@@ -3667,9 +3667,9 @@ PRG022_D668:
 	RTS		 ; Return
 
 Card_RenderDeck:
-	; Temp_Var11 = Card_Index
+	; var11 = Card_Index
 	LDY Card_Index
-	STY <Temp_Var11	
+	STY <var11	
 
 	LDA Card_ActiveSet,Y
 	AND #$80
@@ -3919,9 +3919,9 @@ Card_BeginFlip:
 	LDA #$04
 	STA Card_FlipFrame
 
-	; Temp_Var11 = Card_Index
+	; var11 = Card_Index
 	LDA Card_Index
-	STA <Temp_Var11
+	STA <var11
 
 	JSR Card_Blackout	 ; Blacks out the card that will get flipped
 
@@ -3966,9 +3966,9 @@ Card_DoFlip:
 
 PRG022_D7E5:
 
-	; Temp_Var11 = Card_Index
+	; var11 = Card_Index
 	LDA Card_Index
-	STA <Temp_Var11
+	STA <var11
 
 	JSR CardFlip_Draw	 ; Draw card flip
 
@@ -3977,9 +3977,9 @@ PRG022_D7E5:
 
 	; Card flip complete
 
-	; Temp_Var11 = Card_Index
+	; var11 = Card_Index
 	LDA Card_Index
-	STA <Temp_Var11
+	STA <var11
 
 	JSR Card_RenderFace	; Draw card face
 
@@ -4046,9 +4046,9 @@ PRG022_D83D:
 Card_HandleBowser:
 	; Card_FlipFrame = 0
 
-	; Temp_Var12 = 1
+	; var12 = 1
 	LDA #$01
-	STA <Temp_Var12
+	STA <var12
 
 	LDA #0
 	STA Card_GameState	 ; Card_GameState = 0
@@ -4158,10 +4158,10 @@ PRG022_D87D:
 ;	LDA #$00
 ;	STA Card_FlipFrame
 
-;	LDY <Temp_Var12		 ; Y = Temp_Var12
+;	LDY <var12		 ; Y = var12
 
 ;	LDA Card_Index,Y	; Get first or second card face value
-;	STA <Temp_Var11		; Face value -> Temp_Var11
+;	STA <var11		; Face value -> var11
 
 ;	JSR Card_Blackout	 ; Black out this card
 
@@ -4180,10 +4180,10 @@ PRG022_D87D:
 ;	RTS		 ; Return
 
 ;PRG022_D8A7:
-;	LDY <Temp_Var12		 ; Y = Temp_Var12 (first or second card index)
+;	LDY <var12		 ; Y = var12 (first or second card index)
 
 ;	LDA Card_Index,Y	; Get first or second card face value
-;	STA <Temp_Var11		; Face value -> Temp_Var11
+;	STA <var11		; Face value -> var11
 
 ;	JSR CardFlip_Draw	 ; Draw card flip
 
@@ -4193,14 +4193,14 @@ PRG022_D87D:
 ;	CMP #$05
 ;	BLT PRG022_D8D8	 	; If Card_FlipFrame < 5, jump to PRG022_D8D8
 
-;	LDY <Temp_Var12		; Y = Temp_Var12 (first or second card index)
+;	LDY <var12		; Y = var12 (first or second card index)
 
 ;	LDA Card_Index,Y	; Get first or second card face value
-;	STA <Temp_Var11		; Face value -> Temp_Var11
+;	STA <var11		; Face value -> var11
 
 ;	JSR Card_RenderBack	; Render the card's back side
 
-;	DEC <Temp_Var12	 ; Temp_Var12--
+;	DEC <var12	 ; var12--
 ;	BPL PRG022_D8CF	 ; If there's another card to do, jump to PRG022_D8CF
 
 	; Both cards are flipped back over
@@ -4230,9 +4230,9 @@ PRG022_D87D:
 
 
 Card_Shuffle:
-	; Temp_Var11 = 2 (3 shuffle operations)
+	; var11 = 2 (3 shuffle operations)
 	LDA #$02	 
-	STA <Temp_Var11	
+	STA <var11	
 PRG022_D8E2:
 	JSR Randomize
 	AND #$1f
@@ -4241,9 +4241,9 @@ PRG022_D8E2:
 	; Rotate the first 15 cards 0 to 31 (random) times to shuffle
 PRG022_D8E8:
 
-	; Temp_Var12 = 15th card
+	; var12 = 15th card
 	LDA Card_ActiveSet+14
-	STA <Temp_Var12	
+	STA <var12	
 
 	LDX #$0D	 ; X = $0D
 PRG022_D8EF:
@@ -4256,7 +4256,7 @@ PRG022_D8EF:
 	BPL PRG022_D8EF	; While X >= 0, loop!
 
 	; Set the original 15th card as the first card
-	LDA <Temp_Var12	
+	LDA <var12	
 	STA Card_ActiveSet
 
 	DEY		 ; Y--
@@ -4264,9 +4264,9 @@ PRG022_D8EF:
 
 	LDX #$00	 ; X = 0 (this routine will only be run once, even though they structured a loop)
 PRG022_D902:
-	; First card -> Temp_Var12
+	; First card -> var12
 	LDA Card_ActiveSet,X
-	STA <Temp_Var12	
+	STA <var12	
 
 	; Sixth card -> first
 	LDA Card_ActiveSet+5,X
@@ -4277,7 +4277,7 @@ PRG022_D902:
 	STA Card_ActiveSet+5,X	
 
 	; Former first card -> Eleventh
-	LDA <Temp_Var12	
+	LDA <var12	
 	STA Card_ActiveSet+10,X
 
 	; X -= 2
@@ -4286,8 +4286,8 @@ PRG022_D902:
 
 	BPL PRG022_D902	 ; While X >= 0, loop!
 
-	DEC <Temp_Var11	 ; Temp_Var11--
-	BPL PRG022_D8E2	 ; While Temp_Var11 >= 0, loop!
+	DEC <var11	 ; var11--
+	BPL PRG022_D8E2	 ; While var11 >= 0, loop!
 
 	RTS		 ; Return
 
@@ -4300,7 +4300,7 @@ PRG022_D923:
 	DEY		 ; Y--
 	BPL PRG022_D923	; While Y >= 0, loop
 
-	LDY <Temp_Var11	 ; Y = Temp_Var11 (current card)
+	LDY <var11	 ; Y = var11 (current card)
 
 	; Get VRAM address of this card -> Card_VRAM_H/L
 	LDA Card_VRAMHi,Y
@@ -4338,12 +4338,12 @@ PRG022_D93E:
 	DEX		 ; X--
 	BPL PRG022_D93E	 ; While X >= 0, loop
 
-	LDY <Temp_Var11	 ; Y = Temp_Var11 (current card)
+	LDY <var11	 ; Y = var11 (current card)
 
-	; Get the card face sans "already flipped" bit -> Temp_Var12
+	; Get the card face sans "already flipped" bit -> var12
 	LDA Card_ActiveSet,Y
 	AND #$3f
-	STA <Temp_Var12
+	STA <var12
 
 	ASL A
 	ASL A
@@ -4362,32 +4362,32 @@ PRG022_D93E:
 	LDA Card_FacePatterns,Y
 	STA Graphics_Buffer+$13
 
-	LDY <Temp_Var12		 ; Y = Temp_Var12 (current card face)
+	LDY <var12		 ; Y = var12 (current card face)
 
-	; Temp_Var13 = card face attribute
+	; var13 = card face attribute
 	LDA Card_FaceAttribute,Y
-	STA <Temp_Var13	
+	STA <var13	
 
-	LDA <Temp_Var11
+	LDA <var11
 	CMP #6
-	BLT PRG022_D99F	 ; If Temp_Var11 < 6 (card is on first row), jump to PRG022_D99F
+	BLT PRG022_D99F	 ; If var11 < 6 (card is on first row), jump to PRG022_D99F
 
 	CMP #12
-	BGE PRG022_D99F	 ; If Temp_Var11 < 12 (card is on second row), jump to PRG022_D99F
+	BGE PRG022_D99F	 ; If var11 < 12 (card is on second row), jump to PRG022_D99F
 
 	JMP PRG022_D9A9	 ; Card is on third row; jump to PRG022_D9A9
 
 PRG022_D99F:
-	LDA <Temp_Var13
+	LDA <var13
 	ASL A
 	ASL A
 	ASL A
 	ASL A
 	ORA #$0f
-	STA <Temp_Var13
+	STA <var13
 
 PRG022_D9A9:
-	LDX <Temp_Var11		 ; X = Temp_Var11 (current card index)
+	LDX <var11		 ; X = var11 (current card index)
 
 	; Patch attribute VRAM Hi into graphics buffer
 	LDA #$23
@@ -4402,7 +4402,7 @@ PRG022_D9A9:
 	STA Graphics_Buffer+$1E
 
 	; Attribute byte
-	LDA <Temp_Var13
+	LDA <var13
 	STA Graphics_Buffer+$1F
 
 	; Terminator
@@ -4415,9 +4415,9 @@ PRG022_D9A9:
 
 	; SB: Not using this ... for now
 
-	;LDA <Temp_Var12
+	;LDA <var12
 	;CMP #CARD_1UP
-	;BLT PRG022_D9E0	 ; If Temp_Var12 < CARD_1UP, jump to PRG022_D9E0
+	;BLT PRG022_D9E0	 ; If var12 < CARD_1UP, jump to PRG022_D9E0
 
 	;SUB #CARD_1UP
 	;TAY		 ; Y = relative (0 = 1-up, 1 = 10 coin, 2 = 20 coin)
@@ -4449,7 +4449,7 @@ PRG022_D9F1:
 	DEY		 ; Y--
 	BPL PRG022_D9F1	; While Y >= 0, loop
 
-	LDY <Temp_Var11	 ; Y = Temp_Var11 (current card)
+	LDY <var11	 ; Y = var11 (current card)
 
 	; Get VRAM address of this card -> Card_VRAM_H/L
 	LDA Card_VRAMHi,Y
@@ -4487,7 +4487,7 @@ PRG022_DA0C:
 	DEX		 ; X--
 	BPL PRG022_DA0C	 ; While X >= 0, loop
 
-	LDX <Temp_Var11	 ; X = Temp_Var11 (current card)
+	LDX <var11	 ; X = var11 (current card)
 
 	LDA #$23
 	STA Graphics_Buffer+$1C
@@ -4525,15 +4525,15 @@ PRG022_DA0C:
 ; $DA62 
 	LDY #$00	 ; Y = 0
 
-	; Temp_Var11 = 11
+	; var11 = 11
 	LDA #$01
-	STA <Temp_Var11
+	STA <var11
 
 	LDX Card_Index	 	; X = Card_Index
 
-	; Card face -> Temp_Var12
+	; Card face -> var12
 	LDA Card_ActiveSet,X
-	STA <Temp_Var12	
+	STA <var12	
 
 	ASL A
 	ASL A
@@ -4580,10 +4580,10 @@ PRG022_DA73:
 	ADC #$00
 	STA Card_UnusedVL
 
-	DEC <Temp_Var11	 ; Temp_Var11--
-	BPL PRG022_DA73	 ; While Temp_Var1 >= 0, loop
+	DEC <var11	 ; var11--
+	BPL PRG022_DA73	 ; While var1 >= 0, loop
 
-	LDX <Temp_Var12	 ; X = Temp_Var12
+	LDX <var12	 ; X = var12
 
 	; High VRAM in attribute table?
 	LDA #$23
@@ -4644,7 +4644,7 @@ PRG022_DAF7:
 	DEY		 ; Y--
 	BPL PRG022_DAF7	 ; While Y >= 0, loop
 
-	LDY <Temp_Var11	 ; Y = Temp_Var11
+	LDY <var11	 ; Y = var11
 
 	; Get VRAM address of this card -> Card_VRAM_H/L
 	LDA Card_VRAMHi,Y
@@ -4942,7 +4942,7 @@ PRG022_DC8F:
 	RTS		 ; Return
 
 CardFlip_Draw:
-	LDX <Temp_Var11		 ; X = Temp_Var11 (Card Index)
+	LDX <var11		 ; X = var11 (Card Index)
 
 	; Card starts at selection cursor +8
 	LDA Card_CursorXs,X
@@ -4970,9 +4970,9 @@ PRG022_DCBF:
 
 	INY		 ; Y++ (next sprite byte)
 
-	; Temp_Var11 = 0
+	; var11 = 0
 	LDA #$00
-	STX <Temp_Var11
+	STX <var11
 
 	LDX Card_FlipFrame	 ; X = Card_FlipFrame
 
@@ -4980,7 +4980,7 @@ PRG022_DCBF:
 	LDA CardFlip_Attributes,X
 	STA Sprite_RAM+$04,Y
 
-	LDX <Temp_Var11		 ; X = Temp_Var11 (current card flip sprite)
+	LDX <var11		 ; X = var11 (current card flip sprite)
 
 	INY		 ; Y++ (next sprite byte)
 
@@ -5028,17 +5028,17 @@ PRG022_DD09:
 	RTS		 ; Return
 
 CardFlipSprite_GetPattern:
-	STX <Temp_Var11	 ; Backup 'X' -> Temp_Var11 (current card flip sprite)
+	STX <var11	 ; Backup 'X' -> var11 (current card flip sprite)
 
 	LDX Card_FlipFrame	; X = Card_FlipFrame
 
 	LDA CardFlip_FrameDefOff,X 	; Get initial frame def offset
-	ADD <Temp_Var11		; Offset by current flip sprite
+	ADD <var11		; Offset by current flip sprite
 	TAX		  	; -> 'X'
 
 	LDA CardFlip_FrameDefs,X ; Get this sprite pattern
 
-	LDX <Temp_Var11	 ; Restore 'X'
+	LDX <var11	 ; Restore 'X'
 	RTS		 ; Return
 
 Card_MatchPairReward:
@@ -5046,7 +5046,7 @@ Card_MatchPairReward:
 
 	LDA Card_ActiveSet,Y	; Get the second card
 	AND #$0f		; Mainly to mask the bit 7 "flipped" marker
-	STA <Temp_Var13		; -> Temp_Var13
+	STA <var13		; -> var13
 
 	CMP #CARD_BOWSER1
 	BLT PRG022_DD65	 ; If this is not one of the Bowser cards, jump to PRG022_DD65

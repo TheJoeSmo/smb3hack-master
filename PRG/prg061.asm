@@ -101,8 +101,8 @@ PLayer_KickBobomb:
 	BMI PRG000_CE76	 ; If the Bob-omb's X velocity is the opposite sign of the Player's, jump to PRG000_CE76
 
 	LDA <Player_XVel
-	STA <Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
-	ASL <Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
+	STA <var1		; -> var1 (yyyy xxxx)
+	ASL <var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	ADD ObjectKickXVelMoving,Y	 ; Add base "moving" X velocity of Bob-omb
 	STA <Objects_XVel,X	 ; Set this as Bob-omb's X Velocity
@@ -221,8 +221,8 @@ PRG000_CEC6:
 	BMI PRG000_CEDC	 ; If the object's X velocity is the opposite sign of the Player's, jump to PRG000_CEDC
 
 	LDA <Player_XVel 	; Get the Player's X velocity
-	STA <Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
-	ASL <Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
+	STA <var1		; -> var1 (yyyy xxxx)
+	ASL <var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	ADD ObjectKickXVelMoving,Y	 ; Add base "moving" X velocity of object
 	STA <Objects_XVel,X	 ; Set as object's X velocity
@@ -246,8 +246,8 @@ PRG000_CEDC:
 
 	; Add extra velocity to vertically kicked shells
 	LDA <Player_XVel 	; Get the Player's X velocity
-	;STA <Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
-	;ASL <Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
+	;STA <var1		; -> var1 (yyyy xxxx)
+	;ASL <var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	;ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	;ADD ObjectKickXVelMoving,Y	 ; Add base "moving" X velocity of object
 	STA <Objects_XVel,X	 ; Set as object's X velocity
@@ -675,16 +675,16 @@ Birdo_NoGndHit:
 	; Check if Birdo has gone to a different hit level
 	LDA Objects_Var4,X
 	AND #$F0	; Upper 4 bits are hit level
-	STA <Temp_Var1	; -> Temp_Var1
+	STA <var1	; -> var1
 
 	LDA Objects_HitCount,X
 	AND #$F0
-	CMP <Temp_Var1	; Compare upper 4 bits of hit count to hit level
+	CMP <var1	; Compare upper 4 bits of hit count to hit level
 	BEQ Birdo_NoChangeHit	; If Birdo has not changed to a new hit level, jump to Birdo_NoChangeHit
 
 	; Birdo changed hit level!  Update hit level and go to state 5!
 	LDA #5
-	STA <Temp_Var1
+	STA <var1
 	JSR Birdo_ChangeState
 
 	; Change upper frame to 2
@@ -717,51 +717,51 @@ Birdo_NotInvincible:
 Birdo_Draw:
 	JSR Object_ShakeAndCalcSprite
 
-	; Store frame into Temp_Var14 (top) and Temp_Var15 (bottom)
+	; Store frame into var14 (top) and var15 (bottom)
 	LDX <SlotIndexBackup		 ; X = object slot index
 
 	; Upper body sprite frame
 	LDA Objects_Var1,X
 	ASL A
-	STA <Temp_Var14
+	STA <var14
 
 	; Lower body sprite frame
 	LDA Objects_Var2,X
 	ADD #3		; Base frame for lower body
 	ASL A
-	STA <Temp_Var15
+	STA <var15
 
 	LDA Objects_FlipBits,X
 	AND #SPR_VFLIP
 	BEQ Birdo_DrawNotVFlipped
 
-	; If vertically flipped, swap Temp_Var14/15
-	LDA <Temp_Var14
+	; If vertically flipped, swap var14/15
+	LDA <var14
 	PHA
 
-	LDA <Temp_Var15
-	STA <Temp_Var14
+	LDA <var15
+	STA <var14
 
 	PLA
-	STA <Temp_Var15
+	STA <var15
 
 Birdo_DrawNotVFlipped:
 
-	LDX <Temp_Var14
+	LDX <var14
 	JSR Object_Draw16x16Sprite
 
-	LSR <Temp_Var5	 ; Next visibility bit
+	LSR <var5	 ; Next visibility bit
 
 	; Next two sprites
 	TYA
 	ADD #8
 	TAY
 
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #16
-	STA <Temp_Var1
+	STA <var1
 
-	LDX <Temp_Var15
+	LDX <var15
 	JSR Object_Draw16x16Sprite
 
 	LDX <SlotIndexBackup		 ; X = object slot index
@@ -848,12 +848,12 @@ Birdo_DoSomethingElse:
 	AND #$03
 	TAY
 	LDA Birdo_DestStates,Y	; Random state 2 to 4
-	STA <Temp_Var1
+	STA <var1
 
 Birdo_ChangeState:
 	LDA Objects_Var4,X
 	AND #$F0		; Mask out hit level
-	ORA <Temp_Var1		; Store new state
+	ORA <var1		; Store new state
 	STA Objects_Var4,X	; Go for it, Birdo
 
 	; Clear state-specific var
@@ -1067,7 +1067,7 @@ Birdo_DeadTimeout:
 
 	; Clear Arena Door 0
 	LDA #0
-	STA <Temp_Var1
+	STA <var1
 	JSR_THUNKA 41, ArenaCtl_ExitBoss
 	JMP Object_Delete
 
@@ -1119,11 +1119,11 @@ PRG003_B353:
 	LSR A
 	LSR A
 	LSR A		; Hit level * 2
-	STA <Temp_Var1	; -> Temp_Var1
+	STA <var1	; -> var1
 
 	LDA RandomN
 	AND #$01	; 50/50 chance of something different
-	ORA <Temp_Var1
+	ORA <var1
 	TAX
 	LDA BirdoEgg_Type,X
 	STA Objects_Frame,Y
@@ -1443,10 +1443,10 @@ PRG000_DBCF:
 
 	LDA #-$30	 ; A = -$30
 
-	LDY <Temp_Var4
+	LDY <var4
 
 	CPY #$0f	
-	BEQ PRG000_DBDC	 ; If Temp_Var4 = $0F, jump to PRG000_DBDC
+	BEQ PRG000_DBDC	 ; If var4 = $0F, jump to PRG000_DBDC
 
 	LDA #-$50	 ; A = -$50
 

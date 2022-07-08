@@ -29,16 +29,16 @@ Level_QueueChangeBlock60:
 	STA Level_ChgTileEvent	 ; Store type of block change!
 
 	; Store change Y Hi and Lo
-	LDA <Temp_Var13
+	LDA <var13
 	STA Level_BlockChgYHi
-	LDA <Temp_Var14
+	LDA <var14
 	AND #$F0		; Align to nearest grid coordinate
 	STA Level_BlockChgYLo
 
 	; Store change X Hi and Lo
-	LDA <Temp_Var15
+	LDA <var15
 	STA Level_BlockChgXHi
-	LDA <Temp_Var16	
+	LDA <var16	
 	AND #$F0	 	; Align to nearest grid coordinate
 	STA Level_BlockChgXLo
 

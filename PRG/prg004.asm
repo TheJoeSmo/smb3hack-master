@@ -981,12 +981,12 @@ PRG004_A5F6:
 	LDA #-$30
 	STA SpecialObj_YVel,Y
 
-	STY <Temp_Var1		 ; Temp_Var1 = Special Object slot index
+	STY <var1		 ; var1 = Special Object slot index
 
 	JSR Level_ObjCalcXDiffs
 
 	LDA Hammer_XVel,Y	; Hammer towards Player X Vel
-	LDY <Temp_Var1		 ; Y = Special Object slot index
+	LDY <var1		 ; Y = Special Object slot index
 	STA SpecialObj_XVel,Y	 ; Set X Velocity
 
 	; Regular hammer!
@@ -1013,7 +1013,7 @@ BoomerangBro_ThrowBoomerang:
 	LDA <Objects_YHi,X
 	STA SpecialObj_YHi,Y
 
-	STY <Temp_Var1		 ; Store special object index -> Temp_Var1
+	STY <var1		 ; Store special object index -> var1
 
 	JSR Level_ObjCalcXDiffs
 
@@ -1022,7 +1022,7 @@ BoomerangBro_ThrowBoomerang:
 
 	LDA Boomerang_ArrayValLoad,Y
 
-	LDY <Temp_Var1	 ; Y = special object slot index
+	LDY <var1	 ; Y = special object slot index
 
 	STA SpecialObj_Var2,Y	 ; Store -> SpecialObj_Var2
 
@@ -1449,13 +1449,13 @@ FireBro_SpitFire:
 	LDA #$20
 	STA SpecialObj_YVel,Y
 
-	STY <Temp_Var1		 ; Special object slot index -> Temp_Var1
+	STY <var1		 ; Special object slot index -> var1
 
 	JSR Level_ObjCalcXDiffs
 
 	; Spit fire towards Player!
 	LDA FireBro_FireballXVel,Y
-	LDY <Temp_Var1		; Y = special object slot
+	LDY <var1		; Y = special object slot
 	STA SpecialObj_XVel,Y
 
 	; Fire bro bouncing fireball
@@ -1784,30 +1784,30 @@ PRG004_AB79:
 	AND Giant_HVisBit,Y
 	BNE PRG004_ABE3	 ; If this sprite isn't visible, jump to PRG004_ABE3 (RTS)
 
-	; Temp_Var2 = Sprite X
+	; var2 = Sprite X
 	LDA <Objects_SpriteX,X
 	ADD Giant_HXOff,Y
-	STA <Temp_Var2
+	STA <var2
 
 	LDY Object_SprRAM,X	 ; Y = Sprite_RAM offset
 
 	; Set Sprite Xs
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$13,Y
 	STA Sprite_RAM+$17,Y
 
-	; Vertical visibility bits -> Temp_Var1
+	; Vertical visibility bits -> var1
 	LDA Objects_SprVVis,X
-	STA <Temp_Var1
+	STA <var1
 
 	LDA <Objects_SpriteY,X
-	LSR <Temp_Var1
+	LSR <var1
 	BCS PRG004_ABA2	 ; If this sprite is vertically off-screen, jump to PRG004_ABA2
 
 	STA Sprite_RAM+$10,Y	 ; Otherwise, set Sprite Y
 
 PRG004_ABA2:
-	LSR <Temp_Var1
+	LSR <var1
 	BCS PRG004_ABAC	 ; If this sprite is vertically off-screen, jump to PRG004_ABAC
 
 	ADD #16		; +16 for lower sprite
@@ -2139,9 +2139,9 @@ PRG004_ADAE:
 PRG004_ADC2:
 	JSR GroundTroop_DrawMirrored	 ; Draw's Lakitu's cloud
 
-	; Temp_Var1 = $F6
+	; var1 = $F6
 	LDA #$f6
-	STA <Temp_Var1
+	STA <var1
 
 	LDA Objects_Timer,X
 	BEQ PRG004_ADE1	 ; If timer expired, jump to PRG004_ADE1
@@ -2156,7 +2156,7 @@ PRG004_ADC2:
 	EOR #%00000111	; Flip the lowest 3 bits 
 	ADD #$01	; +1
 	SBC #16		; Subtract 16 again
-	STA <Temp_Var1	; -> Temp_Var1
+	STA <var1	; -> var1
 
 	JMP PRG004_ADF1	 ; Jump to PRG004_ADF1
 
@@ -2170,7 +2170,7 @@ PRG004_ADE1:
 
 	LDA Lakitu_YOff,X
 	LDX <SlotIndexBackup	 ; X = object slot index
-	STA <Temp_Var1		 ; Temp_Var1 = Lakitu's in-cloud Y offset
+	STA <var1		 ; var1 = Lakitu's in-cloud Y offset
 
 PRG004_ADF1:
 	LDA Sprite_RAM+$00,Y
@@ -2178,7 +2178,7 @@ PRG004_ADF1:
 	BEQ PRG004_ADFE	 ; If this Lakitu cloud sprite is vertically off-screen, jump to PRG004_ADFE
 
 	; Otherwise, set Lakitu's left sprite Y
-	ADD <Temp_Var1
+	ADD <var1
 	STA Sprite_RAM+$08,Y
 
 PRG004_ADFE:
@@ -2187,7 +2187,7 @@ PRG004_ADFE:
 	BEQ PRG004_AE0B	 ; If this Lakitu cloud sprite is vertically off-screen, jump to PRG004_AE0B
 
 	; Otherwise, set Lakitu's right sprite Y
-	ADD <Temp_Var1	
+	ADD <var1	
 	STA Sprite_RAM+$0C,Y
 
 PRG004_AE0B:
@@ -2228,8 +2228,8 @@ PRG004_AE2C:
 PRG004_AE35:
 
 	; Not really better than TYA, TAX is it?
-	STY <Temp_Var1	 ; Temp_Var1 = the empty object slot index
-	LDX <Temp_Var1	 ; X = empty object slot index
+	STY <var1	 ; var1 = the empty object slot index
+	LDX <var1	 ; X = empty object slot index
 
 	JSR Level_PrepareNewObject	 ; Prepare new object
 
@@ -2283,7 +2283,7 @@ PRG004_AE35:
 	ASL A
 	ASL A
 	ASL A
-	STA <Temp_Var1	 ; Temp_Var1 = 4.4FP of the scroll difference divided by 2
+	STA <var1	 ; var1 = 4.4FP of the scroll difference divided by 2
 
 	; Var5 is direction Lakitu is going
 	LDA <Objects_Var5,X
@@ -2296,7 +2296,7 @@ PRG004_AE35:
 	LDA #-$10	; A = -$10 (move left)
 
 PRG004_AE89:
-	ADD <Temp_Var1	 ; Add the divided screen difference
+	ADD <var1	 ; Add the divided screen difference
 	STA Objects_XVel,Y	 ; Set the object's X velocity
 
 	RTS		 ; Return
@@ -2631,7 +2631,7 @@ Paragoomba_FlyAbovePlayer:
 	CPY #$00
 	BNE PRG004_B011	 ; If Player is higher than Paragoomba, jump to PRG004_B011
 
-	LDA <Temp_Var16
+	LDA <var16
 	CMP #$38
 	BLT PRG004_B011	 ; If Paragoomba is not sufficiently above Player, jump to PRG004_B011
 
@@ -2920,8 +2920,8 @@ FishObjDraw_FishBone:
 FishObj_NoAnim:
 	JSR Object_ShakeAndDraw
 	
-	; Temp_Var8 = Objects_SprHVis
-	LDA <Temp_Var8
+	; var8 = Objects_SprHVis
+	LDA <var8
 	AND #%00100000
 	BNE FishObjDraw_NoRightSpr
 	
@@ -2944,7 +2944,7 @@ FishObj_NoAnim:
 	
 FishObjDraw_NoRightSpr:
 
-	BIT <Temp_Var3		
+	BIT <var3		
 	BVC FishObjDraw_NoFlip	 ; If sprite is not horizontally flipped, jump to FishObjDraw_NoFlip
 	
 	; Need to flip...
@@ -3008,7 +3008,7 @@ BulletBill_PT5Set:
 	BEQ PRG004_B193	 ; If Var3 = 0, jump to PRG004_B193
 
 	JSR Level_ObjCalcXDiffs	
-	STY <Temp_Var1	 ; Store the difference value -> Temp_Var1
+	STY <var1	 ; Store the difference value -> var1
 
 	LDY #$00	 ; Y = 0 (moving right)
 
@@ -3018,7 +3018,7 @@ BulletBill_PT5Set:
 	INY		 ; Y = 1 (moving left)
 
 PRG004_B18A:
-	CPY <Temp_Var1	
+	CPY <var1	
 	BEQ PRG004_B1C2	 ; If too close, jump to PRG004_B1C2
 
 	DEC Objects_Var3,X	; Var3--
@@ -3691,19 +3691,19 @@ PRG004_B43A:
 
 	LDA <Objects_XHi,X
 	SBC Objects_XHi,Y
-	STA <Temp_Var1	 ; Temp_Var1 = difference between object X His
+	STA <var1	 ; var1 = difference between object X His
 
-	ROL <Temp_Var2	 ; Sets carry if offset was negative
+	ROL <var2	 ; Sets carry if offset was negative
 
 	PLA		 ; Restore X difference
 
 	ADC #$80	 ; +$80
 
-	LDA <Temp_Var1
+	LDA <var1
 	ADC #$00
 	BNE PRG004_B49A	 ; If sprite is off-screen, jump to PRG004_B49A (skip to next object)
 
-	LSR <Temp_Var2	 ; Determine which side the object is on
+	LSR <var2	 ; Determine which side the object is on
 
 	LDY #$00	 ; Y = 0 
 	BCS PRG000_B484	 ; If this object's sprite X < the OTHER object's sprite X, jump to PRG000_B484
@@ -3711,7 +3711,7 @@ PRG004_B43A:
 
 PRG000_B484:
 	TYA 
- 	STA <Temp_Var1	 ; Store target flip -> Temp_Var1
+ 	STA <var1	 ; Store target flip -> var1
 
 	LDY <SlotIndexBackup	 ; Y = original enemy slot index
 	STA Objects_FlipBits,Y	 ; -> FlipBits
@@ -3722,7 +3722,7 @@ PRG000_B484:
 	BNE PRG004_B49A	 ; If the hit object is not in state Normal, jump to PRG004_B49A (skip to next object)
 
 	; Set the object flip opposite of the object it hit
-	LDA <Temp_Var1
+	LDA <var1
 	EOR #SPR_HFLIP
 	STA Objects_FlipBits,X
 
@@ -3836,11 +3836,11 @@ Troopa_Draw:
 
 	NOP		 ; ? Removed something
 
-	; Temp_Var2 = FlipBits
+	; var2 = FlipBits
 	LDA Objects_FlipBits,X
-	STA <Temp_Var2
+	STA <var2
 
-	BIT <Temp_Var2
+	BIT <var2
 	BVC PRG004_B4FB	 ; If not flipped (i.e. horizontal), jump to PRG004_B4FB
 
 	; Y += 4 (next sprite, deciding which sprite to place the head on)
@@ -3929,23 +3929,23 @@ Object_TroopWing_NoRev:
 Object_TroopWing_Cont:
 	STA Sprite_RAM-$08,Y
 
-	; Temp_Var1 = $CD (pattern for wing up)
+	; var1 = $CD (pattern for wing up)
 	LDA #$CD
-	STA <Temp_Var1
+	STA <var1
 
 	LDA <Objects_Var5,X
 	ADC #$02
 	AND #$04
 	BEQ PRG004_B548	 ; 4 ticks on, 4 ticks off; jump to PRG004_B548
 
-	; Temp_Var1 = $CF (pattern for wing down)
+	; var1 = $CF (pattern for wing down)
 	LDA #$CF
-	STA <Temp_Var1 
+	STA <var1 
 
 PRG004_B548:
 
 	; Set correct wing pattern
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM-$07,Y
 
 	; Copy Sprite X
@@ -3964,14 +3964,14 @@ PRG004_B55D:
 
 	; Reverse gravity: Feet appear at -16 offset
 	LDA #-16
-	STA <Temp_Var1
+	STA <var1
 	BNE Object_TroopFeet_Cont	; Jump (technically always) to Object_TroopFeet_Cont
 
 Object_TroopFeet_NoRev:
 
 	; Normal gravity: Feet appear at +16 offset
 	LDA #16
-	STA <Temp_Var1
+	STA <var1
 
 Object_TroopFeet_Cont:
 
@@ -3983,8 +3983,8 @@ Object_TroopFeet_Cont:
 	CMP #$f8
 	BEQ PRG004_B56D	 ; If left bottom of troopa is off-screen, jump to PRG004_B56D
 
-	; Left foot appears at Sprite Y + Temp_Var1
-	ADD <Temp_Var1
+	; Left foot appears at Sprite Y + var1
+	ADD <var1
 	STA Sprite_RAM+$08,Y
 
 PRG004_B56D:
@@ -3992,8 +3992,8 @@ PRG004_B56D:
 	CMP #$f8
 	BEQ PRG004_B57A	 ; If right bottom of troopa is off-screen, jump to PRG004_B57A
 
-	; Right foot appears at Sprite Y + Temp_Var1
-	ADD <Temp_Var1
+	; Right foot appears at Sprite Y + var1
+	ADD <var1
 	STA Sprite_RAM+$0C,Y
 
 PRG004_B57A:
@@ -4025,7 +4025,7 @@ PRG004_B57A:
 	INX
 
 PRG004_B59E:
-	LDA <Temp_Var2
+	LDA <var2
 	AND #SPR_HFLIP
 	BEQ PRG004_B5A3	 ; If not flipped (horizontally), jump to PRG004_B5A3
 
@@ -4057,7 +4057,7 @@ GiantEnemy_Draw:
 	PHA		 ; Save flip bits
 
 	AND #~SPR_HFLIP
-	STA <Temp_Var1	 ; Temp_Var1 = flip bits sans horizontal flip
+	STA <var1	 ; var1 = flip bits sans horizontal flip
 
 	; Set horizontal flip only if Var5 bit 2 is set
 	LDA <Objects_Var5,X
@@ -4066,7 +4066,7 @@ GiantEnemy_Draw:
 	ASL A	
 	ASL A	
 	ASL A	
-	ORA <Temp_Var1
+	ORA <var1
 	STA Objects_FlipBits,X
 
 	JSR PRG004_B5D6 	; Otherwise, draw like any other
@@ -4157,32 +4157,32 @@ PRG004_B629:
 
 PRG004_B638:
 
-	; Temp_Var2 = Sprite X
+	; var2 = Sprite X
 	LDA <Objects_SpriteX,X
 	SBC #$00
 	ADD Giant_HXOff,Y
-	STA <Temp_Var2	
+	STA <var2	
 
 	LDY Object_SprRAM,X	 ; Y = Sprite_RAM offset
 
 	; Set Sprite Xs
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$13,Y
 	STA Sprite_RAM+$17,Y
 
-	; Vertical visibilty -> Temp_Var1
+	; Vertical visibilty -> var1
 	LDA Objects_SprVVis,X
-	STA <Temp_Var1	
+	STA <var1	
 
 	LDA <Objects_SpriteY,X	
 	ADD #$08
-	LSR <Temp_Var1
+	LSR <var1
 	BCS PRG004_B65E	 ; If this sprite is vertically off-screen, jump to PRG004_B65E
 
 	STA Sprite_RAM+$10,Y	 ; Otherwise, set Sprite Y
 
 PRG004_B65E:
-	LSR <Temp_Var1
+	LSR <var1
 	BCS PRG004_B668	 ; If this sprite is vertically off-screen, jump to PRG004_B668
 
 	ADD #16			; Lower sprite is +16 Y
@@ -4236,7 +4236,7 @@ PRG004_B69E:
 	LDY #$04	 ; Y = 4
 
 PRG004_B6A9:
-	STY <Temp_Var4	 ; Temp_Var4 = 0 or 4 (which sprite to use)
+	STY <var4	 ; var4 = 0 or 4 (which sprite to use)
 
 	TYA
 	ADD Object_SprRAM,X	; Set base offset
@@ -4267,7 +4267,7 @@ PRG004_B6CB:
 	STA Sprite_RAM+$02,Y
 	STA Sprite_RAM+$0A,Y
 
-	LDA <Temp_Var4	 
+	LDA <var4	 
 	EOR #$04	 ; Use "other" sprite
 	ADD Object_SprRAM,X	 ; Add base offset
 	TAY		 ; -> 'Y'
@@ -4462,11 +4462,11 @@ GiantPiranha_Emerge:
 
 	LDA Objects_Var7,X
 	SBC #$00
-	STA <Temp_Var1			; Temp_Var1 = Original Y Hi, carry applied
+	STA <var1			; var1 = Original Y Hi, carry applied
 
 	PLA		 ; Restore the Original Y difference
 	CMP <Objects_Y,X
-	LDA <Temp_Var1
+	LDA <var1
 	SBC <Objects_YHi,X
 	BCS PRG004_B7F0	 ; Basically if Giant Piranha is at his Y and Y Hi highest point, jump to PRG004_B7F0
 
@@ -4480,12 +4480,12 @@ GiantPiranha_Retract:
 
 	LDA <Objects_YHi,X
 	ADC #$00
-	STA <Temp_Var1	 ; Temp_Var1 = carry applied to Y Hi
+	STA <var1	 ; var1 = carry applied to Y Hi
 
 	PLA		 ; Restore Y + 1
 
 	CMP <Objects_Var5,X
-	LDA <Temp_Var1	
+	LDA <var1	
 	SBC Objects_Var7,X
 	BCS PRG004_B7F0	 ; Basically if Giant Piranha is at his Y and Y Hi origin, jump to PRG004_B7F0
 
@@ -4521,7 +4521,7 @@ GiantPiranha_HideInPipe:
 
 	JSR Level_ObjCalcXDiffs
 
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #$18
 	CMP #$31
 	BGE PRG004_B7F0	 ; If Player is not too close, jump to PRG004_B7F0
@@ -4578,30 +4578,30 @@ PRG004_B849:
 	AND Giant_HVisBit,Y
 	BNE PRG004_B8B0	 ; If sprite is off-screen, jump to PRG004_B8B0 (RTS)
 
-	; Temp_Var2 = Sprite X + offset
+	; var2 = Sprite X + offset
 	LDA <Objects_SpriteX,X
 	ADD Giant_HXOff,Y
-	STA <Temp_Var2
+	STA <var2
 
 	LDY Object_SprRAM,X	 ; Y = Sprite_RAM offset
 
 	; Set Sprite Xs
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$13,Y
 	STA Sprite_RAM+$17,Y
 
-	; Temp_Var1 = vertical visibility flags
+	; var1 = vertical visibility flags
 	LDA Objects_SprVVis,X
-	STA <Temp_Var1	
+	STA <var1	
 
 	LDA <Objects_SpriteY,X
-	LSR <Temp_Var1
+	LSR <var1
 	BCS PRG004_B872	 ; If sprite is vertically off-screen, jump to PRG004_B872
 
 	STA Sprite_RAM+$10,Y	 ; Set upper Sprite Y
 
 PRG004_B872:
-	LSR <Temp_Var1
+	LSR <var1
 	BCS PRG004_B87C	 ; If sprite is vertically off-screen, jump to PRG004_B87C
 
 	ADD #16
@@ -4651,8 +4651,8 @@ PRG004_B8B0:
 ; I think it's an integer division/modulus kind of routine, but I didn't look at it real hard
 ; $B8B1 
 
-	; 'A' -> Temp_Var2
-	STA <Temp_Var2
+	; 'A' -> var2
+	STA <var2
 
 	; Backup X and Y
 	TXA
@@ -4660,94 +4660,94 @@ PRG004_B8B0:
 	TYA
 	PHA
 
-	; Y Difference flag -> Temp_Var3
+	; Y Difference flag -> var3
 	JSR Level_ObjCalcYDiffs
-	STY <Temp_Var3
+	STY <var3
 
-	; Get absolute value of Temp_Var16 (Y difference) -> Temp_Var13
-	LDA <Temp_Var16
+	; Get absolute value of var16 (Y difference) -> var13
+	LDA <var16
 	BPL PRG004_B8C5
 	NEG
 PRG004_B8C5:
-	STA <Temp_Var13
+	STA <var13
 
-	; X Difference flag -> Temp_Var4
+	; X Difference flag -> var4
 	JSR Level_ObjCalcXDiffs
-	STY <Temp_Var4
+	STY <var4
 
-	; Get absolute value of Temp_Var16 (X difference) -> Temp_Var14
-	LDA <Temp_Var16
+	; Get absolute value of var16 (X difference) -> var14
+	LDA <var16
 	BPL PRG004_B8D5
 	NEG
 PRG004_B8D5:
-	STA <Temp_Var14
+	STA <var14
 
 	LDY #$00	 ; Y = 0
 
-	LDA <Temp_Var14
-	CMP <Temp_Var13
+	LDA <var14
+	CMP <var13
 	BGE PRG004_B8E8	 ; If X distance > Y distance, jump to PRG004_B8E8
 
 	INY		 ; Otherwise, Y = 1
 
-	; Swap Temp_Var13/14 so that Temp_Var14 is greater
+	; Swap var13/14 so that var14 is greater
 	PHA
-	LDA <Temp_Var13
-	STA <Temp_Var14
+	LDA <var13
+	STA <var14
 	PLA
-	STA <Temp_Var13
+	STA <var13
 
 PRG004_B8E8:
 
 	LDA #$00
-	STA <Temp_Var12	; Temp_Var12 = 0
-	STA <Temp_Var1	; Temp_Var1 = 0
+	STA <var12	; var12 = 0
+	STA <var1	; var1 = 0
 
-	LDX <Temp_Var2		 ; X = Temp_Var2 (input value)
+	LDX <var2		 ; X = var2 (input value)
 PRG004_B8F0:
-	LDA <Temp_Var12
-	ADD <Temp_Var13
-	CMP <Temp_Var14
-	BLT PRG004_B8FD		; If Temp_Var12 + Temp_Var13 < Temp_Var14, jump to PRG004_B8FD
+	LDA <var12
+	ADD <var13
+	CMP <var14
+	BLT PRG004_B8FD		; If var12 + var13 < var14, jump to PRG004_B8FD
 
-	SBC <Temp_Var14		; Temp_Var14 -= Temp_Var12 + Temp_Var13
-	INC <Temp_Var1		; Temp_Var1
+	SBC <var14		; var14 -= var12 + var13
+	INC <var1		; var1
 
 PRG004_B8FD:
-	STA <Temp_Var12	 ; Update Temp_Var12
+	STA <var12	 ; Update var12
 	DEX		 ; X--
 	BNE PRG004_B8F0	 ; While X >= 0, loop
 
 	TYA
 	BEQ PRG004_B90F	 ; If Y = 0, jump to PRG004_B90F
 
-	; Otherwise, swap Temp_Var1 and Temp_Var2
-	LDA <Temp_Var1
+	; Otherwise, swap var1 and var2
+	LDA <var1
 	PHA
-	LDA <Temp_Var2
-	STA <Temp_Var1
+	LDA <var2
+	STA <var1
 	PLA
-	STA <Temp_Var2
+	STA <var2
 
 PRG004_B90F:
-	LDA <Temp_Var1
+	LDA <var1
 
-	LDY <Temp_Var3
-	BEQ PRG004_B91C	 ; If Temp_Var3 = 0, jump to PRG004_B91C
+	LDY <var3
+	BEQ PRG004_B91C	 ; If var3 = 0, jump to PRG004_B91C
 
-	; Otherwise, negate Temp_Var1
+	; Otherwise, negate var1
 	NEG
-	STA <Temp_Var1
+	STA <var1
 
 PRG004_B91C:
-	LDA <Temp_Var2
+	LDA <var2
 
-	LDY <Temp_Var4
-	BEQ PRG004_B929	 ; If Temp_Var4 = 0, jump to PRG004_B929
+	LDY <var4
+	BEQ PRG004_B929	 ; If var4 = 0, jump to PRG004_B929
 
-	; Otherwise, negate Temp_Var2
+	; Otherwise, negate var2
 	NEG
-	STA <Temp_Var2
+	STA <var2
 
 PRG004_B929:
 	; Restore Y and X
@@ -4771,7 +4771,7 @@ GroundTroop_DrawOffsetInY:
 	LDA #$00	; A = 0 (draw non-mirrored sprite)
 
 PRG004_B938:
-	STA <Temp_Var9		 ; Temp_Var9 = $00 (non-mirrored sprite) or SPR_VFLIP (mirrored sprite), depending on entry
+	STA <var9		 ; var9 = $00 (non-mirrored sprite) or SPR_VFLIP (mirrored sprite), depending on entry
 
 	LDA Objects_ReverseGrav,X
 	BEQ GroundTroop_DrawOffNoRev	; If this object is NOT under reverse gravity, jump to GroundTroop_DrawOffNoRev
@@ -4783,7 +4783,7 @@ PRG004_B938:
 
 GroundTroop_DrawOffNoRev:
 
-	STY <Temp_Var1		 ; Temp_Var1 = Sprite Y offset
+	STY <var1		 ; var1 = Sprite Y offset
 
 	JSR Object_CalcSpriteXY_NoHi
 
@@ -4793,20 +4793,20 @@ GroundTroop_DrawOffNoRev:
 	LSR A
 	BCS PRG004_B9BA	 	; If this sprite is vertically off-screen, jump to PRG004_B9BA (RTS)
 
-	; Temp_Var3 = horizontal visibility bits
+	; var3 = horizontal visibility bits
 	LDA Objects_SprHVis,X
-	STA <Temp_Var3
+	STA <var3
 
 	LDA <Objects_SpriteY,X
-	SUB <Temp_Var1
+	SUB <var1
 
-	ASL <Temp_Var3
+	ASL <var3
 	BCS PRG004_B959	 ; If this sprite is horizontally off-screen, jump to PRG004_B959
 
 	STA Sprite_RAM+$00,Y	 ; Otherwise, set Sprite Y
 
 PRG004_B959:
-	ASL <Temp_Var3
+	ASL <var3
 	BCS PRG004_B960	 ; If this sprite is horizontally off-screen, jump to PRG004_B960
 
 	STA Sprite_RAM+$04,Y	 ; Otherwise, set Sprite Y
@@ -4822,22 +4822,22 @@ PRG004_B960:
 	ADD #$08
 	STA Sprite_RAM+$07,Y
 
-	; Temp_Var1 = current flip bits
+	; var1 = current flip bits
 	LDA Objects_FlipBits,X
-	STA <Temp_Var1
+	STA <var1
 	ORA Objects_SprAttr,X	 ; OR in the sprite attributes
 
-	ASL <Temp_Var9
-	BCC PRG004_B986	 ; If Temp_Var9 was assigned to $00 at start, we jump to PRG004_B986
+	ASL <var9
+	BCC PRG004_B986	 ; If var9 was assigned to $00 at start, we jump to PRG004_B986
 
-	AND #~SPR_HFLIP	 ; Clear horizontal flip if Temp_Var9 was $80 at start
+	AND #~SPR_HFLIP	 ; Clear horizontal flip if var9 was $80 at start
 
 PRG004_B986:
 	STA Sprite_RAM+$02,Y	 ; Set left sprite attribute
 
-	BCC PRG004_B98D	 ; If Temp_Var9 was assigned to $00 at start, we jump to PRG004_B98D
+	BCC PRG004_B98D	 ; If var9 was assigned to $00 at start, we jump to PRG004_B98D
 
-	ORA #SPR_HFLIP	 ; Set horizontal flip if Temp_Var9 was $80 at start
+	ORA #SPR_HFLIP	 ; Set horizontal flip if var9 was $80 at start
 
 PRG004_B98D:
 	STA Sprite_RAM+$06,Y	 ; Set right sprite attribute
@@ -4853,7 +4853,7 @@ PRG004_B98D:
 
 	LDA ObjectGroup03_PatternSets,X	 ; Get the appropriate pattern for this frame
 
-	BIT <Temp_Var1
+	BIT <var1
 	BVS PRG004_B9AF	 ; If horizontally flipped, jump to PRG004_B9AF
 
 	; Store left sprite pattern
@@ -4959,13 +4959,13 @@ PRG004_BA02:
 
 	JSR Object_CalcSpriteXY_NoHi
 
-	; Temp_Var1 = Sprite Y
+	; var1 = Sprite Y
 	LDA <Objects_SpriteY,X
-	STA <Temp_Var1
+	STA <var1
 
-	; Temp_Var2 = Sprite X
+	; var2 = Sprite X
 	LDA <Objects_SpriteX,X
-	STA <Temp_Var2	
+	STA <var2	
 
 	TYA
 	STA Objects_Var6,X	 ; Var6 = buffer slot select
@@ -4979,9 +4979,9 @@ PRG004_BA02:
 	; This loop loads up the X/Y buffers with the Chain Chomp's position
 	LDY #$1f	 ; Y = $1F (buffer space count)
 PRG004_BA27:
-	LDA <Temp_Var1
+	LDA <var1
 	STA Object_BufferY,X
-	LDA <Temp_Var2
+	LDA <var2
 	STA Object_BufferX,X
 
 	INX		 ; X++ (next buffer byte)
@@ -5041,7 +5041,7 @@ ChainChomp_ChooseLunge:
 
 	JSR Level_ObjCalcXDiffs	
 
-	LDA <Temp_Var16
+	LDA <var16
 	PHP		 ; Save CPU state
 	BPL PRG004_BA8B	 ; If Player is to the right of Chain Chomp, jump to PRG004_BA8B
 
@@ -5154,9 +5154,9 @@ PRG004_BB07:
 	INC Objects_Var4,X
 	INC Objects_Var4,X
 
-	; Temp_Var4 = 4
+	; var4 = 4
 	LDA #$04
-	STA <Temp_Var4
+	STA <var4
 
 	LDA Objects_Var13,X	 	; Chain Chomp starting X
 	SUB <Objects_X,X		; Subtract current X (relative difference)
@@ -5164,18 +5164,18 @@ PRG004_BB07:
 	ADD <Objects_X,X		; Add modulus result to Chain Chomp X
 	STA ChainChomp_ChainX1,X	; Set Chain link 1 X
 
-	ADC <Temp_Var1			; Apply same
+	ADC <var1			; Apply same
 	STA ChainChomp_ChainX2,X	; Set Chain link 2 X
 
-	ADC <Temp_Var1			; Apply same
+	ADC <var1			; Apply same
 	STA ChainChomp_ChainX3,X	; Set Chain link 3 X
 
-	ADC <Temp_Var1			; Apply same
+	ADC <var1			; Apply same
 	STA ChainChomp_ChainX4,X	; Set Chain link 4 X
 
-	; Temp_Var4 = 5
+	; var4 = 5
 	LDA #$05
-	STA <Temp_Var4
+	STA <var4
 
 	LDA Objects_Var14,X	 	; Chain Chomp starting Y
 	SUB <Objects_Y,X		; Subtract current Y (relative difference)
@@ -5183,13 +5183,13 @@ PRG004_BB07:
 	ADD <Objects_Y,X		; Add modulus result to Chain Chomp Y
 	STA ChainChomp_ChainY1,X	; Set Chain link 1 Y
 
-	ADC <Temp_Var1			; Apply same
+	ADC <var1			; Apply same
 	STA ChainChomp_ChainY2,X	; Set Chain link 2 Y
 
-	ADC <Temp_Var1			; Apply same
+	ADC <var1			; Apply same
 	STA ChainChomp_ChainY3,X	; Set Chain link 3 Y
 
-	ADC <Temp_Var1			; Apply same
+	ADC <var1			; Apply same
 	STA ChainChomp_ChainY4,X	; Set Chain link 4 Y
 
 	LDA Object_SprRAM,X
@@ -5231,7 +5231,7 @@ PRG004_BB6C:
 
 	RTS		 ; Return
 
-	; Essentially performs a modulus against the accumulator by Temp_Var4
+	; Essentially performs a modulus against the accumulator by var4
 	; 'Y' stores the effective division result
 Modulus_ByTempVar4:
 	PHP		 ; Save CPU state
@@ -5243,7 +5243,7 @@ PRG004_BB7E:
 	LDY #$ff	 ; Y = $FF
 
 PRG004_BB80:
-	SBC <Temp_Var4	 ; Subtract Temp_Var4 from input
+	SBC <var4	 ; Subtract var4 from input
 
 	INY		 ; Y++
 	BCS PRG004_BB80	 ; If the value has not gone below zero, loop!
@@ -5256,7 +5256,7 @@ PRG004_BB80:
 	NEG
 
 PRG004_BB8E:
-	STA <Temp_Var1		 ; Result -> Temp_Var1
+	STA <var1		 ; Result -> var1
 
 	RTS		 ; Return
 
@@ -5266,7 +5266,7 @@ ChainChomp_XVel:	.byte $10, $20
 ChainChomp_Drop:
 	JSR Level_ObjCalcXDiffs	 
 
-	LDA <Temp_Var16
+	LDA <var16
 	ADC #$60
 	CMP #$c0
 	LDY #$00	 ; Y = 0
@@ -5288,7 +5288,7 @@ PRG004_BBB4:
 	INY		 ; Y = 1
 
 PRG004_BBB5:
-	STY <Temp_Var16	 ; Temp_Var16 = 0 or 1
+	STY <var16	 ; var16 = 0 or 1
 
 	JSR ChainChomp_MoveChain	 ; Chain Chomp moves with his chain, and don't come back!
 
@@ -5300,14 +5300,14 @@ PRG004_BBB5:
 	LDA Objects_TargetingYVal,X
 	BEQ PRG004_BBE2	 ; If PRG004_BBCC = 0, jump to PRG004_BBE2
 
-	; Temp_Var1 = Var14 (Chain Chomp's starting Y)
+	; var1 = Var14 (Chain Chomp's starting Y)
 	LDA Objects_Var14,X
-	STA <Temp_Var1
+	STA <var1
 
 	LDY #$03	 ; Y = 3 (4 chain links)
 PRG004_BBCC:
 	LDA ChainChomp_ChainY1,X
-	CMP <Temp_Var1
+	CMP <var1
 	BGE PRG004_BBD8	
 
 	ADC #$02
@@ -5356,7 +5356,7 @@ PRG004_BBE2:
 PRG004_BC02:
 	LDA #$03	 ; A = 3
 
-	LDY <Temp_Var16	
+	LDY <var16	
 	BEQ PRG004_BC0A	; If PRG004_BC0A = 0, jump to PRG004_BC0A
 
 	LDA #$00	 ; A = 0
@@ -5411,7 +5411,7 @@ PRG004_BC42:
 	BLT PRG004_BC58	 ; If Chain Chomp X < right limit, jump to PRG004_BC58 (RTS)
 
 PRG004_BC47:
-	LDY <Temp_Var16	 ; Y = Temp_Var16
+	LDY <var16	 ; Y = var16
 
 	LDA ChainChomp_XVel,Y
 	BCC PRG004_BC53	 
@@ -5431,47 +5431,47 @@ ChainChomp_Draw:
 	CLC
 	TYA
 	ADC #$14
-	STA <Temp_Var14	 ; Temp_Var14 = ending sprite offset + $14 (5 more sprites inward)
+	STA <var14	 ; var14 = ending sprite offset + $14 (5 more sprites inward)
 
-	; Temp_Var16 = 3
+	; var16 = 3
 	LDA #$03
-	STA <Temp_Var16
+	STA <var16
 
 PRG004_BC66:
-	LDA <Temp_Var16	
+	LDA <var16	
 	ASL A	
 	ASL A	
-	ADC <Temp_Var16
+	ADC <var16
 	ADC <SlotIndexBackup
 	TAY		 
 
-	; Temp_Var1 = Chain Chomp chain link Y made relative
+	; var1 = Chain Chomp chain link Y made relative
 	LDA ChainChomp_ChainY1,Y
 	SUB Level_VertScroll
 	ADD #$04
-	STA <Temp_Var1
+	STA <var1
 
-	; Temp_Var2 = Chain Chomp 
+	; var2 = Chain Chomp 
 	LDA ChainChomp_ChainX1,Y
 	SUB <Horz_Scroll
 	ADD #$04
-	STA <Temp_Var2
+	STA <var2
 
 	JSR ChainChomp_LinkVisibleTest
 	BCS PRG004_BCB4	 ; If this link is not visible, jump to PRG004_BCB4
 
-	; Temp_Var14: Current chain sprite offset
-	LDA <Temp_Var14
+	; var14: Current chain sprite offset
+	LDA <var14
 	TAY			; Sprite Offset -> 'Y'
 	SUB #$04
-	STA <Temp_Var14		 ; Temp_Var14 -= 4 (one sprite prior in memory)
+	STA <var14		 ; var14 -= 4 (one sprite prior in memory)
 
 	; Chain Link Y
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$00,Y
 
 	; Chain Link X
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$03,Y
 
 	; Chain Link pattern
@@ -5491,18 +5491,18 @@ PRG004_BCB1:
 	STA Sprite_RAM+$02,Y	 ; Store attribute
 
 PRG004_BCB4:
-	DEC <Temp_Var16		; Temp_Var16--
-	BPL PRG004_BC66		; While Temp_Var16 >= 0, loop!
+	DEC <var16		; var16--
+	BPL PRG004_BC66		; While var16 >= 0, loop!
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 	RTS		 ; Return
 
 ChainChomp_MoveChain:
 	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
-	STA <Temp_Var1		 ; Store carry flag -> Temp_Var1
+	STA <var1		 ; Store carry flag -> var1
 
 	JSR Object_ApplyXVel	; Apply X velocity
-	STA <Temp_Var2		 ; Store carry flag -> Temp_var2
+	STA <var2		 ; Store carry flag -> var2
 
 	LDY Objects_TargetingXVal,X	 ; Y = Objects_TargetingXVal (0-3, CC's chosen direction)
 
@@ -5518,7 +5518,7 @@ ChainChomp_MoveChain:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainX1,X
-	ADD <Temp_Var2	
+	ADD <var2	
 	STA ChainChomp_ChainX1,X
 
 	LDA ChainChomp_ChainX2,X
@@ -5528,7 +5528,7 @@ ChainChomp_MoveChain:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainX2,X
-	ADD <Temp_Var2	
+	ADD <var2	
 	STA ChainChomp_ChainX2,X
 
 	LDA ChainChomp_ChainX3,X
@@ -5538,7 +5538,7 @@ ChainChomp_MoveChain:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainX3,X
-	ADD <Temp_Var2	
+	ADD <var2	
 	STA ChainChomp_ChainX3,X
 
 	LDA ChainChomp_ChainX4,X
@@ -5548,7 +5548,7 @@ ChainChomp_MoveChain:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainX4,X
-	ADD <Temp_Var2	
+	ADD <var2	
 	STA ChainChomp_ChainX4,X
 
 PRG004_BD1F:
@@ -5565,7 +5565,7 @@ PRG004_BD22:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainX1,X
-	ADD <Temp_Var2	
+	ADD <var2	
 	STA ChainChomp_ChainX1,X
 
 	LDA ChainChomp_ChainX2,X
@@ -5575,7 +5575,7 @@ PRG004_BD22:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainX2,X
-	ADD <Temp_Var2	
+	ADD <var2	
 	STA ChainChomp_ChainX2,X
 
 	LDA ChainChomp_ChainX3,X
@@ -5585,7 +5585,7 @@ PRG004_BD22:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainX3,X
-	ADD <Temp_Var2	
+	ADD <var2	
 	STA ChainChomp_ChainX3,X
 
 	LDA ChainChomp_ChainX4,X
@@ -5595,7 +5595,7 @@ PRG004_BD22:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainX4,X
-	ADD <Temp_Var2	
+	ADD <var2	
 	STA ChainChomp_ChainX4,X
  
 
@@ -5612,7 +5612,7 @@ PRG004_BD75:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainY1,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA ChainChomp_ChainY1,X
 
 	LDA ChainChomp_ChainY2,X
@@ -5622,7 +5622,7 @@ PRG004_BD75:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainY2,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA ChainChomp_ChainY2,X
 
 	LDA ChainChomp_ChainY3,X
@@ -5632,7 +5632,7 @@ PRG004_BD75:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainY3,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA ChainChomp_ChainY3,X
 
 	LDA ChainChomp_ChainY4,X
@@ -5642,7 +5642,7 @@ PRG004_BD75:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainY4,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA ChainChomp_ChainY4,X
 
 PRG004_BDCC:
@@ -5660,7 +5660,7 @@ PRG004_BDCD:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainY1,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA ChainChomp_ChainY1,X
 
 	LDA ChainChomp_ChainY2,X
@@ -5670,7 +5670,7 @@ PRG004_BDCD:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainY2,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA ChainChomp_ChainY2,X
 
 	LDA ChainChomp_ChainY3,X
@@ -5680,7 +5680,7 @@ PRG004_BDCD:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainY3,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA ChainChomp_ChainY3,X
 
 	LDA ChainChomp_ChainY4,X
@@ -5690,7 +5690,7 @@ PRG004_BDCD:
 
 	; Apply velocity carry
 	LDA ChainChomp_ChainY4,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA ChainChomp_ChainY4,X
 
 PRG004_BE20:
@@ -5735,7 +5735,7 @@ ChainChomp_LinkVisibleTest:
 	LDY #$c0	 ; Y = $C0
 
 PRG004_BE45:
-	CPY <Temp_Var2
+	CPY <var2
 	EOR Objects_SprHVis,X
 	BMI PRG004_BE50
 	BCC PRG004_BE52
@@ -6087,7 +6087,7 @@ FlareUp_FlareDown:
 FlareUp_DoDamage:
 	; Since this has 1 to 'x' flare segments, need to check in an iterative fashion
 	LDA Objects_Var1,X
-	STA <Temp_Var10
+	STA <var10
 
 FlareUp_DoDamageLoop:
 	JSR Player_HitEnemy
@@ -6096,7 +6096,7 @@ FlareUp_DoDamageLoop:
 	SUB #16
 	STA <Objects_SpriteY,X
 	
-	DEC <Temp_Var10
+	DEC <var10
 	BPL FlareUp_DoDamageLoop
 
 	RTS
@@ -6108,7 +6108,7 @@ FlareUp_Draw:
 	LDA Objects_Var1,X
 	BEQ FlareUp_NoLoop
 
-	STA <Temp_Var10
+	STA <var10
 	
 FlareUp_DrawMultiFlames_Loop:
 
@@ -6116,7 +6116,7 @@ FlareUp_DrawMultiFlames_Loop:
 	LDA <Objects_SpriteY,X
 	SUB #16
 	STA <Objects_SpriteY,X
-	STA <Temp_Var1
+	STA <var1
 
 	; Next 2 sprites
 	TYA
@@ -6124,13 +6124,13 @@ FlareUp_DrawMultiFlames_Loop:
 	TAY
 
 	; Reset pattern index
-	LDX <Temp_Var6	 ; X = Temp_Var6 (starting tile)
+	LDX <var6	 ; X = var6 (starting tile)
 
 	JSR Object_Draw16x16Sprite
 	
 	LDX <SlotIndexBackup
 	
-	DEC <Temp_Var10
+	DEC <var10
 	BNE FlareUp_DrawMultiFlames_Loop
 
 FlareUp_NoLoop:
@@ -6210,7 +6210,7 @@ Octogoomba_Shoot:
 	AND #1
 	TAY
 	LDA Octogoomba_FireXVel,Y
-	STA <Temp_Var1 
+	STA <var1 
 
 	JSR SpecialObj_FindEmptyAbort	 
 
@@ -6228,7 +6228,7 @@ Octogoomba_Shoot:
 	LDA #SOBJ_PIRANHAFIREBALL
 	STA SpecialObj_ID,Y
 
-	LDA <Temp_Var1
+	LDA <var1
 	STA SpecialObj_XVel,Y
 	
 	LDA #0
@@ -6237,4 +6237,3 @@ Octogoomba_Shoot:
 	RTS		 ; Return
 
 	
-

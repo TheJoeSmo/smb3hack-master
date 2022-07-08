@@ -1257,7 +1257,7 @@ PRG003_A40F:
 
 	JSR Level_ObjCalcXDiffs
 
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #$30
 	CMP #$60
 	BGE PRG003_A424	 ; If Player is not close enough, jump to PRG003_A424
@@ -1419,7 +1419,7 @@ BrickBust_MicroGoomba:
 	LDA #$04	 ; A = 4 (the Microgoomba that falls out of a Piledriver)
 
 PRG003_A4DD:
-	STA <Temp_Var16	 ; Input value -> Temp_Var16
+	STA <var16	 ; Input value -> var16
 
 	; Crumbling brick sound
 	LDA Sound_QLevel2
@@ -1432,8 +1432,8 @@ PRG003_A4DD:
 PRG003_A4EA:
 	JSR BustBlock_Segment 	; Generate Ice block segment
 
-	DEC <Temp_Var16		; Temp_Var16--
-	BPL PRG003_A4EA		; While Temp_Var16 >= 0, loop!
+	DEC <var16		; var16--
+	BPL PRG003_A4EA		; While var16 >= 0, loop!
 
 	RTS		 ; Return
 
@@ -1453,31 +1453,31 @@ BustBlock_Segment:
 
 	JSR SpecialObj_FindEmptyAbortY	 ; Find an empty special object slot or don't come back here...
 
-	; Temp_Var1 = Ice Block's Y
+	; var1 = Ice Block's Y
 	LDA <Objects_Y,X
-	STA <Temp_Var1
+	STA <var1
 
-	; Temp_Var3 = Ice Block's Y Hi
+	; var3 = Ice Block's Y Hi
 	LDA <Objects_YHi,X
-	STA <Temp_Var3
+	STA <var3
 
-	; Temp_Var2 = Ice Block's X
+	; var2 = Ice Block's X
 	LDA <Objects_X,X
-	STA <Temp_Var2
+	STA <var2
 
-	; X = Temp_Var16 (input value for Ice Block)
-	LDX <Temp_Var16
+	; X = var16 (input value for Ice Block)
+	LDX <var16
 
 	; Add Y offset by input
-	LDA <Temp_Var1
+	LDA <var1
 	ADD BustBlock_YOffByInput,X
 	STA SpecialObj_YLo,Y
-	LDA <Temp_Var3
+	LDA <var3
 	ADC BustBlock_YHiOffByInput,X
 	STA SpecialObj_YHi,Y
 
-	; X Lo = Temp_Var2
-	LDA <Temp_Var2
+	; X Lo = var2
+	LDA <var2
 	STA SpecialObj_XLo,Y
 
 	; Set Ice Block Y Velocity by input
@@ -1598,7 +1598,7 @@ PRG003_A5CA:
 PRG003_A5CF:
 	JSR Level_ObjCalcXDiffs	
 
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #$30
 	CMP #$60
 	BGE PRG003_A5EF	 ; If Player is not close enough, jump to PRG003_A5EF
@@ -2123,29 +2123,29 @@ PRG003_A836:
 	JSR Bobomb_BustBlocks
 	JSR Object_CalcSpriteXY_NoHi
 
-	; Temp_Var16 = 5
+	; var16 = 5
 	LDA #$05
-	STA <Temp_Var16
+	STA <var16
 
 PRG003_A83D:
-	; Temp_Var1 = Bob-omb's sprite Y
+	; var1 = Bob-omb's sprite Y
 	LDA <Objects_SpriteY,X
-	STA <Temp_Var1	
+	STA <var1	
 
-	; Temp_Var2 = Bob-omb's sprite X + 4
+	; var2 = Bob-omb's sprite X + 4
 	LDA <Objects_SpriteX,X
 	ADD #$04
-	STA <Temp_Var2
+	STA <var2
 
 	LDA <Objects_Var4,X
 	LSR A		 ; Var4 / 2
 	PHA		 ; Save value
 
-	; Temp_Var3 = 0 to 3, depending on Var4 / 2
+	; var3 = 0 to 3, depending on Var4 / 2
 	AND #$03
-	STA <Temp_Var3
+	STA <var3
 
-	LDX <Temp_Var16	 ; X = Temp_Var16
+	LDX <var16	 ; X = var16
 
 	PLA		 ; Restore Var4 / 2
 
@@ -2158,34 +2158,34 @@ PRG003_A83D:
 	TAX
 
 PRG003_A85C:
-	LDA <Temp_Var1
+	LDA <var1
 	ADD BombStars_YOff,X
-	STA <Temp_Var1
+	STA <var1
 
-	LDA <Temp_Var2
+	LDA <var2
 	ADD BombStars_XOff,X
-	STA <Temp_Var2
+	STA <var2
 
-	DEC <Temp_Var3	 ; Temp_Var3--
-	BPL PRG003_A85C	 ; While Temp_Var3 >= 0, loop!
+	DEC <var3	 ; var3--
+	BPL PRG003_A85C	 ; While var3 >= 0, loop!
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 
 	JSR Sprite_NoCarryIfVisible
 	BCS PRG003_A89D	 ; If this star is not visible, jump to PRG003_A89D
 
-	LDA <Temp_Var16
+	LDA <var16
 	ASL A
-	ASL A		; A = Temp_Var16 * 4 (one sprite per star)
+	ASL A		; A = var16 * 4 (one sprite per star)
 	ADC Object_SprRAM,X	 ; Add the base Sprite_RAM offset
 	TAY		 ; -> 'Y'
 
 	; Star Y
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$00,Y
 
 	; Star X
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$03,Y
 
 	; Star pattern
@@ -2202,17 +2202,17 @@ PRG003_A85C:
 	JSR PRG003_BD1E	 ; Uses part of the "Tail" hurt code, checks if Player has been hit by explosion
 
 PRG003_A89D:
-	DEC <Temp_Var16	 ; Temp_Var16--
-	BPL PRG003_A83D	 ; While Temp_Var16 >= 0, loop!
+	DEC <var16	 ; var16--
+	BPL PRG003_A83D	 ; While var16 >= 0, loop!
 
 	JSR Object_AnySprOffscreen
 	BNE PRG003_A8D2	 ; If any part of the exploding Bob-omb has fallen off-screen, jump to PRG003_A8D2
 
 	JSR BobOmb_CalcULOffXY	; (large bounding box for explosion)
 
-	; Temp_Var13 = 0
+	; var13 = 0
 	LDA #$00
-	STA <Temp_Var13
+	STA <var13
 
 	INC Obj2Obj_FlagNoHitChk	; We WANT the explosion to hit OAT_HITNOTKILL objects (specifically Mouser)
 	JSR PRG000_DC09	 ; Object-to-object collision test sans visibility check and bounding box calculation
@@ -2286,20 +2286,20 @@ PRG003_A8D2:
 
 	; Calculates an upper left X/Y offset
 BobOmb_CalcULOffXY:
-	; Temp_Var3 = Bob-omb's Sprite X - 24
+	; var3 = Bob-omb's Sprite X - 24
 	LDA <Objects_SpriteX,X	 
 	SUB #24
-	STA <Temp_Var3
+	STA <var3
 
-	; Temp_Var7 = Bob-omb's Sprite Y - 24
+	; var7 = Bob-omb's Sprite Y - 24
 	LDA <Objects_SpriteY,X
 	SUB #24
-	STA <Temp_Var7
+	STA <var7
 
-	; Temp_Var4 and Temp_Var8 = $40
+	; var4 and var8 = $40
 	LDA #$40
-	STA <Temp_Var4
-	STA <Temp_Var8
+	STA <var4
+	STA <var8
 
 	RTS		 ; Return
 
@@ -3114,9 +3114,9 @@ BoomBoom_PlanFlight:
 	JSR BoomBoom_CalcFlightPath	 ; Calculate a flight plan towards the Player
 
 	; Set velocities in accordance with flight plan
-	LDA <Temp_Var1
+	LDA <var1
 	STA <Objects_YVel,X
-	LDA <Temp_Var2
+	LDA <var2
 	STA <Objects_XVel,X
 
 	RTS		 ; Return
@@ -3198,9 +3198,9 @@ PRG003_ADC8:
 	LDA Objects_SprVVis,X
 	BNE PRG003_ADB5	 ; If any sprite is vertically off-screen, jump to PRG003_ADB5 (RTS)
 
-	; Temp_Var1 = Sprite Y
+	; var1 = Sprite Y
 	LDA <Objects_SpriteY,X
-	STA <Temp_Var1
+	STA <var1
 
 	; X = frame
 	LDA Objects_Frame,X
@@ -3210,7 +3210,7 @@ PRG003_ADC8:
 	BMI PRG003_AE07	 ; If this sprite is off-screen, jump to PRG003_AE07
 
 	; Add offset to sprite Y
-	LDA <Temp_Var1
+	LDA <var1
 	ADD BoomBoom_SprYOffArmLeft,X
 	STA Sprite_RAM+$10,Y
 
@@ -3220,7 +3220,7 @@ PRG003_AE07:
 	BNE PRG003_AE17	 ; If the other side sprite is off-screen, jump to PRG003_AE17
 
 	; Add offset to sprite Y
-	LDA <Temp_Var1
+	LDA <var1
 	ADD BoomBoom_SprYOffArmRight,X
 	STA Sprite_RAM+$14,Y
 
@@ -3241,9 +3241,9 @@ PRG003_AE17:
 
 	LDX <SlotIndexBackup	 ; X = object slot index
 
-	; Temp_Var2 = Sprite X
+	; var2 = Sprite X
 	LDA <Objects_SpriteX,X
-	STA <Temp_Var2	
+	STA <var2	
 
 	; Set Sprite Xs
 	STA Sprite_RAM+$13,Y
@@ -3577,7 +3577,7 @@ PRG003_AFC9:
 PRG003_AFDC:
 	LDA <Objects_SpriteX,X	 ; Get piranha's sprite X
 	ADD SidePiranha_EndSprXOff,Y
-	STA <Temp_Var2		 ; Temp_Var2 = Sprite X for piranha's remaining bit
+	STA <var2		 ; var2 = Sprite X for piranha's remaining bit
 
 	; SB: They never implemented horizontal check for this, interestingly
 	LDA Objects_SprHVis,X
@@ -3587,15 +3587,15 @@ PRG003_AFDC:
 	LDY Object_SprRAM,X	 ; Y = Sprite_RAM offset
 
 	; Set sprite X
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$13,Y
 
-	; Temp_Var1 = vertical visibility
+	; var1 = vertical visibility
 	LDA Objects_SprVVis,X
-	STA <Temp_Var1
+	STA <var1
 
 	LDA <Objects_SpriteY,X
-	LSR <Temp_Var1
+	LSR <var1
 	BCS PRG003_AFFA	 ; If piranha's last bit isn't vertically visible, jump to PRG003_AFFA
 
 	STA Sprite_RAM+$10,Y	 ; Otherwise, set the Y
@@ -3705,18 +3705,18 @@ PRG003_B05F:
 	STA Sprite_RAM+$13,Y
 	STA Sprite_RAM+$17,Y
 
-	; Vertical off-screen bits -> Temp_Var1
+	; Vertical off-screen bits -> var1
 	LDA Objects_SprVVis,X
-	STA <Temp_Var1
+	STA <var1
 
 	LDA <Objects_SpriteY,X
-	LSR <Temp_Var1	
+	LSR <var1	
 	BCS PRG003_B08A	 ; If this sprite is vertically off-screen, jump to PRG003_B08A
 
 	STA Sprite_RAM+$10,Y	 ; Store this sprite's Y
 
 PRG003_B08A:
-	LSR <Temp_Var1
+	LSR <var1
 	BCS PRG003_B094	 ; If this sprite is vertically off-screen, jump to PRG003_B08A
 
 	ADD #16
@@ -3781,14 +3781,14 @@ PRG003_B0D1:
 	ADC #$00
 	STA SpecialObj_YHi,Y
 
-	; Temp_Var1 = Var4 (which fireball we're on)
+	; var1 = Var4 (which fireball we're on)
 	LDA <Objects_Var4,X
-	STA <Temp_Var1
+	STA <var1
 
 	; Fireball X
 	LDA <Objects_X,X
 	CLC	
-	LDX <Temp_Var1		 ; X = Temp_Var1 (Var4)
+	LDX <var1		 ; X = var1 (Var4)
 	ADC LavaLotusFire_XOff,X
 	STA SpecialObj_XLo,Y
 
@@ -3840,7 +3840,7 @@ ObjNorm_WaterCurrent:
 
 	JSR Level_ObjCalcXDiffs
 
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #$08
 	CMP #$20
 	BGE PRG003_B18C	 ; If Player is not close enough, jump to PRG003_B18C
@@ -3853,17 +3853,17 @@ ObjNorm_WaterCurrent:
 
 	; For upward current...
 
-	; Negate Temp_Var16
-	LDA <Temp_Var16	
+	; Negate var16
+	LDA <var16	
 	JSR Negate	
-	STA <Temp_Var16	
+	STA <var16	
 	DEY		 ; Y-- (change direction)
 
 PRG003_B157:
 	CPY #$00
 	BNE PRG003_B18C	 ; If Player is on wrong side of current object, jump to PRG003_B18C
 
-	LDA <Temp_Var16
+	LDA <var16
 	LSR A
 	LSR A
 	LSR A
@@ -3930,14 +3930,14 @@ Current_GenerateBubble:
 	LDA #$00
 	STA SpecialObj_Data,Y
 
-	STY <Temp_Var1	 ; Special object index -> Temp_Var1
+	STY <var1	 ; Special object index -> var1
 
 	; Apply a bit of randomness to the bubble's X
 	TYA
 	ADC RandomN,Y
 	AND #$17
 	ADD <Objects_X,X
-	LDY <Temp_Var1		 ; Y = special object index
+	LDY <var1		 ; Y = special object index
 	STA SpecialObj_XLo,Y	 ; Store slightly random adjusted X -> Bubble X
 
 	LDA Level_ObjectID,X
@@ -4003,7 +4003,7 @@ ObjNorm_CheepCheepHopper:
 
 	LDY #-$30	 ; Y = -$30
 
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #$40
 	CMP #$80
 	BGE PRG003_B46F	 ; If Cheep Cheep is not close enough to Player, jump to PRG003_B46F
@@ -4263,9 +4263,9 @@ BlooperKid_UNKD:	.byte $00, $01, $01, $00
 
 Blooper_LaunchKids:
 
-	; Temp_Var1 = 3
+	; var1 = 3
 	LDA #$03
-	STA <Temp_Var1
+	STA <var1
 
 PRG003_B876:
 	JSR SpecialObj_FindEmptyAbort
@@ -4287,7 +4287,7 @@ PRG003_B876:
 	LDA <Objects_YHi,X
 	STA SpecialObj_YHi,Y
 
-	LDX <Temp_Var1	 ; X = Temp_Var1
+	LDX <var1	 ; X = var1
 
 	LDA BlooperKid_YVel,X
 	STA SpecialObj_YVel,Y
@@ -4305,8 +4305,8 @@ PRG003_B876:
 	STA SpecialObj_Timer,Y
 
 	LDX <SlotIndexBackup	 ; X = object slot index
-	DEC <Temp_Var1		 ; Temp_Var1--
-	BPL PRG003_B876	 ; While Temp_Var1 >= 0, loop 
+	DEC <var1		 ; var1--
+	BPL PRG003_B876	 ; While var1 >= 0, loop 
 
 	RTS		 ; Return
 
@@ -4328,7 +4328,7 @@ PRG003_B8C3:
 PRG003_B8C6:
 	RTS		 ; Return
 
-	; Temp_Var2 is an X input
+	; var2 is an X input
 	; I don't really understand this function, but it determines horizontal
 	; visibility by Sprite X somehow. Carry set if not visible.
 Sprite_NoCarryIfVisible:
@@ -4347,7 +4347,7 @@ Sprite_NoCarryIfVisible:
 	LDY #$C0	 ; Y = $C0
 
 PRG003_B8DA:
-	CPY <Temp_Var2	 ; Compare $40 or $C0 to input X value
+	CPY <var2	 ; Compare $40 or $C0 to input X value
 
 	EOR Objects_SprHVis,X
 
@@ -4414,13 +4414,13 @@ PRG003_B983:
 
 	JSR Object_CalcSpriteXY_NoHi
 
-	; Sprite Y -> Temp_Var1
+	; Sprite Y -> var1
 	LDA <Objects_SpriteY,X
-	STA <Temp_Var1
+	STA <var1
 
-	; Sprite X -> Temp_Var2
+	; Sprite X -> var2
 	LDA <Objects_SpriteX,X
-	STA <Temp_Var2
+	STA <var2
 
 	TYA		
 	STA Objects_Var6,X	 ; Store Buffer_Occupied slot index -> Var6
@@ -4434,9 +4434,9 @@ PRG003_B983:
 	TAX		 ; -> 'X'
 	LDY #$1f	 ; Y = $1F
 PRG003_B99E:
-	LDA <Temp_Var1
+	LDA <var1
 	STA Object_BufferY,X
-	LDA <Temp_Var2
+	LDA <var2
 	STA Object_BufferX,X
 
 	INX		 ; X++
@@ -4733,7 +4733,7 @@ PRG003_BB33:
 PRG003_BB36:
 	LDA Object_SprRAM,X
 	ADD #$08
-	STA <Temp_Var5		 ; Temp_Var5 = Sprite_RAM offset two bytes over
+	STA <var5		 ; var5 = Sprite_RAM offset two bytes over
 
 	; Essentially shift Var6 left 5 places, so A = $00 or $20 (buffer offset)
 	LDA Objects_Var6,X
@@ -4743,7 +4743,7 @@ PRG003_BB36:
 	LSR A
 
 	ADD #$07
-	STA <Temp_Var4		 ; Temp_Var4 = offset 7 bytes into the X/Y buffer
+	STA <var4		 ; var4 = offset 7 bytes into the X/Y buffer
 
 	LDA Objects_Var7,X
 	BNE PRG003_BB52	 ; If Var7 <> 0, jump to PRG003_BB52
@@ -4751,33 +4751,33 @@ PRG003_BB36:
 	JMP PRG003_BBF5	 ; Jump to PRG003_BBF5
 
 PRG003_BB52:
-	STA <Temp_Var16		 ; Var7 -> Temp_Var16 (Tail length)
+	STA <var16		 ; Var7 -> var16 (Tail length)
 
 
 	; TAIL DRAW / HURT LOGIC
 	; The following 
 
 PRG003_BB54:
-	LDY <Temp_Var4		 ; Y = offset into X/Y Buffer
+	LDY <var4		 ; Y = offset into X/Y Buffer
 
-	; Temp_Var1 = Buffer Y @ Temp_Var4
+	; var1 = Buffer Y @ var4
 	LDA Object_BufferY,Y
-	STA <Temp_Var1	
+	STA <var1	
 
-	; Temp_Var2 = Buffer X @ Temp_Var4 + 4
+	; var2 = Buffer X @ var4 + 4
 	LDA Object_BufferX,Y
 	ADD #$04
-	STA <Temp_Var2
+	STA <var2
 
 	JSR Sprite_NoCarryIfVisible
 	BCS PRG003_BBE0	 ; If carry set, sprite is not visible, jump to PRG003_BBE0
 
-	LDY <Temp_Var5		 ; Y = Temp_Var5 (Sprite_RAM offset)
+	LDY <var5		 ; Y = var5 (Sprite_RAM offset)
 
 	; Store Y and X into sprite RAM
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$00,Y
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$03,Y
 
 	LDA Level_ObjectID,X
@@ -4791,7 +4791,7 @@ PRG003_BB54:
 
 	; Fire Chomp only
 
-	LDA <Temp_Var16
+	LDA <var16
 	ASL A
 	ADC Level_NoStopCnt
 	LSR A
@@ -4835,7 +4835,7 @@ PRG003_BBAC:
 
 
 PRG003_BBBE:
-	LDA <Temp_Var16
+	LDA <var16
 	ASL A	
 	ADC Level_NoStopCnt
 
@@ -4856,22 +4856,22 @@ PRG003_BBD2:
 
 	; Copies attribute from one sprite to the other
 	LDA Sprite_RAM+$02,Y
-	LDY <Temp_Var5
+	LDY <var5
 	STA Sprite_RAM+$02,Y
 
 PRG003_BBDD:
 	JSR Tail_CheckHurtPlayer	; Have the tail hurt the Player by touching it
 
 PRG003_BBE0:
-	LDA <Temp_Var4
+	LDA <var4
 	ADD #$08
-	STA <Temp_Var4
+	STA <var4
 
-	LDA <Temp_Var5
+	LDA <var5
 	ADD #$04
-	STA <Temp_Var5
+	STA <var5
 
-	DEC <Temp_Var16		 ; Temp_Var16-- (one less tail segment)
+	DEC <var16		 ; var16-- (one less tail segment)
 
 	BEQ PRG003_BBF5	 ; If out of segments, jump to PRG003_BBF5
 	JMP PRG003_BB54	 ; Otherwise, loop!
@@ -4901,9 +4901,9 @@ Magiblot_ShootfireCont:
 	JSR BoomBoom_CalcFlightPath
 
 	; Send fireball along flight path
-	LDA <Temp_Var1
+	LDA <var1
 	STA SpecialObj_YVel,Y
-	LDA <Temp_Var2
+	LDA <var2
 	STA SpecialObj_XVel,Y
 
 	; Set coordinates as offset from Fire Chomp
@@ -4922,7 +4922,7 @@ Bleck_CalcProjPath:
 
 	; Calculates flying Boom Boom's path so he flies towards Player
 BoomBoom_CalcFlightPath:
-	STA <Temp_Var2	; Store input value -> Temp_Var2
+	STA <var2	; Store input value -> var2
 
 	; Backup 'X' and 'Y'
 	TXA
@@ -4931,92 +4931,92 @@ BoomBoom_CalcFlightPath:
 	PHA
 
 	JSR Level_ObjCalcYDiffs
-	STY <Temp_Var3		 ; Store Y difference indicator -> Temp_Var3
+	STY <var3		 ; Store Y difference indicator -> var3
 
 	; Get absolute value of Y difference
-	LDA <Temp_Var16
+	LDA <var16
 	BPL PRG003_BCAA
 	JSR Negate
 PRG003_BCAA:
-	STA <Temp_Var13		 ; -> Temp_Var13
+	STA <var13		 ; -> var13
  
 	JSR Level_ObjCalcXDiffs
-	STY <Temp_Var4		 ; Store X difference indicator -> Temp_Var4
+	STY <var4		 ; Store X difference indicator -> var4
 
 	; Get absolute value of X difference
-	LDA <Temp_Var16
+	LDA <var16
 	BPL PRG003_BCB8
 	JSR Negate
 PRG003_BCB8:
-	STA <Temp_Var14		 ; -> Temp_Var14
+	STA <var14		 ; -> var14
 
 	LDY #$00	 ; Y = 0
-	LDA <Temp_Var14	
-	CMP <Temp_Var13	
+	LDA <var14	
+	CMP <var13	
 	BGE PRG003_BCCB	 ; If Y difference >= X difference, jump to PRG003_BCCB
 
 	INY		 ; Y = 1
 
-	; Swap differences (so greater difference will be in Temp_Var14)
+	; Swap differences (so greater difference will be in var14)
 	PHA
-	LDA <Temp_Var13
-	STA <Temp_Var14
+	LDA <var13
+	STA <var14
 	PLA
-	STA <Temp_Var13
+	STA <var13
 
 PRG003_BCCB:
 	LDA #$00
-	STA <Temp_Var12	; Clear Temp_Var12
-	STA <Temp_Var1	; Clear Temp_Var1
+	STA <var12	; Clear var12
+	STA <var1	; Clear var1
 
-	LDX <Temp_Var2		 ; X = Temp_Var2 (original input value)
+	LDX <var2		 ; X = var2 (original input value)
 
 PRG003_BCD3:
-	LDA <Temp_Var12
-	ADD <Temp_Var13		; A = Temp_Var12 + Temp_Var13 (the lesser difference)
-	CMP <Temp_Var14		
-	BLT PRG003_BCE0	 	; If (Temp_Var12 + Temp_Var13) < Temp_Var14 (the greater difference), jump to PRG003_BCE0
+	LDA <var12
+	ADD <var13		; A = var12 + var13 (the lesser difference)
+	CMP <var14		
+	BLT PRG003_BCE0	 	; If (var12 + var13) < var14 (the greater difference), jump to PRG003_BCE0
 
-	; If (Temp_Var12 + Temp_Var13) >= Temp_Var14
+	; If (var12 + var13) >= var14
 
-	SBC <Temp_Var14		 ; Subtract total from Temp_Var14
-	INC <Temp_Var1		 ; Temp_Var1++
+	SBC <var14		 ; Subtract total from var14
+	INC <var1		 ; var1++
 
 PRG003_BCE0:
-	STA <Temp_Var12		 ; Update Temp_Var12 with the previous total
+	STA <var12		 ; Update var12 with the previous total
 	DEX		 	; X--
 	BNE PRG003_BCD3		; While X >= 0, loop!
 
 	TYA		 ; A = 0 or 1
 	BEQ PRG003_BCF2	 ; If zero (don't need to swap), jump to PRG003_BCF2
 
-	; Swap Temp_Var1 and Temp_Var2
-	LDA <Temp_Var1
+	; Swap var1 and var2
+	LDA <var1
 	PHA	
-	LDA <Temp_Var2
-	STA <Temp_Var1
+	LDA <var2
+	STA <var1
 	PLA	
-	STA <Temp_Var2
+	STA <var2
 
 PRG003_BCF2:
-	LDA <Temp_Var1		 ; A = Temp_Var1
+	LDA <var1		 ; A = var1
 
-	LDY <Temp_Var3		 ; Y = Temp_Var3 (Y difference indicator)
+	LDY <var3		 ; Y = var3 (Y difference indicator)
 	BEQ PRG003_BCFD	 	; If Player was lower than object, jump to PRG003_BCFD
 
-	; Otherwise, negate Temp_Var1
+	; Otherwise, negate var1
 	JSR Negate
-	STA <Temp_Var1
+	STA <var1
 
 PRG003_BCFD:
-	LDA <Temp_Var2		 ; A = Temp_Var2
+	LDA <var2		 ; A = var2
 
-	LDY <Temp_Var4		 ; Y = Temp_Var4 (X difference indicator)
+	LDY <var4		 ; Y = var4 (X difference indicator)
 	BEQ PRG003_BD08	 	; If Player was lower than object, jump to PRG003_BD08
 
-	; Otherwise, negate Temp_Var2
+	; Otherwise, negate var2
 	JSR Negate
-	STA <Temp_Var2
+	STA <var2
 
 PRG003_BD08:
 
@@ -5034,7 +5034,7 @@ Tail_PlayerYLimit:	.byte $0E, $18	; Limit value
 	; For enemies with tails (e.g. Fire Snake, Fire Chomp, Blooper with Kids),
 	; checks if the Player has touched any part of their tail and should be hurt.
 Tail_CheckHurtPlayer:
-	LDA <Temp_Var16
+	LDA <var16
 	ADD <Counter_1
 	LSR A
 	BCC PRG003_BD60	 ; Every other tick, jump to PRG003_BD60 (RTS)
@@ -5054,9 +5054,9 @@ PRG003_BD1E:
 	INY		 ; Y = 1
 
 PRG003_BD2A:
-	LDA <Temp_Var1
+	LDA <var1
 	CMP #$c3
-	BGE PRG003_BD60	 ; If Temp_Var1 >= $C3, jump to PRG003_BD60 (RTS)
+	BGE PRG003_BD60	 ; If var1 >= $C3, jump to PRG003_BD60 (RTS)
 
 	ADD #$08
 	SUB <Player_SpriteY
@@ -5064,7 +5064,7 @@ PRG003_BD2A:
 	CMP Tail_PlayerYLimit,Y
 	BGE PRG003_BD60	 ; If Player is not in good Y range, jump to PRG003_BD60 (RTS)
 
-	LDA <Temp_Var2
+	LDA <var2
 	ADD #$04
 	SUB <Player_SpriteX
 	SBC #$00
@@ -5435,7 +5435,7 @@ BooLoop_DrawLoop:
 
 
 BooLoop_DoABoo:
-	STA <Temp_Var1	; Save input
+	STA <var1	; Save input
 
 	; Backup X/Y
 	LDA <Objects_Y,X
@@ -5447,24 +5447,24 @@ BooLoop_DoABoo:
 	LDA <Objects_XHi,X
 	PHA
 
-	LDA <Temp_Var1	 ; Restore input
+	LDA <var1	 ; Restore input
 
 	JSR BooLoop_GetOffsetXY
 
 	; Offset X
 	LDA Objects_X,X
-	ADD <Temp_Var3
+	ADD <var3
 	STA Objects_X,X
 	LDA Objects_XHi,X
-	ADC <Temp_Var4
+	ADC <var4
 	STA Objects_XHi,X
 
 	; Offset Y
 	LDA Objects_Y,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA Objects_Y,X
 	LDA Objects_YHi,X
-	ADC <Temp_Var2
+	ADC <var2
 	STA Objects_YHi,X
 
 	JSR Object_DetermineHorzVis	 ; Determine horizontal visibility of the RotoDisc
@@ -5521,7 +5521,7 @@ BooLoop_HReversals:	.byte $00, $00, $FF, $FF
 
 	; Alternate call for thunking
 BooLoop_GetOffsetXY_TV1:
-	LDA <Temp_Var1
+	LDA <var1
 
 BooLoop_GetOffsetXY:
 
@@ -5544,11 +5544,11 @@ BooLoop_GetOffsetXY:
 
 	; Get H reversal (X Hi offset)
 	LDA BooLoop_HReversals,Y
-	STA <Temp_Var4	; -> Temp_Var4
+	STA <var4	; -> var4
 
 	; Get V reversal (Y Hi offset)
 	LDA BooLoop_VReversals,Y
-	STA <Temp_Var2	; -> Temp_Var6
+	STA <var2	; -> var6
 
 	; Restore input
 	PLA
@@ -5560,14 +5560,14 @@ BooLoop_GetOffsetXY:
 
 	; Get Y offset
 	LDA BooLoop_Offsets,Y
-	EOR <Temp_Var2	; (Sort of) negate if needed
-	STA <Temp_Var1	; -> Temp_Var1
+	EOR <var2	; (Sort of) negate if needed
+	STA <var1	; -> var1
 
 
 	; Get X offset
 	LDA BooLoop_Offsets+1,Y
-	EOR <Temp_Var4	; (Sort of) negate if needed
-	STA <Temp_Var3	; -> Temp_Var2
+	EOR <var4	; (Sort of) negate if needed
+	STA <var3	; -> var2
 
 	RTS
 
@@ -5633,7 +5633,7 @@ Thwomp_WaitForPlayer
 
 	JSR Level_ObjCalcXDiffs
 
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #$24
 	CMP #$50
 	BGE PRG003_A6A6	 ; If Player is too far away, jump to PRG003_A6A6 (RTS)
@@ -5731,19 +5731,19 @@ Thwomp_Draw:
 	STA Sprite_RAM+$13,Y
 	STA Sprite_RAM+$17,Y
 
-	; Temp_Var1 = vertical visibility bits
+	; var1 = vertical visibility bits
 	LDA Objects_SprVVis,X
-	STA <Temp_Var1	
+	STA <var1	
 
 	LDA <Objects_SpriteY,X
 
-	LSR <Temp_Var1
+	LSR <var1
 	BCS PRG003_A718	 ; If sprite is vertically off-screen, jump to PRG003_A718
 
 	STA Sprite_RAM+$10,Y	 ; Set upper Sprite Y
 
 PRG003_A718:
-	LSR <Temp_Var1
+	LSR <var1
 	BCS PRG003_A722	 ; If sprite is vertically off-screen, jump to PRG003_A722
 
 	ADD #16
@@ -5809,16 +5809,16 @@ ThwompLR_WaitForPlayer:
 
 	JSR Level_ObjCalcXDiffs	
 
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #$70
 	CMP #$e8
 	BGE PRG003_A78B	 ; If Player is too far from Thwomp, jump to PRG003_A78B (RTS)
 
 	LDA Level_ObjectID,X
 	SUB #OBJ_THWOMPLEFTSLIDE
-	STA <Temp_Var1		 ; Temp_Var1 = 0 if left sliding Thwomp, or 1 if right sliding Thwomp
+	STA <var1		 ; var1 = 0 if left sliding Thwomp, or 1 if right sliding Thwomp
 
-	CPY <Temp_Var1	
+	CPY <var1	
 	BEQ PRG003_A78B	 ; If Player is not on correct side of Thwomp, jump to PRG003_A78B (RTS)
 
 	; Set Var7 for slide direction
@@ -6098,9 +6098,9 @@ DarknessCtl_Darken:
 	; We'll keep the first non-BG color at $00 for minimal visibility
 	
 	LDA #31		; All 32 colors
-	STA <Temp_Var1
+	STA <var1
 DarknessCtl_DarkeningLoop:
-	LDA <Temp_Var1
+	LDA <var1
 	BEQ DarknessCtl_NotStatBar	; Color 0 is acceptable to modify; jump to DarknessCtl_NotStatBar
 	
 	; Otherwise...
@@ -6109,7 +6109,7 @@ DarknessCtl_DarkeningLoop:
 	BLT DarknessCtl_SkipStatBar	; If this is a status bar OR Player sprite color, jump to DarknessCtl_NotStatBar
 	
 DarknessCtl_NotStatBar:
-	LDA <Temp_Var1
+	LDA <var1
 	TAY		; -> 'Y'
 
 	; This will select the "full darkness" color (gray for one color to keep 
@@ -6128,8 +6128,8 @@ DarknessCtl_ColorOK:
 	STA Palette_Buffer,Y
 
 DarknessCtl_SkipStatBar:
-	DEC <Temp_Var1		; Temp_Var1++
-	BPL DarknessCtl_DarkeningLoop	; While Temp_Var1 > 0, loop!
+	DEC <var1		; var1++
+	BPL DarknessCtl_DarkeningLoop	; While var1 > 0, loop!
 	
 	; Completed darkening
 	LDA #0
@@ -6142,9 +6142,9 @@ DarknessCtl_DarkWait:
 DarknessCtl_Brighten:
 
 	LDA #31		; All 32 colors
-	STA <Temp_Var1
+	STA <var1
 DarknessCtl_B_BrighteningLoop:
-	LDA <Temp_Var1
+	LDA <var1
 	BEQ DarknessCtl_B_NotStatBar	; Color 0 is acceptable to modify; jump to DarknessCtl_B_NotStatBar
 	
 	
@@ -6154,7 +6154,7 @@ DarknessCtl_B_BrighteningLoop:
 	BLT DarknessCtl_B_SkipStatBar	; If this is a status bar color, jump to DarknessCtl_B_NotStatBar
 	
 DarknessCtl_B_NotStatBar:
-	LDA <Temp_Var1
+	LDA <var1
 	TAY		; -> 'Y'
 
 	LDA Palette_Buffer,Y
@@ -6169,8 +6169,8 @@ DarknessCtl_B_ColorOK:
 	STA Palette_Buffer,Y
 
 DarknessCtl_B_SkipStatBar:
-	DEC <Temp_Var1		; Temp_Var1++
-	BPL DarknessCtl_B_BrighteningLoop	; While Temp_Var1 > 0, loop!
+	DEC <var1		; var1++
+	BPL DarknessCtl_B_BrighteningLoop	; While var1 > 0, loop!
 
 	
 	LDA Objects_Timer,X
@@ -6270,4 +6270,3 @@ ObjAScrlDeltaAdj3_YNotNeg:
 
 OADA3_NotInShiftingMaze:
 	RTS		 ; Return
-

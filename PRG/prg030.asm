@@ -73,7 +73,7 @@ ObjFrozen_NotFlickering:
 	LDY Object_SprRAM,X		; Offset to sprite RAM
 
 	LDA #6
-	STA <Temp_Var1			; Temp_Var1 = 6 (loop counter)
+	STA <var1			; var1 = 6 (loop counter)
 	
 	; Set all 6 sprites...
 ObjFrozen_SetPal0_Loop:
@@ -86,8 +86,8 @@ ObjFrozen_SetPal0_Loop:
 	INY
 	INY						; Y += 4 (next sprite)
 	
-	DEC <Temp_Var1				; Temp_Var1--
-	BNE ObjFrozen_SetPal0_Loop	; While Temp_Var1 > 0, loop!
+	DEC <var1				; var1--
+	BNE ObjFrozen_SetPal0_Loop	; While var1 > 0, loop!
 
 ObjFrozen_Flicker:
 
@@ -219,9 +219,9 @@ PRG030_BADC:
 
 	LDA <Pad_Holding
 	AND #(PAD_LEFT | PAD_RIGHT)
-	STA <Temp_Var1	 ; Temp_Var1 is non-zero if Player is pressing left/right
+	STA <var1	 ; var1 is non-zero if Player is pressing left/right
 
-	CPY <Temp_Var1	 ; Check if Player is pressing a direction favorable to his position
+	CPY <var1	 ; Check if Player is pressing a direction favorable to his position
 
 	CLC		 ; Clear carry (no collision)
 
@@ -273,8 +273,8 @@ PRG030_BAEF:
 	BMI ObjFrozen_CantKick	 ; If the object's X velocity is the opposite sign of the Player's, jump to ObjFrozen_CantKick
 
 	LDA <Player_XVel 	; Get the Player's X velocity
-	STA <Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
-	ASL <Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
+	STA <var1		; -> var1 (yyyy xxxx)
+	ASL <var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	ADD ObjectKickXVelMoving30,Y	 ; Add base "moving" X velocity of object
 	STA <Objects_XVel,X	 ; Set as object's X velocity
@@ -293,21 +293,21 @@ PlayerPushWithFrznObj_XVel:	.byte $04, -$04
 
 Player_StandOnFrznObj:
 	LDA #28
-	STA <Temp_Var1
+	STA <var1
 
 	LDA Level_ObjectID,X
 	CMP #OBJ_POKEY
 	BNE FrozenObj_NotPokey
 	
 	; Hack for Pokey: The head is offset by the value in Var1
-	LDA <Temp_Var1
+	LDA <var1
 	ADD Objects_Var1,X
-	STA <Temp_Var1
+	STA <var1
 
 FrozenObj_NotPokey:
 	; Set Player to object's Y - 31
 	LDA <Objects_Y,X	 
-	SUB <Temp_Var1
+	SUB <var1
 	STA <Player_Y
 	LDA <Objects_YHi,X
 	SBC #$00
@@ -352,16 +352,16 @@ Player_32PP_BumpCheck:
 	BNE PBC_Sloped
 
 	; Get tile where Player is standing...
-	LDA <Temp_Var16
+	LDA <var16
 	STA ObjTile_DetXLo
-	LDA <Temp_Var15
+	LDA <var15
 	STA ObjTile_DetXHi
 
-	LDA <Temp_Var14
+	LDA <var14
 	ADD #16
 	ADD <Vert_Scroll
 	STA ObjTile_DetYLo
-	LDA <Temp_Var13
+	LDA <var13
 	STA ObjTile_DetYHi
 
 	JSR_THUNKC 0, Object_DetectTileManual
@@ -392,16 +392,16 @@ PBC_Sloped:
 	INC Level_32PPSlopeFlag
 
 	; Get tile where Player is standing...
-	LDA <Temp_Var16
+	LDA <var16
 	STA ObjTile_DetXLo
-	LDA <Temp_Var15
+	LDA <var15
 	STA ObjTile_DetXHi
 
-	LDA <Temp_Var14
+	LDA <var14
 	ADD #16
 	ADD <Vert_Scroll
 	STA ObjTile_DetYLo
-	LDA <Temp_Var13
+	LDA <var13
 	STA ObjTile_DetYHi
 
 	JSR_THUNKC 0, Object_DetectTileManual
@@ -414,13 +414,13 @@ PBC_Sloped:
 	PHA
 
 	LDA #0
-	STA <Temp_Var1
+	STA <var1
 
 	LDA #$FF
 	STA <Player_Slopes
 	
 	LDA Level_Tile
-	STA <Temp_Var2
+	STA <var2
 	JSR_THUNKC 0, PGSAT_GetSlope
 
 	LDA <Player_Slopes
@@ -622,16 +622,16 @@ Level_InitAction_Do30:
 	ASL A		
 	TAY		; Y = Level_InitAction << 1 (2 byte index)
 
-	; Copy jump address into Temp_Var1/2
+	; Copy jump address into var1/2
 	LDA Level_InitAction_JumpTable,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA Level_InitAction_JumpTable+1,Y
-	STA <Temp_Var2
+	STA <var2
 
 	LDA #$00
 	STA Level_InitAction	; Level_InitAction = 0 (same memory gets used as Player_Slide after this!)
 
-	JMP [Temp_Var1]		; Jump appropriately...
+	JMP [var1]		; Jump appropriately...
 
 
 LevelInit_StartSliding:
@@ -827,7 +827,7 @@ Player_WaterSplash30:
 	LDA Splash_DisTimer
 	BNE PRG030_C0F9	 ; If Splash_DisTimer > 0 (Player splashes disabled), jump to PRG030_C0F9
 
-	STA <Temp_Var1	 ; Temp_Var1 = 0
+	STA <var1	 ; var1 = 0
 
 	LDA <Player_Suit
 	BEQ PRG030_C0C8	 ; If Player is small, jump to PRG030_C0C8
@@ -840,7 +840,7 @@ PRG030_C0C8:
 	; Player is small or ducking
 
 	LDA #10
-	STA <Temp_Var1	 ; Temp_Var1 = 10
+	STA <var1	 ; var1 = 10
 
 PRG030_C0CC:
 	LDA #$01
@@ -865,7 +865,7 @@ PRG030_C0CC:
 
 PRG030_C0E7:
 	LDA <Player_Y
-	ADD <Temp_Var1	; Y offset
+	ADD <var1	; Y offset
 	AND #$F0	; align to grid
 	ADD #$02	; +2
 
@@ -1283,7 +1283,7 @@ LJPI_NoYoshi:
 GhostHouse_Stairs:
 
 	LDY #0		; Y = 0 (adjusting for stairs, not in front)
-	STY <Temp_Var1	; Temp_Var1 = 0 (rightward stair)
+	STY <var1	; var1 = 0 (rightward stair)
 
 	LDA Player_OnStairs
 	BNE StairsCont	; If Player already on stairs, jump to StairsCont
@@ -1295,7 +1295,7 @@ GhostHouse_Stairs:
 	CMP #TILE5_STAIRR2
 	BEQ GHS_Under
 
-	INC <Temp_Var1	; Temp_Var1 = 1 (leftward stair)
+	INC <var1	; var1 = 1 (leftward stair)
 
 	; Check for stairway left based on left ground tile ONLY
 	LDA Level_Tile_GndL
@@ -1312,7 +1312,7 @@ GhostHouse_Stairs:
 	CMP #TILE5_STAIRL1
 	BEQ GHS_Front	; If stair is in front, jump to GHS_Front
 
-	DEC <Temp_Var1	; Temp_Var1 = 0 (rightward stair)
+	DEC <var1	; var1 = 0 (rightward stair)
 
 	; Check for right stair in front if facing right ONLY
 	LDA Level_Tile_InFL
@@ -1344,12 +1344,12 @@ GHS_DisableTillClear:
 	LDA <Player_X
 	STA Player_OnStairsX
 
-	; Temp_Var1 should be $00 or $02
-	ASL <Temp_Var1
+	; var1 should be $00 or $02
+	ASL <var1
 
 	; On stairs!
 	LDA #$80	; Flags on stairs at all
-	ORA <Temp_Var1	; $00 or $02 (if leftward stair)
+	ORA <var1	; $00 or $02 (if leftward stair)
 	STA Player_OnStairs
 
 	JMP StairsSkipFeetChk	; Jump to StairsSkipFeetChk (skips check on first round, assume stairs OK)
@@ -1443,33 +1443,33 @@ StairsSkipFeetChk:
 	; Only care about the 8-bit difference; as long as we understand this to be 8-bit signed it works
 	LDA <Player_X
 	SUB Player_OnStairsX
-	STA <Temp_Var1
+	STA <var1
 
 	LDA Player_OnStairs
 	AND #$02
 	BEQ GHS_XDiffOK
 
 	; However, negate the result on left stairs
-	LDA <Temp_Var1
+	LDA <var1
 	NEG
-	STA <Temp_Var1
+	STA <var1
 
 GHS_XDiffOK:
 
-	LDA <Temp_Var1
+	LDA <var1
 	BPL GHS_XDiffExtPos
 	INY
 GHS_XDiffExtPos:
 
 	; Store proper sign extension based on sign
 	LDA GhostHouseStairs_XDiffExt,Y 
-	STA <Temp_Var2
+	STA <var2
 
 	LDA <Player_Y
-	SUB <Temp_Var1
+	SUB <var1
 	STA <Player_Y
 	LDA <Player_YHi
-	SBC <Temp_Var2
+	SBC <var2
 	STA <Player_YHi
 
 	; Update coordinate
@@ -1536,7 +1536,7 @@ Bobomb_BustBlocks30:
 	DEX	; X = $FF (if negative)
 	
 Bobomb_BustBlock_PosX:
-	STX <Temp_Var1		; -> Temp_Var1
+	STX <var1		; -> var1
 
 
 	; Determine if Y needs extension
@@ -1549,7 +1549,7 @@ Bobomb_BustBlock_PosX:
 	DEX	; X = $FF (if negative)
 	
 Bobomb_BustBlock_PosY:
-	STX <Temp_Var2		; -> Temp_Var2
+	STX <var2		; -> var2
 
 	LDX <SlotIndexBackup
 
@@ -1559,7 +1559,7 @@ Bobomb_BustBlock_PosY:
 	AND #$F0
 	STA ObjTile_DetXLo
 	LDA <Objects_XHi,X
-	ADC <Temp_Var1
+	ADC <var1
 	STA Level_BlockChgXHi
 	STA ObjTile_DetXHi
 
@@ -1569,7 +1569,7 @@ Bobomb_BustBlock_PosY:
 	AND #$F0
 	STA ObjTile_DetYLo
 	LDA <Objects_YHi,X
-	ADC <Temp_Var2
+	ADC <var2
 	STA ObjTile_DetYHi
 
 	; Check to see if this is a tile we can bust first!
@@ -1666,18 +1666,18 @@ Bobomb_BustBrickFX:
 ; In this bank just because there wasn't any space left in PRG030
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 CFire_CalcCoarseXDiff:
-	; Temp_Var13 is X
-	; Temp_Var14 is XHi
-	; Calculate coarse X difference -> Temp_Var15 (basically Object_CalcCoarseXDiff)
+	; var13 is X
+	; var14 is XHi
+	; Calculate coarse X difference -> var15 (basically Object_CalcCoarseXDiff)
 	LDA CannonFire_X,X	 
-	SUB <Temp_Var13
-	STA <Temp_Var15		; Temp_Var15 = difference between Object and Player X
+	SUB <var13
+	STA <var15		; var15 = difference between Object and Player X
 	LDA CannonFire_XHi,X
-	SBC <Temp_Var14		; Calc diff between X His
+	SBC <var14		; Calc diff between X His
 	LSR A			; Push low bit of "hi" difference -> carry
-	ROR <Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
+	ROR <var15		; Cycle carry into var15 at high bit; will be discarding low bit
 	LSR A			; Push low bit of "hi" difference -> carry
-	ROR <Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
+	ROR <var15		; Cycle carry into var15 at high bit; will be discarding low bit
 	RTS
 
 CFire_Gravity30:
@@ -1709,13 +1709,13 @@ CFire_Gravity30:
 CFire_Gravity_Do:
 	; Determine if Player/object is within the effect area
 	LDA Player_X,Y
-	STA <Temp_Var13
+	STA <var13
 	LDA Player_XHi,Y
-	STA <Temp_Var14
+	STA <var14
 	JSR CFire_CalcCoarseXDiff
 	
 	; 64 each way, 16 coarse units
-	LDA <Temp_Var15
+	LDA <var15
 	CMP #16
 	BGS CFire_Gravity_NoChange
 	CMP #-16
@@ -2119,14 +2119,14 @@ ActSw_FindObject:
 	CPX #0
 	BLS ActSwSearch_Invalid		; If X < 0, jump to ActSwSearch_Invalid
 
-	STA <Temp_Var1
+	STA <var1
 
 ActSwSearch_Loop:
 	LDA Objects_State,X
 	BEQ ActSwSearch_NotFound		; If object slot is dead/empty, jump to ActSwSearch_NotFound
 	
 	LDA Level_ObjectID,X
-	CMP <Temp_Var1
+	CMP <var1
 	BEQ ActSwSearch_Found
 	
 ActSwSearch_NotFound:
@@ -2414,9 +2414,9 @@ Pause_NotMapBank:
 	JSR Sprite_RAM_Clear	 ; Clear other sprites
 
 	LDA #3
-	STA <Temp_Var14		; Maximum menu index
+	STA <var14		; Maximum menu index
 	LDA #0
-	STA <Temp_Var15		; Menu Y offset	
+	STA <var15		; Menu Y offset	
 
 	LDY #(PAUSEMenu_Sprites_End - PAUSEMenu_Sprites - 4)
 
@@ -2425,9 +2425,9 @@ Pause_NotMapBank:
 	BNE Pause_NotOnMap
 
 	LDA #4
-	STA <Temp_Var14		; Maximum menu index
+	STA <var14		; Maximum menu index
 	LDA #-32
-	STA <Temp_Var15		; Menu Y offset	
+	STA <var15		; Menu Y offset	
 
 	LDY #(PAUSEMenu_Sprites_EndMap - PAUSEMenu_Sprites - 4)
 
@@ -2436,7 +2436,7 @@ Pause_NotOnMap:
 	; Copy in the pause menu sprites
 PAUSEMenu_SpriteCopyLoop:
 	LDA PAUSEMenu_Sprites,Y
-	ADD <Temp_Var15
+	ADD <var15
 	STA Sprite_RAM+$00,Y
 	LDA PAUSEMenu_Sprites+1,Y
 	STA Sprite_RAM+$01,Y
@@ -2490,7 +2490,7 @@ Pause_NoPauseOnMap:
 	
 	LDX Level_PauseSelect
 	LDA PAUSEMenu_CursorY,X
-	ADD <Temp_Var15
+	ADD <var15
 	STA Sprite_RAM+$00,Y
 	LDA #$FF
 	STA Sprite_RAM+$01,Y
@@ -2513,11 +2513,11 @@ Pause_NoPauseOnMap:
 	BPL PAUSEMenu_NotNeg
 	
 	; Negative
-	LDA <Temp_Var14
+	LDA <var14
 	SUB #1
 	
 PAUSEMenu_NotNeg:
-	CMP <Temp_Var14
+	CMP <var14
 	BLT PAUSEMenu_NotHigh
 	
 	; Overflow

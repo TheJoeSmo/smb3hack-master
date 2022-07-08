@@ -665,7 +665,7 @@ Score_Get100PlusPts:
 Score_PopUp:
 ; $C467
 	PHA		 	; Save input value
-	STY <Temp_Var15	 	; Backup 'Y' -> Temp_Var15
+	STY <var15	 	; Backup 'Y' -> var15
 
 	JSR Score_FindFreeSlot	; Get free Scores_Value slot
 
@@ -690,7 +690,7 @@ PRG000_C47D:
 	LDA #$30
 	STA Scores_Counter,Y
 
-	LDY <Temp_Var15	; Restore 'Y'
+	LDY <var15	; Restore 'Y'
 
 	RTS		 ; Return
 
@@ -717,8 +717,8 @@ PRG000_C49B:
 
 	; Common init point for "power up" coins (coins that emerge from bricks and blocks)
 
-	; Temp_Var1 = Y Lo
-	; Temp_Var2 = X lo
+	; var1 = Y Lo
+	; var2 = X lo
 
 	LDY #$03	 ; Y = 3
 
@@ -741,12 +741,12 @@ PRG000_C4A7:
 	LDA #$01
 	STA CoinPUp_State,Y	; Set coin state to 1
 
-	LDA <Temp_Var1		; Get input Y
+	LDA <var1		; Get input Y
 	SUB Level_VertScroll	; Make relative to vertical scroll
 	SBC #24	 		; Subtract 24
 	STA CoinPUp_Y,Y	 	; Store as coin's Y
 
-	LDA <Temp_Var2		; Get input X
+	LDA <var2		; Get input X
 	SUB <Horz_Scroll	; Make relative to horizontal scroll
 	STA CoinPUp_X,Y	 	; Store as coin's X
 
@@ -920,7 +920,7 @@ Objects_WDetect_NoRevSlopeH:
 	JSR Object_GetAttrAndMoveTiles	 ; Fill in values for Object_TileFeet/Quad and Object_TileWall/Quad
 
 	PLA		 ; Restore input value
-	STA <Temp_Var1	 ; Store into Temp_Var1
+	STA <var1	 ; Store into var1
 
 	LDY Object_AttrWall	; Y = detected quadrant of potential wall tile
 	LDA Object_TileWall	; A = detected tile index
@@ -1028,11 +1028,11 @@ PRG000_C5D3:
 
 OWD_Not32PP:
 	AND #$0f
-	STA <Temp_Var1	; Temp_Var1 = object's tile-relative vertical position
+	STA <var1	; var1 = object's tile-relative vertical position
 
-	LDA <Temp_Var16	; Temp_Var16 right now is ObjTile_DetXLo
+	LDA <var16	; var16 right now is ObjTile_DetXLo
 	AND #$0f
-	STA <Temp_Var16	; Temp_Var16 = object's tile-relative horizontal position
+	STA <var16	; var16 = object's tile-relative horizontal position
 
 	LDY Level_Tile_Slope	 ; Y = object's detected slope
 	LDA Slope_ObjectVel_Effect,Y	 ; Get value by slope
@@ -1064,7 +1064,7 @@ PRG000_C5EC:
 	ASL A
 	ASL A
 	ASL A	; multiply by 16, since there's 16 entries per slope
-	ADD <Temp_Var16	 ; Add the tile-relative horizontal position (offset to pixel specific height on this slope)
+	ADD <var16	 ; Add the tile-relative horizontal position (offset to pixel specific height on this slope)
 	TAY
 
 	LDA Objects_ReverseGrav,X
@@ -1076,13 +1076,13 @@ PRG000_C5EC:
 	LSR A
 	LSR A
 	LSR A	
-	STA <Temp_Var2	 ; Upper 4 bits of slope (the "ceiling" slope height) -> Temp_Var2
+	STA <var2	 ; Upper 4 bits of slope (the "ceiling" slope height) -> var2
 
-	LDA <Temp_Var1	
+	LDA <var1	
 	CMP #4
 	BLT PRG000_C606	 ; If object's tile-relative Y position < 4, jump to PRG000_C606
 
-	CMP <Temp_Var2
+	CMP <var2
 	BEQ PRG000_C606
 	BLT PRG000_C606	 ; If object's tile-relative Y position < calculated slope height, jump to PRG000_C606
 
@@ -1092,17 +1092,17 @@ Object_WorldDetect_SlopeNoRev:
 	LDA [Level_GndLUT_L],Y
  
 	AND #$0f	
-	STA <Temp_Var2	 ; Lower 4 bits of slope (the "floor" slope height) -> Temp_Var2
+	STA <var2	 ; Lower 4 bits of slope (the "floor" slope height) -> var2
 
-	LDA <Temp_Var1	
+	LDA <var1	
 	CMP #12
 	BGE PRG000_C606	 ; If object's tile-relative Y position >= 12, jump to PRG000_C606
 
-	CMP <Temp_Var2
+	CMP <var2
 	BLT PRG000_C65D	 ; If object's tile-relative Y position < calculated slope height, jump to PRG000_C65D
 
 PRG000_C606:
-	LDA <Temp_Var2		
+	LDA <var2		
 	STA Object_SlopeHeight	 ; Store Object_SlopeHeight
 
 	; Set "hit ground" flag
@@ -1143,12 +1143,12 @@ PRG000_C62E:
 	JSR Negate	 ; Otherwise, negate (absolute value)
 
 PRG000_C635:
-	STX <Temp_Var1	 ; -> Temp_Var1
+	STX <var1	 ; -> var1
 
 	LDX <SlotIndexBackup	 ; X = object slot index
 	STA Objects_Slope,X	 ; Absolute value slope
 
-	LDA <Temp_Var1		 ; A = value from Slope_ObjectVel_Effect
+	LDA <var1		 ; A = value from Slope_ObjectVel_Effect
 
 	LDY <Objects_XVel,X
 	BPL PRG000_C645	 ; If X Velocity >= 0, jump to PRG000_C645
@@ -1176,7 +1176,7 @@ PRG000_C649:
 
 	LDA <Objects_Y,X
 	AND #$0f	 ; Object's tile-relative vertical position
-	CMP <Temp_Var1	
+	CMP <var1	
 	BGE PRG000_C65C	 ; If object is too far down in to the tile, jump to PRG000_C65C (RTS)
  
 PRG000_C656:
@@ -1241,11 +1241,11 @@ PRG000_C67E:
 Object_WorldDetect_FHChkRev:
 	LDA <Objects_Y,X
 	AND #$0f	 ; Object's tile-relative vertical position
-	STA <Temp_Var2	 ; -> Temp_Var2
+	STA <var2	 ; -> var2
 	
 	LDA #16
-	SUB <Temp_Var1	 ; Calculate an inverted limit
-	CMP <Temp_Var2
+	SUB <var1	 ; Calculate an inverted limit
+	CMP <var2
 	BGE PRG000_C65C	 ; If object is too far up in to the tile, jump to PRG000_C65C (RTS)
 	BLT PRG000_C656	 ; Otherwise, jump to PRG000_C656	
 
@@ -1311,7 +1311,7 @@ Object_GetAttrAndMoveTiles:
 	ROL A
 	ROL A		 ; Upper 2 bits shift right 6, effectively
 	AND #%00000011	 ; Keep these bits, i.e. "tile quadrant"
-	STA <Temp_Var1	 ; -> Temp_Var1
+	STA <var1	 ; -> var1
 	STA Temp_VarNP0 	; Do not delete it
 	TAY		 ; -> 'Y'
 
@@ -1344,7 +1344,7 @@ Object_NotGHUWChk:
 	LDA Level_TilesetIdx
 	ASL A	
 	ASL A		 ; Offset to beginning of underwater-by-quad table
-	ADD <Temp_Var1	 ; Add quadrant offset
+	ADD <var1	 ; Add quadrant offset
 	TAY		 ; -> 'Y' 
 	LDA Level_MinTileUWByQuad,Y	; Get the starting underwater tile
 	CMP <Level_Tile	
@@ -1363,7 +1363,7 @@ PRG000_C6D0:
 	PHA		 	; Save underwater flag
 
 	LDA <Level_Tile		 ; A = tile index
-	LDY <Temp_Var1		 ; Y = tile quadrant
+	LDY <var1		 ; Y = tile quadrant
 	CMP Tile_AttrTable,Y
 
 	PLA		 	; Restore underwater flag
@@ -1430,9 +1430,9 @@ PRG000_C6FD:
 	AND #OA2_TDOGRPMASK	 
 	LSR A		; Upper 4 bits of attributes set 2 shifted right 1 (value * 8)
 
-	STA <Temp_Var1
+	STA <var1
 	LSR A		; Value * 4
-	ADD <Temp_Var1	; Value * 12 (SB: Adding additional reverse gravity offsets)
+	ADD <var1	; Value * 12 (SB: Adding additional reverse gravity offsets)
 
 	TAY		; -> 'Y' (use respective Object_TileDetectOffsets group Row 1)
 
@@ -1540,7 +1540,7 @@ CrumbleTimerLoop:
 	BNE FailedToCrumbleBlock	; If we cannot crumble the block, try again next frame
 
 	; Store the current object's index
-	STX <Temp_Var16
+	STX <var16
 
 	; Try to summon an object in the poof state, or just don't spawn one
 	LDA #HIGH(FailedToSummonPoof - 1)
@@ -1575,7 +1575,7 @@ CrumbleTimerLoop:
 
 FailedToSummonPoof:
 	; If we failed to summon a poof, we will still delete the block, just with less effect.
-	LDX <Temp_Var16
+	LDX <var16
 
 	; Make some noise!
 	LDA #SND_LEVELCRUMBLE
@@ -1624,7 +1624,7 @@ PRG000_C736:
 	TAY		 ; -> 'Y'
 
 	LDA ObjTile_DetXLo
-	STA <Temp_Var16	 ; Temp_Var16 = ObjTile_DetXLo
+	STA <var16	 ; var16 = ObjTile_DetXLo
 
 	LDA Level_SlopeEn
 	BEQ PRG000_C76C	 ; If slopes are not enabled here, jump to PRG000_C76C
@@ -1639,17 +1639,17 @@ PRG000_C736:
 	ASL A		 ; Shifted left 1 (2 byte index)
 	TAX		 ; -> 'X'
 
-	; Temp_Var3/4 point to array of slope values for this quadrant
+	; var3/4 point to array of slope values for this quadrant
 	LDA Level_SlopeSetByQuad,X
-	STA <Temp_Var3
+	STA <var3
 	LDA Level_SlopeSetByQuad+1,X
-	STA <Temp_Var4
+	STA <var4
 
 	PLA		 ; Restore tile
 
 	SUB Tile_AttrTable,Y	; Subtract the root tile value
 	TAY		 	; -> 'Y'
-	LDA [Temp_Var3],Y	; Get slope value
+	LDA [var3],Y	; Get slope value
 	STA Level_Tile_Slope	; -> Level_Tile_Slope
 
 	LDX <SlotIndexBackup	; Restore X as object slot index
@@ -1810,7 +1810,7 @@ PRG000_C7F1:
 
 PRG000_C7FA:
 	AND #$01
-	STA <Temp_Var3	 ; Temp_Var3 = 0 or 1 / Y Hi
+	STA <var3	 ; var3 = 0 or 1 / Y Hi
 
 	LDA <Objects_X,X
 	ADC Object_TileDetectOffsets+2,Y	; Adding tile detection X offset to Object's X
@@ -1828,13 +1828,13 @@ PRG000_C7FA:
 	LDA <Objects_DetStat,X
 	BPL Object_32PP_NoBump	; If object is not on 32-pixel-partition floor, jump to Object_32PP_NoBump
 
-	LDA <Temp_Var3
+	LDA <var3
 	PHA
 
 	JSR_THUNKC 30, Object_32PP_BumpCheck
 
 	PLA
-	STA <Temp_Var3
+	STA <var3
 	
 Object_32PP_NoBump:
 	PLA
@@ -1843,12 +1843,12 @@ ODT_Manual_Entry:
 	ASL A		 ; Change high part into 2 byte index to select the screen
 	TAY		 ; -> 'Y'
 
-	; Calculate Temp_Var2/1 (tile address)
+	; Calculate var2/1 (tile address)
 	LDA Tile_Mem_Addr,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA Tile_Mem_Addr+1,Y
-	ADC <Temp_Var3	
-	STA <Temp_Var2	
+	ADC <var3	
+	STA <var2	
 
 	; Calculate tile offset within screen
 	LDA ObjTile_DetXLo
@@ -1861,7 +1861,7 @@ ODT_Manual_Entry:
 	TAY		 	; -> 'Y'
 
 PRG000_C82A:
-	LDA [Temp_Var1],Y	; Get tile
+	LDA [var1],Y	; Get tile
  
 	JSR DoSubstTileAndAttr	 ; Substitute tile if P-Switch is active
 
@@ -1893,7 +1893,7 @@ Object_DetectTileManual:
 	BGE PRG000_C832	 ; If the Y Hi >= 2, jump to PRG000_C832
 	
 	AND #$01
-	STA <Temp_Var3	 ; Temp_Var3 = 0 or 1 / Y Hi
+	STA <var3	 ; var3 = 0 or 1 / Y Hi
 	BEQ ODTM_NotHigh	; If not high, jump to ODTM_NotHigh
 
 	LDA ObjTile_DetYLo
@@ -1915,14 +1915,14 @@ ODTM_Vertical:
 	LDA ObjTile_DetYLo
 	AND #$f0		; Align to grid
 	STA ObjTile_DetYLo
-	STA <Temp_Var3		; -> Temp_Var3
+	STA <var3		; -> var3
 	
 	LDA ObjTile_DetYHi
 	CMP #$10
 	BGE PRG000_C832	 ; If object is detecting way too low (out of range), jump to PRG000_C832 (no tile detected)
 	
 	ADC #$60		; +$60
-	STA <Temp_Var2		 ; -> Temp_Var2
+	STA <var2		 ; -> var2
 	
 	LDA ObjTile_DetXLo
 	JMP ODT_Manual_EntryV
@@ -1947,7 +1947,7 @@ Object_ODTV_NoRev:
 Object_ODTV_Cont:
 	AND #$f0		; Align to grid
 	STA ObjTile_DetYLo 	; -> ObjTile_DetYLo (low)
-	STA <Temp_Var3		 ; -> Temp_Var3
+	STA <var3		 ; -> var3
 
 	LDA <Objects_YHi,X
 	ADC #$00	 	; Apply carry
@@ -1957,7 +1957,7 @@ Object_ODTV_Cont:
 	BGE PRG000_C832	 ; If object is detecting way too low (out of range), jump to PRG000_C832 (no tile detected)
 
 	ADC #$60		; +$60
-	STA <Temp_Var2		 ; -> Temp_Var2
+	STA <var2		 ; -> var2
 
 	; ObjTile_DetXHi = Objects_XHi (should be zero)
 	LDA <Objects_XHi,X
@@ -1973,8 +1973,8 @@ ODT_Manual_EntryV:
 	LSR A	
 	LSR A	
 	LSR A	
-	ORA <Temp_Var3
-	STA <Temp_Var1	 ; -> Temp_Var1 
+	ORA <var3
+	STA <var1	 ; -> var1 
 
 	LDY #$00	 ; Y = 0 (additional offset not used)
 
@@ -1994,7 +1994,7 @@ _check_all_tiles:
 	CMP OnTile,Y
 	BNE _next_tile	 	; If this is not a match, jump to PRG000_C858
 
-	STA <Temp_Var5		; Signal we replaced
+	STA <var5		; Signal we replaced
 	LDA OffAttr,Y		; Get replacement attribute
 	STA <Player_Slopes	; Store into Player_Slopes
 
@@ -2009,19 +2009,19 @@ _onoff_rts:
 	RTS			; Return
 
 DoSubstTileAndAttr:
-	STA <Temp_Var6		; store tile
+	STA <var6		; store tile
 	LDA #$00
-	STA <Temp_Var5
-	LDA <Temp_Var6		; get tile
+	STA <var5
+	LDA <var6		; get tile
 	JSR OnOff_SubstTileAndAddr
 	PHA			; store result
-	LDA <Temp_Var5		; did we replace?
+	LDA <var5		; did we replace?
 	BEQ _pswitch_subst
 	PLA			; get result
 	RTS
 _pswitch_subst:
 	PLA			; discard result
-	LDA <Temp_Var6		; get tile
+	LDA <var6		; get tile
 	JSR PSwitch_SubstTileAndAttr
 	RTS	
 
@@ -2067,7 +2067,7 @@ Object_WaterSplash:
 	LDA #$02
 
 Podoboo_Splash:
-	STA <Temp_Var1	 ; Temp_Var1 = 2
+	STA <var1	 ; var1 = 2
 
 	LDA ObjSplash_DisTimer,X
 	BNE PRG000_C914	 ; If splashes are disabled, jump to PRG000_C914 (RTS)
@@ -2118,7 +2118,7 @@ PRG000_C8BE:
 	LDA <Objects_Y,X
 	SUB #$04
 	AND #$f0
-	ADD <Temp_Var1
+	ADD <var1
 	STA Splash_Y,Y
 
 	; Set appropriate splash X
@@ -2527,7 +2527,7 @@ DoShelledBumps:
 
 	; Handle object bouncing off blocks
 	LDA Object_TileFeet2
-	STA <Temp_Var8
+	STA <var8
 
 	;; Custom Object_BumpBlocks due to needing special offsets for a thrown shell
 	; Backup current PAGE_A000 bank
@@ -2540,26 +2540,26 @@ DoShelledBumps:
 	JSR PRGROM_Change_A000
 
 	LDA ObjTile_DetYHi
-	STA <Temp_Var13		; YHi
+	STA <var13		; YHi
 	LDA ObjTile_DetYLo
 	SUB #$08
 	AND #$F0
-	STA <Temp_Var14		; YLo
+	STA <var14		; YLo
 	LDA ObjTile_DetXLo
 	SUB #$07
 	AND #$F0
-	STA <Temp_Var16
+	STA <var16
 	PHP
 	LDA ObjTile_DetXHi
-	STA <Temp_Var15
+	STA <var15
 	PLP
 	BCS _post_xhi_dec
-	DEC <Temp_Var15
+	DEC <var15
 _post_xhi_dec:
 
 	; Send detected tile over to check if object has hit any blocks
 	; that respond to being hit with head
-	LDA <Temp_Var8
+	LDA <var8
 	JSR Object_BumpOffBlocks
 
 	LDX <SlotIndexBackup	; X = object slot index
@@ -3015,21 +3015,21 @@ PRG000_CCAE:
 	STA PAGE_A000 
 	JSR PRGROM_Change_A000
  
-	; Temp_Var13 = Object tile detect Y Hi
+	; var13 = Object tile detect Y Hi
 	LDA ObjTile_DetYHi 
-	STA <Temp_Var13	 
+	STA <var13	 
 
-	; Temp_Var13 = Object tile detect Y Hi
+	; var13 = Object tile detect Y Hi
 	LDA ObjTile_DetYLo 
-	STA <Temp_Var14	 
+	STA <var14	 
 
-	; Temp_Var15 = Object tile detect X Hi
+	; var15 = Object tile detect X Hi
 	LDA ObjTile_DetXHi 
-	STA <Temp_Var15	 
+	STA <var15	 
 
-	; Temp_Var16 = Object tile detect X Lo
+	; var16 = Object tile detect X Lo
 	LDA ObjTile_DetXLo 
-	STA <Temp_Var16	 
+	STA <var16	 
 
 	; Handle object bouncing off blocks
 	LDA Object_TileWall2
@@ -3237,7 +3237,7 @@ BrickBust_MoveOver:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $CDD2
 Object_BumpBlocks:
-	STA <Temp_Var8	; Store detected tile -> Temp_Var8
+	STA <var8	; Store detected tile -> var8
 
 	; Backup current PAGE_A000 bank
 	LDA PAGE_A000
@@ -3251,20 +3251,20 @@ Object_BumpBlocks:
 	; Transfer tile detection 
 
 	LDA ObjTile_DetYHi
-	STA <Temp_Var13	
+	STA <var13	
 
 	LDA ObjTile_DetYLo
-	STA <Temp_Var14	
+	STA <var14	
 
 	LDA ObjTile_DetXHi
-	STA <Temp_Var15	
+	STA <var15	
 
 	LDA ObjTile_DetXLo
-	STA <Temp_Var16	
+	STA <var16	
 
 	; Send detected tile over to check if object has hit any blocks
 	; that respond to being hit with head
-	LDA <Temp_Var8
+	LDA <var8
 	JSR Object_BumpOffBlocks
 
 	LDX <SlotIndexBackup	; X = object slot index
@@ -4007,7 +4007,7 @@ PRG000_D1DB:
 	CMP #OBJSTATE_NORMAL
 	BEQ PRG000_D204	 ; If object state is Normal, jump to PRG000_D204 (RTS)
 
-	STA <Temp_Var4	 ; Otherwise, store current state into Temp_Var4
+	STA <var4	 ; Otherwise, store current state into var4
 
 	JSR Enemy_Kill	 ; Kill enemy
 
@@ -4021,8 +4021,8 @@ PRG000_D1DB:
 	STA Objects_State,X
 
 	LDA <Player_XVel	; Get Player X velocity
-	STA <Temp_Var1		; -> Temp_Var1 (yyyy xxxx)
-	ASL <Temp_Var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
+	STA <var1		; -> var1 (yyyy xxxx)
+	ASL <var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	ADD <Objects_XVel,X	; Add the existing velocity to this (so object velocity is influenced by half Player velocity)
 	STA <Objects_XVel,X	; -> Object's X velocity
@@ -4122,7 +4122,7 @@ PRG000_D218:
 	LDY #8	 	; Y = 8 (not the first two, if object is giant set)
 
 PRG000_D22E:
-	STY <Temp_Var2		 ; -> Temp_Var2 (height above object considered "stompable" range)
+	STY <var2		 ; -> var2 (height above object considered "stompable" range)
 
 ; Begin Here
 	LDA Objects_ReverseGrav,X
@@ -4132,22 +4132,22 @@ PRG000_D22E:
 	LDA Objects_State,X
 	CMP #OBJSTATE_SHELLED
 	BNE _not_shelled
-	STA <Temp_Var1
+	STA <var1
 	LDA <Player_Y		; This basically allows a player to grab a shelled shell as long as he's holding b
 	SUB #1
 	CMP <Player_Y
 	JMP _end_of_shell_check
 _not_shelled:			; For non-shells, do normal stomp comparison
 	LDA <Objects_Y,X	; Get object's Y
-	SUB <Temp_Var2		; Subtract Temp_Var2 (height above object considered "stompable" range)
-	ROL <Temp_Var1		; Stores the carry bit into Temp_Var1 bit 0
+	SUB <var2		; Subtract var2 (height above object considered "stompable" range)
+	ROL <var1		; Stores the carry bit into var1 bit 0
 	CMP <Player_Y
 
 _end_of_shell_check:
 
 	PHP		 ; Save CPU state (the comparison)
 
-	LSR <Temp_Var1		; Restore the carry bit
+	LSR <var1		; Restore the carry bit
 	LDA <Objects_YHi,X	
 	SBC #$00	 	; Apply the carry bit to the Objects_YHi as needed for the height subtraction
 
@@ -4198,30 +4198,30 @@ ObjStomp_Rev:
 
 	LDA <Objects_Y,X	; Get object Y
 	ADD #16			; +16 as an approximate bottom (works for most ground troops)
-	ADD <Temp_Var2		; Add detection height
-	STA <Temp_Var2		; -> Temp_Var2
+	ADD <var2		; Add detection height
+	STA <var2		; -> var2
 
 	LDA <Objects_YHi,X	; Get object Y Hi
 	ADC #0			; Apply carry
-	STA <Temp_Var1		; Object Y High offset -> Temp_Var1
+	STA <var1		; Object Y High offset -> var1
 
 	LDA <Player_Y		; Get Player Y
 	SUB #22			; Subtract 22 (approximate Player height)
-	STA <Temp_Var4		; -> Temp_Var 4
+	STA <var4		; -> Temp_Var 4
 
 	LDA <Player_YHi		; Get Player Y Hi
 	SBC #0			; Apply carry
-	STA <Temp_Var3		; -> Temp_Var3
+	STA <var3		; -> var3
 
-	LDA <Temp_Var1
-	CMP <Temp_Var3
+	LDA <var1
+	CMP <var3
 	BEQ ObjStomp_RevRefine	; If Y His are the same, not enough to go on, jump to ObjStomp_RevRefine
 	BGE ObjStomp_Cont	; If Player Y Hi > Object Y Hi, definitely stomping range, jump to ObjStomp_Cont
 	BLT Jmp_HoldKickOrHurtPlayer_fix	; Otherwise, jump to Jmp_HoldKickOrHurtPlayer
 
 ObjStomp_RevRefine:
-	LDA <Temp_Var2
-	CMP <Temp_Var4
+	LDA <var2
+	CMP <var4
 	BGE ObjStomp_Cont	; If Player Y >= Object Y, jump to ObjStomp_Cont
 		
 Jmp_HoldKickOrHurtPlayer_fix:	
@@ -4473,7 +4473,7 @@ PRG000_D355:
 	INY		 ; Otherwise, Y = 1
 
 PRG000_D373:
-	STY <Temp_Var1		 ; Temp_Var1 = 0 (Player moving left) or 1 (Player moving right)
+	STY <var1		 ; var1 = 0 (Player moving left) or 1 (Player moving right)
 
 	EOR <Objects_XVel,X	 ; Check for X velocity sign difference between Player and object
 	BMI PRG000_D382	 	; If there's a difference in sign, jump to PRG000_D382
@@ -4481,7 +4481,7 @@ PRG000_D373:
 	; Object and Player are moving in the same horizontal direction...
 
 	JSR Level_ObjCalcXDiffs	
-	CPY <Temp_Var1
+	CPY <var1
 	BNE PRG000_D39F	 ; If Player is moving away from object, jump to PRG000_D39F
 	BEQ PRG000_D39C	 ; Otherwise, jump to PRG000_D39C
 
@@ -4540,10 +4540,10 @@ ObjState_Initializing_Call:
 
 	; Get jump address specific to this object
 	LDA ObjectGroup_InitJumpTable,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA ObjectGroup_InitJumpTable+1,Y
-	STA <Temp_Var2
-	JMP [Temp_Var1]	 ; Dynamically jump to object's init routine 
+	STA <var2
+	JMP [var1]	 ; Dynamically jump to object's init routine 
 
 	; Set object's palette value
 ; $D3BC
@@ -4585,7 +4585,7 @@ Object_DeleteOffScreen:
 	LDA #$00	 ; A = 0
 
 PRG000_D3EF:
-	STA <Temp_Var1	 ; Temp_Var1 = 0, 2, or 4 
+	STA <var1	 ; var1 = 0, 2, or 4 
 
 	JSR Object_AnySprOffscreen
 	BEQ PRG000_D463	 ; If any sprites are off-screen, jump to PRG000_D463
@@ -4609,21 +4609,21 @@ PRG000_D3EF:
 	BCS PRG000_D463	 ; If carry set, jump to PRG000_D463 (RTS)
 
 	AND #$01
-	STA <Temp_Var2	 ; Temp_Var2 stores bit 0 from above; thus 0 or 1
+	STA <var2	 ; var2 stores bit 0 from above; thus 0 or 1
 
-	ADC <Temp_Var1	 ; So value is now 0-5
+	ADC <var1	 ; So value is now 0-5
 	TAY		 ; -> 'Y'
 
 	LDA <Horz_Scroll
 	ADD PRG000_D3CC,Y	 ; Horizontal scroll plus offset
 
-	ROL <Temp_Var1		 ; Temp_Var1 is 0/1, 4/5
+	ROL <var1		 ; var1 is 0/1, 4/5
 
 	CMP <Objects_X,X	 ; Compare to object X
 	PHP		 	; Save CPU state
 
 	LDA <Horz_Scroll_Hi	 
-	LSR <Temp_Var1		 
+	LSR <var1		 
 	ADC PRG000_D3D2,Y	 ; Add high part of offset
 
 
@@ -4633,16 +4633,16 @@ PRG000_D3EF:
 	PLP		 	; Restore CPU state
 
 	SBC <Objects_XHi,X	 
-	STA <Temp_Var1		 ; Temp_Var1 is X Hi difference
+	STA <var1		 ; var1 is X Hi difference
 
-	LDY <Temp_Var2		 ; Y = Temp_Var2
+	LDY <var2		 ; Y = var2
 	BEQ PRG000_D42E	 	; If zero, jump to PRG000_D42E
 
 	EOR #$80	 	
-	STA <Temp_Var1		; Temp_Var1 ^= $80
+	STA <var1		; var1 ^= $80
 
 PRG000_D42E:
-	LDA <Temp_Var1	
+	LDA <var1	
 	BPL PRG000_D463	 ; If positive, jump to PRG000_D463 (RTS)
 
 	; Deletes object, marks it so it will reappear next time it comes on-screen
@@ -4700,12 +4700,12 @@ PRG000_D464:
 	BCS PRG000_D463	 ; Every other tick, jump to PRG000_D463 (RTS)
 
 	AND #$01
-	STA <Temp_Var2	 ; Temp_Var2 = 0 or 1
+	STA <var2	 ; var2 = 0 or 1
 	TAY		 ; -> 'Y'
 
 	LDA Level_VertScroll
 	ADD PRG000_D3C8,Y
-	ROL <Temp_Var1		 ; 0/1 or 4/5
+	ROL <var1		 ; 0/1 or 4/5
 
 	CMP <Objects_Y,X	 ; Compare to object Y
 
@@ -4713,21 +4713,21 @@ PRG000_D479:
 	PHP		 ; Save CPU state
 
 	LDA Level_VertScrollH
-	LSR <Temp_Var1	
+	LSR <var1	
 	ADC PRG000_D3CA,Y
 
 	PLP		 ; Restore CPU state
 
 	SBC <Objects_YHi,X
-	STA <Temp_Var1	
-	LDY <Temp_Var2	
+	STA <var1	
+	LDY <var2	
 	BEQ PRG000_D48F	 
 
 	EOR #$80	
-	STA <Temp_Var1	
+	STA <var1	
 
 PRG000_D48F:
-	LDA <Temp_Var1
+	LDA <var1
 	BPL PRG000_D463	
 	BMI Object_Delete	
 	BPL PRG000_D497	 
@@ -4774,10 +4774,10 @@ Object_DoNormal:
 
 	; Get jump address specific to this object
 	LDA ObjectGroup_NormalJumpTable,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA ObjectGroup_NormalJumpTable+1,Y
-	STA <Temp_Var2
-	JMP [Temp_Var1]	 ; Dynamically jump to object's "normal" routine 
+	STA <var2
+	JMP [var1]	 ; Dynamically jump to object's "normal" routine 
 
 
 Object_DoHaltedAction:
@@ -4883,14 +4883,14 @@ PRG000_D588:
 ; X = index of on-screen object
 ;
 ; Returns lots of stuff:
-; Temp_Var1 = Object sprite Y
-; Temp_Var2 = Object sprite X
-; Temp_Var3 = Object's LR flag
-; Temp_Var4 = Object's attributes
-; Temp_Var5 = Objects_SprVVis
-; Temp_Var6 = Object's starting tiles index (and -> 'X')
-; Temp_Var7 = Object's Sprite_RAM offset (and -> 'Y')
-; Temp_Var8 = Objects_SprHVis
+; var1 = Object sprite Y
+; var2 = Object sprite X
+; var3 = Object's LR flag
+; var4 = Object's attributes
+; var5 = Objects_SprVVis
+; var6 = Object's starting tiles index (and -> 'X')
+; var7 = Object's Sprite_RAM offset (and -> 'Y')
+; var8 = Objects_SprHVis
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $D589
 Object_ShakeAndCalcSprite:
@@ -4898,7 +4898,7 @@ Object_ShakeAndCalcSprite:
 	SUB Level_VertScroll	; Make relative
 
 	STA <Objects_SpriteY,X	; Store as sprite Y
-	STA <Temp_Var1		; Also -> Temp_Var1
+	STA <var1		; Also -> var1
 
 	; This is the object "shakin' awake" routine!  (Enemies in shell etc.)
  
@@ -4922,10 +4922,10 @@ PRG000_D5A0:
 	LDA <Objects_X,X	; Get object's X
 	SBC <Horz_Scroll	; Make relative
 	STA <Objects_SpriteX,X	; Store as sprite X
-	STA <Temp_Var2		; Also -> Temp_Var2
+	STA <var2		; Also -> var2
 
 	LDA Objects_FlipBits,X
-	STA <Temp_Var3		; Temp_Var3 = object's LR flag
+	STA <var3		; var3 = object's LR flag
 
 	LDY ObjGroupRel_Idx	; Y = object's group relative index
 
@@ -4940,29 +4940,29 @@ PRG000_D5BC:
 	LDA Objects_SprAttr,X	; Otherwise, just get the normal attributes
 
 PRG000_D5BF:
-	STA <Temp_Var4		; Decided attributes -> Temp_Var4
+	STA <var4		; Decided attributes -> var4
 
 	LDA Objects_SprVVis,X
-	STA <Temp_Var5		; Temp_Var5 = Objects_SprVVis
+	STA <var5		; var5 = Objects_SprVVis
 
 	LDA Objects_SprHVis,X
-	STA <Temp_Var8		; Temp_Var8 = Objects_SprVVis
+	STA <var8		; var8 = Objects_SprVVis
 
 	; Each "frame" value moves up two bytes to the next pair
 	LDA Objects_Frame,X
 	ASL A	
-	STA <Temp_Var6		; Temp_Var6 = Objects_Frame << 1
+	STA <var6		; var6 = Objects_Frame << 1
 
 	LDA ObjectGroup_PatternStarts,Y
-	ADD <Temp_Var6	
-	STA <Temp_Var6		; Temp_Var6 += ObjectGroup_PatternStarts[Y] (set base tile index)
+	ADD <var6	
+	STA <var6		; var6 += ObjectGroup_PatternStarts[Y] (set base tile index)
 
 	TAX		 	; -> 'X' 
 
 	LDY <SlotIndexBackup	; Y = object slot index
 
 	LDA Object_SprRAM,Y
-	STA <Temp_Var7		; Temp_Var7 = Object_SprRAM[Y] 
+	STA <var7		; var7 = Object_SprRAM[Y] 
 
 	TAY		 	; -> 'Y' 
 
@@ -5033,11 +5033,11 @@ Object_Draw16x32SpriteCS:	; Alternate entry point assuming Object_ShakeAndCalcSp
 
 	LDA Objects_Frame,X
 	ASL A		 
-	ADD <Temp_Var6	
-	STA <Temp_Var6	 ; Temp_Var6 += object's frame
+	ADD <var6	
+	STA <var6	 ; var6 += object's frame
 	TAX		 ; -> 'X'
 
-	LDA <Temp_Var3	 ; Objects_FlipBits
+	LDA <var3	 ; Objects_FlipBits
 	BPL PRG000_D62D	 ; If Objects_FlipBits bit 7 is NOT set, jump to PRG000_D62D
 
 	; Otherwise...
@@ -5047,16 +5047,16 @@ Object_Draw16x32SpriteCS:	; Alternate entry point assuming Object_ShakeAndCalcSp
 PRG000_D62D:
 	JSR Object_Draw16x16Sprite	 ; Draw sprite
 
-	LSR <Temp_Var5	 ; Objects_SprVVis
+	LSR <var5	 ; Objects_SprVVis
 
 	; 'Y' += 8 (Sprite RAM 2 sprites over)
 	TYA
 	ADD #$08
 	TAY	
 
-	LDX <Temp_Var6	 ; X = Temp_Var6 (starting tile)
+	LDX <var6	 ; X = var6 (starting tile)
 
-	LDA <Temp_Var3	 ; Objects_FlipBits
+	LDA <var3	 ; Objects_FlipBits
 	BMI PRG000_D63F	 ; If Objects_FlipBits bit 7 set, jump to PRG000_D63F
 
 	; Otherwise...
@@ -5065,8 +5065,8 @@ PRG000_D62D:
 
 PRG000_D63F:
 	LDA #16
-	ADD <Temp_Var1	 ; Sprite Y
-	STA <Temp_Var1	 ; Temp_Var1 += 16
+	ADD <var1	 ; Sprite Y
+	STA <var1	 ; var1 += 16
 
 	JSR Object_Draw16x16Sprite	 ; Draw sprite
 
@@ -5087,8 +5087,8 @@ Object_DrawWide:
 
 	; Calculate offset into the ObjectGroup_PatternSets table
 	LDA Objects_Frame,X
-	ADD <Temp_Var6	
-	STA <Temp_Var6		; Temp_Var6 += object's frame
+	ADD <var6	
+	STA <var6		; var6 += object's frame
 	TAX		 	; -> 'X'
 	JSR Object_Draw24x16Sprite	; Draw wide sprite
 
@@ -5145,21 +5145,21 @@ PRG000_D67B:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $D680
 Object_Draw16x16Sprite:
-; Temp_Var1 = Object sprite Y
-; Temp_Var2 = Object sprite X
-; Temp_Var3 = Object's LR flag
-; Temp_Var4 = Object's attributes
-; Temp_Var5 = Objects_SprVVis
-; Temp_Var6 = Object's starting tiles index (and -> 'X')
-; Temp_Var7 = Object's Sprite_RAM offset (and -> 'Y')
-; Temp_Var8 = Objects_SprHVis
-	LDA <Temp_Var5	; Check sprite vertical visibility
+; var1 = Object sprite Y
+; var2 = Object sprite X
+; var3 = Object's LR flag
+; var4 = Object's attributes
+; var5 = Objects_SprVVis
+; var6 = Object's starting tiles index (and -> 'X')
+; var7 = Object's Sprite_RAM offset (and -> 'Y')
+; var8 = Objects_SprHVis
+	LDA <var5	; Check sprite vertical visibility
 	LSR A		; Shift right (checking lowest bit)
 	BCS PRG000_D6C6	; If this bit is set, this sprite piece is invisible, jump to PRG000_D6C6 (RTS)
 
-	LDA <Temp_Var1	; Get sprite Y
+	LDA <var1	; Get sprite Y
 
-	BIT <Temp_Var8	; Testing bit 7 of horizontal sprite visibility
+	BIT <var8	; Testing bit 7 of horizontal sprite visibility
 	BMI PRG000_D68E	; If bit 7 is set (this sprite is horizontally off-screen), jump to PRG000_D68E
 
 	STA Sprite_RAM+$00,Y	 ; Otherwise, OK to set sprite Y
@@ -5170,7 +5170,7 @@ PRG000_D68E:
 	STA Sprite_RAM+$04,Y	 ; Otherwise, OK set second sprite Y
 
 PRG000_D693:
-	LDA <Temp_Var2		; Get sprite X
+	LDA <var2		; Get sprite X
 	STA Sprite_RAM+$03,Y	; Store into Sprite RAM
 
 	ADD #$08	 	; +8 for next sprite over
@@ -5182,12 +5182,12 @@ PRG000_D693:
 	LDA ObjectGroup_PatternSets+1,X	; Get second sprite pattern index
 	STA Sprite_RAM+$05,Y	; -> Sprite RAM
 
-	LDA <Temp_Var3		 
-	ORA <Temp_Var4		 ; Joins base attributes to H-flip flag
+	LDA <var3		 
+	ORA <var4		 ; Joins base attributes to H-flip flag
 	STA Sprite_RAM+$02,Y	 ; Store into both sprite's attributes
 	STA Sprite_RAM+$06,Y	 ; Store into both sprite's attributes
 
-	BIT <Temp_Var3		
+	BIT <var3		
 	BVC PRG000_D6C6	 ; If sprite is not horizontally flipped, jump to PRG000_D6C6 (RTS)
 
 	; If flipped, swap sprite attributes
@@ -5209,21 +5209,21 @@ PRG000_D6C6:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $D6C7
 Object_Draw24x16Sprite:
-	LDA <Temp_Var5	; Check sprite vertical visibility
+	LDA <var5	; Check sprite vertical visibility
 	LSR A		
 	BCS PRG000_D726	; If this sprite is off-screen, jump to PRG000_D726 (RTS)
 
-	LDA <Temp_Var8	; Check horizontal sprite visibility
+	LDA <var8	; Check horizontal sprite visibility
 	ASL A		; Left shift flags value
-	STA <Temp_Var10	; -> Temp_Var10
+	STA <var10	; -> var10
 
-	LDA <Temp_Var1	; Sprite Y
+	LDA <var1	; Sprite Y
 	BCS PRG000_D6D8	; If sprite is horizontally off-screen, jump to PRG000_D6D8
 
 	STA Sprite_RAM+$00,Y	 ; Set sprite Y in RAM
 
 PRG000_D6D8:
-	BIT <Temp_Var10	 
+	BIT <var10	 
 	BMI PRG000_D6DF	 ; If this sprite is off-screen, jump to PRG000_D6DF
 
 	STA Sprite_RAM+$04,Y	 ; Set sprite Y in RAM
@@ -5234,7 +5234,7 @@ PRG000_D6DF:
 	STA Sprite_RAM+$08,Y	 ; Set sprite Y in RAM
 
 PRG000_D6E4:
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$03,Y	 ; Set sprite X in RAM
 	ADD #$08
 	STA Sprite_RAM+$07,Y	 ; Set sprite X in RAM (+8)
@@ -5250,13 +5250,13 @@ PRG000_D6E4:
 	STA Sprite_RAM+$09,Y
 
 	; Set each sprite's attributes
-	LDA <Temp_Var3
-	ORA <Temp_Var4		 ; Combine attributes
+	LDA <var3
+	ORA <var4		 ; Combine attributes
 	STA Sprite_RAM+$02,Y
 	STA Sprite_RAM+$06,Y
 	STA Sprite_RAM+$0A,Y
 
-	BIT <Temp_Var3
+	BIT <var3
 	BVC PRG000_D6C6	 ; If sprite is not horizontally flipped, jump to PRG000_D6C6 (RTS)
 
 	; Swap end sprites patterns
@@ -5281,13 +5281,13 @@ PRG000_D726:
 ; X = index of on-screen object
 ;
 ; Returns:
-;	Temp_Var7 = offset to the blank sprite (also in 'Y')
-;	Temp_Var8 = 5 or 1
+;	var7 = offset to the blank sprite (also in 'Y')
+;	var8 = 5 or 1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	; Selection table for the 5/1... doesn't seem like the
 	; values actually mean anything, it just checks > 5?
-	; Kept in Temp_Var9 anyway...
+	; Kept in var9 anyway...
 PRG000_D727:
 	.byte $00, $01, $02, $03, $04, $05, $03, $07, $00, $01, $02, $03, $04, $05, $02
 
@@ -5298,24 +5298,24 @@ Object_GetRandNearUnusedSpr:
 
 	LDY #$07	 ; Y = 7
 PRG000_D73A:
-	STY <Temp_Var7	 ; Update Temp_Var7
+	STY <var7	 ; Update var7
 
 	LDX <SlotIndexBackup	 ; X = object slot index
 
 	LDA RandomN,X
 	AND #$07	
-	ADD <Temp_Var7	
-	TAY		 ; Y = (Random 0-7) + Temp_Var7
+	ADD <var7	
+	TAY		 ; Y = (Random 0-7) + var7
 
 	LDA PRG000_D727,Y
 	TAY		
-	STY <Temp_Var9	 ; Temp_Var9 = PRG000_D727[Y]
+	STY <var9	 ; var9 = PRG000_D727[Y]
 
 	LDA Objects_State,Y
 	BEQ PRG000_D763	 ; If object state = 0 (dead/empty), jump to PRG000_D763
 
 PRG000_D752:
-	LDY <Temp_Var7	 ; Y = Temp_Var7
+	LDY <var7	 ; Y = var7
 	DEY		 ; Y--
 	BPL PRG000_D73A	 ; While Y > 0, loop!
 
@@ -5341,14 +5341,14 @@ PRG000_D763:
 
 	LDY #$05	 ; Y = 5
 
-	LDA <Temp_Var9
+	LDA <var9
 	CMP #$05	
-	BLT PRG000_D776	 ; If Temp_Var9 < 5, jump to PRG000_D776
+	BLT PRG000_D776	 ; If var9 < 5, jump to PRG000_D776
 
 	LDY #$01	 ; Y = 1
 
 PRG000_D776:
-	STY <Temp_Var8	 ; Temp_Var8 = 5 or 1
+	STY <var8	 ; var8 = 5 or 1
 
 	LDA Sprite_RAM+$00,X
 	CMP #$f8
@@ -5365,7 +5365,7 @@ PRG000_D776:
 	JMP PRG000_D752	 ; Jump to PRG000_D752
 
 PRG000_D789:
-	STX <Temp_Var7	 ; Temp_Var7 = offset to blank sprite
+	STX <var7	 ; var7 = offset to blank sprite
 
 	TXA
 	TAY		; Y = same offset
@@ -5373,7 +5373,7 @@ PRG000_D789:
 	PLA
 	TAX		 ; Restore 'X'
 
-	LDA <Temp_Var8	 ; A = 5 or 1
+	LDA <var8	 ; A = 5 or 1
 
 	RTS		 ; Return
 
@@ -5477,15 +5477,15 @@ PRG000_D7B8:
 PRG000_D7BD:
 	LDA <Objects_X,X
 	ADD Object_Widths,Y
-	STA <Temp_Var15		; Temp_Var15 = object's X + ??
+	STA <var15		; var15 = object's X + ??
 
 	LDA <Objects_XHi,X
 	ADC #$00	 
-	STA <Temp_Var16		; Temp_Var16 = Object's X Hi with carry applied
+	STA <var16		; var16 = Object's X Hi with carry applied
 
-	LDA <Temp_Var15
+	LDA <var15
 	CMP <Horz_Scroll
-	LDA <Temp_Var16	
+	LDA <var16	
 	SBC <Horz_Scroll_Hi
 	BEQ PRG000_D7DE	 ; If sprite is not horizontally off-screen, jump to PRG000_D7DE
 
@@ -5522,51 +5522,51 @@ Object_DetermineVertVis:
 
 Object_DetermineVertVisY:
 	LDA #$01
-	STA <Temp_Var3	 ; Temp_Var3 = 1
+	STA <var3	 ; var3 = 1
 
 	LDA #$00
 	STA Objects_SprVVis,X	 ; Clear until determined
 
-	; Copy object's Y Hi/Lo -> Temp_Var1/2
+	; Copy object's Y Hi/Lo -> var1/2
 	LDA <Objects_YHi,X
-	STA <Temp_Var1	
+	STA <var1	
 	LDA <Objects_Y,X
-	STA <Temp_Var2	
+	STA <var2	
 
 PRG000_D7FE:
 
 	; Add 16 to copy of object's Y (bottom of this sprite)
-	LDA <Temp_Var2
+	LDA <var2
 	ADD #16
-	STA <Temp_Var2
+	STA <var2
 
 	BCC PRG000_D809	 ; If no carry, jump to Objects_SprVVis
 
-	INC <Temp_Var1		 ; Otherwise, apply carry
+	INC <var1		 ; Otherwise, apply carry
 
 PRG000_D809:
-	LDA <Temp_Var2		
+	LDA <var2		
 	SUB Level_VertScroll
-	STA <Temp_Var4		 ; Temp_Var4 = screen-relative Y
+	STA <var4		 ; var4 = screen-relative Y
 
-	LDA <Temp_Var1		
+	LDA <var1		
 	SBC Level_VertScrollH	
 	BNE PRG000_D81E	 ; If relative position is off-screen, jump to PRG000_D81E
 
 	; Otherwise...
-	LDA <Temp_Var4
+	LDA <var4
 	CMP #240
 	BLT PRG000_D826	 ; If object sprite is higher than 240 (not off bottom of screen), jump to PRG000_D826
 
 PRG000_D81E:
 
 	; This sprite is off top/bottom of screen...
-	LDA <Temp_Var3		 ; Get current set bit
+	LDA <var3		 ; Get current set bit
 	ORA Objects_SprVVis,X	 
 	STA Objects_SprVVis,X	 ; Mark this part as invisible
 
 PRG000_D826:
-	ASL <Temp_Var3	 ; Temp_Var3 <<= 1
+	ASL <var3	 ; var3 <<= 1
 	DEY		 ; Y--
 	BPL PRG000_D7FE	 ; While Y >= 0, loop!
 
@@ -5574,10 +5574,10 @@ PRG000_D82B:
 	RTS		 ; Return
 
 	; Defines the "bounding box" around the Player
-	; Temp_Var1 - upper left of bounding box
-	; Temp_Var2 - offset to right bounding box (width)
-	; Temp_Var5 - top of bounding box
-	; Temp_Var6 - offset to bottom bounding box (height)
+	; var1 - upper left of bounding box
+	; var2 - offset to right bounding box (width)
+	; var5 - top of bounding box
+	; var6 - offset to bottom bounding box (height)
 Player_BoundBox:
 	;    Left Right  Bot Top - offsets applied to sprite X/Y
 	.byte 4,  8, 17, 13	; small/ducking
@@ -5620,7 +5620,7 @@ Object_HitTestRespond:
 	LDA #$00	; Test and do "collide" routine
 
 PRG000_D83D:
-	STA <Temp_Var16	 ; Temp_Var16 = 0 or 1, depending on entry point
+	STA <var16	 ; var16 = 0 or 1, depending on entry point
 
 	; Clear the Player hit status bits
 	LDA Objects_PlayerHitStat,X
@@ -5668,17 +5668,17 @@ Player_BBox_NoRev:
 	; Calculate upper left of bounding box and lower right offsets of Player
 	LDA <Player_SpriteX
 	ADD Player_BoundBox,Y
-	STA <Temp_Var3	
+	STA <var3	
 
 	LDA <Player_SpriteY
 	ADD Player_BoundBox+2,Y
-	STA <Temp_Var7	
+	STA <var7	
 
 	LDA Player_BoundBox+1,Y
-	STA <Temp_Var4	
+	STA <var4	
 
 	LDA Player_BoundBox+3,Y
-	STA <Temp_Var8	
+	STA <var8	
 
 	JSR ObjectObject_Intersect	; Returns carry SET if object and Player intersected
 	BCC PRG000_D82B	 	; If carry clear, object and Player did not intersect, jump to PRG000_D82B (RTS)
@@ -5687,95 +5687,95 @@ Player_BBox_NoRev:
 	; but this is not a complete check as Player or object may be at different "High/Low"
 	; positions (full 16-bit coordinate check)
 
-	STA <Temp_Var1		 ; Store Player's bounding box top offset -> Temp_Var1
+	STA <var1		 ; Store Player's bounding box top offset -> var1
 
 	LDA Level_7Vertical
 	BNE PRG000_D8B1	 ; If level is vertical, jump to PRG000_D8B1
 
-	; Calculate full 16-bit X difference of object -> Temp_Var14/15
+	; Calculate full 16-bit X difference of object -> var14/15
 	LDA <Player_X
 	SUB <Objects_X,X
-	STA <Temp_Var15	
+	STA <var15	
 
 	LDA <Player_XHi
 	SBC <Objects_XHi,X
-	STA <Temp_Var14	
+	STA <var14	
 
 	BPL PRG000_D8A9	 ; If overall result is positive, jump to PRG000_D8A9
 
-	; Otherwise, 16-bit negate Temp_Var14/15
-	LDA <Temp_Var15
+	; Otherwise, 16-bit negate var14/15
+	LDA <var15
 	JSR Negate	
-	STA <Temp_Var15	
+	STA <var15	
 
-	LDA <Temp_Var14
+	LDA <var14
 	EOR #$ff	
 	ADC #$00	
-	STA <Temp_Var14	
+	STA <var14	
 
 PRG000_D8A9:
 
-	LDA <Temp_Var14
-	BNE PRG000_D920	 ; If Temp_Var14 is not zero, there's a difference in the "High" component of the Player/Object, so no intersect!  Jump to PRG000_D920
+	LDA <var14
+	BNE PRG000_D920	 ; If var14 is not zero, there's a difference in the "High" component of the Player/Object, so no intersect!  Jump to PRG000_D920
 
-	LDA <Temp_Var15
-	BMI PRG000_D920	 ; If Temp_Var15 is negative, no intersect, jump to PRG000_D920
+	LDA <var15
+	BMI PRG000_D920	 ; If var15 is negative, no intersect, jump to PRG000_D920
 
 PRG000_D8B1:
 
 	; The above check is not needed on a vertical level...
 	; no chance of being on horizontally different screens!
 
-	; Calculate full 16-bit Y difference of object -> Temp_Var14/15
+	; Calculate full 16-bit Y difference of object -> var14/15
 	LDA <Player_Y
 	SUB <Objects_Y,X
-	STA <Temp_Var15	
+	STA <var15	
 
 	LDA <Player_YHi	
 	SBC <Objects_YHi,X
-	STA <Temp_Var14	
+	STA <var14	
 
 	BPL PRG000_D8CF	 ; If overall result is positive, jump to PRG000_D8CF
 
-	; Otherwise, 16-bit negate Temp_Var14/15
-	LDA <Temp_Var15
+	; Otherwise, 16-bit negate var14/15
+	LDA <var15
 	JSR Negate
-	STA <Temp_Var15
+	STA <var15
 
-	LDA <Temp_Var14
+	LDA <var14
 	EOR #$ff	
 	ADC #$00	
-	STA <Temp_Var14	
+	STA <var14	
 
 PRG000_D8CF:
-	LDA <Temp_Var14
-	BNE PRG000_D920	 ; If Temp_Var14 is not zero, there's a difference in the "High" component of the Player/Object, so no intersect!  Jump to PRG000_D920
+	LDA <var14
+	BNE PRG000_D920	 ; If var14 is not zero, there's a difference in the "High" component of the Player/Object, so no intersect!  Jump to PRG000_D920
 
-	LDA <Temp_Var15
-	BMI PRG000_D920	 ; If Temp_Var15 is negative, no intersect, jump to PRG000_D920
+	LDA <var15
+	BMI PRG000_D920	 ; If var15 is negative, no intersect, jump to PRG000_D920
 
-	; Temp_Var12 holds specific info:
+	; var12 holds specific info:
 	;	Bit 0 - Set if Player's bbox bottom is HIGHER than object's bbox bottom
 	;	Bit 1 - Set if Player's bbox left edge is to the LEFT of object's bbox left edge
 
-	LDA <Temp_Var12
+	LDA <var12
 	LSR A		
 	BCC PRG000_D8EB	 ; If Player's bbox bottom is NOT higher than object's, jump to PRG000_D8EB
 
-	LDA <Temp_Var1	 ; Get Player's bounding box top offset
-	SUB <Temp_Var11	 ; Get vertical difference between Player and Object's bounding box bottoms
+	LDA <var1	 ; Get Player's bounding box top offset
+	SUB <var11	 ; Get vertical difference between Player and Object's bounding box bottoms
 	CMP #$08	 
 	BLS PRG000_D8EB	 ; If the result < 8, jump to PRG000_D8EB
 
-	; Otherwise, flip the remaining bit of Temp_Var12
-	LDA <Temp_Var12	
+	; Otherwise, flip the remaining bit of var12
+	LDA <var12	
 	EOR #$01
-	STA <Temp_Var12	
+	STA <var12	
 
 PRG000_D8EB:
 
 	; Set into status bits for this objcet
-	LDA <Temp_Var12	
+	LDA <var12	
 	ORA Objects_PlayerHitStat,X
 	STA Objects_PlayerHitStat,X
 
@@ -5823,7 +5823,7 @@ PRG000_D922:
 
 	; For all objects where bit 7 is set in their attributes...
 
-	LDA <Temp_Var16	 ; Returns 0 or 1, depending on original entry point
+	LDA <var16	 ; Returns 0 or 1, depending on original entry point
 	BNE PRG000_D929	 ; If it was 1 (do not respond to hit), jump to PRG000_D929
 
 	; Do hit routine
@@ -5836,10 +5836,10 @@ PRG000_D929:
 
 	; Calculates the upper-left and returns the lower-right offsets
 	; of this object's bounding box...
-	; Temp_Var1 - upper left of bounding box
-	; Temp_Var2 - offset to right bounding box
-	; Temp_Var5 - bottom of bounding box
-	; Temp_Var6 - offset to top bounding box
+	; var1 - upper left of bounding box
+	; var2 - offset to right bounding box
+	; var5 - bottom of bounding box
+	; var6 - offset to top bounding box
 ; $D92F
 Object_CalcBoundBox:
 	; X is object's slot
@@ -5855,27 +5855,27 @@ Object_CalcBoundBox:
 	; Calculate upper left of bounding box and lower right offsets
 	LDA <Objects_SpriteX,X
 	ADD Object_BoundBox,Y	
-	STA <Temp_Var1		 ; Temp_Var1 object's sprite X with offset
+	STA <var1		 ; var1 object's sprite X with offset
 
 	LDA <Objects_SpriteY,X
 	ADD Object_BoundBox+2,Y	
-	STA <Temp_Var5		 ; Temp_Var5 object's sprite Y with offset
+	STA <var5		 ; var5 object's sprite Y with offset
 
 	LDA Object_BoundBox+1,Y
-	STA <Temp_Var2		 ; Temp_Var2 has the right offset
+	STA <var2		 ; var2 has the right offset
 
 	LDA Object_BoundBox+3,Y	
-	STA <Temp_Var6		 ; Temp_Var6 has the bottom offset
+	STA <var6		 ; var6 has the bottom offset
 
 	RTS		 ; Return
 
 
 	; Calculates the upper-left and returns the lower-right offsets
 	; of this object's bounding box...
-	; Temp_Var3 - upper left of bounding box
-	; Temp_Var4 - offset to right bounding box
-	; Temp_Var7 - bottom of bounding box
-	; Temp_Var8 - offset to top bounding box
+	; var3 - upper left of bounding box
+	; var4 - offset to right bounding box
+	; var7 - bottom of bounding box
+	; var8 - offset to top bounding box
 ; $D955
 Object_CalcBoundBox2:	; Same as Object_CalcBoundBox in spirit, just different outputs, used for object-to-object collision
 	; X is object's slot
@@ -5891,17 +5891,17 @@ Object_CalcBoundBox2:	; Same as Object_CalcBoundBox in spirit, just different ou
 	; Calculate upper left of bounding box and lower right offsets
 	LDA <Objects_SpriteX,X
 	ADD Object_BoundBox,Y	
-	STA <Temp_Var3		 ; Temp_Var3 object's sprite X with offset
+	STA <var3		 ; var3 object's sprite X with offset
 
 	LDA <Objects_SpriteY,X
 	ADD Object_BoundBox+2,Y	
-	STA <Temp_Var7		 ; Temp_Var7 object's sprite Y with offset
+	STA <var7		 ; var7 object's sprite Y with offset
 
 	LDA Object_BoundBox+1,Y
-	STA <Temp_Var4		 ; Temp_Var4 has the right offset
+	STA <var4		 ; var4 has the right offset
 
 	LDA Object_BoundBox+3,Y	
-	STA <Temp_Var8		 ; Temp_Var8 has the bottom offset
+	STA <var8		 ; var8 has the bottom offset
 
 	RTS		 ; Return
 
@@ -5916,7 +5916,7 @@ Object_CalcBoundBox2:	; Same as Object_CalcBoundBox in spirit, just different ou
 ; X = index of on-screen object
 ;
 ; Returns carry SET if Player/Object and Object intersected
-; Temp_Var12 holds specific info:
+; var12 holds specific info:
 ;	Bit 0 - Set if Player/Object's bbox bottom is HIGHER than 
 ;	        object's bbox bottom
 ;	Bit 1 - Set if Player/Object's bbox left edge is to the LEFT of
@@ -5932,72 +5932,72 @@ Object_CalcBoundBox2:	; Same as Object_CalcBoundBox in spirit, just different ou
 ; $D97B
 ObjectObject_Intersect:
 	LDY #$00	 ; Y = 0
-	STY <Temp_Var12	 ; Temp_Var12 = 0 (Player's bbox is to the RIGHT of the object's left edge, until determined otherwise)
+	STY <var12	 ; var12 = 0 (Player's bbox is to the RIGHT of the object's left edge, until determined otherwise)
 
 
 	; Right now we're considering the left edges of the Player and Object
 	; we're detecting against
 
-	LDA <Temp_Var3		 ; Left of Player's bounding box
-	SUB <Temp_Var1		 ; Left of object's bound box
-	STA <Temp_Var11		 ; Difference between the two -> Temp_Var11
+	LDA <var3		 ; Left of Player's bounding box
+	SUB <var1		 ; Left of object's bound box
+	STA <var11		 ; Difference between the two -> var11
 
 	ASL A			 ; Sets carry if it was a negative result
  
-	LDA <Temp_Var2		 ; Get the object's right edge bounding box offset
+	LDA <var2		 ; Get the object's right edge bounding box offset
 
 	BCC PRG000_D997	 	 ; If the calculated difference was NOT negative (Player's bbox left edge is to the RIGHT of object's bbox left edge), jump to PRG000_D997
 
 	; Player's box left edge is to the LEFT of the object's left edge
 
-	; Negate Temp_Var11 (the difference), making it positive
-	LDA <Temp_Var11
+	; Negate var11 (the difference), making it positive
+	LDA <var11
 	EOR #$ff
-	STA <Temp_Var11		 
-	INC <Temp_Var11	
+	STA <var11		 
+	INC <var11	
 
-	INC <Temp_Var12		 ; Temp_Var12 = 1 (Player's bbox is to the LEFT of object's left edge)
+	INC <var12		 ; var12 = 1 (Player's bbox is to the LEFT of object's left edge)
 
-	LDA <Temp_Var4		 ; Get the Player's right edge bounding box offset
+	LDA <var4		 ; Get the Player's right edge bounding box offset
 
 PRG000_D997:
-	CMP <Temp_Var11
+	CMP <var11
 	BLT PRG000_D9B7	 	 ; If the left edge offset is less than the right edge offset (CARRY CLEAR), jump to PRG000_D9B7 (RTS)
 
 
 	; That didn't happen...
 
-	ASL <Temp_Var12		 ; Push result bit up
+	ASL <var12		 ; Push result bit up
 
-	LDA <Temp_Var7		 ; Player's bounding box bottom
-	SUB <Temp_Var5		 ; Object's bouncing box bottom
-	STA <Temp_Var11		 ; Store difference -> Temp_Var11
+	LDA <var7		 ; Player's bounding box bottom
+	SUB <var5		 ; Object's bouncing box bottom
+	STA <var11		 ; Store difference -> var11
 
 	ASL A		 	 ; Sets carry if it was a negative result
 
-	LDA <Temp_Var6		 ; Get object's bounding box top edge offset
+	LDA <var6		 ; Get object's bounding box top edge offset
 
 	BCC PRG000_D9B5	 	 ; If the calculated difference was NOT negative (Player's bbox bottom is LOWER than object's bbox bottom), jump to PRG000_D9B5
 
-	; Negate Temp_Var11 (the difference), making it positive
-	LDA <Temp_Var11
+	; Negate var11 (the difference), making it positive
+	LDA <var11
 	EOR #$ff	
-	STA <Temp_Var11	
-	INC <Temp_Var11	
+	STA <var11	
+	INC <var11	
 
-	INC <Temp_Var12		 ; Set bit 0 of Temp_Var12
+	INC <var12		 ; Set bit 0 of var12
 
-	LDA <Temp_Var8		 ; Get Player's bounding box top edge offset
+	LDA <var8		 ; Get Player's bounding box top edge offset
 
 PRG000_D9B5:
-	CMP <Temp_Var11		 ; Set final carry bit to determine if we intersected or not
+	CMP <var11		 ; Set final carry bit to determine if we intersected or not
 
 PRG000_D9B7:
 
 	; Most importantly, status of the carry flag is returned
 	; If carry is CLEAR, we did not intersect Player to Object
 
-	; Temp_Var12 holds specific info:
+	; var12 holds specific info:
 	;	Bit 0 - Set if Player's bbox bottom is HIGHER than object's bbox bottom
 	;	Bit 1 - Set if Player's bbox left edge is to the LEFT of object's bbox left edge
 
@@ -6015,10 +6015,10 @@ Object_DoCollision:
 
 	; Get address from ObjectGroup_CollideJumpTable...
 	LDA ObjectGroup_CollideJumpTable,Y
-	STA <Temp_Var1	
+	STA <var1	
 	LDA ObjectGroup_CollideJumpTable+1,Y
-	STA <Temp_Var2	
-	JMP [Temp_Var1]	 ; Jump to the acquired address!
+	STA <var2	
+	JMP [var1]	 ; Jump to the acquired address!
 
 
 ; $D9D3
@@ -6178,16 +6178,16 @@ Object_HitByTailOrBouncer:
 	LDA LRBounce_Y
 	CMP #$ff
 	BEQ PRG000_DB16	 ; If LRBounce_Y = $FF, jump to PRG000_DB16 (RTS)
-	STA <Temp_Var7	 ; Temp_Var7 = LRBounce_Y
+	STA <var7	 ; var7 = LRBounce_Y
 
 	LDA #$0f
-	STA <Temp_Var8	 ; Temp_Var8 = $0F
+	STA <var8	 ; var8 = $0F
 
 	LDA LRBounce_X
-	STA <Temp_Var3	 ; Temp_Var3 = LRBounce_X
+	STA <var3	 ; var3 = LRBounce_X
 
 	LDA #$0f
-	STA <Temp_Var4	 ; Temp_Var4 = $0F
+	STA <var4	 ; var4 = $0F
 
 	JSR Player_TailAttackDo	; Perform tail attack type action
 
@@ -6219,17 +6219,17 @@ PRG000_DB26:
 PRG000_DB2F:
 	LDA Player_TailAttackXOff,Y
 	ADD <Player_SpriteX
-	STA <Temp_Var3	 ; Temp_Var3 = appropriate X offset for tail attack
+	STA <var3	 ; var3 = appropriate X offset for tail attack
 
 	LDA #$0a
-	STA <Temp_Var4	 ; Temp_Var4 = $0A
+	STA <var4	 ; var4 = $0A
 
 	LDA <Player_SpriteY
 	ADD #$10
-	STA <Temp_Var7	 ; Temp_Var7 = tail attack offset
+	STA <var7	 ; var7 = tail attack offset
 
 	LDA #$0f
-	STA <Temp_Var8	 ; Temp_Var8 = $0F
+	STA <var8	 ; var8 = $0F
 
 Player_TailAttackDo:
 	LDY Objects_State,X	; Y = object's current state
@@ -6255,7 +6255,7 @@ Player_TailAttackDo:
 	AND #OA3_TAILATKIMMUNE
 	BNE PRG000_DB16	 ; If OA3_TAILATKIMMUNE is SET (Object cannot be tail-attacked), jump to PRG000_DB16 (RTS)
 
-	LDA <Temp_Var4
+	LDA <var4
 	CMP #$0f
 	BEQ Enemy_Kill
 
@@ -6364,7 +6364,7 @@ PRG000_DC0B:
 
 	LDA <Objects_XHi,X
 	SBC Objects_XHi,Y	 ; Difference between the object and the OTHER object's X Hi
-	STA <Temp_Var1		 ; -> Temp_Var1
+	STA <var1		 ; -> var1
 
 	PLA		 ; Restore the lower X difference
 
@@ -6372,7 +6372,7 @@ PRG000_DC0B:
 	; objects are actually on the same screen instead of just
 	; seeming to due to the low accuracy of sprite coordinates
 	ADC #$80	
-	LDA <Temp_Var1	
+	LDA <var1	
 	ADC #$00	
 	BNE PRG000_DC51	 ; If the objects did not actually collide, jump to PRG000_DC51 (do nothing)
 
@@ -6411,66 +6411,66 @@ PRG000_DC5C:
 
 
 
-	; This changes a tile based on Temp_Var13-16 coordinates:
-	; Temp_Var13 / Temp_Var14 -- Y Hi and Lo
-	; Temp_Var15 / Temp_Var16 -- X Hi and Lo
+	; This changes a tile based on var13-16 coordinates:
+	; var13 / var14 -- Y Hi and Lo
+	; var15 / var16 -- X Hi and Lo
 Level_ChangeTile_ByTempVars:
 
 	PHA		 ; Save 'A'
 	LDA Level_7Vertical
 	BEQ PRG000_DC7B	 ; If level is NOT vertical, jump to PRG000_DC7B
 
-	LDY <Temp_Var13
-	LDA <Temp_Var14
+	LDY <var13
+	LDA <var14
 	JSR LevelJct_GetVScreenH	; Adjust coordinates for vertical
 
 	PHA		 ; Save 'A' (Y Lo)
 
 	; Set tile grid modify address
 	LDA Tile_Mem_AddrVL,Y
-	STA <Temp_Var1	
+	STA <var1	
 	LDA Tile_Mem_AddrVH,Y
-	STA <Temp_Var2	
+	STA <var2	
 
 	PLA		 ; Restore 'A' (Y Lo)
 
 	JMP PRG000_DC91	 ; Jump to PRG000_DC91
 
 PRG000_DC7B:
-	LDA <Temp_Var15
+	LDA <var15
 	ASL A		
-	TAY		 ; Y = Temp_Var15 (X Hi) shifted left 1 (2 bytes index per screen for Tile_Mem_Addr)
+	TAY		 ; Y = var15 (X Hi) shifted left 1 (2 bytes index per screen for Tile_Mem_Addr)
 
 	; Set tile grid modify address
 	LDA Tile_Mem_Addr,Y
-	STA <Temp_Var1	
+	STA <var1	
 	LDA Tile_Mem_Addr+1,Y
-	STA <Temp_Var2
+	STA <var2
 
-	LDA <Temp_Var13	
+	LDA <var13	
 	BEQ PRG000_DC8F	 ; If Y Hi = 0, jump to PRG000_DC8F
 
-	INC <Temp_Var2	 ; Otherwise, offset to lower screen area
+	INC <var2	 ; Otherwise, offset to lower screen area
 
 PRG000_DC8F:
-	LDA <Temp_Var14	 ; A = Y lo
+	LDA <var14	 ; A = Y lo
 
 PRG000_DC91:
 	AND #$f0
-	STA <Temp_Var3	; Tile aligned "low" (makes row)
+	STA <var3	; Tile aligned "low" (makes row)
 
-	LDA <Temp_Var16
+	LDA <var16
 	LSR A	
 	LSR A	
 	LSR A	
 	LSR A	
-	ORA <Temp_Var3	; Makes column
+	ORA <var3	; Makes column
 
 	TAY		 ; Y = offset to specific tile
 
 	PLA		 ; Restore 'A' (tile index)
 
-	STA [Temp_Var1],Y ; Change tile as appropriate
+	STA [var1],Y ; Change tile as appropriate
 
 	RTS		 ; Return
 
@@ -6481,24 +6481,24 @@ PRG000_DC91:
 ; Calculates a "coarse" X difference with the Player,
 ; returning a one byte value that determines the
 ; difference in X/XHi coordinates in units of 4 pixels
-; in Temp_Var15.  Temp_Var16 is set to $40 and the
+; in var15.  var16 is set to $40 and the
 ; carry flag is set if the difference was negative.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $DCA2 
 Object_CalcCoarseXDiff:
 	LDA <Objects_X,X	 
 	SUB <Player_X	
-	STA <Temp_Var15		; Temp_Var15 = difference between Object and Player X
+	STA <var15		; var15 = difference between Object and Player X
 
 	LDA <Objects_XHi,X
 	SBC <Player_XHi		; Calc diff between X His
 
 	LSR A			; Push low bit of "hi" difference -> carry
-	ROR <Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
+	ROR <var15		; Cycle carry into var15 at high bit; will be discarding low bit
 	LSR A			; Push low bit of "hi" difference -> carry
-	ROR <Temp_Var15		; Cycle carry into Temp_Var15 at high bit; will be discarding low bit
+	ROR <var15		; Cycle carry into var15 at high bit; will be discarding low bit
 
-	; Temp_Var15 now holds a difference between the Object and Player
+	; var15 now holds a difference between the Object and Player
 	;  X coordinates in units of 4 pixels (works up to two screen
 	; widths; anything greater and object was probably removed anyway)
 
@@ -6507,7 +6507,7 @@ Object_CalcCoarseXDiff:
 	; a level cannot be more than 10 screens in width.
 	ASL A			; Shift remaining difference left 1; carry set means negative difference
 	AND #$40
-	STA <Temp_Var16		; Temp_Var16 being $40 also means negative difference
+	STA <var16		; var16 being $40 also means negative difference
 
 	RTS		 ; Return
 
@@ -6518,32 +6518,32 @@ Object_CalcCoarseXDiff:
 ; Calculates a "coarse" Y difference with the Player,
 ; returning a one byte value that determines the
 ; difference in Y/YHi coordinates in units of 8 pixels.
-; Returns Temp_Var15 in the format of a crude signed
+; Returns var15 in the format of a crude signed
 ; value for Y Hi in bit 6 and 7 
 ; [00 -> Y Hi = 0, 01 -> Y Hi = 1, 11 -> Y Hi = negative]
 ; and the base Y difference in the bits 0 - 5 (so units 
 ; of 8 pixels.)
-; Temp_Var16 holds the raw difference in "Y Hi"
+; var16 holds the raw difference in "Y Hi"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $DCB9
 Object_CalcCoarseYDiff
 	LDA <Objects_Y,X
 	SUB <Player_Y	
-	STA <Temp_Var15		 ; Temp_Var15 = difference between object's Y and Player's Y
+	STA <var15		 ; var15 = difference between object's Y and Player's Y
 
 	LDA <Objects_YHi,X
 	SBC <Player_YHi	
-	STA <Temp_Var16		 ; Temp_Var16 = difference between object's Y Hi and Player's Y Hi
+	STA <var16		 ; var16 = difference between object's Y Hi and Player's Y Hi
 
 	LSR A		 	; least significant bit of Y Hi -> carry
 
-	ROR <Temp_Var15		; Temp_Var15 takes on the "Hi" value in its most significant bit
+	ROR <var15		; var15 takes on the "Hi" value in its most significant bit
 
 	LSR A			; next least significant bit of Y Hi -> carry
 
-	ROR <Temp_Var15		; The new Temp_Var15's least significant bit is pushed into its bit 7
+	ROR <var15		; The new var15's least significant bit is pushed into its bit 7
 
-	; So now Temp_Var15 holds the main Y difference in its first 5 bits
+	; So now var15 holds the main Y difference in its first 5 bits
 	; Bit 6 and 7 form a signed portion of the "hi" value -- 00 -> Y Hi = 0, 01 -> Y Hi = 1, 11 -> Y Hi = negative
 
 	RTS		 ; Return
@@ -6692,7 +6692,7 @@ PRG000_DD19:
 ; Level_ObjCalcXDiffs
 ;
 ; For a given object slot in 'X'...
-; Returns: Temp_Var16 as pixel difference between Player and object X coordinates
+; Returns: var16 as pixel difference between Player and object X coordinates
 
 ; 	   And 'Y' is set to 0 if Player is to the right of object, 1 if to the left
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -6700,7 +6700,7 @@ PRG000_DD19:
 Level_ObjCalcXDiffs:
 	LDA <Player_X
 	SUB <Objects_X,X
-	STA <Temp_Var16	 ; Temp_Var16 = difference between Player's X and object's X
+	STA <var16	 ; var16 = difference between Player's X and object's X
 
 	LDY #$00	 ; Y = 0
 	LDA <Player_XHi	 
@@ -6717,14 +6717,14 @@ PRG000_DD3C:
 ; Level_ObjCalcYDiffs
 ;
 ; For a given object slot in 'X'...
-; Returns: Temp_Var16 as pixel difference between Player and object Y coordinates
+; Returns: var16 as pixel difference between Player and object Y coordinates
 ; 	   And 'Y' is set to 0 if Player is lower than object, 1 if higher
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $DD3D
 Level_ObjCalcYDiffs:
 	LDA <Player_Y
 	SUB <Objects_Y,X
-	STA <Temp_Var16		 ; Temp_Var16 = difference between Player's Y and object's Y
+	STA <var16		 ; var16 = difference between Player's Y and object's Y
 
 	LDY #$00	 ; Y = 0
 	LDA <Player_YHi	
@@ -6773,22 +6773,22 @@ BlockBump_Init:
 	BNE PRG000_DDCB	 ; If block bump slot 2 is not empty, jump to PRG000_DDCB (RTS)
 
 PRG000_DDB2:
-	LDA <Temp_Var12	
+	LDA <var12	
 	STA Level_BlkBump,Y	 ; Store tile-behind effect
 
-	; Temp_Var13 / Temp_Var14 -- Y Hi and Lo
-	; Temp_Var15 / Temp_Var16 -- X Hi and Lo
+	; var13 / var14 -- Y Hi and Lo
+	; var15 / var16 -- X Hi and Lo
 
-	LDA <Temp_Var15	
+	LDA <var15	
 	STA Level_BlkBump_XHi,Y
 
-	LDA <Temp_Var16
+	LDA <var16
 	STA Level_BlkBump_XLo,Y
 
-	LDA <Temp_Var13
+	LDA <var13
 	STA Level_BlkBump_YHi,Y
 
-	LDA <Temp_Var14
+	LDA <var14
 	STA Level_BlkBump_YLo,Y
 
 PRG000_DDCB:

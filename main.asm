@@ -422,24 +422,26 @@ MMC3_IRQENABLE	= $E001 ; Enables IRQ generation
 	.org $00
 
 ; For clarification, none of the other "Temp" vars are damaged by NMI,
-; the NMI does employ Temp_Var1-3, and restores them when it's done.
+; the NMI does employ var1-3, and restores them when it's done.
 
-	Temp_Var1:		.ds 1	; Temporary storage variable (protected from damage by NMI)
-	Temp_Var2:		.ds 1	; Temporary storage variable (protected from damage by NMI)
-	Temp_Var3:		.ds 1	; Temporary storage variable (protected from damage by NMI)
-	Temp_Var4:		.ds 1	; Temporary storage variable
-	Temp_Var5:		.ds 1	; Temporary storage variable
-	Temp_Var6:		.ds 1	; Temporary storage variable
-	Temp_Var7:		.ds 1	; Temporary storage variable
-	Temp_Var8:		.ds 1	; Temporary storage variable
-	Temp_Var9:		.ds 1	; Temporary storage variable
-	Temp_Var10:		.ds 1	; Temporary storage variable
-	Temp_Var11:		.ds 1	; Temporary storage variable
-	Temp_Var12:		.ds 1	; Temporary storage variable
-	Temp_Var13:		.ds 1	; Temporary storage variable
-	Temp_Var14:		.ds 1	; Temporary storage variable
-	Temp_Var15:		.ds 1	; Temporary storage variable
-	Temp_Var16:		.ds 1	; Temporary storage variable
+	var1:		.ds 1	; Temporary storage variable (protected from damage by NMI)
+	var2:		.ds 1	; Temporary storage variable (protected from damage by NMI)
+	var3:		.ds 1	; Temporary storage variable (protected from damage by NMI)
+	var4:		.ds 1	; Temporary storage variable
+	var5:		.ds 1	; Temporary storage variable
+	var6:		.ds 1	; Temporary storage variable
+	var7:		.ds 1	; Temporary storage variable
+	var8:		.ds 1	; Temporary storage variable
+	var9:		.ds 1	; Temporary storage variable
+	var10:		.ds 1	; Temporary storage variable
+	var11:		.ds 1	; Temporary storage variable
+	var12:		.ds 1	; Temporary storage variable
+	var13:		.ds 1	; Temporary storage variable
+	var14:		.ds 1	; Temporary storage variable
+	Temp_Var15:			; Required for NoDice
+	var15:		.ds 1	; Temporary storage variable
+	Temp_Var16:			; Required for NoDice
+	var16:		.ds 1	; Temporary storage variable
 
 	VBlank_Tick:		.ds 1	; can be used for timing, or knowing when an NMI just fired off
 

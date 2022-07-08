@@ -263,9 +263,9 @@ SndMus2C_LoadNext:
 
 	; Get offset for the current index; it is always one ahead, so -1 from the LUT
 	LDA Music_Set2C_HeaderLUT-2+$100,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA Music_Set2C_HeaderLUT-1+$100,Y
-	STA <Temp_Var2
+	STA <var2
 
 	JMP SndMus_LoadNext_Cont
 
@@ -273,9 +273,9 @@ SndMus2C_LoadNext:
 Mus2C_LoadNoCarry:
 	; Get offset for the current index; it is always one ahead, so -1 from the LUT
 	LDA Music_Set2C_HeaderLUT-2,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA Music_Set2C_HeaderLUT-1,Y
-	STA <Temp_Var2
+	STA <var2
 
 	JMP SndMus_LoadNext_Cont
 
@@ -393,9 +393,9 @@ SndMus2B_LoadNext:
 
 	; Get offset for the current index; it is always one ahead, so -1 from the LUT
 	LDA Music_Set2B_HeaderLUT-2,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA Music_Set2B_HeaderLUT-1,Y
-	STA <Temp_Var2
+	STA <var2
 
 SndMus_LoadNext_Cont:
 
@@ -404,36 +404,36 @@ SndMus_LoadNext_Cont:
 	TAY
 
 	; Get and store rest lookup base index for this segment in Music_RestH_Base
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Music_RestH_Base	
 
 	; Get and store the base address into [Music_Base_H][Music_Base_L]
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA <Music_Base_L
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA <Music_Base_H
 
 	; Get and store triangle track offset
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Music_TriTrkPos
 
 	; Get and store square 1 track offset
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Music_Sq1TrkOff
 
 	; Set and store noise track offset
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Music_NseTrkPos
 	STA Music_NseStart	; Retain starting position for possible restoration later
 
 	; Set and store DMC track offset
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Music_PCMTrkPos
 	STA Music_PCMStart	; Retain starting position for possible restoration later
@@ -543,45 +543,45 @@ SndMus2A_LoadNext:
 
 	; Get offset for the current index; it is always one ahead, so -1 from the LUT
 	LDA Music_Set1_Set2A_HeaderLUT-2,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA Music_Set1_Set2A_HeaderLUT-1,Y
-	STA <Temp_Var2
+	STA <var2
 
 	; Clear 'Y'
 	LDA #0
 	TAY
 
 	; Get and store rest lookup base index for this segment in Music_RestH_Base
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Music_RestH_Base	
 
 	; Get and store the base address into [Music_Base_H][Music_Base_L]
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA <Music_Base_L
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA <Music_Base_H
 
 	; Get and store triangle track offset
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Music_TriTrkPos
 
 	; Get and store square 1 track offset
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Music_Sq1TrkOff
 
 	; Set and store noise track offset
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Music_NseTrkPos
 	STA Music_NseStart	; Retain starting position for possible restoration later
 
 	; Set and store DMC track offset
-	LDA [Temp_Var1],Y
+	LDA [var1],Y
 	INY
 	STA Music_PCMTrkPos
 	STA Music_PCMStart	; Retain starting position for possible restoration later
@@ -1598,11 +1598,11 @@ IntNMI:
 	PHA		 ; Push A (Y) onto stack
 
 	; Push the three temp vars onto the stack 
-	LDA <Temp_Var1
+	LDA <var1
 	PHA
-	LDA <Temp_Var2
+	LDA <var2
 	PHA
-	LDA <Temp_Var3
+	LDA <var3
 	PHA
 
 	JMP PRG062_SUB_9F40	 ; Jump to PRG062_SUB_9F40
@@ -1773,11 +1773,11 @@ PRG063_F567:
 
 	; Pull (pop) the three temp vars from the stack 
 	PLA
-	STA <Temp_Var3
+	STA <var3
 	PLA
-	STA <Temp_Var2
+	STA <var2
 	PLA
-	STA <Temp_Var1
+	STA <var1
 
 	; This pulls (pops) all the registers from the stack...
 	PLA
@@ -2146,14 +2146,14 @@ IntIRQ:	 ; $F795 IRQ Interrupt (scanline from MMC3)
 
 	; Reset_Latch was something other than the magic $5A value... reset!!
 
-	; This gets the address of the Reset entry point -> [Temp_Var2][Temp_Var1]
+	; This gets the address of the Reset entry point -> [var2][var1]
 	LDA Vector_Table+2
-	STA <Temp_Var1
+	STA <var1
 	LDA Vector_Table+3
-	STA <Temp_Var2
+	STA <var2
 
 	; Jump to the Reset instead...
-	JMP [Temp_Var1]
+	JMP [var1]
 
 PRG063_F7B0:
 	LDA PAPU_MODCTL_Copy
@@ -2998,19 +2998,19 @@ CardVStartL:	.byte $56, $59, $5C	; Lower half of card
 StatusBar_Update_Cards:
 
 	LDA #0 ; SB: Inventory offset, former 2P specific offsets removed
-	STA <Temp_Var1	 ; Temp_Var1 = A
+	STA <var1	 ; var1 = A
 
 	LDA #$02	 
-	STA <Temp_Var2	 ; Temp_Var2 = 2
+	STA <var2	 ; var2 = 2
 
 PRG063_FCCC:
-	LDY <Temp_Var1	 ; Y = Temp_Var1
+	LDY <var1	 ; Y = var1
 
 	JSR StatusBar_DrawCardPiece	 ; Draw part of the card into the status bar
 
-	INC <Temp_Var1
-	DEC <Temp_Var2
-	BPL PRG063_FCCC	 ; While Temp_Var2 >= 0, loop!
+	INC <var1
+	DEC <var2
+	BPL PRG063_FCCC	 ; While var2 >= 0, loop!
 
 	RTS		 ; Return
 
@@ -3027,7 +3027,7 @@ Player_GetStarCoinAndUpdate:
 	STA Inventory_Cards,Y	 ; Store the new star coin
 
 StatusBar_DrawCardPiece:
-	STY <Temp_Var3	 	; Temp_Var3 = Y
+	STY <var3	 	; var3 = Y
 	LDX Inventory_Cards,Y	; Get next card
 
 	LDA <Map_EnterViaID
@@ -3055,9 +3055,9 @@ SBDCP_NotComet:
 
 	LDX #0	; SB: Inventory offset, former 2P specific offsets removed
 
-	LDA <Temp_Var3		; A = Temp_Var3 (offset to current card)
-	STX <Temp_Var3		; Temp_Var3 = X
-	SUB <Temp_Var3		; A -= Temp_Var3 (offset from start to current card)
+	LDA <var3		; A = var3 (offset to current card)
+	STX <var3		; var3 = X
+	SUB <var3		; A -= var3 (offset from start to current card)
 	TAX		 	; A = X
 
 	LDA CardVStartU,X
@@ -3207,13 +3207,13 @@ Clear_PPU_CTL2_Copy:	; $FDBF
 ; technically the other two could be specified as well)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Clear_Nametable:	; $FDC7:
-	STA <Temp_Var1		; Save A
+	STA <var1		; Save A
 
 	LDA PPU_STAT	 	; 
 	LDA #$00	 	; 
 	STA PPU_CTL1		; Most likely most importantly to prevent any more Resets
 
-	LDA <Temp_Var1		; Restore A (from Reset_PPU_Clear_Nametables, this is $20 or $28, Nametable 0 or Nametable 2)
+	LDA <var1		; Restore A (from Reset_PPU_Clear_Nametables, this is $20 or $28, Nametable 0 or Nametable 2)
 	STA PPU_VRAM_ADDR	; Write this as high byte VRAM address select
 	LDA #$00 
 	STA PPU_VRAM_ADDR	; $00 as low byte for VRAM address (Reset_PPU_Clear_Nametables selects nametable 1 or 2)
@@ -3229,7 +3229,7 @@ PRG063_FDE1:
 	DEX		 ; X--
 	BNE PRG063_FDE1	 ; While <> 0, loop (will write 4 times)
 
-	LDA <Temp_Var1	 ; Retrieve initial A value again
+	LDA <var1	 ; Retrieve initial A value again
 	ADD #$03	 	; A += 3 (moving to attribute table)
 	STA PPU_VRAM_ADDR	; Address high byte
 	LDA #$c0		; Beginning of attribute table
@@ -3258,7 +3258,7 @@ Clear_Nametable_Short:	; $FE02
 	LDA #$00	 	; 
 	STA PPU_CTL1		; Most likely most importantly to prevent any more Resets
 
-	LDA <Temp_Var1		; Restore A (from Reset_PPU_Clear_Nametables, this is $20 or $28, Nametable 0 or Nametable 2)
+	LDA <var1		; Restore A (from Reset_PPU_Clear_Nametables, this is $20 or $28, Nametable 0 or Nametable 2)
 	STA PPU_VRAM_ADDR	; Write this as high byte VRAM address select
 	LDA #$00 
 	STA PPU_VRAM_ADDR	; $00 as low byte for VRAM address (Reset_PPU_Clear_Nametables selects nametable 1 or 2)
@@ -3297,11 +3297,11 @@ PRG063_FE38:
 
 PRG063_FE40:
 
-	; Load FIXME values -> Temp_Var1/2
+	; Load FIXME values -> var1/2
 	LDA PRG063_FE2A,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA PRG063_FE2F,Y
-	STA <Temp_Var2
+	STA <var2
 
 	LDY #$00	 ; Y = 0
 	LDX #$03	 ; X = 3
@@ -3321,9 +3321,9 @@ PRG063_FE58:
 	STA PPU_CTL1
 PRG063_FE60:
 	; Set VRAM High/Low Addresses
-	LDA <Temp_Var1
+	LDA <var1
 	STA PPU_VRAM_ADDR
-	LDA <Temp_Var2
+	LDA <var2
 	STA PPU_VRAM_ADDR
 
 PRG063_FE6A:
@@ -3339,25 +3339,25 @@ PRG063_FE6A:
 PRG063_FE76:
 
 	; Next VRAM byte
-	LDA <Temp_Var2
+	LDA <var2
 	ADD #$01
-	STA <Temp_Var2
-	LDA <Temp_Var1
+	STA <var2
+	LDA <var1
 	ADC #$00
-	STA <Temp_Var1
+	STA <var1
 
 	CMP #$23
 	BNE PRG063_FE6A	 ; If haven't possibly hit the end of the nametable, jump to PRG063_FE6A
 
-	LDA <Temp_Var2
+	LDA <var2
 	CMP #$c0
 	BNE PRG063_FE6A	 ; If haven't hit the end of the nametable, jump to PRG063_FE6A
 
 	; Set address to second nametable
 	LDA #$28
-	STA <Temp_Var1
+	STA <var1
 	LDA #$00
-	STA <Temp_Var2
+	STA <var2
 
 	JMP PRG063_FE60	; Loop!
 
@@ -3389,22 +3389,22 @@ DynJump:	; $FE99
 	; This will address the bytes that immediately followed the
 	; JSR instruction that put us here...
 	PLA			; Pull A
-	STA <Temp_Var1		; Temp_Var1 = pulled A
+	STA <var1		; var1 = pulled A
 	PLA			; Pull A
-	STA <Temp_Var2		; Temp_Var2 = pulled A
+	STA <var2		; var2 = pulled A
 
 	; REMEMBER: Since the return address was pulled, the next RTS that
 	; we happen to encounter will put us back to the call before the
 	; call that put us here at DynJump...
 
 	INY			; Need to increment Y (because the return address is at the last byte of the JSR)
-	LDA [Temp_Var1],Y	; Gets the byte here (address high)
-	STA <Temp_Var3		; Stored into Temp_Var3
+	LDA [var1],Y	; Gets the byte here (address high)
+	STA <var3		; Stored into var3
 	INY		 	; Y++
-	LDA [Temp_Var1],Y	; Gets the byte here (address low)
-	STA <Temp_Var4		; Stores the byte into Temp_Var4
+	LDA [var1],Y	; Gets the byte here (address low)
+	STA <var4		; Stores the byte into var4
 	
-	JMP [Temp_Var3]	 	; Jump to [Temp_Var4][Temp_Var3]
+	JMP [var3]	 	; Jump to [var4][var3]
 	
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3499,14 +3499,14 @@ PRG063_FEC0:
 
 	; FIXME: I THINK this is for switch debouncing??
 PRG063_FEC3:
-	LDA <Temp_Var1	 ; Pull result out of $00 -> A
+	LDA <var1	 ; Pull result out of $00 -> A
 	PHA		 ; Push A
 	JSR Read_Joypad	 ; Read Joypad
 	PLA		 ; Pull A
-	CMP <Temp_Var1	 ; Check if same
+	CMP <var1	 ; Check if same
 	BNE PRG063_FEC3	 ; If not, do it again
 
-	ORA <Temp_Var2	 ; 
+	ORA <var2	 ; 
 	PHA		 ; Push A
 	AND #$0f	 ; A &= $0F
 	TAX		 ; A -> X
@@ -3515,9 +3515,9 @@ PRG063_FEC3:
 
 	ORA Read_Joypads_UnkTable,X	 ; FIXME: A |= Read_Joypads_UnkTable[X]
 	PHA		 	; Save A
-	STA <Temp_Var3	 	; Temp_Var3 = A
+	STA <var3	 	; var3 = A
 	EOR Controller1,Y	; 
-	AND <Temp_Var3	 	; 
+	AND <var3	 	; 
 	STA Controller1Press,Y	; Figures which buttons have only been PRESSED this frame as opposed to those which are being held down
 	STA <Pad_Input	 	; 
 	PLA		 	; Restore A
@@ -3532,17 +3532,17 @@ PRG063_FEC3:
 
 	LDA <Controller1
 	AND #$30
-	STA <Temp_Var1
+	STA <var1
 	LDA <Controller2
 	AND #$cf
-	ORA <Temp_Var1
+	ORA <var1
 	STA <Pad_Holding
 	LDA <Controller1Press
 	AND #$30
-	STA <Temp_Var1
+	STA <var1
 	LDA <Controller2Press
 	AND #$cf
-	ORA <Temp_Var1
+	ORA <var1
 	STA <Pad_Input
 
 PRG063_FF11:
@@ -3567,7 +3567,7 @@ ReadJoypad_NotRev:
 ; Read_Joypad
 ;
 ; This subroutine does some tricky business to read out the joypad
-; into Temp_Var1 / Temp_Var2
+; into var1 / var2
 ; Register Y should be 0 for Joypad 1 and 1 for Joypad 2
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -3595,9 +3595,9 @@ Read_Joypad:	; $FF12
 Read_Joypad_Loop:
 	LDA JOYPAD,Y	 ; Get joypad data
 	LSR A
-	ROL <Temp_Var1
+	ROL <var1
 	LSR A
-	ROL <Temp_Var2
+	ROL <var2
 	DEX
 	BNE Read_Joypad_Loop	 ; Loop until 8 reads complete
 
@@ -3757,4 +3757,3 @@ Vector_Table:
 	.word IntNMI   	; $FFFA - NMI Interrupt (VBlank)
 	.word IntReset	; $FFFC - Reset Interrupt (boot up)
 	.word IntIRQ	; $FFFE - IRQ Interrupt (scanline from MMC3)
-

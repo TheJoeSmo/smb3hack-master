@@ -545,12 +545,12 @@ PRG005_A283:
 Podoboo_HitLavaAlt:
 	LDA <Objects_Y,X
 	SUB <Objects_Var5,X
-	STA <Temp_Var1
+	STA <var1
 	LDA <Objects_YHi,X
 	SBC <Objects_Var4,X
 	LSR A	
-	ROR <Temp_Var1
-	LDA <Temp_Var1
+	ROR <var1
+	LDA <var1
 	LSR A
 	LSR A
 	LSR A
@@ -643,20 +643,20 @@ ObjInit_Spark:
 
 	; Based on where we find a solid tile will determine our initial travel direction
 	LDA #3
-	STA <Temp_Var15	; Temp_Var1 = 3 (checking all possible directions)
+	STA <var15	; var1 = 3 (checking all possible directions)
 Spark_InitLoop:
 
-	LDY <Temp_Var15
+	LDY <var15
 	JSR Spark_SolidTraceTileCheck
 	BGE Spark_TracerFound	; If Spark has found a solid tracer tile, jump to Spark_TracerFound
 
-	DEC <Temp_Var15		; Temp_Var1--
-	BNE Spark_InitLoop	; While Temp_Var1 > 0, loop!
+	DEC <var15		; var1--
+	BNE Spark_InitLoop	; While var1 > 0, loop!
 
-	; Note: If we drop out here, Temp_Var1 = 0, which is fine
+	; Note: If we drop out here, var1 = 0, which is fine
 
 Spark_TracerFound:
-	LDA <Temp_Var15
+	LDA <var15
 	STA <Objects_Var5,X		; Set Spark's initial direction
 
 	RTS
@@ -757,10 +757,10 @@ Spark_NotTracerEnd:
 	
 	LDA Objects_Var1,X
 	ASL A
-	STA <Temp_Var1	; Temp_Var1 = 0 or 4, depending on whether CW or CCW
+	STA <var1	; var1 = 0 or 4, depending on whether CW or CCW
 	
 	LDA <Objects_Var5,X		; Get direction
-	ADD <Temp_Var1			; Offset by CW or CCW
+	ADD <var1			; Offset by CW or CCW
 	TAY		; -> 'Y'
 	
 	LDA <Objects_DetStat,X
@@ -993,9 +993,9 @@ BigCannonBall_Draw:
 	LDA Objects_SprVVis,X
 	BNE PRG005_A429	 	; If any sprite of the big cannon ball is vertically off-screen, jump to PRG005_A429 (RTS)
 
-	; Temp_Var1 = big cannon ball's Sprite Y
+	; var1 = big cannon ball's Sprite Y
 	LDA <Objects_SpriteY,X
-	STA <Temp_Var1
+	STA <var1
 
 	LDY Object_SprRAM,X	 ; Y = Sprite RAM offset
 
@@ -1003,7 +1003,7 @@ BigCannonBall_Draw:
 	BMI PRG005_A3F3	 ; If this sprite is horizontally off-screen, jump to PRG005_A3F3
 
 	; Add 8 to Sprite Y for left edge sprite (vertically centered)
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #$08
 	STA Sprite_RAM+$10,Y
 
@@ -1013,7 +1013,7 @@ PRG005_A3F3:
 	BNE PRG005_A402	 ; If this sprite is horizontally off-screen, jump to PRG005_A402
 
 	; Add 8 to Sprite Y for right edge sprite (vertically centered)
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #$08
 	STA Sprite_RAM+$14,Y
 
@@ -1329,9 +1329,9 @@ PRG005_A581:
 
 	; Left or Right Fire jet here...
 
-	; Temp_Var16 = 0
+	; var16 = 0
 	LDA #$00
-	STA <Temp_Var16
+	STA <var16
 
 	LDY <Objects_Var4,X
 	BEQ PRG005_A568	 ; If Var4 = 0, jump to PRG005_A568 (RTS)
@@ -1341,50 +1341,50 @@ PRG005_A581:
 
 	JSR Object_CalcSpriteXY_NoHi
 
-	; Temp_Var1 = Sprite Y - 1
+	; var1 = Sprite Y - 1
 	LDA <Objects_SpriteY,X
 	SUB #$01
-	STA <Temp_Var1
+	STA <var1
 
-	; Temp_Var2 = Sprite X
+	; var2 = Sprite X
 	LDA <Objects_SpriteX,X	
-	STA <Temp_Var2	
+	STA <var2	
 
 PRG005_A59D:
-	LDA <Temp_Var2
+	LDA <var2
 	JSR FireJetLR_SpriteVisibleTest
 	BCS PRG005_A605	 ; If sprite is not visible, jump to PRG005_A605
 
-	LDA <Temp_Var16
+	LDA <var16
 	ASL A	
 	ASL A	
 	ADC Object_SprRAM,X
 	TAY		 ; Y = Sprite RAM offset
 
 	; Set Sprite Y
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$00,Y
 
 	; Set Sprite X
-	LDA <Temp_Var2	
+	LDA <var2	
 	STA Sprite_RAM+$03,Y
 
-	; Counter value -> Temp_Var3
+	; Counter value -> var3
 	LDA Level_NoStopCnt
-	STA <Temp_Var3
+	STA <var3
 
 	LDA <Objects_Var4,X
-	LSR <Temp_Var3
+	LSR <var3
 	CMP #$03
 	BEQ PRG005_A5C9	 ; If Var4 = 3, jump to PRG005_A5C9
 
 	; Otherwise, divide it further
-	LSR <Temp_Var3
-	LSR <Temp_Var3
-	LSR <Temp_Var3
+	LSR <var3
+	LSR <var3
+	LSR <var3
 
 PRG005_A5C9:
-	LSR <Temp_Var3
+	LSR <var3
 
 	PHP		 ; Save process status
 
@@ -1410,25 +1410,25 @@ PRG005_A5DD:
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 
-	; Temp_Var15 = Temp_Var16 (sprite ram offset)
-	LDA <Temp_Var16
-	STA <Temp_Var15
+	; var15 = var16 (sprite ram offset)
+	LDA <var16
+	STA <var15
 
 	LDA Level_ObjectID,X
 	CMP #OBJ_FIREJET_RIGHT
 	BNE PRG005_A5F4	 ; If this is not a rightward fire jet, jump to PRG005_A5F4
 
-	; Otherwise, Temp_Var15 = 5 - Temp_Var16
+	; Otherwise, var15 = 5 - var16
 	LDA #$05
-	SUB <Temp_Var16
-	STA <Temp_Var15
+	SUB <var16
+	STA <var15
 
 PRG005_A5F4:
 	LDA Objects_Frame,X
 	ASL A
 	ASL A
 	ASL A
-	ADC <Temp_Var15
+	ADC <var15
 	TAX		 ; X = appropriate fire jet pattern index
 
 	; Set pattern for this sprite
@@ -1439,14 +1439,14 @@ PRG005_A5F4:
 
 PRG005_A605:
 
-	; Temp_Var2 (Sprite X) += 8 (next sprite over)
-	LDA <Temp_Var2
+	; var2 (Sprite X) += 8 (next sprite over)
+	LDA <var2
 	ADD #$08
-	STA <Temp_Var2
+	STA <var2
 
-	INC <Temp_Var16	 ; Temp_Var16
+	INC <var16	 ; var16
 
-	LDA <Temp_Var16
+	LDA <var16
 	CMP #$06
 	BNE PRG005_A59D	 ; If this is not the sixth fire jet sprite, jump to PRG005_A59D
 
@@ -1582,13 +1582,13 @@ PRG005_A67D:
 	LDA Piranha_Style,Y
 	STA Objects_Var2,X
 	AND #$01	; Only concerned with bit 0 (set for "ceiling" type) here
-	STA <Temp_Var2
+	STA <var2
 
 	LDA <Objects_Var5,X	; Original Y
 	SUB <Objects_Y,X	; - Current Y
 
-	LDY <Temp_Var2
-	BEQ PRG005_A6C0	 ; If Temp_Var2 = 0, jump to PRG005_A6C0
+	LDY <var2
+	BEQ PRG005_A6C0	 ; If var2 = 0, jump to PRG005_A6C0
 
 	CMP Objects_Var1,X
 	BLT PRG005_A6CA	 ; If the Y difference < low Y difference, jump to PRG005_A6C4
@@ -1608,7 +1608,7 @@ PRG005_A6CA:
 	JSR Object_Draw16x32Sprite	; Draw Piranha
 
 	JSR Level_ObjCalcYDiffs
-	STY <Temp_Var1		 ; Store Player's relative position value -> Temp_Var1
+	STY <var1		 ; Store Player's relative position value -> var1
 
 	LDY Object_SprRAM,X	 ; Y = Sprite_RAM offset
 
@@ -1639,7 +1639,7 @@ PRG005_A6FD:
 	LDA Objects_FlipBits,X
 	BMI PRG005_A71E	 ; If vertically flipped, jump to PRG005_A71E
 
-	LDX <Temp_Var1		; X = Temp_Var1
+	LDX <var1		; X = var1
 
 	LDA Sprite_RAM+$02,Y
 	AND #~SPR_VFLIP
@@ -1658,7 +1658,7 @@ PRG005_A712:
 	BNE PRG005_A738	 ; Jump (technically always) to PRG005_A738
 
 PRG005_A71E:
-	LDX <Temp_Var1		; X = Temp_Var1
+	LDX <var1		; X = var1
 
 	LDA Sprite_RAM+$0A,Y
 	AND #~SPR_VFLIP
@@ -1683,25 +1683,25 @@ PRG005_A738:
 	LDA Objects_SprVVis,X
 	BNE PRG005_A78F	 ; If any sprite is vertically off-screen, jump to PRG005_A78F
 
-	; Temp_Var1 = 1
+	; var1 = 1
 	LDA #$01
-	STA <Temp_Var1
+	STA <var1
 
 	LDA Objects_Var2,X
 	AND #$01
 	BEQ PRG005_A74F	 ; If Var2 bit 0 not set, jump to PRG005_A74F
 
-	; Otherwise, load Temp_Var1 = Var1
+	; Otherwise, load var1 = Var1
 	LDA Objects_Var1,X
-	STA <Temp_Var1
+	STA <var1
 
 PRG005_A74F:
 	LDA Objects_SprHVis,X
 	BMI PRG005_A760	 ; If leftmost sprite is horizontally off-screen, jump to PRG005_A760
 
-	; Set Sprite Y at Origin Y - Temp_Var1, made relative to scroll
+	; Set Sprite Y at Origin Y - var1, made relative to scroll
 	LDA <Objects_Var5,X
-	SUB <Temp_Var1	
+	SUB <var1	
 	SUB Level_VertScroll
 	STA Sprite_RAM-$08,Y
 
@@ -1710,9 +1710,9 @@ PRG005_A760:
 	AND #$40
 	BNE PRG005_A773	 ; If the second from left sprite is horizontally off-screen, jump to PRG005_A773
 
-	; Set Sprite Y at Origin Y - Temp_Var1, made relative to scroll
+	; Set Sprite Y at Origin Y - var1, made relative to scroll
 	LDA <Objects_Var5,X
-	SUB <Temp_Var1
+	SUB <var1
 	SUB Level_VertScroll
 	STA Sprite_RAM-$04,Y
 
@@ -1768,11 +1768,11 @@ Piranha_Emerge:
 
 	LDA Objects_Var7,X
 	SBC #$00
-	STA <Temp_Var1			; Temp_Var1 = Original Y Hi, carry applied
+	STA <var1			; var1 = Original Y Hi, carry applied
 
 	PLA		 ; Restore the Original Y difference
 	CMP <Objects_Y,X
-	LDA <Temp_Var1
+	LDA <var1
 	SBC <Objects_YHi,X
 	BCS PRG005_A824	 ; Basically if Piranha is at his Y and Y Hi highest point, jump to PRG004_B7F0
 
@@ -1787,12 +1787,12 @@ Piranha_Retract:
 
 	LDA <Objects_YHi,X
 	ADC #$00
-	STA <Temp_Var1	 ; Temp_Var1 = carry applied to Y Hi
+	STA <var1	 ; var1 = carry applied to Y Hi
 
 	PLA		 ; Restore Y + 1
 
 	CMP <Objects_Var5,X
-	LDA <Temp_Var1	
+	LDA <var1	
 	SBC Objects_Var7,X
 	BCS PRG005_A824	 ; Basically if Piranha is at his Y and Y Hi origin, jump to PRG005_A824
 
@@ -1846,7 +1846,7 @@ PRG005_A808:
 
 	JSR Level_ObjCalcXDiffs
 
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #$1b
 	CMP #$37
 	BLT PRG005_A833	 ; If Player is too close, jump to PRG005_A833
@@ -1906,7 +1906,7 @@ PRG005_A85B:
 
 	JSR Level_ObjCalcXDiffs
 
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #$1b
 	CMP #$37
 	BGE PRG005_A824	 ; If Player is too far, jump to PRG005_A833
@@ -1926,7 +1926,7 @@ Piranha_SpitFire:
 	LDY #16		 ; Y = 16
 
 PRG005_A885:
-	STY <Temp_Var1	 ; Temp_Var1 = 0 or 16
+	STY <var1	 ; var1 = 0 or 16
 
 	LDY #$03	 ; Y = 3
 	JSR SpecialObj_FindEmptyAbortY	 ; Find an empty slot from special object slot 0 to 3 or don't come back!
@@ -1940,7 +1940,7 @@ Reznor_SpitFire5:
 Clyde_SpitFire5:
 	; Set Y offset
 	LDA <Objects_Y,X
-	ADD <Temp_Var1
+	ADD <var1
 	STA SpecialObj_YLo,Y
 	LDA <Objects_YHi,X
 	ADC #$00
@@ -1950,19 +1950,19 @@ Clyde_SpitFire5:
 	LDA #SOBJ_PIRANHAFIREBALL
 	STA SpecialObj_ID,Y
 
-	STY <Temp_Var1		 ; Special object slot index -> Temp_Var1
+	STY <var1		 ; Special object slot index -> var1
 
-	; Y difference -> Temp_Var6
+	; Y difference -> var6
 	JSR Level_ObjCalcYDiffs
-	STY <Temp_Var6	
+	STY <var6	
 
-	; X difference -> Temp_Var7
+	; X difference -> var7
 	JSR Level_ObjCalcXDiffs
-	STY <Temp_Var7	
+	STY <var7	
 
 	LDX #$00	 ; X = 0 (Player is close)
 
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #$50
 	CMP #$a0
 	BLT PRG005_A8C0	 ; If Player is close, jump to PRG005_A8C0
@@ -1970,11 +1970,11 @@ Clyde_SpitFire5:
 	INX		 ; X = 1 (Player is far)
 
 PRG005_A8C0:
-	LDY <Temp_Var1		 ; Y = special object slot index
+	LDY <var1		 ; Y = special object slot index
 
 	LDA PiranhaFireball_YVel,X
 
-	LSR <Temp_Var6
+	LSR <var6
 	BCC PRG005_A8CC	 ; If Y differance is not negative, jump to PRG005_A8CC
 
 	JSR Negate	 ; Otherwise, negate the loaded Y velocity
@@ -1984,7 +1984,7 @@ PRG005_A8CC:
 
 	LDA PiranhaFireball_XVel,X
 
-	LSR <Temp_Var7
+	LSR <var7
 	BCC PRG005_A8D9	 ; If X difference is not negative, jump to PRG005_A8D9
 
 	JSR Negate	 ; Otherwise negate the loaded X velocity
@@ -2005,9 +2005,9 @@ PRG005_A8D9:
 FireJetLR_SpriteVisibleTest:
 
 	; Backup X, Y, A
-	STX <Temp_Var4
-	STY <Temp_Var3
-	STA <Temp_Var2
+	STX <var4
+	STY <var3
+	STA <var2
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 
@@ -2023,7 +2023,7 @@ FireJetLR_SpriteVisibleTest:
 	LDY #$c0	 ; Y = $C0
 
 PRG005_A971:
-	CPY <Temp_Var2
+	CPY <var2
 	EOR Objects_SprHVis,X
 	BMI PRG005_A97C
 	BCC PRG005_A97E	
@@ -2041,9 +2041,9 @@ PRG005_A981:
 
 PRG005_A982:
 	; Restore Y, A, X
-	LDY <Temp_Var3
-	LDA <Temp_Var2
-	LDX <Temp_Var4
+	LDY <var3
+	LDA <var2
+	LDX <var4
 
 	RTS		 ; Return
 
@@ -2375,15 +2375,15 @@ Rocky_ThrowWrench:
 	LDA #$18	; A = $18 (otherwise)
 
 PRG005_AB13:
-	STA <Temp_Var3		 ; -> Temp_Var3
+	STA <var3		 ; -> var3
 
 	LDA Objects_FlipBits,X
 	ASL A
 	ASL A
 
-	STY <Temp_Var1	 ; Special object slot index -> Temp_Var1
+	STY <var1	 ; Special object slot index -> var1
 
-	LDA <Temp_Var3
+	LDA <var3
 	BCS PRG005_AB22	 ; If Rocky is horizontally flipped, jump to PRG005_AB22
 
 	LDA #-$10
@@ -2397,7 +2397,7 @@ PRG005_AB22:
 
 	; Set Rocky's Wrench Y Velocity
 	LDA Rocky_WrenchYVel,Y
-	LDY <Temp_Var1	
+	LDY <var1	
 	STA SpecialObj_YVel,Y
 
 	; Rocky's Wrench ID
@@ -2655,11 +2655,11 @@ PRG005_AC64:
 	DEY		 ; Y = $FF (16-bit sign extension)
 
 PRG005_AC6B:
-	STA <Temp_Var1	 ; A = -30 or 30
+	STA <var1	 ; A = -30 or 30
 
 	LDA <Objects_X,X
 	PHA		 ; Save bolt's X
-	ADD <Temp_Var1	 ; Add decided value
+	ADD <var1	 ; Add decided value
 	STA <Objects_X,X ; -> bolt's X
 
 	LDA <Objects_XHi,X
@@ -2734,18 +2734,18 @@ PRG005_ACA9:
 
 	LDA <Objects_XHi,X
 	SBC Objects_XHi,Y
-	STA <Temp_Var1	 ; Temp_Var1 = difference of X His
+	STA <var1	 ; var1 = difference of X His
 
-	ROL <Temp_Var2	 ; Pushes sign bit
+	ROL <var2	 ; Pushes sign bit
 
 	PLA		 ; Restore X difference
 
 	ADC #$80
-	LDA <Temp_Var1
+	LDA <var1
 	ADC #$00
 	BNE PRG005_AD01	 ; If bolts haven't hit, jump to PRG005_AD01 (skip this object)
 
-	LSR <Temp_Var2
+	LSR <var2
 
 	LDA #-$01	 ; A = -$01
 	BCS PRG005_ACF3	 
@@ -2754,14 +2754,14 @@ PRG005_ACA9:
 
 PRG005_ACF3:
 
-	STX <Temp_Var16		 ; Backup this other bolt's index
+	STX <var16		 ; Backup this other bolt's index
 
 	LDX <SlotIndexBackup	 ; X = original bolt object slot index
 	STA <Objects_XVel,X	 ; Set this bolt's X velocity
 
 	PHA		 ; ?? doesn't do anything useful (see immediately below)
 
-	LDX <Temp_Var16	 ; Restore this other bolt's index 
+	LDX <var16	 ; Restore this other bolt's index 
 
 	PLA		 ; ?? doesn't do anything useful (see immediately above)
 
@@ -3107,9 +3107,9 @@ PRG005_AE67:
 	LDA Objects_SprVVis,X
 	BNE PRG005_AE56	 ; If Sun is vertically off-screen, jump to PRG005_AE56 (RTS)
 
-	; Sun's Sprite Y -> Temp_Var1
+	; Sun's Sprite Y -> var1
 	LDA <Objects_SpriteY,X
-	STA <Temp_Var1	
+	STA <var1	
 
 	LDA Objects_Frame,X
 	TAX		 ; Frame -> 'X'
@@ -3118,7 +3118,7 @@ PRG005_AE67:
 	BMI PRG005_AEAC	 ; If sprite is horizontally off-screen, jump to PRG005_AEAC
 
 	; Set Sprite Y
-	LDA <Temp_Var1	
+	LDA <var1	
 	ADD Sun_SpriteYOffs,X
 	STA Sprite_RAM+$10,Y
 
@@ -3128,7 +3128,7 @@ PRG005_AEAC:
 	BNE PRG005_AEBC	 ; If this sprite is horizontally off-screen, jump to PRG005_AEBC
 
 	; Set Sprite Y
-	LDA <Temp_Var1
+	LDA <var1
 	ADD Sun_SpriteYOffs,X
 	STA Sprite_RAM+$14,Y
 
@@ -3139,23 +3139,23 @@ PRG005_AEBC:
 	STA Sprite_RAM+$11,Y
 	STA Sprite_RAM+$15,Y
 
-	; Keep all sun bits except vertical flip from first sprite -> Temp_Var15 and four sprites over
+	; Keep all sun bits except vertical flip from first sprite -> var15 and four sprites over
 	LDA Sprite_RAM+$02,Y
 	AND #~SPR_VFLIP
-	STA <Temp_Var15
+	STA <var15
 	STA Sprite_RAM+$12,Y
 
-	; Keep all sun bits except vertical flip from second sprite -> Temp_Var16 and four sprites over
+	; Keep all sun bits except vertical flip from second sprite -> var16 and four sprites over
 	LDA Sprite_RAM+$06,Y
 	AND #~SPR_VFLIP
-	STA <Temp_Var16
+	STA <var16
 	STA Sprite_RAM+$16,Y
 
 	LDX <SlotIndexBackup	 ; X = object slot index
 
-	; Sun Sprite X -> Temp_Var2 and sprite
+	; Sun Sprite X -> var2 and sprite
 	LDA <Objects_SpriteX,X
-	STA <Temp_Var2
+	STA <var2
 	STA Sprite_RAM+$13,Y
 
 	; +24 for right edge sprite
@@ -3168,16 +3168,16 @@ PRG005_AEBC:
 	JSR Object_GetRandNearUnusedSpr
 
 	; Set lower left sprite at Sprite Y + 16
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #16
 	STA Sprite_RAM+$00,Y
 
 	; Set lower left Sprite X
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$03,Y
 
 	; Vertically flip lower left sprite
-	LDA <Temp_Var15
+	LDA <var15
 	ORA #SPR_VFLIP
 	STA Sprite_RAM+$02,Y
 
@@ -3188,17 +3188,17 @@ PRG005_AEBC:
 	JSR Object_GetRandNearUnusedSpr
 
 	; Set lower right sprite Y + 16
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #16
 	STA Sprite_RAM+$00,Y
 
 	; Set lower right sprite X
-	LDA <Temp_Var2
+	LDA <var2
 	ADD #24
 	STA Sprite_RAM+$03,Y
 
 	; Set lower right sprite attributes
-	LDA <Temp_Var16
+	LDA <var16
 	ORA #SPR_VFLIP
 	STA Sprite_RAM+$02,Y
 
@@ -3336,7 +3336,7 @@ PRG005_AFB8:
 	JSR ArrowPlat_CheckWorldCollide
 	BLT PRG005_AFE2	 ; If arrow platform is not going to run into solid, jump to PRG005_AFE2 (RTS)
 
-	STA <Temp_Var1	 ; Store detected tile -> Temp_Var1
+	STA <var1	 ; Store detected tile -> var1
 
 	; Set state to Dead/Empty
 	LDA #OBJSTATE_DEADEMPTY
@@ -3347,7 +3347,7 @@ PRG005_AFB8:
 	CMP #$ff
 	BEQ PRG005_AFE2	; If there's no spikes in the active tileset, jump to PRG005_AFE2
 
-	SUB <Temp_Var1	 ; Subtract the detected tile
+	SUB <var1	 ; Subtract the detected tile
 	CMP #$02
 	BGE PRG005_AFE2	 ; If this is not a spike tile, jump to PRG005_AFE2 (RTS)
 
@@ -3453,9 +3453,9 @@ ArrowPlat_DrawCont:
 
 PRG005_B04C:
 
-	; Temp_Var2 = Sprite X
+	; var2 = Sprite X
 	LDA <Objects_SpriteX,X
-	STA <Temp_Var2
+	STA <var2
 
 	LDY <Objects_Var4,X	; Y = Var4
 
@@ -3465,13 +3465,13 @@ PRG005_B04C:
 	LDY #$04	 	; Y = 4 (platform is mid-direction-change)
 
 PRG005_B059:
-	STY <Temp_Var3		; Temp_Var3 = Var4 or 4 (arrow platform type)
+	STY <var3		; var3 = Var4 or 4 (arrow platform type)
 
 	LDY Object_SprRAM,X	 ; Y = Sprite RAM offset
 
-	; Temp_Var1 = 0
+	; var1 = 0
 	LDA #$00
-	STA <Temp_Var1
+	STA <var1
 
 PRG005_B062:
 	; SB: Handle horizontal visibility
@@ -3484,31 +3484,31 @@ PRG005_B062:
 
 ArrowPlat_SkipSpr:
 	; Set Sprite X
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$03,Y
 
 	; +8 (next sprite over)
 	ADD #$08
-	STA <Temp_Var2
+	STA <var2
 
-	LDA <Temp_Var3
+	LDA <var3
 	ASL A
 	ASL A		; Multiply type by 4 to get to pattern start
-	ADC <Temp_Var1	; This particular pattern of the loop
+	ADC <var1	; This particular pattern of the loop
 	TAX		 ; X = proper index into ArrowPlat_Patterns
 
 	; Set the pattern for this sprite of the arrow platform
 	LDA ArrowPlat_Patterns,X
 	STA Sprite_RAM+$01,Y
 
-	LDX <Temp_Var3	 ; X = Temp_Var3 (arrow platform type index)
+	LDX <var3	 ; X = var3 (arrow platform type index)
 
 	LDA ArrowPlat_Attrs,X
 
 	CPX #$04
 	BNE PRG005_B08F	 ; If arrow platform is in mid-direction-change, jump to PRG005_B08F
 
-	LDX <Temp_Var1	 ; X = this loop index
+	LDX <var1	 ; X = this loop index
 	CPX #$02
 	BNE PRG005_B08F	 ; If this is the second up direction state, jump to PRG005_B08F
 
@@ -3526,11 +3526,11 @@ PRG005_B08F:
 	INY
 	INY	; Y += 4 (next sprite)
 
-	INC <Temp_Var1	 ; Temp_Var1++
+	INC <var1	 ; var1++
 
-	LDA <Temp_Var1
+	LDA <var1
 	CMP #$04
-	BNE PRG005_B062	 ; If Temp_Var1 <> 4, loop!
+	BNE PRG005_B062	 ; If var1 <> 4, loop!
 
 PRG005_B0A0:
 	RTS		 ; Return
@@ -3562,7 +3562,7 @@ PRG005_B0AE:
 
 	ADC <Player_Y	; Add Player Y
 	AND #$f0	; Align to tile grid vertically
-	STA <Temp_Var3	; -> Temp_Var3
+	STA <var3	; -> var3
 
 	LDA <Player_YHi
 	ADC #$00
@@ -3571,7 +3571,7 @@ PRG005_B0AE:
 
 	; Tile_Mem address high byte
 	ADC #HIGH(Tile_Mem)
-	STA <Temp_Var2
+	STA <var2
 
 	LDA <Player_X
 	ADD #$08	; Center Player X
@@ -3579,12 +3579,12 @@ PRG005_B0AE:
 	LSR A
 	LSR A
 	LSR A		; Divide by 16 (tile grid column value)
-	ORA <Temp_Var3	; "OR" in the vertical position
-	STA <Temp_Var1  ; Temp_Var1 is a row/column grid position
+	ORA <var3	; "OR" in the vertical position
+	STA <var1  ; var1 is a row/column grid position
 
 	LDY #$00	 ; Y = 0
 
-	LDA [Temp_Var1],Y ; Get the tile here
+	LDA [var1],Y ; Get the tile here
 	PHA		 ; Save it
 
 	ASL A
@@ -3936,15 +3936,15 @@ PRG005_B270:
 
 	LDA Level_ObjectID,X
 	SUB #$90
-	STA <Temp_Var15
+	STA <var15
 	LDY #$06
 
 PRG005_B282:
-	STY <Temp_Var1		  
+	STY <var1		  
 	CPY #$06
 	BNE PRG005_B28D
 
-	LDA <Temp_Var7
+	LDA <var7
 	JMP PRG005_B294
 
 
@@ -3955,7 +3955,7 @@ PRG005_B28D:
 	ADD Object_SprRAM,X
 
 PRG005_B294:
-	STA <Temp_Var16		  
+	STA <var16		  
 	LDA <Player_Y
 	SUB Level_VertScroll
 	ADD #$18
@@ -3965,7 +3965,7 @@ PRG005_B294:
 	SUB #$10
 
 PRG005_B2A6:
-	LDY <Temp_Var16		  
+	LDY <var16		  
 	SUB Sprite_RAM+$00,Y
 	CMP #$09
 	BCS PRG005_B2C0
@@ -3979,7 +3979,7 @@ PRG005_B2A6:
 
 
 PRG005_B2C0:
-	LDY <Temp_Var1		  
+	LDY <var1		  
 	DEY
 	BPL PRG005_B282
 
@@ -3994,7 +3994,7 @@ PRG005_B2C6:
 	CMP #$f8
 	BEQ PRG005_B2C0
 
-	LDA <Temp_Var15
+	LDA <var15
 	BEQ PRG005_B33E
 
 	LDA <Objects_Var5,X
@@ -4035,7 +4035,7 @@ PRG005_B2F4:
 
 PRG005_B303:
 	LDA <Objects_Var5,X	  
-	LDY <Temp_Var1
+	LDY <var1
 	CPY #$04
 	BCC PRG005_B30D
 
@@ -4045,12 +4045,12 @@ PRG005_B30D:
 	ASL A		  
 	BCS PRG005_B331
 
-	LDA <Temp_Var6
+	LDA <var6
 	ASL A
 	ASL A
 	ASL A
 	STA <Player_YVel
-	LDA <Temp_Var5
+	LDA <var5
 	EOR #$ff
 
 PRG005_B31B:
@@ -4077,10 +4077,10 @@ PRG005_B32E:
 	RTS
 
 PRG005_B331:
-	LDA <Temp_Var5		  
+	LDA <var5		  
 	JSR PRG005_B31B
 
-	LDA <Temp_Var6
+	LDA <var6
 	ASL A
 	ASL A
 	ASL A
@@ -4088,7 +4088,7 @@ PRG005_B331:
 	RTS
 
 PRG005_B33E:
-	LDY <Temp_Var1		  
+	LDY <var1		  
 	LDA <Objects_VarBSS,X
 	CMP #$10
 	BCC PRG005_B34F
@@ -4122,18 +4122,18 @@ PRG005_B364:
 	STA <Objects_Var5,X
 
 PRG005_B369:
-	LDA <Temp_Var5		  
-	EOR <Temp_Var6
+	LDA <var5		  
+	EOR <var6
 	BPL PRG005_B375
 
-	LDA <Temp_Var5
+	LDA <var5
 	BPL PRG005_B379
 
 	BMI PRG005_B37C
 
 
 PRG005_B375:
-	LDA <Temp_Var5		  
+	LDA <var5		  
 	BPL PRG005_B37C
 
 
@@ -4153,8 +4153,8 @@ PRG005_B37C:
 
 PRG005_B38B:
 	LDY #$20	  
-	STA <Temp_Var1
-	ASL <Temp_Var1
+	STA <var1
+	ASL <var1
 	ROR A
 	NOP
 	NOP
@@ -4181,7 +4181,7 @@ PRG005_B3AD:
 	STA <Player_YVel
 
 PRG005_B3B1:
-	LDY <Temp_Var16		  
+	LDY <var16		  
 	LDA <Player_Y
 	PHA
 	LDA Sprite_RAM+$00,Y
@@ -4258,7 +4258,7 @@ PRG005_B40A:
 	TAY		 ; Y = 0 to 15
 
 	LDA PRG005_B21B,Y
-	STA <Temp_Var10	 ; Temp_Var10 = PRG005_B21B[Y]
+	STA <var10	 ; var10 = PRG005_B21B[Y]
 
 	TYA		 ; Y = 0 to 15 again
 
@@ -4268,29 +4268,29 @@ PRG005_B40A:
 	TAY
 
 	LDA PRG005_B21B,Y
-	STA <Temp_Var9	 ; Temp_Var9 = PRG005_B21B[Y]
+	STA <var9	 ; var9 = PRG005_B21B[Y]
 
 	LDA <Objects_VarBSS,X
 	AND #$10
 	BEQ PRG005_B432
 
-	LDA <Temp_Var9
+	LDA <var9
 	PHA
-	LDA <Temp_Var10
-	STA <Temp_Var9
+	LDA <var10
+	STA <var9
 	PLA
-	STA <Temp_Var10
+	STA <var10
 
 PRG005_B432:
-	LDA <Temp_Var10		  
+	LDA <var10		  
 	CMP #$03
 	BCS PRG005_B444
 
 	LSR A
-	STA <Temp_Var2
-	STA <Temp_Var6
+	STA <var2
+	STA <var6
 	LDA #$00
-	STA <Temp_Var4
+	STA <var4
 	JMP PRG005_B460
 
 PRG005_B444:
@@ -4303,29 +4303,29 @@ PRG005_B447:
 	BCS PRG005_B447
 
 	ADC #$03
-	STA <Temp_Var4
-	STY <Temp_Var2
-	STY <Temp_Var4
-	STY <Temp_Var6
+	STA <var4
+	STY <var2
+	STY <var4
+	STY <var6
 	TAY
 	BEQ PRG005_B460
 
-	INC <Temp_Var2
+	INC <var2
 	DEY
 	BEQ PRG005_B460
 
-	INC <Temp_Var6
+	INC <var6
 
 PRG005_B460:
-	LDA <Temp_Var9		  
+	LDA <var9		  
 	CMP #$03
 	BCS PRG005_B472
 
 	LSR A
-	STA <Temp_Var1
-	STA <Temp_Var5
+	STA <var1
+	STA <var5
 	LDA #$00
-	STA <Temp_Var3
+	STA <var3
 	JMP PRG005_B48C
 
 PRG005_B472:
@@ -4338,17 +4338,17 @@ PRG005_B475:
 	BCS PRG005_B475
 
 	ADC #$03
-	STY <Temp_Var1
-	STY <Temp_Var3
-	STY <Temp_Var5
+	STY <var1
+	STY <var3
+	STY <var5
 	TAY
 	BEQ PRG005_B48C
 
-	INC <Temp_Var1
+	INC <var1
 	DEY
 	BEQ PRG005_B48C
 
-	INC <Temp_Var5
+	INC <var5
 
 PRG005_B48C:
 	LDA <Objects_VarBSS,X	  
@@ -4367,15 +4367,15 @@ PRG005_B49D:
 	LDX #$01	  
 
 PRG005_B49F:
-	LDA <Temp_Var1,X
+	LDA <var1,X
 	JSR Negate
-	STA <Temp_Var1,X
-	LDA <Temp_Var3,X
+	STA <var1,X
+	LDA <var3,X
 	JSR Negate
-	STA <Temp_Var3,X
-	LDA <Temp_Var5,X
+	STA <var3,X
+	LDA <var5,X
 	JSR Negate
-	STA <Temp_Var5,X
+	STA <var5,X
 
 PRG005_B4B4:
 	LDX <SlotIndexBackup		  
@@ -4394,38 +4394,38 @@ PRG005_SUB_B4BB:
 	; Draws any of the tilting/rotating platforms
 
 	LDY Object_SprRAM,X
-	LDA <Temp_Var14
+	LDA <var14
 	STA Sprite_RAM+$00,Y
-	ADD <Temp_Var1
+	ADD <var1
 	STA Sprite_RAM+$04,Y
-	ADD <Temp_Var3
+	ADD <var3
 	STA Sprite_RAM+$08,Y
-	ADD <Temp_Var5
+	ADD <var5
 	STA Sprite_RAM+$0C,Y
-	LDA <Temp_Var14
-	SUB <Temp_Var1
+	LDA <var14
+	SUB <var1
 	STA Sprite_RAM+$10,Y
-	SUB <Temp_Var3
+	SUB <var3
 	STA Sprite_RAM+$14,Y
-	SUB <Temp_Var5
-	LDY <Temp_Var7
+	SUB <var5
+	LDY <var7
 	STA Sprite_RAM+$00,Y
 	LDY Object_SprRAM,X
-	LDA <Temp_Var15
+	LDA <var15
 	STA Sprite_RAM+$03,Y
-	ADD <Temp_Var2
+	ADD <var2
 	STA Sprite_RAM+$07,Y
-	ADD <Temp_Var4
+	ADD <var4
 	STA Sprite_RAM+$0B,Y
-	ADD <Temp_Var6
+	ADD <var6
 	STA Sprite_RAM+$0F,Y
-	LDA <Temp_Var15
-	SUB <Temp_Var2
+	LDA <var15
+	SUB <var2
 	STA Sprite_RAM+$13,Y
-	SUB <Temp_Var4
+	SUB <var4
 	STA Sprite_RAM+$17,Y
-	SUB <Temp_Var6
-	LDY <Temp_Var7
+	SUB <var6
+	LDY <var7
 	STA Sprite_RAM+$03,Y
 	LDY Object_SprRAM,X
 	LDX #$06
@@ -4434,14 +4434,14 @@ PRG005_B526:
 	CPX #$00	  
 	BNE PRG005_B52C
 
-	LDY <Temp_Var7
+	LDY <var7
 
 PRG005_B52C:
 	LDA Sprite_RAM+$00,Y	  
 	CMP #$c2
 	BCS PRG005_B53A
 
-	LDA <Temp_Var13
+	LDA <var13
 	AND PRG005_B58F,X
 	BEQ PRG005_B541
 
@@ -4476,7 +4476,7 @@ PRG005_B551:
 	RTS
 
 
-	; The lower nibble of Var5 is shifted left 4 bits, Temp_Var1 is added, and this is returned as Temp_Var1
+	; The lower nibble of Var5 is shifted left 4 bits, var1 is added, and this is returned as var1
 	; The upper nibble of Var5 is arithmetically shifted right 4 bits and added to VarBSS which is capped to 0-63
 Platform_SplitVar5:
 	LDA <Player_HaltGame
@@ -4490,7 +4490,7 @@ Platform_SplitVar5:
 	ASL A
 	ASL A			; Var5 * 16
 	ADD Objects_Var1,X	; + Var1
-	STA Objects_Var1,X 	; -> Temp_Var1
+	STA Objects_Var1,X 	; -> var1
 
 	PLA		 ; Restore Var5
 
@@ -4525,47 +4525,47 @@ PRG005_B58F:	.byte $80, $40, $20, $02, $04, $08, $10
 
 PRG005_SUB_B596:
 	LDA #$00
-	STA <Temp_Var13
-	STA <Temp_Var11
-	LDA <Temp_Var2
-	ADD <Temp_Var4
-	ADD <Temp_Var6
-	STA <Temp_Var12
+	STA <var13
+	STA <var11
+	LDA <var2
+	ADD <var4
+	ADD <var6
+	STA <var12
 	PHA
 	LDA <Objects_X,X
-	SUB <Temp_Var12
-	STA <Temp_Var12
+	SUB <var12
+	STA <var12
 	PLA
 	BPL PRG005_B5B3
 
-	DEC <Temp_Var11
+	DEC <var11
 
 PRG005_B5B3:
 	LDA <Objects_XHi,X	  
-	SBC <Temp_Var11
-	STA <Temp_Var11
+	SBC <var11
+	STA <var11
 	LDY #$00
 
 PRG005_B5BB:
-	LDA <Temp_Var12		  
+	LDA <var12		  
 	CMP <Horz_Scroll
-	LDA <Temp_Var11
+	LDA <var11
 	SBC <Horz_Scroll_Hi
 	BEQ PRG005_B5CC
 
 	LDA PRG005_B588,Y
-	ORA <Temp_Var13
-	STA <Temp_Var13
+	ORA <var13
+	STA <var13
 
 PRG005_B5CC:
-	STX <Temp_Var15		  
+	STX <var15		  
 	LDX PRG005_B582,Y
-	LDA <Temp_Var1,X
+	LDA <var1,X
 	PHA
-	ADD <Temp_Var12
-	STA <Temp_Var12
-	LDX <Temp_Var15
-	STY <Temp_Var16
+	ADD <var12
+	STA <var12
+	LDX <var15
+	STY <var16
 	LDY #$00
 	PLA
 	BPL PRG005_B5E3
@@ -4574,32 +4574,32 @@ PRG005_B5CC:
 
 PRG005_B5E3:
 	TYA		  
-	ADC <Temp_Var11
-	STA <Temp_Var11
-	LDY <Temp_Var16
+	ADC <var11
+	STA <var11
+	LDY <var16
 	INY
 	CPY #$07
 	BNE PRG005_B5BB
 
 	LDA <Objects_X,X
 	SUB <Horz_Scroll
-	STA <Temp_Var15
+	STA <var15
 	LDA <Objects_Y,X
 	SUB Level_VertScroll
-	STA <Temp_Var14
+	STA <var14
 	LDA <Objects_YHi,X
 	ADC #$00
 	CMP #$01
 	BNE PRG005_B60C
 
-	LDA <Temp_Var14
+	LDA <var14
 	CMP #$e0
 	BCC PRG005_B610
 
 
 PRG005_B60C:
 	LDA #$ff	  
-	STA <Temp_Var13
+	STA <var13
 
 PRG005_B610:
 	RTS
@@ -4615,11 +4615,11 @@ PRG005_B6BA:
 
 	LDA <Pad_Holding
 	AND #(PAD_LEFT | PAD_RIGHT)
-	STA <Temp_Var1	 ; Temp_Var1 = non-zero if Player is pressing left or right
+	STA <var1	 ; var1 = non-zero if Player is pressing left or right
 
 	LDA #$00	; Halt Player if he presses direction "into" the Big ? Block
 
-	CPY <Temp_Var1
+	CPY <var1
 	BNE PRG005_B6CD	 ; If Player is doing that, jump to PRG005_B6CD
 
 	LDA BigQBlock_PlayerPushXVel-1,Y	 ; Get direction of Player away from block
@@ -4723,11 +4723,11 @@ Level_ObjectsSpawnByScroll:
 	LDA <Horz_Scroll
 	ADD LOSBS_LookAhead,Y
 	AND #$f0
-	STA <Temp_Var6	 ; Temp_Var6 = Horz_Scroll + LOSBS_LookAhead[Y] (appropriate "look ahead" values)
+	STA <var6	 ; var6 = Horz_Scroll + LOSBS_LookAhead[Y] (appropriate "look ahead" values)
 
 	LDA <Horz_Scroll_Hi
 	ADC LOSBS_LookAheadHi,Y
-	STA <Temp_Var7	 ; Temp_Var7 = "look ahead" high part
+	STA <var7	 ; var7 = "look ahead" high part
 
 	CMP <Level_Width
 	BEQ PRG005_B852	
@@ -4736,16 +4736,16 @@ Level_ObjectsSpawnByScroll:
 	JMP PRG005_B956	 ; Otherwise, at the end, jump to PRG005_B956 (RTS)
 
 PRG005_B852:
-	LDX <Temp_Var7	 ; X = "look ahead" high part
+	LDX <var7	 ; X = "look ahead" high part
 
 	LDA Level_ObjIdxStartByScreen,X	 ; Get starting Level_Objects index for this screen
 	BMI PRG005_B872	 ; If no objects on this screen, jump to PRG005_B872 (RTS)
  
-	STA <Temp_Var2	 ; Starting index -> Temp_Var2
+	STA <var2	 ; Starting index -> var2
 	TAX		 ; -> 'X'
 
 	ASL A		 
-	ADD <Temp_Var2	 ; Multiply by 3 (get to appropriate object)
+	ADD <var2	 ; Multiply by 3 (get to appropriate object)
 	TAY		 ; -> 'Y'
 
 	DEY		 ; Y-- (offset to object column, decrement to counteract Y += 3 on first pass)
@@ -4763,7 +4763,7 @@ PRG005_B863:
 	LSR A
 	LSR A
 	LSR A		 ; Divide by 16 to get "screen" (16 columns per screen)
-	CMP <Temp_Var7	 
+	CMP <var7	 
 	BEQ PRG005_B873	 ; If object is on this "look ahead" screen, jump to PRG005_B873
 
 PRG005_B872:
@@ -4784,13 +4784,13 @@ PRG005_B873:
 	ASL A		 
 	ASL A		 
 	ASL A		 ; Multiply by 16 (make pixel position)
-	CMP <Temp_Var6	 
+	CMP <var6	 
 	BNE PRG005_B863	 ; If object not equal to "look ahead" low component, jump to PRG005_B863 (skip to next object)
 
 	; Object should be spawned...
 
-	STX <Temp_Var2		 ; Backup object index -> Temp_Var2
-	STA <Temp_Var1		 ; Backup pixel X position -> Temp_Var1
+	STX <var2		 ; Backup object index -> var2
+	STA <var1		 ; Backup pixel X position -> var1
 
 	LDA Level_Objects-1,Y	 ; Get object ID
 
@@ -4832,7 +4832,7 @@ PRG005_B8B3:
 	TAY		 ; Restore Level_Objects index
 
 PRG005_B8BE:
-	LDX <Temp_Var2	 ; Restore object index
+	LDX <var2	 ; Restore object index
 
 	LDA Level_ObjectsSpawned,X
 	ORA #$80	 
@@ -4862,7 +4862,7 @@ PrioSpecObj_Match_IDLoop:
 	BPL PrioSpecObj_Match_IDLoop	; While X >= 0, loop!
 
 	; Not a priority special object...
-	LDX <Temp_Var2	 ; Restore object index
+	LDX <var2	 ; Restore object index
 	JMP Spawn_NotPrioSpecObj
 
 Spawn_PrioSpecObj:
@@ -4885,7 +4885,7 @@ Spawn_NotPrioSpecObj:
 	STA Level_ActSwEvent	; -> Level_ActSwEvent
 
 	; NOTE: NOT marking as spawned because we want support for multiple switches within a level, if desired
-	LDX <Temp_Var2	 ; Restore object index
+	LDX <var2	 ; Restore object index
 	JMP PRG005_B863	 ; Jump to PRG005_B863 (next object)
 
 Spawn_NotActSw:
@@ -4999,9 +4999,9 @@ ObjSpawn_NotPipeRaise:
 PRG005_B91E:
 
 	; Set object X
-	LDA <Temp_Var1
+	LDA <var1
 	STA <Objects_X,X
-	LDA <Temp_Var7
+	LDA <var7
 	STA <Objects_XHi,X
 
 	INY		 ; Y++ (different way of getting at row, I guess)
@@ -5031,7 +5031,7 @@ PRG005_B91E:
 	LDA Level_Objects,Y
 	STA Level_ObjectID,X
 
-	LDY <Temp_Var2			; Object index -> 'Y'
+	LDY <var2			; Object index -> 'Y'
 
 	; Mark this object as spawned
 	LDA Level_ObjectsSpawned,Y
@@ -5123,7 +5123,7 @@ ObjLRFlags:	.byte SPR_HFLIP, $00	; If Player is to right of object vs left, stor
 
 
 CannonFire_Init:
-	STA <Temp_Var16	 ; Store index value (1+)
+	STA <var16	 ; Store index value (1+)
 	TXA		 ; -> 'X'
 	PHA		 ; Save it too
 
@@ -5189,10 +5189,10 @@ PRG005_BA9A:
 	ASL A		
 	STA CannonFire_Y
 
-	LDA <Temp_Var7	
+	LDA <var7	
 	STA CannonFire_XHi	 ; CannonFire_XHi = (pixel high X of object)
 
-	LDA <Temp_Var1	
+	LDA <var1	
 	STA CannonFire_X	 ; CannonFire_X = (pixel X position of object)
 
 	LDA #$00
@@ -5201,7 +5201,7 @@ PRG005_BA9A:
 
 	LDA #$60
 
-	LDX <Temp_Var16	 ; X = Temp_Var16 (ID of Cannon Fire)
+	LDX <var16	 ; X = var16 (ID of Cannon Fire)
 
 	CPX #CFIRE_4WAY
 	BNE PRG005_BACE	 ; If X <> 4, jump to PRG005_BACE
@@ -5211,15 +5211,15 @@ PRG005_BA9A:
 PRG005_BACE:
 	STA CannonFire_Timer	 ; CannonFire_Timer = $00 or $60, depending on whether we're a 4-Way cannon
 
-	LDX <Temp_Var2		 ; Restore object index
-	STX CannonFire_Parent	 ; CannonFire_Parent = Temp_Var2
+	LDX <var2		 ; Restore object index
+	STX CannonFire_Parent	 ; CannonFire_Parent = var2
 
 	; Mark this object as spawned
 	LDA Level_ObjectsSpawned,X
 	ORA #$80	
 	STA Level_ObjectsSpawned,X
 
-	LDA <Temp_Var16	
+	LDA <var16	
 	STA CannonFire_ID
 
 	PLA		 ; Restore input index value
@@ -5248,18 +5248,18 @@ Level_ObjectsSpawnByScrollV:
 	LDA Level_VertScroll
 	ADD LOSBSV_LookAhead,Y
 	AND #$f0	 
-	STA <Temp_Var6	 ; Temp_Var6 = Vert_Scroll + LOSBSV_LookAhead[Y] (appropriate "look ahead" values)
+	STA <var6	 ; var6 = Vert_Scroll + LOSBSV_LookAhead[Y] (appropriate "look ahead" values)
 
 	LDA Level_VertScrollH
 	ADC LOSBSV_LookAheadHi,Y
-	STA <Temp_Var7		 ; Temp_Var7 = "look ahead" high part
+	STA <var7		 ; var7 = "look ahead" high part
 
 	LDY <Level_Width
 	CMP VertLevel_ScreenH+1,Y
 	BLT PRG005_BB12	 ; If the "high part" is < the level high size, jump to PRG005_BB12
 	BNE PRG005_BB0F	 ; If the "high part" is otherwise not equal, jump to PRG005_BB0F
 
-	LDA <Temp_Var6
+	LDA <var6
 	CMP VertLevel_ScreenL+1,Y
 	BLT PRG005_BB12	 ; If the lookahead low part is < the level low size, jump to PRG005_BB12
 
@@ -5267,17 +5267,17 @@ PRG005_BB0F:
 	JMP PRG005_BB9A	 ; Jump to PRG005_BB9A (RTS)
 
 PRG005_BB12:
-	LDX <Temp_Var7		 ; X = "look ahead" high part
+	LDX <var7		 ; X = "look ahead" high part
 	LDA Level_ObjIdxStartByScreen,X	 	 ; Get starting Level_Objects index for this screen
 	BMI PRG005_BB2F	 ; If no objects on this screen, jump to PRG005_BB2F (RTS)
 
 
 
-	STA <Temp_Var2	 ; Starting index -> Temp_Var2
+	STA <var2	 ; Starting index -> var2
 	TAX		 ; -> 'X'
 
 	ASL A		 
-	ADD <Temp_Var2	 ; Multiply by 3 (get to appropriate object)
+	ADD <var2	 ; Multiply by 3 (get to appropriate object)
 	TAY		 ; -> 'Y'
 
 PRG005_BB21:
@@ -5290,7 +5290,7 @@ PRG005_BB21:
 	LSR A
 	LSR A
 	LSR A		 ; Divide by 16 to get "screen" (16 rows per screen)
-	CMP <Temp_Var7	 
+	CMP <var7	 
 	BEQ PRG005_BB30	 ; If object is on this "look ahead" screen, jump to PRG005_BB30
 
 PRG005_BB2F:
@@ -5311,15 +5311,15 @@ PRG005_BB30:
 	ASL A
 	ASL A
 	ASL A		; Multiply by 16 (make pixel position)
-	CMP <Temp_Var6
+	CMP <var6
 	BNE PRG005_BB21	 ; If object not equal to "look ahead" low component, jump to PRG005_BB21 (skip to next object)
 
 	; Object should be spawned...
 
 	DEX		 ; X-- (undo INX above)
 
-	STX <Temp_Var2		 ; Backup object index -> Temp_Var2
-	STA <Temp_Var1		 ; Backup pixel X position -> Temp_Var1
+	STX <var2		 ; Backup object index -> var2
+	STA <var1		 ; Backup pixel X position -> var1
 
 	; SB: Fixing bug here, using object ID like it should
 	LDA Level_Objects-2,Y
@@ -5363,9 +5363,9 @@ PRG005_BB61:
 PRG005_BB6C:
 
 	; Set object Y
-	LDA <Temp_Var1
+	LDA <var1
 	STA <Objects_Y,X
-	LDA <Temp_Var7	
+	LDA <var7	
 	STA <Objects_YHi,X
 
 	; Object X Hi is never used in a vertical level
@@ -5388,7 +5388,7 @@ PRG005_BB6C:
 	LDA Level_Objects,Y
 	STA Level_ObjectID,X
 
-	LDY <Temp_Var2		 ; Y = Temp_Var2 (object index)
+	LDY <var2		 ; Y = var2 (object index)
 
 	; Mark object as spawned
 	LDA Level_ObjectsSpawned,Y
@@ -5468,7 +5468,7 @@ PRG005_BBDF:
 	ADD Level_VertScroll
 	AND #$e0	; Locks to 32 pixel grid
 	ORA #$08
-	STA <Temp_Var1	 ; Temp_Var1 = 64 + (Random 0 to 127), locked to 32 pixel grid with 15 offset
+	STA <var1	 ; var1 = 64 + (Random 0 to 127), locked to 32 pixel grid with 15 offset
 	PHP		 ; Save process status
 
 	; Now comes a lengthy check to make sure that no wooden 
@@ -5484,7 +5484,7 @@ PRG005_BBF1:
 
 	; This check specifically prevents two platforms from appearing in the same place
 	LDA Objects_Y,Y
-	CMP <Temp_Var1	
+	CMP <var1	
 	BNE PRG005_BC11	 ; If this object slot's Y position does not match what we generated, jump to PRG005_BC11
 
 	; Random + $30
@@ -5500,7 +5500,7 @@ PRG005_BC11:
 	BPL PRG005_BBF1	 ; While Y >= 0, loop!
 
 	; Y coordinate checks out, assign!
-	LDA <Temp_Var1
+	LDA <var1
 	STA <Objects_Y,X
 	PLP		 ; Restore process status
 	LDA <Vert_Scroll_Hi
@@ -5903,7 +5903,7 @@ Level_SpawnObjSetMax:
 ; It also sets X = SlotIndexBackup
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Level_CountNotDeadObjs:
-	STA <Temp_Var1	 ; Store object ID we're hunting for -> Temp_Var1
+	STA <var1	 ; Store object ID we're hunting for -> var1
 
 	LDY #$00	 ; Y = 0 (count how many of this object already exist)
 	LDX #$04	 ; X = 4
@@ -5913,7 +5913,7 @@ PRG005_BE13:
 	BEQ PRG005_BE20	 ; If this object slot is "dead", jump to PRG005_BE20
 
 	LDA Level_ObjectID,X
-	CMP <Temp_Var1	
+	CMP <var1	
 	BNE PRG005_BE20	 ; If this object slot does not have the same ID as what was input, jump to PRG005_BE20
 
 	INY		 ; Otherwise, increment count
@@ -6020,7 +6020,7 @@ PRG005_BE90:
 	STA AScrlURDiag_WrapState
 	STA Cine_ToadKing
 	STA Level_AScrlVVel
-	STA <Temp_Var1
+	STA <var1
 
 	TAX		 ; X = 0
 
@@ -6049,14 +6049,14 @@ PRG005_BECE:
 	LSR A
 	LSR A
 	LSR A		 ; Get appropriate screen offset
-	STA <Temp_Var2	 ; -> Temp_Var2
+	STA <var2	 ; -> var2
 
-	CPX <Temp_Var2	
+	CPX <var2	
 	BNE PRG005_BEE5	 ; If X <> screen offset, jump to PRG005_BEE5
 
-	INC <Temp_Var1	 ; Temp_Var1++
+	INC <var1	 ; var1++
 
-	LDA <Temp_Var1	
+	LDA <var1	
 	STA Level_ObjIdxStartByScreen+1,X ; Calculated first object index for next screen
 
 	INY
@@ -6065,7 +6065,7 @@ PRG005_BECE:
 	JMP PRG005_BEB6	 ; Jump to PRG005_BEB6
 
 PRG005_BEE5:
-	LDA <Temp_Var1	 
+	LDA <var1	 
 
 	CPX #$0f	 
 	BEQ PRG005_BEEE	 ; If X = $F, jump to PRG005_BEEE
@@ -6124,13 +6124,13 @@ PRG005_BF1C:
 
 	AND #$f0	 ; Align to grid
 
-	STA <Temp_Var14	 ; -> Temp_Var14
+	STA <var14	 ; -> var14
 
 	LDA <Horz_Scroll_Hi
 	PHA		 ; Save Horz_Scroll_Hi
 
 	ADC LOSBS_LookAheadHi	 ; Add 1 with carry (LOSBS_LookAheadHi = 1)
-	STA <Temp_Var15	 ; -> Temp_Var15
+	STA <var15	 ; -> var15
 
 	LDA #$01
 	STA <Scroll_LastDir	 ; Scroll_LastDir = 1 (screen last moved left)
@@ -6160,11 +6160,11 @@ PRG005_BF55:
 	JSR Level_ObjectsSpawnByScroll
 	JSR Level_ObjectsSpawnByScroll
 
-	LDA <Temp_Var15
+	LDA <var15
 	CMP <Horz_Scroll_Hi
 	BNE PRG005_BF49	 ; If we haven't reached the high target yet, loop
 
-	LDA <Temp_Var14	
+	LDA <var14	
 	CMP <Horz_Scroll
 	BNE PRG005_BF49	 ; If we haven't reached the low target yet, loop
 
@@ -6193,13 +6193,13 @@ PRG005_BF70:
 
 	ADD LOSBSV_LookAhead+1
 	AND #$f0
-	STA <Temp_Var14	 ; Temp_Var14 = Level_VertScroll + [LOSBSV_LookAhead+1], aligned to nearest row
+	STA <var14	 ; var14 = Level_VertScroll + [LOSBSV_LookAhead+1], aligned to nearest row
 
 	LDA Level_VertScrollH
 	PHA		 ; Save Level_VertScrollH
 	
 	ADD LOSBSV_LookAheadHi+1
-	STA <Temp_Var15	 ; Temp_Var15 = Level_VertScrollH + [LOSBSV_LookAheadHi+1]
+	STA <var15	 ; var15 = Level_VertScrollH + [LOSBSV_LookAheadHi+1]
 
 	LDA #$00
 	STA <Scroll_LastDir	 ; Scroll_LastDir = 0 (screen last moved up)
@@ -6225,11 +6225,11 @@ PRG005_BFA7:
 	JSR Level_ObjectsSpawnByScrollV
 	JSR Level_ObjectsSpawnByScrollV
 
-	LDA <Temp_Var15
+	LDA <var15
 	CMP Level_VertScrollH
 	BNE PRG005_BF98	 ; If we haven't reached the high target yet, loop
 
-	LDA <Temp_Var14
+	LDA <var14
 	CMP Level_VertScroll
 	BNE PRG005_BF98	 ; If we haven't reached the low target yet, loop
 
@@ -6287,20 +6287,20 @@ LevReset_VSpawnSpecs_IsOne:
 	PHA
 
 	; Needed for spawn -> index into 'X'
-	STX <Temp_Var2
+	STX <var2
 
-	; Calculate X coordinate -> Temp_Var1
+	; Calculate X coordinate -> var1
 	; X Hi not needed in vertical world
 	LDA Level_Objects,Y
 	ASL A
 	ASL A
 	ASL A
 	ASL A	; Multiply by 16
-	STA <Temp_Var1	; -> Temp_Var1
+	STA <var1	; -> var1
 
 	; Zero out the would-be X Hi
 	LDA #0
-	STA <Temp_Var7
+	STA <var7
 
 	; Spawn an alternate level mod!
 	JSR ObjPrioSpecObj_Init ; Initialization code for OBJ_ALTLEVELMOD/OBJ_TOUCHWARP
@@ -6365,7 +6365,7 @@ ObjPrioSpecObj_Init:
 	; If we don't, we'll FORCE into one!!
 
 	LDA Level_Objects+1,Y	; Get object row
-	STA <Temp_Var3	; -> Temp_Var3
+	STA <var3	; -> var3
 
 	; Match the object ID to its cooresponding special object ID
 	LDA Level_Objects-1,Y	; Get object ID
@@ -6379,7 +6379,7 @@ ObjPrioSpecObj_SearchLoop:
 
 ObjPrioSpecObj_Matched:	
 	LDA ObjPrioSpecObj_SObjIDs,Y	; Get Special Object ID
-	STA <Temp_Var4	; -> Temp_Var4
+	STA <var4	; -> var4
 
 	LDY #$07	 ; Y = 7
 PrioSpecObj_SearchEmpty:
@@ -6418,29 +6418,29 @@ PrioSpecObj_SearchEmpty_Found:
 	; We have an empty slot in 'Y' ...
 
 	; Set the appropriate Special Object ID...
-	LDA <Temp_Var4
+	LDA <var4
 	STA SpecialObj_ID,Y
 
 	; Store object spawn index into Var1 (so we can un-mark ourselves as spawned later; we WANT this to retrigger!)
-	LDA <Temp_Var2
+	LDA <var2
 	STA SpecialObj_Var1,Y
 
 	; Store the object X -> X Lo
-	LDA <Temp_Var1
+	LDA <var1
 	STA SpecialObj_XLo,Y
 
 	; Special objects generally do not have "X Hi", but we really need it this time,
 	; so we're going to borrow Var3 as a forced X Hi
-	LDA <Temp_Var7
+	LDA <var7
 	STA SpecialObj_Var3,Y
 
-	LDA <Temp_Var4
+	LDA <var4
 	CMP #SOBJ_FENCECTL
 	BNE PrioSpecObj_NoRealY
 
 	; Fence controller needs a real YLo/Hi!
 	; Upper 4 bits shifted right -> CannonFire_YHi (high Y)
-	LDA <Temp_Var3	 ; Get object row
+	LDA <var3	 ; Get object row
 	AND #$f0	 
 	LSR A		 
 	LSR A		 
@@ -6449,7 +6449,7 @@ PrioSpecObj_SearchEmpty_Found:
 	STA SpecialObj_YHi,Y
 
 	; Upper 4 bits shifted left -> CannonFire_Y (low Y)
-	LDA <Temp_Var3	 ; Get object row
+	LDA <var3	 ; Get object row
 	AND #$0f	
 	ASL A		
 	ASL A		
@@ -6461,7 +6461,7 @@ PrioSpecObj_SearchEmpty_Found:
 
 PrioSpecObj_NoRealY:
 	; Store the object row (used as a parameter) -> Y Lo
-	LDA <Temp_Var3
+	LDA <var3
 	STA SpecialObj_YLo,Y
 
 PrioSpecObj_YSet:
@@ -6471,7 +6471,7 @@ PrioSpecObj_YSet:
 	STA SpecialObj_Var2,Y
 	STA SpecialObj_Data,Y
 
-	LDX <Temp_Var2	 ; Restore object index
+	LDX <var2	 ; Restore object index
 
 	RTS
 
@@ -6615,9 +6615,9 @@ ClimbingKoopa_Draw:
 
 	; Reset vis variables
 	LDA Objects_SprVVis,X
-	STA <Temp_Var5		; Temp_Var5 = Objects_SprVVis
+	STA <var5		; var5 = Objects_SprVVis
 	LDA Objects_SprHVis,X
-	STA <Temp_Var8		; Temp_Var8 = Objects_SprVVis
+	STA <var8		; var8 = Objects_SprVVis
 	
 	; Advance 2 sprites
 	TYA
@@ -6630,22 +6630,22 @@ ClimbingKoopa_Draw:
 	; If vertically flipped, shell is at top not bottom...
 	
 	; Move shell up 16 pixels
-	LDA <Temp_Var1
+	LDA <var1
 	SUB #16
-	STA <Temp_Var1
+	STA <var1
 
 ClimbingKoopa_NotVFlip:
 	; Set proper palette
 	LDX <SlotIndexBackup
-	LDA <Temp_Var4	; We expect that the palette portion is currently SPR_PAL3, %xxxxxx11
+	LDA <var4	; We expect that the palette portion is currently SPR_PAL3, %xxxxxx11
 	AND #~%00000011		; Clear palette setting
-	STA <Temp_Var4
+	STA <var4
 	LDA Level_ObjectID,X
 	AND #1
 	TAX
 	LDA ClimbingKoopa_Palette,X
-	ORA <Temp_Var4
-	STA <Temp_Var4
+	ORA <var4
+	STA <var4
 	
 	; Select patterns for shell
 	LDX #(CK_Shell-ObjectGroup04_PatternSets)

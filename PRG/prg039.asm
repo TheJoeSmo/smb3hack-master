@@ -462,10 +462,10 @@ PlayerSnd_KickCont:
 	ASL A
 	ASL A
 KickSnd_NoAdj:
-	STA <Temp_Var1
+	STA <var1
 
 	LDA #$a0	 ; 
-	SUB <Temp_Var1
+	SUB <var1
 	STA PAPU_FT1	 ; Update register
 
 	LDA #$9f	 ; 
@@ -1365,4 +1365,3 @@ MXXSegData18:
 	.byte $7E, $8E, $7E, $FF, $02, $8C, $7E, $8C, $7E, $8C, $7E, $85, $7E, $8D, $02, $80
 	.byte $7E, $8D, $02, $84, $7E, $8E, $7E, $8E, $7E, $8D, $02, $8D, $7E, $8E, $7E, $8D
 	.byte $02, $8C, $7E
-

@@ -680,10 +680,10 @@ Map_IntroAttrSave:
 	LSR A		
 	LSR A		 ; A >> 5 (div by 32, for figuring out what set of 2x2 tiles we need to fix)
 	ADD #$d2
-	STA <Temp_Var1
+	STA <var1
 
 	ADD #$08
-	STA <Temp_Var2
+	STA <var2
 
 	LDA PPU_STAT
 
@@ -693,7 +693,7 @@ PRG010_C2DA:
 	; Set the address to $2Bxx (attribute table 2, all that the map effects)
 	LDA #$2B
 	STA PPU_VRAM_ADDR
-	LDA <Temp_Var1	
+	LDA <var1	
 	STA PPU_VRAM_ADDR
 
 	LDA PPU_VRAM_DATA
@@ -701,22 +701,22 @@ PRG010_C2DA:
 	LDA PPU_VRAM_DATA
 	STA <Scroll_ColorStrip,X
 
-	LDY <Temp_Var1	 ; Y = Temp_Var1
+	LDY <var1	 ; Y = var1
 	INY
 	TYA
 	AND #$07
 	BNE PRG010_C2F9
 
-	LDA <Temp_Var1
+	LDA <var1
 	AND #$f8
 	TAY
 
 PRG010_C2F9:
-	STY <Temp_Var1
+	STY <var1
 	CPX #$03
 	BNE PRG010_C303
-	LDA <Temp_Var2	
-	STA <Temp_Var1	
+	LDA <var2	
+	STA <var1	
 
 PRG010_C303:
 	INX	
@@ -1293,7 +1293,7 @@ PRG010_C5B0:
 
 PRG010_C5C5:
 	LDA Map_IntBoxErase	 
-	STA <Temp_Var1		 	; Temp_Var1 = Map_IntBoxErase
+	STA <var1		 	; var1 = Map_IntBoxErase
 
 	LDX #$00	 		; X = 0
 
@@ -1305,13 +1305,13 @@ PRG010_C5CC:
 	ASL A		 
 	TAY		 		; Y = Level_Tileset << 1 (for indexing TileLayout_ByTileset)
 
-	; Set Temp_Var15 to point to the 16x16 tile 8x8 layout data
+	; Set var15 to point to the 16x16 tile 8x8 layout data
 	LDA TileLayout_ByTileset,Y
-	STA <Temp_Var15		 
+	STA <var15		 
 	LDA TileLayout_ByTileset+1,Y
-	STA <Temp_Var16	
+	STA <var16	
 
-	LDY <Temp_Var1		 	; Get offset to current 16x16 tile we want to grab
+	LDY <var1		 	; Get offset to current 16x16 tile we want to grab
 	LDA [level_data_pointer],Y	 	; Grab it!
 	TAY		 		; Y = tile
 
@@ -1319,27 +1319,27 @@ PRG010_C5CC:
 	; in the order of upper-left, lower-left, upper-right, lower-right
 
 	; Upper-left
-	LDA [Temp_Var15],Y	 	; Get first 8x8
+	LDA [var15],Y	 	; Get first 8x8
 	STA Scroll_PatStrip,X	 	; Store this 8x8 into the vertical strip
 
 	; Lower-left
-	INC <Temp_Var16		; Jump to next layout chunk
-	LDA [Temp_Var15],Y	 	; Get next 8x8
+	INC <var16		; Jump to next layout chunk
+	LDA [var15],Y	 	; Get next 8x8
 	STA Scroll_PatStrip+1,X	; Store this 8x8 into vertical strip, next slot to the right
 
 	; Upper-right
-	INC <Temp_Var16		; Jump to next layout chunk
-	LDA [Temp_Var15],Y	 	; Get next 8x8
+	INC <var16		; Jump to next layout chunk
+	LDA [var15],Y	 	; Get next 8x8
 	STA Scroll_PatStrip+$B,X	; Store into vertical strip
 
 	; Lower-right
-	INC <Temp_Var16		; Jump to next layout chunk
-	LDA [Temp_Var15],Y	 	; Get next 8x8
+	INC <var16		; Jump to next layout chunk
+	LDA [var15],Y	 	; Get next 8x8
 	STA Scroll_PatStrip+$C,X	; Store into vertical strip
 
-	LDA <Temp_Var1	
+	LDA <var1	
 	ADD #16	
-	STA <Temp_Var1		 	; Temp_Var1 += 16 (get next tile one row down)
+	STA <var1		 	; var1 += 16 (get next tile one row down)
 
 	INX
 	INX		; X += 2 (next block down in Scroll_PatStrip)
@@ -1767,16 +1767,16 @@ PRG010_C8CD:
 	LDY Graphics_BufCnt	 ; Y = current graphics buffer count
 	LDX Map_DoFortressFX	 ; X = Mini Fortress effect slot index
 
-	; Get appropriate high byte of VRAM address -> Temp_Var11
+	; Get appropriate high byte of VRAM address -> var11
 	LDA FortressFX_VAddrH,X
-	STA <Temp_Var11	
+	STA <var11	
 	STA Graphics_Buffer,Y	; ... and into Graphics Buffer
 
 	INY		 ; Y++ (next byte in graphics buffer)
 
-	; Get appropriate low byte of VRAM address -> Temp_Var12
+	; Get appropriate low byte of VRAM address -> var12
 	LDA FortressFX_VAddrL,X
-	STA <Temp_Var12	
+	STA <var12	
 	STA Graphics_Buffer,Y	; ... and into Graphics Buffer
 
 	INY		 ; Y++ (next byte in graphics buffer)
@@ -1802,18 +1802,18 @@ PRG010_C8CD:
 	INY		 ; Y++ (next byte in graphics buffer)
 
 	; 32 bytes to get to the next row (bottom half of map tile getting changed)
-	LDA <Temp_Var12
+	LDA <var12
 	ADD #32
-	STA <Temp_Var12
-	LDA <Temp_Var11
+	STA <var12
+	LDA <var11
 	ADC #$00
-	STA <Temp_Var11
+	STA <var11
 
 	STA Graphics_Buffer,Y	 ; Store new high byte
 
 	INY		 ; Y++ (next byte in graphics buffer)
 
-	LDA <Temp_Var12
+	LDA <var12
 	STA Graphics_Buffer,Y	 ; Store new low byte
 
 	INY		 ; Y++ (next byte in graphics buffer)
@@ -1846,11 +1846,11 @@ PRG010_C8CD:
 
 	LDA Tile_Mem_Addr,Y	; Get low byte of address to tile memory for the specified screen
 	ADD #$f0		; Offset to map level
-	STA <Temp_Var15		; -> Temp_Var15
+	STA <var15		; -> var15
 
 	LDA Tile_Mem_Addr+1,Y	; Get high byte of address to tile memory for the specified screen
 	ADC #$00		; Apply carry
-	STA <Temp_Var16		; -> Temp_Var16
+	STA <var16		; -> var16
 
 	LDA FortressFX_MapLocation,X	; Get the column value
 	LSR A
@@ -1862,7 +1862,7 @@ PRG010_C8CD:
 
 	; Replace the tile in-memory
 	LDA FortressFX_MapTileReplace,X
-	STA [Temp_Var15],Y
+	STA [var15],Y
 	
 
 PRG010_C9A4:
@@ -1878,14 +1878,14 @@ PRG010_C9A4:
 PRG010_C9B2:
 	LDY Map_DoFortressFX	 ; Y = Map_DoFortressFX
 
-	; Store the map location pixel Y -> Temp_Var1
+	; Store the map location pixel Y -> var1
 	LDA FortressFX_MapLocationRow,Y
-	STA <Temp_Var1
+	STA <var1
 
-	; Store the map location pixel X -> Temp_Var2
+	; Store the map location pixel X -> var2
 	LDA FortressFX_MapLocation,Y
 	AND #$f0
-	STA <Temp_Var2
+	STA <var2
 
 	LDY <Map_ClearLevelFXCnt		 ; Y = Map_ClearLevelFXCnt
 	JSR Map_DrawClearLevelPoof	 ; Draw the "poof"
@@ -2114,21 +2114,21 @@ Map_Do_Borders:
 
 	PLA		 	; Restore A (Screen_ColumnL + value)
 	AND #$0f	 	; Screen-relative column index 
-	STA <Temp_Var5	 	; Store that to Temp_Var5
+	STA <var5	 	; Store that to var5
 	LDX #$00	 	; X = 0
 	LDA <Map_ScrollOddEven	; A = Map_ScrollOddEven
 	AND #$01	 	; Check if entering
 	BEQ PRG010_CACF	 	; If NOT entering, jump to PRG010_CACF
 	LDX #$06	 	; Otherwise, X = 6
 PRG010_CACF:
-	LDY <Temp_Var5		; Y = Temp_Var5 (screen-relative column index)
+	LDY <var5		; Y = var5 (screen-relative column index)
 	LDA [level_data_pointer],Y	; Get tile
 	AND #$c0	 	; Only keep its upper 2 bits ($00, $40, $80, $C0)
-	STA <Temp_Var1		; Store this into Temp_Var1
+	STA <var1		; Store this into var1
 	INY		 	; Y++
 	LDA [level_data_pointer],Y	; Get the next tile
 	AND #$c0	 	; Only keep its upper 2 bits ($00, $40, $80, $C0)
-	STA <Temp_Var2		; Store this into Temp_Var2
+	STA <var2		; Store this into var2
 
 	TYA		 	
 	ADD #15
@@ -2136,32 +2136,32 @@ PRG010_CACF:
 
 	LDA [level_data_pointer],Y	; Get this tile
 	AND #$c0	 	; Only keep its upper 2 bits ($00, $40, $80, $C0)
-	STA <Temp_Var3		; Store this into Temp_Var3
+	STA <var3		; Store this into var3
 	INY		 	; Y++
 	LDA [level_data_pointer],Y	; Get this tile
 	AND #$c0	 	; Only keep its upper 2 bits ($00, $40, $80, $C0)
-	STA <Temp_Var4		; Store this into Temp_Var4
+	STA <var4		; Store this into var4
 
 	; Take the four tiles and form an attribute byte
-	LDA <Temp_Var1
+	LDA <var1
 	LSR A		
 	LSR A		
-	ORA <Temp_Var2	
+	ORA <var2	
 	LSR A		
 	LSR A		
-	ORA <Temp_Var3	
+	ORA <var3	
 	LSR A		
 	LSR A		
-	ORA <Temp_Var4	
+	ORA <var4	
 
 	STA Map_BorderAttrFromTiles,X
 	INX		 ; X++
 
-	LDA <Temp_Var5
+	LDA <var5
 	ADD #32
-	STA <Temp_Var5	 ; Temp_Var5 += 32
+	STA <var5	 ; var5 += 32
 
-	AND #$f0	 ; Only keep upper four bits of Temp_Var5
+	AND #$f0	 ; Only keep upper four bits of var5
 	CMP #$c0	 
 	BNE PRG010_CACF	 ; If not equal to $C0, loop!
 
@@ -2270,13 +2270,13 @@ PRG010_CB8D:
 	LSR A
 	LSR A
 	EOR VBorder_Offset,X
-	STA <Temp_Var1
+	STA <var1
 
 	LDY #$02	 ; Y = 2
 	LDX #$00	 ; X = 0
 PRG010_CBA6:
 	LDA Graphics_Buffer+1,X
-	EOR <Temp_Var1
+	EOR <var1
 	STA Graphics_Buffer+1,X
 
 	INX
@@ -2340,14 +2340,14 @@ PRG010_CBEA:
 	LSR A
 	LSR A
 	LSR A
-	STA <Temp_Var1
+	STA <var1
 
 	LDY #$00	 ; Y = 0
 	LDX #$00	 ; X = 0
 
-	; Temp_Var2 = 5
+	; var2 = 5
 	LDA #$05
-	STA <Temp_Var2
+	STA <var2
 
 	LDA <Map_ScrollOddEven
 	BEQ PRG010_CC0B	 ; If Map_ScrollOddEven = 0, jump to PRG010_CC0B
@@ -2358,7 +2358,7 @@ PRG010_CC0B:
 
 	; Set VRAM low address in graphics buffer
 	LDA Graphics_Buffer+1,X
-	EOR <Temp_Var1
+	EOR <var1
 	STA Graphics_Buffer+1,X
 
 	LDA Map_BorderAttrFromTiles,Y
@@ -2373,8 +2373,8 @@ PRG010_CC0B:
 
 	INY		 ; Y++
 
-	DEC <Temp_Var2	 ; Temp_Var2--
-	BPL PRG010_CC0B	 ; While Temp_Var2 >= 0, loop
+	DEC <var2	 ; var2--
+	BPL PRG010_CC0B	 ; While var2 >= 0, loop
 
 	; Graphics_BufCnt = $18
 	LDA #$18
@@ -2435,7 +2435,7 @@ Map_PanRight:
 
 	LDA <Scroll_ColumnL
 	AND #$0f
-	STA <Temp_Var1
+	STA <var1
 
 	LDX #$00	 ; X = 0
 
@@ -2444,13 +2444,13 @@ PRG010_CC7A:
 	ASL A 
 	TAY		 ; Y = Level_Tileset * 2
 
-	; Get pointer to tile layout -> Temp_Var15/16
+	; Get pointer to tile layout -> var15/16
 	LDA TileLayout_ByTileset,Y
-	STA <Temp_Var15
+	STA <var15
 	LDA TileLayout_ByTileset+1,Y
-	STA <Temp_Var16
+	STA <var16
 
-	LDY <Temp_Var1		 ; Y = Temp_Var1
+	LDY <var1		 ; Y = var1
 
 	LDA [level_data_pointer],Y	; Get tile
 	TAY		 	; -> 'Y'
@@ -2459,27 +2459,27 @@ PRG010_CC7A:
 	AND #$01
 	BNE PRG010_CC98
 
-	; Temp_Var16 += 2 (two 8x8 patterns over)
-	INC <Temp_Var16
-	INC <Temp_Var16
+	; var16 += 2 (two 8x8 patterns over)
+	INC <var16
+	INC <var16
 
 PRG010_CC98:
-	LDA [Temp_Var15],Y		; Get this pattern
+	LDA [var15],Y		; Get this pattern
 	STA Scroll_PatStrip+$20,X	; Store into Scroll_PatStrip
 
-	INC <Temp_Var16			; Temp_Var16++
+	INC <var16			; var16++
 
-	LDA [Temp_Var15],Y		; Get this pattern
+	LDA [var15],Y		; Get this pattern
 	STA Scroll_PatStrip+$21,X	; Store into Scroll_PatStrip
 
 	; X += 2
 	INX
 	INX
 
-	; Temp_Var1 += 16
-	LDA <Temp_Var1
+	; var1 += 16
+	LDA <var1
 	ADD #$10
-	STA <Temp_Var1
+	STA <var1
 
 	AND #$f0
 	CMP #$b0
@@ -2530,7 +2530,7 @@ Map_PanLeft:
 	LSR A
 	LSR A
 	LSR A
-	STA <Temp_Var1
+	STA <var1
 
 	LDY #(PRG010_CB39_End - PRG010_CB39 - 1)
 	LDX #(PRG010_CB39_End - PRG010_CB39 - 1)
@@ -2558,7 +2558,7 @@ PRG010_CCF7:
 PRG010_CD0B:
 	; Set VRAM low address in graphics buffer
 	LDA Graphics_Buffer+1,X
-	EOR <Temp_Var1
+	EOR <var1
 	STA Graphics_Buffer+1,X
 
 	LDA Map_BorderAttrFromTiles,Y
@@ -2835,7 +2835,7 @@ Map_UpdateStarCoins:
 
 	; If you get here, found a map link; update the star coins
 	LDA Map_Completions,Y
-	STA <Temp_Var1	; -> Temp_Var1
+	STA <var1	; -> var1
 
 	; If one of the completion bits is set, put that in Level_IsComplete
 	STA Level_IsComplete
@@ -2843,11 +2843,11 @@ Map_UpdateStarCoins:
 	LDX #2	; X = 2 (3 star coins)
 Map_UpdCoin_Loop:
 
-	LDA <Temp_Var1
+	LDA <var1
 	AND #$01
 	STA Inventory_Cards,X
 
-	LSR <Temp_Var1
+	LSR <var1
 
 	DEX	; X--
 	BPL Map_UpdCoin_Loop	; While X >= 0, loop
@@ -2924,7 +2924,7 @@ MONorm_NoStarCoins:
 	; SB: Old, unknown code; AFAIK this is unused, but I'll be safe with 0
 	;LDA Map_Previous_World,Y	; A = Map_Previous_World
 	LDA #0
-	STA <Temp_Var3		; Stored into Temp_Var3
+	STA <var3		; Stored into var3
 	JMP Map_DrawPlayer	; Draw Player sprite on map
 
 Map_UpdateStarCoins_AtPlayer:
@@ -3323,13 +3323,13 @@ MWZDN_NotStopped:
 Scroll_Map_SpriteBorder:
 
 	LDA #$20	 
-	STA <Temp_Var1	 ; Temp_Var1 = $20
+	STA <var1	 ; var1 = $20
 	LDY #$60	 ; Y = $60
 
 PRG010_D1B2:
 
-	; Set first three hardware sprites to Y = Temp_Var1
-	LDA <Temp_Var1
+	; Set first three hardware sprites to Y = var1
+	LDA <var1
 	STA Sprite_RAM,Y
 	STA Sprite_RAM+4,Y
 	STA Sprite_RAM+8,Y
@@ -3361,9 +3361,9 @@ PRG010_D1B2:
 	LDA #248
 	STA Sprite_RAM+11,Y
 
-	LDA <Temp_Var1	
+	LDA <var1	
 	ADD #16
-	STA <Temp_Var1	 ; Temp_Var1 += 16
+	STA <var1	 ; var1 += 16
 
 	TYA		
 	SUB #12	
@@ -3399,12 +3399,12 @@ Map_GetTile:
 	LSR A		 
 	LSR A		 
 	LSR A		 
-	STA <Temp_Var1		; Temp_Var1 = World_Map_X / 16 (the current column of the current screen)
+	STA <var1		; var1 = World_Map_X / 16 (the current column of the current screen)
 
 	LDA <World_Map_Y,X
 	SUB #16
 	AND #$f0
-	ORA <Temp_Var1		; Temp_Var1 now holds the X column in the lower 4-bits and the Y row in the upper 4-bits
+	ORA <var1		; var1 now holds the X column in the lower 4-bits and the Y row in the upper 4-bits
 
 	TAY		 	; Store this offset value into 'Y'
 
@@ -3492,7 +3492,7 @@ Map_CanoeCheckXHiOff:	.byte  0,  $FF, 0,   0	; Remember, this is used more as a 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Map_CheckDoMove:
 	LDA <Pad_Holding
-	STA <Temp_Var4		; Temp_Var4 = Pad_Holding
+	STA <var4		; var4 = Pad_Holding
 
 	LDA Debug_Flag
 	CMP #$80
@@ -3502,7 +3502,7 @@ Map_CheckDoMove:
 	LDA <Controller1,X
 	AND #PAD_SELECT
 	BEQ MCDM_NotHoldingSelectDebug
-	LDA <Temp_Var4
+	LDA <var4
 	AND #(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
 	BEQ MCDM_NotHoldingSelectDebug
 	JMP PRG010_D336
@@ -3523,7 +3523,7 @@ MCDM_NotHoldingSelectDebug:
 PRG010_D296:
 
 	LDY #$03	 	; Y = 3
-	LDA <Temp_Var4		; A = Pad_Holding
+	LDA <var4		; A = Pad_Holding
 	AND #(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)	 	; Just up/down/left/right
 
 PRG010_D29C:
@@ -3548,23 +3548,23 @@ PRG010_D2A7
 
 PRG010_D2AD:
 	TYA		 	; A = 0-3
-	STA <Temp_Var3		; Temp_Var3 = 0-3 (right, left, down, up respectively)
+	STA <var3		; var3 = 0-3 (right, left, down, up respectively)
 	ASL A		 	
 
 	TAX		 	; X = A << 1 (indexing Map_Object_Valid_Tiles)
 
-	; [Temp_Var2][Temp_Var1] become an address into Map_Object_Valid_Tiles
+	; [var2][var1] become an address into Map_Object_Valid_Tiles
 	LDA Map_Object_Valid_Tiles,X
-	STA <Temp_Var1		 
+	STA <var1		 
 	LDA Map_Object_Valid_Tiles+1,X
-	STA <Temp_Var2		 
+	STA <var2		 
 
 	JSR MapTile_Get_By_Offset	; Get tile Player is going to move over (adjacent tile in travel direction)
 
 	; Search to see if this is a valid to move over given the Player's direction et al.
 	LDY #(Player_Valid_Tiles2Check-1)
 PRG010_D2C1:
-	CMP [Temp_Var1],Y	
+	CMP [var1],Y	
 	BEQ PRG010_D336	 	; If Player is going to travel over this particular valid tile, jump to PRG010_D336
 	DEY		 	; Y--
 	BPL PRG010_D2C1	 	; While Y >= 0, loop!
@@ -3601,20 +3601,20 @@ PRG010_D2E1:
 	CPY #TILE_DOCK	
 	BNE PRG010_D310	 	; If Player is not standing on a dock tile, jump to PRG010_D310
 
-	LDY <Temp_Var3		; Y = Temp_Var3; 0-3 (right, left, down, up respectively)
+	LDY <var3		; Y = var3; 0-3 (right, left, down, up respectively)
 
 	LDX Player_Current
 	LDA <World_Map_Y,X
 	ADD Map_CanoeCheckYOff,Y
-	STA <Temp_Var1		; Temp_Var1 = Player's Y on map plus an appropriate offset to search for canoe
+	STA <var1		; var1 = Player's Y on map plus an appropriate offset to search for canoe
 
 	LDA <World_Map_X,X
 	ADD Map_CanoeCheckXOff,Y
-	STA <Temp_Var2		; Temp_Var2 is like Temp_Var1, for X
+	STA <var2		; var2 is like var1, for X
 
 	LDA <World_Map_XHi,X	
 	ADC Map_CanoeCheckXHiOff,Y
-	STA <Temp_Var3		; Temp_Var3 is like Temp_Var2, for X Hi
+	STA <var3		; var3 is like var2, for X Hi
 
 	;LDX #(MAPOBJ_TOTAL-1) 	; X = (MAPOBJ_TOTAL-1) (search all map objects)
 ;PRG010_D306:
@@ -3638,7 +3638,7 @@ PRG010_D31C:
 PRG010_D31D:
 	; There's a canoe here...!
 
-	; Temp_Var1-3 configure a detection position precisely one tile away
+	; var1-3 configure a detection position precisely one tile away
 	; from the Player in whatever direction is appropriate; the canoe
 	; must match this coordinate precisely.
 
@@ -3650,15 +3650,15 @@ PRG010_D31D:
 	; we fail this test (and make the "bump" sound if needed)
 
 	LDY Map_Object_ActY,X
-	CPY <Temp_Var1	
+	CPY <var1	
 	BNE PRG010_D310	
 
 	LDY Map_Object_ActX,X	
-	CPY <Temp_Var2	
+	CPY <var2	
 	BNE PRG010_D310	 
 
 	LDY Map_Object_ActXH,X
-	CPY <Temp_Var3	
+	CPY <var3	
 	BNE PRG010_D310	 
 
 PRG010_D332:
@@ -3671,7 +3671,7 @@ PRG010_D336:
 	LDX #SND_MAPPATHMOVE		; X = SND_MAPPATHMOVE
 
 	; Drawbridge check!
-	;LDY <Temp_Var3			; Y = Temp_Var3; 0-3 (right, left, down, up respectively)
+	;LDY <var3			; Y = var3; 0-3 (right, left, down, up respectively)
 	;CMP Map_DrawBridgeCheck,Y	
 	;BNE PRG010_D347	 		; If Player is not crossing a draw bridge tile, jump to PRG010_D347
 
@@ -3689,7 +3689,7 @@ PRG010_D349:
 	LDX Player_Current
 	STA <World_Map_Move,X	 	; Tell Player to move 'A' units
 
-	LDA <Temp_Var4			; A = Pad_Holding
+	LDA <var4			; A = Pad_Holding
 	AND #(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)	; Just the left/right/down/up bits
 	STA <World_Map_Dir,X	 	; Store as movement direction!
 	STA Map_PrevMoveDir	 	; Store as previous move!
@@ -3728,11 +3728,11 @@ MapTile_Get_By_Offset:	; $D369
 
 	LDA <World_Map_Y,X	; A = player's current Y position on-map
 	ADD Search_YOff,Y	; Offset Player's Y based on current search direction
-	STA <Temp_Var15		; Store into Temp_Var15
+	STA <var15		; Store into var15
 
 	LDA <World_Map_X,X	; A = player's current X position on-map
 	ADD Search_XOff,Y	; Offset Player's X based on current search direction
-	STA <Temp_Var16	; Store into Temp_Var16
+	STA <var16	; Store into var16
 
 	LDA <World_Map_XHi,X	; A = player's current X Hi position on-map
 	ADC Search_XHiOff,Y	; Offset Player's X Hi based on current search direction
@@ -3747,17 +3747,17 @@ MapTile_Get_By_Offset:	; $D369
 
 	INC <level_data_pointer+1	; Effectively adds $100 to the address (maps get loaded at screen base + $110)
 
-	LDA <Temp_Var16
+	LDA <var16
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	STA <Temp_Var16	; Temp_Var16 = Temp_Var16 >> 4
+	STA <var16	; var16 = var16 >> 4
 
-	LDA <Temp_Var15
+	LDA <var15
 	AND #$f0		; Aligns Player's Y to a tile
-	ORA <Temp_Var16
-	TAY		 	; Y = (Temp_Var15 & 0xF0) | Temp_Var15 (offset to specific tile Player is at)
+	ORA <var16
+	TAY		 	; Y = (var15 & 0xF0) | var15 (offset to specific tile Player is at)
 	LDA [level_data_pointer],Y	; Get this tile
 	RTS		 	; Return!
  
@@ -3785,7 +3785,7 @@ Map_W8DarknessUpdate:
 	BEQ PRG010_D3E3	 ; If (Map_W8D_Dir & 3) = 0 (every 4 counts), jump to PRG010_D3E3
 
 	LDY #$86	 ; Y = $86
-	STY <Temp_Var3	 ; Temp_Var3 = $86
+	STY <var3	 ; var3 = $86
 
 	AND #$02
 	BNE PRG010_D3C6
@@ -3807,7 +3807,7 @@ PRG010_D3CD:
 
 PRG010_D3E3:
 	LDY #$06	 	; Y = 6
-	STY <Temp_Var3		; Temp_Var3 = 6
+	STY <var3		; var3 = 6
 	LDX #$00	 	; X = 0
 	LDA Map_W8D_Dir	; A = Map_W8D_Dir
 	AND #$08	 	
@@ -3830,12 +3830,12 @@ PRG010_D3F8:
 PRG010_D40B:
 	LDA Map_W8D_Y	 	; A = Map_W8D_Y
 	LDX Map_W8D_X	 	; X = Map_W8D_X
-	JSR W8D_Calc_VRAM_Addr	; Returns Temp_Var15 as the video address we need to modify
+	JSR W8D_Calc_VRAM_Addr	; Returns var15 as the video address we need to modify
 
-	; Store Temp_Var15 -> Map_W8D_VAddrH/L
-	LDA <Temp_Var15
+	; Store var15 -> Map_W8D_VAddrH/L
+	LDA <var15
 	STA Map_W8D_VAddrH
-	LDA <Temp_Var16
+	LDA <var16
 	STA Map_W8D_VAddrL
 
 	JSR W8D_Calc_RC	; Calculate the Map_W8D_RC value (row in upper bits, column in lower bits)
@@ -3871,8 +3871,8 @@ PRG010_D445:
 	LDA #32	 ; A = 32 (32 bytes, i.e. vertical offset between 8x8 patterns)
 	LDX #16	 ; X = 16 (16 bytes, i.e. vertical offset between map tiles)
 PRG010_D449:
-	STA <Temp_Var6
-	STX <Temp_Var7
+	STA <var6
+	STX <var7
 
 	LDY Graphics_BufCnt	; Y = Graphics_BufCnt
 	LDX #$05	 	; X = 5
@@ -3887,7 +3887,7 @@ PRG010_D449:
 
 	INY
 
-	LDA <Temp_Var3	
+	LDA <var3	
 	STA Graphics_Buffer,Y
 
 	INY
@@ -3908,7 +3908,7 @@ PRG010_D472:
 
 	; Address offset to next 8x8 pattern
 	LDA Map_W8D_VAddrL2
-	ADD <Temp_Var6
+	ADD <var6
 	STA Map_W8D_VAddrL2
 	LDA Map_W8D_VAddrH2
 	ADC #$00
@@ -3922,7 +3922,7 @@ PRG010_D472:
 
 	; Offset to next row
 	LDA Map_W8D_RC
-	ADD <Temp_Var7
+	ADD <var7
 	STA Map_W8D_RC
 
 PRG010_D495:
@@ -3948,9 +3948,9 @@ W8D_Calc_RC:
 
 
 W8D_GetNext8x8:
-	; Backup X and Y into Temp_Var2 and Temp_Var5
-	STY <Temp_Var2		 
-	STX <Temp_Var5
+	; Backup X and Y into var2 and var5
+	STY <var2		 
+	STX <var5
 
 	JSR W8D_Calc_TileOff	 ; Calculate offset within tile
 
@@ -3958,7 +3958,7 @@ W8D_GetNext8x8:
 
 	; Uses a fixed offset of Tile_Mem + $450
 	LDA Tile_Mem + $450,Y	 ; Get tile here
-	STA <Temp_Var11		 ; -> Temp_Var11
+	STA <var11		 ; -> var11
 
 	; Switch to page 12 @ A000 (for map tile 8x8 layout data)
 	LDA #MMC3_8K_TO_PRG_A000
@@ -3966,13 +3966,13 @@ W8D_GetNext8x8:
 	LDA #12
 	STA MMC3_PAGE
 
-	JSR TileLayout_GetBaseAddr	 ; Set Temp_Var13/14 to layout pointer, and reload Y = Temp_Var11 (the tile)
+	JSR TileLayout_GetBaseAddr	 ; Set var13/14 to layout pointer, and reload Y = var11 (the tile)
 
 	LDA Map_W8D_TileOff	; In-tile offset
-	ADD <Temp_Var14
-	STA <Temp_Var14		; Temp_Var14 += Map_W8D_TileOff
+	ADD <var14
+	STA <var14		; var14 += Map_W8D_TileOff
 
-	LDA [Temp_Var13],Y	; Load this 8x8 pattern of tile
+	LDA [var13],Y	; Load this 8x8 pattern of tile
 	PHA		 ; Save it
 
 	; Restore previous page @ A000
@@ -3981,8 +3981,8 @@ W8D_GetNext8x8:
 	PLA		 ; Restore 8x8 pattern
 
 	; Restore X and Y
-	LDY <Temp_Var2
-	LDX <Temp_Var5
+	LDY <var2
+	LDX <var5
 
 	RTS		 ; Return
 
@@ -3996,24 +3996,24 @@ W8D_Calc_VRAM_Addr:
 	ADC #$00
 	ASL A	
 	ADC #$00
-	STA <Temp_Var13	 ; Result -> <Temp_Var13
+	STA <var13	 ; Result -> <var13
 
 	TXA		 ; A = X (Map_W8D_X)
 	LSR A
 	LSR A
 	LSR A
-	STA <Temp_Var14 ; <Temp_Var14 = Map_W8D_X >> 3
+	STA <var14 ; <var14 = Map_W8D_X >> 3
 
-	; Forming a video address into Temp_Var15
-	LDA <Temp_Var13	 ; 
+	; Forming a video address into var15
+	LDA <var13	 ; 
 	AND #$03	 ; Cap within Name table 2
 	ORA #$28	 ; Name Table 2 hi addr
-	STA <Temp_Var15  ; Video address -> Temp_Var15
+	STA <var15  ; Video address -> var15
 
-	LDA <Temp_Var13	  
+	LDA <var13	  
 	AND #$e0	  
-	ORA <Temp_Var14  
-	STA <Temp_Var16
+	ORA <var14  
+	STA <var16
 	RTS		 ; Return
 
 
@@ -4130,59 +4130,59 @@ Map_FindCompForPlayerPos:
 	ASL A
 	TAX
 
-	; Temp_Var3/4 form an address to Map_ByRowType
+	; var3/4 form an address to Map_ByRowType
 	LDA Map_ByRowType,X
-	STA <Temp_Var3
+	STA <var3
 	LDA Map_ByRowType+1,X
-	STA <Temp_Var4
+	STA <var4
 
-	; Temp_Var5/6 form an address to Map_ByScrCol
+	; var5/6 form an address to Map_ByScrCol
 	LDA Map_ByScrCol,X 
-	STA <Temp_Var5
+	STA <var5
 	LDA Map_ByScrCol+1,X
-	STA <Temp_Var6
+	STA <var6
 
 	; X = Player_Current
 	LDX Player_Current
 
-	; Form a column location out of Map X/Hi position -> Temp_Var1
+	; Form a column location out of Map X/Hi position -> var1
 	LDA <World_Map_XHi,X
 	ASL A
 	ASL A
 	ASL A
 	ASL A
-	STA <Temp_Var1		; Map screen * 16
+	STA <var1		; Map screen * 16
 	LDA <World_Map_X,X
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var1		; Specific column on map screen (0-15)
-	STA <Temp_Var1		; -> Temp_Var1
+	ORA <var1		; Specific column on map screen (0-15)
+	STA <var1		; -> var1
 
-	; Form a row location out of Map Y position -> Temp_Var2
+	; Form a row location out of Map Y position -> var2
 	LDA <World_Map_Y,X
 	AND #$F0		; Row only, no tileset
-	STA <Temp_Var2		; -> Temp_Var2
+	STA <var2		; -> var2
 
 	; Need to iterate all map links of this world looking for this column
 MarkComp_Loop:
-	LDA [Temp_Var5],Y	; Get column/hi value
-	CMP <Temp_Var1		; Compare to Player's column/hi
+	LDA [var5],Y	; Get column/hi value
+	CMP <var1		; Compare to Player's column/hi
 	BNE MarkComp_DoNext	; If this is not the correct horizontal location, jump to MarkComp_DoNext
 
-	LDA [Temp_Var3],Y	; Get row/tileset value
+	LDA [var3],Y	; Get row/tileset value
 	AND #$F0		; Keep row only
-	CMP <Temp_Var2		; Compare to Player's row
+	CMP <var2		; Compare to Player's row
 	BNE MarkComp_DoNext	; If this is not the correct vertical location, jump to MarkComp_DoNext
 
 	; We've found the appropriate map link!
 	LDX World_Num
 	LDA MapCompletions_Starts,X	; This world's start map completion index
-	STA <Temp_Var1			; -> Temp_Var1
+	STA <var1			; -> var1
 
 	TYA		; Map link index
-	ADD <Temp_Var1	; Add map completion index offset
+	ADD <var1	; Add map completion index offset
 	TAY		; -> 'Y'
 
 MarkComp_Exit:
@@ -4215,15 +4215,15 @@ MapTile_GetPats:
 	STA PAGE_A000
 	JSR PRGROM_Change_A000
 
-	; Four pattern pieces to Temp_Var1 thru 4
+	; Four pattern pieces to var1 thru 4
 	LDA Tile_Layout_TS0,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA Tile_Layout_TS0+$100,Y
-	STA <Temp_Var2
+	STA <var2
 	LDA Tile_Layout_TS0+$200,Y
-	STA <Temp_Var3
+	STA <var3
 	LDA Tile_Layout_TS0+$300,Y
-	STA <Temp_Var4
+	STA <var4
 
 
 	; Set page @ A000 to 11
@@ -4300,7 +4300,7 @@ MapCompletion_FixAdjPaths:
 
 	; We're at the leftmost position of the screen!  
 	; Need to move to the last column and go to previous screen...
-	LDA <Temp_Var1
+	LDA <var1
 	BEQ MComp_NoLeftAtAll	; ... unless we're on the first screen, in which case there's no left at all; jump to MComp_NoLeftAtAll
 
 	; Move one screen to the left
@@ -4514,13 +4514,13 @@ Map_CountAllEntry:
 	STA Map_StarCoin_Got
 	STA Map_StarCoin_Total
 
-	; Initialize Temp_Var3-8 (addresses of bank 12 context)
+	; Initialize var3-8 (addresses of bank 12 context)
 	JSR Map_GetTile_ByWorld_Init
 
 	; Get start of index into Map_Completions -> 'Y'
 	LDA MapCompletions_Starts+1,X
 	SUB MapCompletions_Starts,X
-	STA <Temp_Var9
+	STA <var9
 	
 	LDY #0
 Map_CSC_Loop:
@@ -4534,7 +4534,7 @@ Map_CSC_Loop:
 	PHA
 	PHA
 	
-	LDA <Temp_Var10
+	LDA <var10
 	CMP #16					; Lazy check for numbered panel
 	BLT Map_CSC_CountTile	; If numbered panel, jump to Map_CSC_CountTile
 	
@@ -4543,7 +4543,7 @@ Map_CSC_Loop:
 Map_CSC_CountTile_Loop:
 
 	LDA Map_CSC_CountTiles,Y
-	CMP <Temp_Var10
+	CMP <var10
 	BEQ Map_CSC_CountTile	; If this is one of the listed tiles, jump to Map_CSC_CountTile
 
 	DEY
@@ -4592,7 +4592,7 @@ Map_CSC_DontCount:
 	TAY
 
 	INY		; Y++
-	CPY <Temp_Var9
+	CPY <var9
 	BLT Map_CSC_Loop	; While there's more start indicies, loop
 
 
@@ -4652,7 +4652,7 @@ Map_CountAllStarCoins:
 	LDA #10
 
 Map_CountAllStarCoinsAlt:
-	STA <Temp_Var16
+	STA <var16
 
 	LDX #0
 	STX Map_StarCoin_Got
@@ -4691,7 +4691,7 @@ Map_CSC_AllLoop:
 
 Map_CSC_AllNoCarry:
 	INX
-	CPX <Temp_Var16
+	CPX <var16
 	BLT Map_CSC_AllLoop	; While X < 10, loop!
 
 	RTS
@@ -4790,13 +4790,13 @@ MDGSC_NoCoins:
 	RTS
 
 
-	; Checks W9's "completions" for the highest opened world -> Temp_Var10
+	; Checks W9's "completions" for the highest opened world -> var10
 Save_GetHighestWorld:
 	TXA
 	PHA
 
 	LDX #0
-	STX <Temp_Var10
+	STX <var10
 	LDY MapCompletions_Starts+8
 SGHW_Loop:
 	LDA Map_Completions,Y
@@ -4814,14 +4814,14 @@ SGHW_NotWZero:
 
 	LDA W9_ByRowType,X
 	AND #$0F	; Get the world this points to
-	CMP <Temp_Var10
-	BLT SGHW_WGreater	; If fetched world < Temp_Var10, we still have largest value, jump to SGHW_WGreater
+	CMP <var10
+	BLT SGHW_WGreater	; If fetched world < var10, we still have largest value, jump to SGHW_WGreater
 
 	ADD #1	; Because what's unlocked is the brain you completed
 
 SGHW_SetWZero:
 	; New highest value
-	STA <Temp_Var10
+	STA <var10
 
 SGHW_WGreater:
 	INX
@@ -4832,14 +4832,14 @@ SGHW_WGreater:
 	PLA
 	TAX
 
-	LDA <Temp_Var10
+	LDA <var10
 	CMP #8
 	BNE SGHW_NotW9
 
 	; If you've completed W8, you may get "World 9" as the "next world"
 	; Obviously that's wrong...
 	LDA #7
-	DEC <Temp_Var10
+	DEC <var10
 
 SGHW_NotW9:
 	CMP #10
@@ -4848,7 +4848,7 @@ SGHW_NotW9:
 	; I've occasionally seen a bug that makes an invalid world number.
 	; Not sure why this happens, but let's just make sure it never does.
 	LDA #9
-	STA <Temp_Var10
+	STA <var10
 	
 SGHW_NotInvalid:
 	RTS
@@ -4867,7 +4867,7 @@ Debug_SetCompletedToWorld
 	LDA #(MCOMP_COMPLETE | MCOMP_SECRET)
 
 DSCTW_NotWZero:
-	STA <Temp_Var1
+	STA <var1
 
 	LDX #0
 	LDY MapCompletions_Starts+8
@@ -4882,7 +4882,7 @@ DSCTW_Equal:
 	
 	; Complete this world appropriately!
 	LDA Map_Completions,Y
-	ORA <Temp_Var1
+	ORA <var1
 	STA Map_Completions,Y
 
 DSCTW_Greater:
@@ -4905,13 +4905,13 @@ Map_RTH_WorldLoop:
 	RTS
 
 Map_ResetToadHouse:
-	; Initialize Temp_Var3-8 (addresses of bank 12 context)
+	; Initialize var3-8 (addresses of bank 12 context)
 	JSR Map_GetTile_ByWorld_Init
 
 	; Get start of index into Map_Completions -> 'Y'
 	LDA MapCompletions_Starts+1,X
 	SUB MapCompletions_Starts,X
-	STA <Temp_Var9
+	STA <var9
 	
 	LDY #0
 Map_RTH_Loop:
@@ -4921,7 +4921,7 @@ Map_RTH_Loop:
 	; towards the total)
 	JSR Map_GetTile_ByWorld
 	
-	LDA <Temp_Var10
+	LDA <var10
 	CMP #TILE_TOADHOUSE
 	BNE Map_RTH_NotToadHouse
 
@@ -4942,7 +4942,7 @@ Map_RTH_Loop:
 
 Map_RTH_NotToadHouse:
 	INY		; Y++
-	CPY <Temp_Var9
+	CPY <var9
 	BLT Map_RTH_Loop	; While there's more start indicies, loop
 
 	RTS
@@ -5055,4 +5055,3 @@ DMC08:
 DMC08_End
 
 ; Rest of ROM bank was empty
-

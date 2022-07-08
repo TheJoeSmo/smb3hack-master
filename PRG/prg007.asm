@@ -53,40 +53,40 @@ PRG007_A027:
 	LDY Player_ReverseGrav
 	LDA <Player_Y	; Get Player Y
 	ADD PDLDAB_GravityOff,Y
-	STA <Temp_Var5	; -> Temp_Var5
+	STA <var5	; -> var5
 
 	LDA <Player_YHi
 	BMI PRG007_A06F	; If Player is up off the top of the screen, jump to PRG007_A06F (RTS)
 
 	ADC #$00	; Apply carry
 	AND #$01	; Only bit 0 is valid anyway in non-vertical mode
-	STA <Temp_Var3	; -> Temp_Var3
+	STA <var3	; -> var3
 
 	LDA Level_32PPSlopeFlag
 	BEQ SpecTile_Not32PP		; If Player is not on sloped 32PP floor, jump to SpecTile_Not32PP
 
 	; Adjust for relativity...
-	LDA <Temp_Var5
+	LDA <var5
 	SUB Level_VertScroll	; Make relative to Vertical Scroll
 	SBC #16		; - 16
-	STA <Temp_Var5	; -> Temp_Var14
+	STA <var5	; -> var14
 
 	LDA #$01
-	STA <Temp_Var3	 ; Temp_Var13 = 1 (implied high byte / carry)
+	STA <var3	 ; var13 = 1 (implied high byte / carry)
 	
 SpecTile_Not32PP:
-	LDA <Temp_Var5
+	LDA <var5
 	AND #$F0
-	STA <Temp_Var5	; Align to tile grid
+	STA <var5	; Align to tile grid
 
 	LDA <Player_X	; Get Player X
 	ADD #$08	; +8
 	AND #$f0	; Align to tile grid
-	STA <Temp_Var4	; -> Temp_Var4
+	STA <var4	; -> var4
 
 	LDA <Player_XHi
 	ADC #$00	; Apply carry
-	STA <Temp_Var6	; -> Temp_Var6
+	STA <var6	; -> var6
 
 	CMP #16		; 16 screens are the max!!
 	BCS PRG007_A06F	; If Player is really far to the right (somehow), jump to PRG007_A06F (RTS)
@@ -94,25 +94,25 @@ SpecTile_Not32PP:
 	ASL A		; 2 byte index for current screen
 	TAY		; -> 'Y'
 
-	; Store high byte of screen address -> Temp_Var1
+	; Store high byte of screen address -> var1
 	LDA Tile_Mem_Addr,Y
-	STA <Temp_Var1	
+	STA <var1	
 
-	; Store low byte of screen address + Player's Y Hi -> Temp_Var2
+	; Store low byte of screen address + Player's Y Hi -> var2
 	LDA Tile_Mem_Addr+1,Y
-	ADD <Temp_Var3	
-	STA <Temp_Var2
+	ADD <var3	
+	STA <var2
 
 	; Calculate a proper offset into the tile memory for the X/Y position of the Player
-	LDA <Temp_Var4
+	LDA <var4
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var5
+	ORA <var5
 	TAY	; -> 'Y'
 
-	LDA [Temp_Var1],Y	; Get the tile here
+	LDA [var1],Y	; Get the tile here
 
 	CMP #TILEA_BLOCKBUMP_CLEAR
 	BNE PRG007_A070	 ; If this is not a bumped block tile, jump to PRG007_A070
@@ -126,33 +126,33 @@ PRG007_A06F:
 
 
 PRG007_A070:
-	STA <Temp_Var1     ; Store the tile to check
+	STA <var1     ; Store the tile to check
 	
 	; If the player is immune to lava, do not check lava
 	LDA Player_LavaImmune
 	BNE DoCheckCrumblingBlock
 
-	LDA <Temp_Var1
+	LDA <var1
 	ASL A		 
 	ROL A		 
 	ROL A		 		; Upper 2 bits shift right 6, effectively
 	AND #%00000011
-	STA <Temp_Var2 		; Store the tile quadrent
+	STA <var2 		; Store the tile quadrent
 
 	LDA Level_TilesetIdx
 	ASL A	
 	ASL A		 ; Offset to beginning of lava-by-quad table
-	ADD <Temp_Var2	 ; Add quadrant offset
+	ADD <var2	 ; Add quadrant offset
 	TAY		 ; -> 'Y' 
 	LDA Level_MinTileLavaByQuad,Y	; Get the starting lava tile
-	CMP <Temp_Var1	
+	CMP <var1	
 	BGE DoCheckCrumblingBlock	 ; If starting lava tile is >= the detected tile, jump to PRG000_C6D0
 
 ; Fell into lava, kill the player
 	JMP PRG007_A183
 
 DoCheckCrumblingBlock:
-	LDA Temp_Var1  		; Restore the tile
+	LDA var1  		; Restore the tile
 	; Check if we are on a crumbling block
 	CMP #TILEA_CRUMBLINGBLOCK
 	BNE DoCheckDonutBlocks
@@ -179,17 +179,17 @@ DoCheckCrumblingBlock:
 	STA Level_ObjectID,X
 
 	; Set donut lift Y 
-	LDA <Temp_Var5
+	LDA <var5
 	SUB #$01
 	STA <Objects_Y,X
-	LDA <Temp_Var3
+	LDA <var3
 	SBC #$00
 	STA <Objects_YHi,X
 
 	; Set donut lift X
-	LDA <Temp_Var4
+	LDA <var4
 	STA <Objects_X,X
-	LDA <Temp_Var6
+	LDA <var6
 	STA <Objects_XHi,X
 
 	; Set donut lift object's Var5 = $20
@@ -208,13 +208,13 @@ DoCheckCrumblingBlock:
 	; Do tile change event to clear the tile version of the donut lift
 	LDA #$02
 	STA Level_ChgTileEvent
-	LDA <Temp_Var3	
+	LDA <var3	
 	STA Level_BlockChgYHi
-	LDA <Temp_Var5	
+	LDA <var5	
 	STA Level_BlockChgYLo
-	LDA <Temp_Var4	
+	LDA <var4	
 	STA Level_BlockChgXLo
-	LDA <Temp_Var6	
+	LDA <var6	
 	STA Level_BlockChgXHi
 
 
@@ -254,17 +254,17 @@ PRG007_A099:
 	STA Level_ObjectID,X
 
 	; Set donut lift Y 
-	LDA <Temp_Var5
+	LDA <var5
 	SUB #$01
 	STA <Objects_Y,X
-	LDA <Temp_Var3
+	LDA <var3
 	SBC #$00
 	STA <Objects_YHi,X
 
 	; Set donut lift X
-	LDA <Temp_Var4
+	LDA <var4
 	STA <Objects_X,X
-	LDA <Temp_Var6
+	LDA <var6
 	STA <Objects_XHi,X
 
 	; Set donut lift object's Var5 = $20
@@ -279,13 +279,13 @@ PRG007_A099:
 	; Do tile change event to clear the tile version of the donut lift
 	LDA #$02
 	STA Level_ChgTileEvent
-	LDA <Temp_Var3	
+	LDA <var3	
 	STA Level_BlockChgYHi
-	LDA <Temp_Var5	
+	LDA <var5	
 	STA Level_BlockChgYLo
-	LDA <Temp_Var4	
+	LDA <var4	
 	STA Level_BlockChgXLo
-	LDA <Temp_Var6	
+	LDA <var6	
 	STA Level_BlockChgXHi
 
 NoBlockBlockBlockFound:
@@ -318,37 +318,37 @@ PRG007_A0DE:
 	LDA <Player_Y	; Get Player Y
 	ADD #33		; +33
 	AND #$f0	; Aligned to tile grid
-	STA <Temp_Var1	; -> Temp_Var1
-	STA <Temp_Var5	; -> Temp_Var5
+	STA <var1	; -> var1
+	STA <var5	; -> var5
 
 	LDA <Player_YHi
 	BMI PRG007_A0DD	 ; If Player is up off the top of the level, jump to PRG007_A0DD (RTS)
 
 	ADC #$00	; Apply carry
-	STA <Temp_Var3	; -> Temp_Var3
+	STA <var3	; -> var3
 
-	; High byte of Tile_Mem -> Temp_Var2
+	; High byte of Tile_Mem -> var2
 	ORA #HIGH(Tile_Mem)
-	STA <Temp_Var2
+	STA <var2
 
 	LDA <Player_X	; Get Player X
 	ADD #$08	; +8
 	AND #$f0	; Aligned to tile grid
-	STA <Temp_Var4	; -> Temp_Var4
+	STA <var4	; -> var4
 
 	; Construct tile offset
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var1
-	STA <Temp_Var1
+	ORA <var1
+	STA <var1
 
-	; Temp_Var6 = 0 (would be "X Hi", which is always zero in vertical level)
+	; var6 = 0 (would be "X Hi", which is always zero in vertical level)
 	LDY #$00
-	STY <Temp_Var6
+	STY <var6
 
-	LDA [Temp_Var1],Y	 ; Get tile here
+	LDA [var1],Y	 ; Get tile here
 
 	CMP #TILE2_DONUTLIFT
 	BNE PRG007_A113	 ; If this is not donut lift tile, jump to PRG007_A113
@@ -375,9 +375,9 @@ PRG007_A113:
 	SUB #TILE8_ARROWLIFT_UPL
 	TAY		 ; Y = relative index of tile for arrow platform
 
-	; Temp_Var3 = $FF
+	; var3 = $FF
 	LDA #$ff
-	STA <Temp_Var3
+	STA <var3
 
 	LDX #$04	 ; X = 4
 PRG007_A12E:
@@ -402,13 +402,13 @@ PRG007_A12E:
 	; empty object appears forward of this position...
 
 PRG007_A144:
-	STX <Temp_Var3		; Temp_Var3 = index we just searched
+	STX <var3		; var3 = index we just searched
 
 PRG007_A146:
 	DEX		 ; X--
 	BPL PRG007_A12E	 ; While X >= 0, loop!
 
-	LDX <Temp_Var3	 ; X = free object slot!
+	LDX <var3	 ; X = free object slot!
 	BMI PRG007_A182	 ; If no free object slot was found, jump to PRG007_A182
 
 	; Set this to "Normal!"
@@ -440,26 +440,26 @@ PRG007_A146:
 	STA <Objects_YHi,X
 
 	LDA ArrowPlat_XOff,Y
-	STA <Temp_Var1
+	STA <var1
 
 	LDA <Player_X
 	ADD #8
 	AND #$F0
-	ADD <Temp_Var1
+	ADD <var1
 	STA <Objects_X,X
 
 	LDY #0	; Y = 0 (16-bit extension)
 
-	LDA <Temp_Var1
+	LDA <var1
 	BPL ArrowPlat_XOffNotNeg
 
 	LDY #$FF ; Y = $FF (16-bit negative extension)
 
 ArrowPlat_XOffNotNeg:
-	STY <Temp_Var1
+	STY <var1
 
 	LDA <Player_XHi
-	ADC <Temp_Var1
+	ADC <var1
 	STA <Objects_XHi,X
 
 	RTS
@@ -467,17 +467,17 @@ ArrowPlat_XOffNotNeg:
 
 ArrowLift_Vert:
 	; Arrow platform Y
-	LDA <Temp_Var1
+	LDA <var1
 	AND #$f0
 	SUB #$01
 	STA <Objects_Y,X
-	LDA <Temp_Var2
+	LDA <var2
 	SBC #$00
 	AND #$0f
 	STA <Objects_YHi,X
 
 	; Arrow platform X
-	LDA <Temp_Var1
+	LDA <var1
 	ASL A
 	ASL A
 	ASL A
@@ -718,19 +718,19 @@ SKF_UseGiantAlt:
 	STA Sprite_RAM+$01,Y
 	STA Sprite_RAM+$05,Y
 
-	; Temp_Var1 = toggled vertical flip bit
+	; var1 = toggled vertical flip bit
 	LDA <Counter_1
 	LSR A
 	LSR A
 	LSR A
 	ROR A
 	AND #SPR_VFLIP
-	STA <Temp_Var1
+	STA <var1
 
 	; OR in a palette cycle
 	LDA <Counter_1
 	AND #$03
-	ORA <Temp_Var1
+	ORA <var1
 
 	; Set left sprite attribute
 	STA Sprite_RAM+$02,Y
@@ -814,14 +814,14 @@ PRG007_A2E3:
 	STA PlayerProj_YVelFrac,X
 	
 	LDA #$00
-	STA <Temp_Var1
+	STA <var1
 
 	LDA PProj_InitXVel,Y
 	LDY <Player_FlipBits	; Keep in mind this is generally only $00 or $40 since Player doesn't vertically flip/etc.
 	BNE PRG007_A30B	 	; If Player is horizontally flipped, jump to PRG007_A30B
 
 	JSR Negate	 ; If Player is turned around, negate value
-	INC <Temp_Var1
+	INC <var1
 
 PRG007_A30B:
 	LDY PlayerProj_ID,X
@@ -837,7 +837,7 @@ PProj_NoHammerAdj:
 
 	AND #$80		; Keep sign bit for telling when boomerang has first turned around
 	ORA #$40		; Bit means we need to do the turnaround check
-	ORA <Temp_Var1	; Sets direction flag
+	ORA <var1	; Sets direction flag
 	STA PlayerProj_Var2,X
 
 	RTS		 ; Return
@@ -940,13 +940,13 @@ PRG007_A7C6:
 	ADD #10		 ; Small or ducking, +10 (15 to 18)
 
 PRG007_A7C9:
-	STA <Temp_Var1	 ; -> Temp_Var1
+	STA <var1	 ; -> var1
 
 	LDX <SlotIndexBackup	 ; Restore 'X' as slot index
 
 	; Sprite "splashing" effect Y
 	LDA <Player_SpriteY
-	ADD <Temp_Var1
+	ADD <var1
 	SUB #10
 	STA Sprite_RAM+$00,Y
 	STA Sprite_RAM+$04,Y
@@ -1129,20 +1129,20 @@ PRG007_A89A:
 	LDA Bubble_Y,X
 	ADD #10		; Bubble Y + 10
 	AND #$f0
-	STA <Temp_Var3	; Temp_Var3 = bubble row (offset into tile memory)
+	STA <var3	; var3 = bubble row (offset into tile memory)
 
 	LDA Bubble_YHi,X
 	ADC #HIGH(Tile_Mem)
-	STA <Temp_Var2	; Temp_Var2 = bubble high offset into tile memory
+	STA <var2	; var2 = bubble high offset into tile memory
 
-	; Create row/column offset into tile memory for current screen of bubble -> Temp_var1
+	; Create row/column offset into tile memory for current screen of bubble -> var1
 	LDA Bubble_X,X
 	LSR A
 	LSR A
 	LSR A
 	LSR A
-	ORA <Temp_Var3
-	STA <Temp_Var1
+	ORA <var3
+	STA <var1
 
 	LDY #$00	 ; Y = 0 (not using the offset like non-vertical does)
 	BEQ PRG007_A8F0	 ; Jump (technically always) to PRG007_A8F0
@@ -1151,64 +1151,64 @@ PRG007_A8BF:
 	LDA Bubble_Y,X
 	ADD #10		 ; Bubble Y + 10
 	AND #$f0
-	STA <Temp_Var3	 ; Temp_Var3 = bubble row (offset into tile memory)
+	STA <var3	 ; var3 = bubble row (offset into tile memory)
 
 	LDA Bubble_YHi,X
 	ADC #$00	 ; Apply carry
 	PHA		 ; Save it
 
-	; Temp_Var5 = bubble X
+	; var5 = bubble X
 	LDA Bubble_X,X
-	STA <Temp_Var5
+	STA <var5
 
 	LDA Bubble_XHi,X
 	ASL A		 ; 2 bytes per screen
 	TAY		 ; Y = offset into Tile_Mem_Addr
 
 	LDA Tile_Mem_Addr,Y
-	STA <Temp_Var1	 ; Temp_Var1 = low byte of this screen's tile memory address
+	STA <var1	 ; var1 = low byte of this screen's tile memory address
 
 	PLA		 ; Restore Bubble's Y Hi
 	AND #$01	 ; Only 0/1 valid for non-vertical
 	ADD Tile_Mem_Addr+1,Y	 ; Add to high byte of address
-	STA <Temp_Var2	 ; -> Temp_Var2
+	STA <var2	 ; -> var2
 
-	; Create row/column offset -> Temp_Var3
-	LDA <Temp_Var5
+	; Create row/column offset -> var3
+	LDA <var5
 	LSR A	
 	LSR A	
 	LSR A	
 	LSR A	
-	ORA <Temp_Var3
+	ORA <var3
 
 	TAY		 ; Y = this offset
 
 PRG007_A8F0:
-	LDA [Temp_Var1],Y ; Get the tile the bubble detects
+	LDA [var1],Y ; Get the tile the bubble detects
 
 	PHA		 ; Save it
 
-	; Get tile "quadrant" -> Temp_Var1
+	; Get tile "quadrant" -> var1
 	ASL A
 	ROL A
 	ROL A
 	AND #$03
-	STA <Temp_Var1
+	STA <var1
 
 	PLA		 ; Restore specific tile
-	STA <Temp_Var2	 ; -> Temp_Var2
+	STA <var2	 ; -> var2
 
-	LDY <Temp_Var1	 ; Y = tile quadrant
+	LDY <var1	 ; Y = tile quadrant
 	CMP Tile_AttrTable,Y
 	BGE PRG007_A91E	 ; If this tile is solid, jump to PRG007_A91E (destroy bubble)
 
 	LDA Level_TilesetIdx
 	ASL A
 	ASL A		; Tileset index * 4
-	ADD <Temp_Var1	; + quadrant
+	ADD <var1	; + quadrant
 	TAY	; -> 'Y' (offset into Level_MinTileUWByQuad)
 
-	LDA <Temp_Var2
+	LDA <var2
 	CMP #TILE1_WFALLTOP
 	BEQ PRG007_A91E	 ; If this is the top of a waterfall, jump to PRG007_A915 (indirect to PRG007_A91E)
 
@@ -1218,7 +1218,7 @@ PRG007_A915:
 	BEQ PRG007_A91E	 ; If this is the top or middle of a waterfall, jump to PRG007_A91E
 
 	LDA Level_MinTileUWByQuad,Y
-	CMP <Temp_Var2
+	CMP <var2
 	BLT Bubble_Draw	 ; If this tile is still considered underwater, jump to Bubble_Draw 
 
 PRG007_A91E:
@@ -1239,9 +1239,9 @@ Bubble_Draw:
 	LSR A	
 	TAY		 ; Y = 0 to 3
 
-	; Temp_Var1 = bubble's X offset
+	; var1 = bubble's X offset
 	LDA Bubble_XOff,Y
-	STA <Temp_Var1
+	STA <var1
 
 	LDA <Counter_1
 	AND #%00000011
@@ -1267,7 +1267,7 @@ Bubble_Draw:
 
 	; Bubble X
 	LDA Bubble_X,X
-	ADD <Temp_Var1
+	ADD <var1
 	SUB <Horz_Scroll
 	STA Sprite_RAM+$03,Y
 
@@ -1346,7 +1346,7 @@ Splash_Draw:
 	JSR Object_GetRandNearUnusedSpr	 
 	BEQ PRG007_A9AF	 ; If no sprite available, jump to PRG007_A9AF (RTS)
 
-	STY <Temp_Var1	 ; Sprite RAM offset -> Temp_Var1
+	STY <var1	 ; Sprite RAM offset -> var1
 
 	LDA Splash_X,X
 	SUB <Horz_Scroll	; Make scroll relative X for splash
@@ -1367,7 +1367,7 @@ Splash_Draw:
 	SUB Level_VertScroll	 ; Make scroll relative Y for splash
 
 PRG007_A9D5:
-	LDY <Temp_Var1		 ; Y = sprite RAM offset
+	LDY <var1		 ; Y = sprite RAM offset
 
 	CMP #$ae
 	BGE Splash_Remove	 ; If splash sprite RAM offset >= $AE (?), jump to Splash_Remove (remove it!)
@@ -1389,7 +1389,7 @@ PRG007_A9D5:
 	LSR A
 	LSR A
 	TAX		; X = splash counter / 8
-	STX <Temp_Var1	; -> Temp_Var1
+	STX <var1	; -> var1
 
 	; Set splash sprite patterns
 	LDA Splash_Patterns,X
@@ -1398,7 +1398,7 @@ PRG007_A9D5:
 
 	LDX <SlotIndexBackup	 ; X = splash index
 
-	LDA <Temp_Var1
+	LDA <var1
 	CMP #$03
 	BLT PRG007_AA4C	 ; If (splash counter / 8) < 3, jump to PRG007_AA4C (RTS)
 
@@ -1418,16 +1418,16 @@ PRG007_AA10:
 	AND #$03	 ; A = (splash counter - 24) / 8
 
 Draw_SpreadAndColorful:
-	STA <Temp_Var1		 
+	STA <var1		 
 
 	; Subtract from sprite X
 	LDA Sprite_RAM+$03,Y
-	SUB <Temp_Var1	
+	SUB <var1	
 	STA Sprite_RAM+$03,Y
 
 	; Add to other sprite X
 	LDA Sprite_RAM+$07,Y
-	ADD <Temp_Var1
+	ADD <var1
 	STA Sprite_RAM+$07,Y
 
 	; Set attributes of two sprites
@@ -1442,7 +1442,7 @@ Draw_SpreadAndColorful:
 	BNE PRG007_AA4C	 ; 2 ticks on, 2 ticks off; jump to PRG007_AA4C (RTS)
 
 	; Mess with attributes for a little sparkly fun
-	LDA <Temp_Var1
+	LDA <var1
 	ORA #SPR_VFLIP
 	STA Sprite_RAM+$02,Y
 
@@ -1528,7 +1528,7 @@ PRG007_AA8F:
 	AND #$7f	 ; Keep only lower 7 bits
 
 PRG007_AAA8:
-	STA <Temp_Var1	 	; Score value -> Temp_Var1
+	STA <var1	 	; Score value -> var1
 	JSR Score_GiveAndDraw	; Give awarded points and draw score sprites
 
 PRG007_AAAD:
@@ -1567,7 +1567,7 @@ PRG007_AACF:
 
 	; Score counter = $2A...
 
-	LDY <Temp_Var1	 ; Y = score value
+	LDY <var1	 ; Y = score value
 
 	; Add Score's value to Score_Earned
 	LDA Score_Earned
@@ -1640,10 +1640,10 @@ PRG007_AB1D:
 	LDA Object_SprRAM,X
 	ADD #16		; +16 (4 sprites over)
 	TAY		 ; Y = Sprite RAM offset
-	STY <Temp_Var5	 ; -> Temp_Var5
+	STY <var5	 ; -> var5
 
 	ADD #$04	 ; +4 (1 sprite over)
-	STA <Temp_Var6	 ; -> Temp_Var6
+	STA <var6	 ; -> var6
 
 	LDA Sprite_RAM+$00,Y
 	CMP #$f8
@@ -1652,26 +1652,26 @@ PRG007_AB1D:
 PRG007_AB53:
 	JSR Object_GetRandNearUnusedSpr		; Sprite is not free; get a nearby one
 
-	STY <Temp_Var5	 ; -> Temp_Var5
+	STY <var5	 ; -> var5
 	BNE PRG007_AB70	 ; As long as result wasn't zero, jump to PRG007_AB70
 
 	; No sprites available...
 
-	; Temp_Var6 = $FF
+	; var6 = $FF
 	LDA #$ff
-	STA <Temp_Var6
+	STA <var6
 
 	LDA <Counter_1
 	LSR A
 	BCC PRG007_AB6D	 ; Every other tick, jump to PRG007_AB6D
 
 	; Basically only one or the other half of the score will actually display
-	LDA <Temp_Var5
+	LDA <var5
 	PHA
-	LDA <Temp_Var6
-	STA <Temp_Var5
+	LDA <var6
+	STA <var5
 	PLA
-	STA <Temp_Var6
+	STA <var6
 
 PRG007_AB6D:
 	JMP PRG007_AB76	 ; Jump to PRG007_AB76
@@ -1680,14 +1680,14 @@ PRG007_AB70:
 	; New sprite RAM offset selected...
 	TYA		 ; -> Y
 	ADD #$04	 ; +4 (next sprite over)
-	STA <Temp_Var6	 ; -> Temp_Var6
+	STA <var6	 ; -> var6
 
 PRG007_AB76: 
-	LDY <Temp_Var5	 ; Y = first sprite offset
+	LDY <var5	 ; Y = first sprite offset
 	CPY #$ff
 	BEQ PRG007_AB99	 ; If this sprite is marked as "don't display", jump to PRG007_AB99
 
-	LDX <Temp_Var1	 ; X = score value
+	LDX <var1	 ; X = score value
 
 	LDA Score_PatternLeft-1,X	 ; -1 because a score value of zero is "empty"
 
@@ -1710,7 +1710,7 @@ PRG007_AB76:
 	JSR Score_SetAttribute
 
 PRG007_AB99:
-	LDY <Temp_Var6	 ; Y = second sprite offset
+	LDY <var6	 ; Y = second sprite offset
 	CPY #$ff
 	BEQ PRG007_ABC4	 ; If this sprite is marked as "don't display", jump to PRG007_ABC4
 
@@ -1724,7 +1724,7 @@ PRG007_AB99:
 	; SB: Hack to free a couple patterns in CHR004
 	; Use the double-zero for score values 5-8 (100, 200, 400, 800)
 	; by moving it over by 4 instead of 8
-	LDX <Temp_Var1	 ; X = score value
+	LDX <var1	 ; X = score value
 	ADD Score_OffsetRight-1,X
 	STA Sprite_RAM+$03,Y
 
@@ -1733,7 +1733,7 @@ PRG007_AB99:
 	STA Sprite_RAM+$01,Y
 
 Score_SetAttribute:
-	LDA <Temp_Var1	 ; Get score value
+	LDA <var1	 ; Get score value
 	CMP #$0d
 	LDA #$01	 ; A = 1
 	BGE PRG007_ABBF	 ; If this is the 1-up, jump to PRG007_ABBF
@@ -1895,7 +1895,7 @@ PRG007_AC5A:
 
 PRG007_AC7A:
 	LDA BrickBust_HEn,X
-	STA <Temp_Var4	 ; Horizontal enable flag -> Var4
+	STA <var4	 ; Horizontal enable flag -> Var4
 
 	CMP #$0c
 	BLT PRG007_AC91	 ; If at least one of upper or lower are enabled, jump to PRG007_AC91
@@ -1913,7 +1913,7 @@ PRG007_AC8E:
 	JMP PRG007_AD21	 ; Otherwise, jump to PRG007_AD21 (disable this brick bust)
 
 PRG007_AC91:
-	LDA <Temp_Var4
+	LDA <var4
 	AND #$08
 	BNE PRG007_ACA0	 ; If upper bust chunks are disabled, jump to PRG007_ACA0
 
@@ -1923,7 +1923,7 @@ PRG007_AC91:
 	STA Sprite_RAM+$04,Y
 
 PRG007_ACA0:
-	LDA <Temp_Var4
+	LDA <var4
 	AND #$04
 	BNE PRG007_ACAF	 ; If lower bust chunks are disabled, jump to PRG007_ACAF
 
@@ -1933,7 +1933,7 @@ PRG007_ACA0:
 	STA Sprite_RAM+$0C,Y
 
 PRG007_ACAF:
-	LSR <Temp_Var4
+	LSR <var4
 	BCC PRG007_ACBB	 ; If right bust chunks are NOT disabled, jump to PRG007_ACBB
 
 	; Hide right-hand bust chunks
@@ -1942,7 +1942,7 @@ PRG007_ACAF:
 	STA Sprite_RAM+$08,Y
 
 PRG007_ACBB:
-	LSR <Temp_Var4
+	LSR <var4
 	BCC PRG007_ACC7	 ; If left bust chunks are NOT disabled, jump to PRG007_ACC7
 
 	; Hide left-hand bust chunks
@@ -2083,11 +2083,11 @@ PRG007_AD54:
 	LSR A
 	ROR A
 	AND #SPR_VFLIP
-	STA <Temp_Var1	 ; Periodically vertically flip
+	STA <var1	 ; Periodically vertically flip
 
 	; Form attribute with sprite palette 1 for left half
 	LDA #SPR_PAL1
-	ORA <Temp_Var1
+	ORA <var1
 	STA Sprite_RAM+$02,Y
 
 	; Right half uses opposite flips
@@ -2391,9 +2391,9 @@ CFire_Cannonball:
 	LDA #$87
 	STA CannonFire_Timer,X
 
-	; Temp_Var1 = this particular Cannon Fire ID
+	; var1 = this particular Cannon Fire ID
 	LDA CannonFire_ID,X
-	STA <Temp_Var1
+	STA <var1
 
 	CMP #CFIRE_HRBIGCANNON
 	BEQ PRG007_BC4B	 ; If this is the right-shooting BIG Cannon, jump to PRG007_BC4B
@@ -2439,7 +2439,7 @@ PRG007_BC5C:
 	LDA CannonFire_YHi,Y
 	STA <Objects_YHi,X
 
-	LDA <Temp_Var1
+	LDA <var1
 	CMP #CFIRE_HRCANNON
 
 	LDA #$30	 ; A = $30
@@ -2451,7 +2451,7 @@ PRG007_BC5C:
 	LDA #-$30	 ; A = -$30
 
 PRG007_BC81:
-	STY <Temp_Var1	 ; Temp_Var1 = $12 (if right-shooting) or $09 (if left-shooting)
+	STY <var1	 ; var1 = $12 (if right-shooting) or $09 (if left-shooting)
 
 	STA <Objects_XVel,X	 ; X velocity = -$30 or $30, depending on direction
 
@@ -2517,7 +2517,7 @@ PRG007_BCB4:
 	LDA #-$30
 	STA <Objects_YVel,X
 
-	LDA <Temp_Var1
+	LDA <var1
 	CMP #CFIRE_RBOBOMBS
 
 	LDA #$10	 ; A = $10
@@ -2528,14 +2528,14 @@ PRG007_BCB4:
 	LDA #-$10	 ; A = -$10
 
 PRG007_BCE9:
-	STY <Temp_Var1	 ; Temp_Var1 = $0A or $0B
+	STY <var1	 ; var1 = $0A or $0B
 	STA <Objects_XVel,X	 ; Set Bob-omb's X velocity (-$10 or $10)
 
 	ASL A		 ; Shift sign bit into carry
 
-	; Temp_Var2 = $00 (16-bit sign extension)
+	; var2 = $00 (16-bit sign extension)
 	LDA #$00
-	STA <Temp_Var2
+	STA <var2
 
 	LDY <SlotIndexBackup	 ; Y = Cannon Fire slot index
 
@@ -2543,12 +2543,12 @@ PRG007_BCE9:
 	LDA #$08	 ; A = $08
 	BCC PRG007_BCFC	 ; If this is a right-shot Bob-omb, jump to PRG007_BCFC
 	LDA #-$08	 ; A = -$08
-	DEC <Temp_Var2	 ; Temp_Var2 = $FF (16-bit sign extension)
+	DEC <var2	 ; var2 = $FF (16-bit sign extension)
 PRG007_BCFC:
 	ADD CannonFire_X,Y
 	STA <Objects_X,X
 	LDA CannonFire_XHi,Y
-	ADC <Temp_Var2	
+	ADC <var2	
 	STA <Objects_XHi,X
 
 
@@ -2589,7 +2589,7 @@ CFire_GoombaPipe:
 	STA <Objects_XHi,X
 
 	JSR Level_ObjCalcXDiffs
-	STY <Temp_Var2		 ; Store directional flag -> Temp_Var2
+	STY <var2		 ; Store directional flag -> var2
 
 	LDY <SlotIndexBackup	 ; Y = Cannon Fire index
 
@@ -2603,7 +2603,7 @@ CFire_GoombaPipe:
 	INY		 ; Y = 1 (left output Goomba pipe)
 
 PRG007_BD49:
-	CPY <Temp_Var2
+	CPY <var2
 	BNE PRG007_BD7B	 ; If Player is on the wrong side of the Goomba pipe, jump to PRG007_BD7B
 
 	; Set Goomba's initial flip bits
@@ -2784,7 +2784,7 @@ PRG007_BE43:
 
 	LDA CannonFire_Var,X
 	AND #$07
-	STA <Temp_Var1	; Temp_Var1 = 0 to 7
+	STA <var1	; var1 = 0 to 7
 
 	JSR FireCannonBall	 ; Fire cannon ball
  
@@ -2793,7 +2793,7 @@ PRG007_BE43:
 	AND #$07	 ; +4 wrap around (fire the cannonball on the opposite side)
 
 PRG007_BE59:
-	STA <Temp_Var1
+	STA <var1
 	
 	; Load cannonball graphics
 	LDA #$36
@@ -2822,7 +2822,7 @@ PRG007_BE69:
 	; Set cannonball X
 	LDA CannonFire_X,X
 	CLC
-	LDX <Temp_Var1		; X = 0 to 7
+	LDX <var1		; X = 0 to 7
 	ADC CannonPoof_XOffs,X
 	STA SpecialObj_XLo,Y
 
@@ -2834,14 +2834,14 @@ PRG007_BE69:
 	LDA FourWay_CannonballXVel,X
 	STA SpecialObj_XVel,Y
 
-	; Temp_Var3 = 0 (16-bit sign extension)
+	; var3 = 0 (16-bit sign extension)
 	LDA #$00
-	STA <Temp_Var3
+	STA <var3
 
 	LDA CannonPoof_YOffs,X
 	BPL PRG007_BE91	 ; If Y offset is not negative, jump to PRG007_BE91
 
-	DEC <Temp_Var3	 ; Temp_Var3 = $FF (16-bit sign extension)
+	DEC <var3	 ; var3 = $FF (16-bit sign extension)
 
 PRG007_BE91:
 	CLC
@@ -2849,7 +2849,7 @@ PRG007_BE91:
 	ADC CannonFire_Y,X
 	STA SpecialObj_YLo,Y
 	LDA CannonFire_YHi,X
-	ADC <Temp_Var3		; 16-bit sign extension
+	ADC <var3		; 16-bit sign extension
 	STA SpecialObj_YHi,Y	
 
 	; Data = 0
@@ -2862,7 +2862,7 @@ PRG007_BEAA:
 	RTS		 ; Return
 
 	; Produces the smoke resulting from cannon fire; specify X/Y offset
-	; from Cannon Fire's position by Temp_Var1 which indexes CannonPoof_X/YOffs
+	; from Cannon Fire's position by var1 which indexes CannonPoof_X/YOffs
 CannonFire_NoiseAndSmoke:
 	; Cannon firing noise
 	LDA Sound_QLevel1
@@ -2878,12 +2878,12 @@ CannonFire_NoiseAndSmoke:
 	; Set poof X
 	LDA CannonFire_X,X	; Get Cannon Fire X
 	CLC
-	LDX <Temp_Var1		; X = Temp_Var1 holds the index into CannonPoof_XOffs
-	ADC CannonPoof_XOffs,X	; + CannonPoof_XOffs[Temp_Var1]
+	LDX <var1		; X = var1 holds the index into CannonPoof_XOffs
+	ADC CannonPoof_XOffs,X	; + CannonPoof_XOffs[var1]
 	SUB <Horz_Scroll	; Make relative to horizontal scroll
 	STA BrickBust_X		; Set X
 
-	LDA CannonPoof_YOffs,X	 ; A = CannonPoof_YOffs[Temp_Var1]
+	LDA CannonPoof_YOffs,X	 ; A = CannonPoof_YOffs[var1]
 
 	LDX <SlotIndexBackup	 ; X = Cannon Fire slot index
 
@@ -3005,7 +3005,7 @@ PRG007_BF80:
 
 	TYA		; 0 or 1
 	ADD #(Bill_CPXOff - CannonPoof_XOffs)
-	STA <Temp_Var1	; -> Temp_Var1
+	STA <var1	; -> var1
 
 	JSR CannonFire_NoiseAndSmoke	 ; Play cannon fire noise and make smoke
 
@@ -3026,4 +3026,3 @@ ActionSwitch_Do:
 
 ActSwitch_DoNothing:
 	RTS
-

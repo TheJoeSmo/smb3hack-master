@@ -357,16 +357,16 @@ BowserJr_Draw:
 	TAY
 	
 	LDA BJrBody_YOffs,Y
-	STA <Temp_Var10			; Body Y offset
+	STA <var10			; Body Y offset
 	
 	LDA BJrBodyTop_YOffs,Y
-	STA <Temp_Var11			; Body top Y offset
+	STA <var11			; Body top Y offset
 	
 	LDA BJrHead_YOffs,Y
-	STA <Temp_Var12			; Head Y offset
+	STA <var12			; Head Y offset
 
 	LDA BJrHair_YOffs,Y
-	STA <Temp_Var13			; Hair Y offset
+	STA <var13			; Hair Y offset
 
 	;;;;;;;;;;;;;;;;;;;;;
 	; Bowser Jr's Body
@@ -389,13 +389,13 @@ BJrDraw_NoHFlip:
 
 	; Load base pattern and delta (for bottom run of body sprites)
 	LDA BJrBody_BasePattern,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA BJrBody_PatternDelta,Y
-	STA <Temp_Var2
+	STA <var2
 	
 	; 3 sprites
 	LDA #3
-	STA <Temp_Var3
+	STA <var3
 
 	; Y = sprite memory offset
 	LDY Object_SprRAM,X
@@ -403,7 +403,7 @@ BJrDraw_NoHFlip:
 BJrDrawBody_Loop:
 
 	; Sprite pattern
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$01,Y
 
 	; Sprite Attribute
@@ -426,7 +426,7 @@ BJrDrawBody_Loop:
 	
 	; Set Sprite Y
 	LDA <Objects_SpriteY,X
-	ADD <Temp_Var10
+	ADD <var10
 	STA Sprite_RAM+$00,Y
 	
 BJDB_NoBVis:
@@ -435,14 +435,14 @@ BJDB_NoBVis:
 	BCS BJDB_NoVis	; If upper body sprite not visible, jump to BJDB_NoVis
 
 	; One sprite for his upper body exists above pattern $95
-	LDA <Temp_Var1
+	LDA <var1
 	CMP #$D5
 	BNE BJDB_NoVis
 
 	; Top sprite should be here!
 
 	LDA <Objects_SpriteY,X
-	ADD <Temp_Var11
+	ADD <var11
 	STA Sprite_RAM+$04,Y
 	
 	LDA #$D7
@@ -472,18 +472,18 @@ BJDB_NoVis:
 	STA <Objects_SpriteX,X
 	
 	; Add delta to pattern
-	LDA <Temp_Var1
-	ADD <Temp_Var2
-	STA <Temp_Var1
+	LDA <var1
+	ADD <var2
+	STA <var1
 	
 	
-	DEC <Temp_Var3
-	BNE BJrDrawBody_Loop	; While Temp_Var3 > 0, loop!
+	DEC <var3
+	BNE BJrDrawBody_Loop	; While var3 > 0, loop!
 	
 	; Calculate head position at Y+4
 	LDA <Objects_Y,X
 	PHA
-	ADD <Temp_Var12
+	ADD <var12
 	STA <Objects_Y,X
 	LDA <Objects_YHi,X
 	PHA
@@ -533,7 +533,7 @@ BJH_NoFlip2:
 	TAY
 		
 	LDA <Objects_SpriteY,X
-	ADD <Temp_Var13
+	ADD <var13
 	STA Sprite_RAM+$00,Y
 	
 	; Tuft of hair
@@ -610,9 +610,9 @@ DBSS_NoFlip:
 	;LDA Objects_ReverseGrav,X
 	;BEQ DBSS_NoRevGrav
 
-	;LDA <Temp_Var3
+	;LDA <var3
 	;ORA #SPR_VFLIP
-	;STA <Temp_Var3
+	;STA <var3
 
 ;DBSS_NoRevGrav:
 
@@ -621,15 +621,15 @@ DBSS_NoFlip:
 	ADD Objects_Frame,X		; A = Frame * 3
 	TAX		; -> 'X'
 
-	; Shift Temp_Var5; if bit set, skip this sprite
-	LSR <Temp_Var5
+	; Shift var5; if bit set, skip this sprite
+	LSR <var5
 	BCS PRG037_B4B4	 ; If carry set, jump to PRG037_B4B4 (RTS)
 
-	LDA <Temp_Var8	 ; Holds Object's Flags1 (sprites horizontally off-screen)
+	LDA <var8	 ; Holds Object's Flags1 (sprites horizontally off-screen)
 	ASL A		 ; Shift value to the left
-	STA <Temp_Var16	 ; -> Temp_Var16
+	STA <var16	 ; -> var16
 
-	LDA <Temp_Var1	 ; Object's Y
+	LDA <var1	 ; Object's Y
 	ADD #16
 
 	BCS PRG037_B466	 	; If sprite is not visible, jump to PRG037_B466
@@ -637,7 +637,7 @@ DBSS_NoFlip:
 	STA Sprite_RAM,Y 	; Otherwise, store sprite Y
 
 PRG037_B466:
-	BIT <Temp_Var16	 
+	BIT <var16	 
 	BMI PRG037_B46D	 	; If next sprite is not visible, jump to PRG037_B46D
 
 	STA Sprite_RAM+4,Y	; Otherwise, store next sprite Y
@@ -650,7 +650,7 @@ PRG037_B46D:
 PRG037_B472:
 
 	; Store all sprites' Xs
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+3,Y
 	ADD #$08
 	STA Sprite_RAM+7,Y
@@ -664,7 +664,7 @@ PRG037_B472:
 	LDA BJr_ShellSpin_Pats+2,X
 	STA Sprite_RAM+9,Y
 
-	LDA <Temp_Var3
+	LDA <var3
 	ORA #SPR_PAL1
 
 	; Store combined attributes
@@ -672,7 +672,7 @@ PRG037_B472:
 	STA Sprite_RAM+6,Y
 	STA Sprite_RAM+10,Y 
 
-	BIT <Temp_Var3 
+	BIT <var3 
 	BVC PRG037_B4B4	 ; If not horizontally flipped, jump to PRG037_B4B4 
 
 	; Otherwise, reverse the sprites...
@@ -696,10 +696,10 @@ BowserJr_DrawHand:
 	TAY		; Input -> 'Y'
 	
 	LDA BJrHand_Pats,Y
-	STA <Temp_Var1
+	STA <var1
 
 	LDA BJrHand_YOff,Y
-	STA <Temp_Var2
+	STA <var2
 
 	LDA #1
 	JSR Object_StealAdjSprite
@@ -710,10 +710,10 @@ BowserJr_DrawHand:
 	TAY
 
 	LDA <Objects_SpriteY,X
-	ADD <Temp_Var2
+	ADD <var2
 	STA Sprite_RAM+$00,Y
 	
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$01,Y
 	
 	LDA Objects_SprAttr,X
@@ -733,7 +733,7 @@ BowserJr_DrawHand:
 	; This replaces BJr's bottom 3 sprites...
 BowserJr_DrawClownCar:
 	LDA #2
-	STA <Temp_Var1
+	STA <var1
 
 	LDA Objects_FlipBits,X
 	AND #SPR_HFLIP
@@ -742,7 +742,7 @@ BowserJr_DrawClownCar:
 	LSR A
 	LSR A		; 0 or 4
 	ADD #$B1
-	STA <Temp_Var2
+	STA <var2
 
 	LDY Object_SprRAM,X
 
@@ -751,7 +751,7 @@ BJrClownCar_Loop:
 	ADD #2
 	STA Sprite_RAM+$00,Y
 
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$01,Y
 
 	LDA Objects_FlipBits,X
@@ -768,7 +768,7 @@ BJrClownCar_Loop:
 
 	; BJr H-Flipped...
 
-	LDA <Temp_Var1
+	LDA <var1
 	CMP #2
 	BNE BJrClownCar_NotQuirk
 
@@ -780,8 +780,8 @@ BJrClownCar_Loop:
 
 BJrClownCar_NotQuirk:
 	; Previous Clown Car pattern
-	DEC <Temp_Var2
-	DEC <Temp_Var2
+	DEC <var2
+	DEC <var2
 	
 	JMP BJrClownCar_LoopDecJump
 
@@ -789,12 +789,12 @@ BJrClownCar_NoHFlip:
 	; BJr not H-Flipped...
 
 	; Next Clown Car pattern
-	INC <Temp_Var2
-	INC <Temp_Var2
+	INC <var2
+	INC <var2
 
 BJrClownCar_LoopDecJump
-	DEC <Temp_Var1			; Temp_Var1--
-	BPL BJrClownCar_Loop	; While Temp_Var1 >= 0, loop!
+	DEC <var1			; var1--
+	BPL BJrClownCar_Loop	; While var1 >= 0, loop!
 
 	RTS
 	
@@ -856,7 +856,7 @@ BJrW3_Normal:
 	STA Objects_Frame,X
 	
 	LDA #0
-	STA <Temp_Var1		; Hand resting
+	STA <var1		; Hand resting
 	JSR BowserJr_DrawHand
 	
 	; Bowser Jr has blown out of Boomer ... waiting for him to land
@@ -883,7 +883,7 @@ BowserJr_BoomersOK:
 	STA Objects_Frame,X
 	
 	LDA #0
-	STA <Temp_Var1		; Hand resting
+	STA <var1		; Hand resting
 	JSR BowserJr_DrawHand
 
 	RTS
@@ -925,7 +925,7 @@ BowserJr_WartsOK:
 	; Bowser Jr's typical expression
 	LDA #0
 	STA Objects_Frame,X
-	STA <Temp_Var1		; Hand resting
+	STA <var1		; Hand resting
 
 	LDA Objects_Var5,Y
 	CMP #5
@@ -944,14 +944,14 @@ BowserJr_WartsNotHurt:
 	BGE BowserJr_W2DrawHand
 	
 	; Spitting!
-	INC <Temp_Var1
+	INC <var1
 	
 	; Mouth open
 	INC Objects_Frame,X
 	INC Objects_Frame,X
 
 BowserJr_W2DrawHand:
-	LDA <Temp_Var1
+	LDA <var1
 	JSR BowserJr_DrawHand
 
 	RTS
@@ -1255,7 +1255,7 @@ BJrW4_Normal:
 	STA Sound_QPlayer
 	
 	LDA #SPR_PAL3
-	STA <Temp_Var2
+	STA <var2
 	
 	LDA #OBJ_GREENSHELL
 	BNE BJrW4_DropObject_Do
@@ -1263,18 +1263,18 @@ BJrW4_Normal:
 
 BJrW4_ShellFound:
 	JSR Object_CalcCoarseXDiff
-	LDA <Temp_Var15
+	LDA <var15
 	ADD #2
 	CMP #4
 	BGE BJrW4_NotOverPlayer
 	
 	LDA #SPR_PAL1
-	STA <Temp_Var2
+	STA <var2
 	
 	; BJr's over the Player! Drop a fireball if possible...
 	LDA #OBJ_FLAREUP
 BJrW4_DropObject_Do:
-	STA <Temp_Var1
+	STA <var1
 	JSR BJrW4_DropObject
 
 	; Timer to prevent too much
@@ -1304,10 +1304,10 @@ BJrW4_DropObject:
 	LDA <Objects_YHi,X
 	STA Objects_YHi,Y
 	
-	LDA <Temp_Var1
+	LDA <var1
 	STA Level_ObjectID,Y
 
-	LDA <Temp_Var2
+	LDA <var2
 	STA Objects_SprAttr,Y
 
 	RTS
@@ -1705,7 +1705,7 @@ BowserJr_World5:
 	; Not spitting, no hand out
 	LDA #0
 BowerJrW5_HandOut:
-	STA <Temp_Var1
+	STA <var1
 		
 	JSR BowserJr_W2DrawHand
 	
@@ -1748,25 +1748,25 @@ ObjInit_DelfinoSlots42:
 	LDA Reel1_Defs
 	ASL A
 	ASL A
-	STA <Temp_Var1
+	STA <var1
 	LDA Reel1_Defs+1
-	ORA <Temp_Var1
+	ORA <var1
 	STA Objects_Var1,X
 
 	LDA Reel2_Defs
 	ASL A
 	ASL A
-	STA <Temp_Var1
+	STA <var1
 	LDA Reel2_Defs+1
-	ORA <Temp_Var1
+	ORA <var1
 	STA Objects_Var2,X
 
 	LDA Reel3_Defs
 	ASL A
 	ASL A
-	STA <Temp_Var1
+	STA <var1
 	LDA Reel3_Defs+1
-	ORA <Temp_Var1
+	ORA <var1
 	STA Objects_Var3,X
 
 	LDA <Objects_Y,X
@@ -2022,7 +2022,7 @@ DelfinoSlots_CalculatePrize:
 
 	; Start with zero weight
 	LDA #0
-	STA <Temp_Var1
+	STA <var1
 
 	; Sum all of the reel prize weights
 	LDA Objects_Var1,X
@@ -2043,16 +2043,16 @@ DelfinoSlots_CalculatePrize:
 	
 	; Iterate through DelfinoSlots_WeightPrizeJumps to find out what prize
 	; (if any) is to be awarded...
-	LDA <Temp_Var1
+	LDA <var1
 	AND #%00111111	; Don't include bit 6/7 because they can be used as wild/doublers; if this is zero, it's an all 7 match!
-	STA <Temp_Var2
+	STA <var2
 	
 	LDX #0
 DelfinoSlots_PrizeCheckLoop:
 	
 	; Check if the weight matches this prize jump...
 	LDA DelfinoSlots_WeightPrizeJumps,X
-	CMP <Temp_Var2
+	CMP <var2
 	BEQ DelfinoSlots_WinPrize	; If this is the prize here, jump to DelfinoSlots_WinPrize
 	
 	INX
@@ -2077,7 +2077,7 @@ DelfinoSlots_WinPrize:
 
 	; For either of the coin prizes, a double can take place
 	; if two reels are 7s, which incidentally is easily determined
-	; by checking the sign bit of Temp_Var1 (since the bit weight
+	; by checking the sign bit of var1 (since the bit weight
 	; addition result of the two 7s will result in %10000000),
 	; which results in a doubling of the prize!
 	
@@ -2087,9 +2087,9 @@ DelfinoSlots_WinPrize:
 	LDX <SlotIndexBackup
 
 	LDA DelfinoSlots_CoinLevel_L,Y	; Get low byte of coin prize
-	STA <Temp_Var3					; -> Temp_Var3
+	STA <var3					; -> var3
 	LDA DelfinoSlots_CoinLevel_H,Y	; Get hight byte of coin prize
-	STA <Temp_Var4					; -> Temp_Var4
+	STA <var4					; -> var4
 		
 	; Doubling of the coin prize only comes from "coin" reels, so
 	; Y = 0 or Y = 1... a little hacky
@@ -2097,19 +2097,19 @@ DelfinoSlots_WinPrize:
 	BGE DelfinoReel_NoDoubling
 	
 	; This is a lower coin prize, subject to doubling
-	LDA <Temp_Var1
+	LDA <var1
 	; Since the only possibility of being here is if we have 0, 1, or 2 
-	; reels with a "7" on it, the result in Temp_Var1 will be %10xxxxxx,
+	; reels with a "7" on it, the result in var1 will be %10xxxxxx,
 	; so we can just check sign. More comment than instruction, eh?
 	BPL DelfinoReel_NoDoubling	; If we don't have two 7 reels, jump to DelfinoReel_NoDoubling
 	
 	; Double prize!
-	ASL <Temp_Var3
-	ROL <Temp_Var4	; Not really needed, but most correct...
+	ASL <var3
+	ROL <var4	; Not really needed, but most correct...
 	
 DelfinoReel_NoDoubling:
 	; If the coin result is negative, we got Boo reels, which (may) be damaging!
-	LDA <Temp_Var4
+	LDA <var4
 	BPL DelfinoSlots_RewardNotBoo	; If not negative, jump to DelfinoSlots_RewardNotBoo
 	
 	LDA #SND_MAPDENY
@@ -2127,9 +2127,9 @@ DelfinoSlots_DontHurt:
 	
 DelfinoSlots_RewardNotBoo:
 	; Coin prize, yay!
-	LDA <Temp_Var3
+	LDA <var3
 	STA Objects_Var6,X
-	LDA <Temp_Var4
+	LDA <var4
 	STA Objects_Var7,X
 	
 DelfinoSlots_RewardEnd:
@@ -2145,8 +2145,8 @@ DelfinoSlots_AddPrizeWeight:
 	ROL A
 	TAY
 	LDA DelfinoSlots_ImageWeight,Y
-	ADD <Temp_Var1
-	STA <Temp_Var1
+	ADD <var1
+	STA <var1
 	RTS
 
 DelfinoSlots_RestartReels
@@ -2175,36 +2175,36 @@ DelfinoSlots_MoveReel:
 	ASL A
 	TAY		; -> 'Y'
 	
-	; Store address to reel images -> Temp_Var1/2
+	; Store address to reel images -> var1/2
 	LDA Reel_DefAddrs,Y		; Low byte of reel image array
-	STA <Temp_Var1
+	STA <var1
 	LDA Reel_DefAddrs+1,Y	; High byte of reel image array
-	STA <Temp_Var2
+	STA <var2
 
-	; Store address of reel's index and images -> Temp_Var3/4
+	; Store address of reel's index and images -> var3/4
 	LDA Reel_ImageIndexAddrs,Y
 	ADD <SlotIndexBackup
-	STA <Temp_Var3
+	STA <var3
 	LDA Reel_ImageIndexAddrs+1,Y
 	ADC #0
-	STA <Temp_Var4
+	STA <var4
 
-	; Store address of reel's Y position -> Temp_Var5/6
+	; Store address of reel's Y position -> var5/6
 	LDA Reel_PositionAddrs,Y
 	ADD <SlotIndexBackup
-	STA <Temp_Var5
+	STA <var5
 	LDA Reel_PositionAddrs+1,Y
 	ADC #0
-	STA <Temp_Var6
+	STA <var6
 
-	; Temp_Var1/2 point to the array of reel images, if we advance
+	; var1/2 point to the array of reel images, if we advance
 
-	; Temp_Var3/4 point to the value that holds the index and images:
+	; var3/4 point to the value that holds the index and images:
 	; Bits 0-3 -- index into reel array
 	; Bits 4-5 -- top reel image
 	; Bits 6-7 -- bottom reel image
 
-	; Temp_Var5/6 point to the address of the reel's Y position
+	; var5/6 point to the address of the reel's Y position
 	
 	; OKAY so what we need to do is:
 	;	- advance the reel Y position
@@ -2214,7 +2214,7 @@ DelfinoSlots_MoveReel:
 	
 	LDY #0
 	
-	LDA [Temp_Var5], Y
+	LDA [var5], Y
 	CMP #%11000000			; Bit 7 is "going to stop" and bit 6 is "stopped", which should happen at Y offset zero
 	BEQ ReelYUpdate_NoChange	; If this reel is already stopped, jump to ReelYUpdate_NoChange
 	
@@ -2227,33 +2227,33 @@ DelfinoSlots_MoveReel:
 Reel_NeedToStop:
 	; We've wrapped!
 	; Increment the index...
-	LDA [Temp_Var3], Y
+	LDA [var3], Y
 	ADD #1				; Next index
 	AND #%00001111		; Lower bits hold the current index
 	TAY					; -> 'Y'
 	
 	; Use this to fetch the new reel images
-	LDA [Temp_Var1], Y	; Pre-shifted reel
+	LDA [var1], Y	; Pre-shifted reel
 	ASL A
 	ASL A				; It's pre-shifted to bits 4-5, need to be in 6-7
-	STA <Temp_Var8		; Reel image we're at -> Temp_Var8 (for top)
+	STA <var8		; Reel image we're at -> var8 (for top)
 	
 	INY		; Next image in reel
 	
-	LDA [Temp_Var1], Y
-	ORA <Temp_Var8		; Reel image coming up next -> Temp_Var9 (for bottom)
-	STA <Temp_Var8		; Combine into Temp_Var8
+	LDA [var1], Y
+	ORA <var8		; Reel image coming up next -> var9 (for bottom)
+	STA <var8		; Combine into var8
 	
 	; Merge!
 	DEY		; Return to current index
 	TYA		; -> 'A'
-	ORA <Temp_Var8		; Merge in the image indexes
+	ORA <var8		; Merge in the image indexes
 
 	LDY #0
-	STA [Temp_Var3], Y	; Store into reel positions!
+	STA [var3], Y	; Store into reel positions!
 	
 	; Check if we were supposed to stop
-	LDA [Temp_Var5], Y
+	LDA [var5], Y
 	BPL DelfinoReel_NotStopping		; If bit 7 is not set, jump to DelfinoReel_NotStopping
 		
 	; We're stopping!
@@ -2265,7 +2265,7 @@ DelfinoReel_NotStopping:
 	LDA #0
 
 ReelYUpdate_NoChange:
-	STA [Temp_Var5], Y
+	STA [var5], Y
 
 	RTS
 
@@ -2287,18 +2287,18 @@ DelfinoSlot_Draw:
 	JSR Object_StealAdjSprite_DS
 	
 	; Use sprite 1, 2, 3, and 4 of this object
-	STY <Temp_Var11
+	STY <var11
 	TYA
 	ADD #(4 * 2)
-	STA <Temp_Var12
+	STA <var12
 
-	LDA <Temp_Var12
-	PHA		; Save Temp_Var12; it will get damaged in DelfinoSlot_DrawSlot by the collision check
+	LDA <var12
+	PHA		; Save var12; it will get damaged in DelfinoSlot_DrawSlot by the collision check
 			
 	; Draw it!
 	LDA Objects_Var10,X
 	AND #%00111111		; Bit 6 & 7 are stop indicators
-	STA <Temp_Var1
+	STA <var1
 	JSR_THUNKA 41, DelfinoSlot_DrawSlot
 
 	; REEL 2
@@ -2308,9 +2308,9 @@ DelfinoSlot_Draw:
 	JSR DelfinoSlots_SetFrAndPal
 
 	; Use sprite 5 and 6...
-	PLA		; Restore Temp_Var12
+	PLA		; Restore var12
 	ADD #(4 * 2)
-	STA <Temp_Var11
+	STA <var11
 
 	; Get next object sprite base
 	LDA #0
@@ -2319,7 +2319,7 @@ DelfinoSlot_Draw:
 	; Change to last sprite
 	TYA
 	ADD #(4 * 4)
-	STA <Temp_Var12
+	STA <var12
 	
 	; Move over to next reel
 	LDA <Objects_X,X
@@ -2334,7 +2334,7 @@ DelfinoSlot_Draw:
 	; Draw it!
 	LDA Objects_Var11,X
 	AND #%00111111		; Bit 6 & 7 are stop indicators
-	STA <Temp_Var1
+	STA <var1
 	JSR_THUNKA 41, DelfinoSlot_DrawSlot
 
 
@@ -2351,7 +2351,7 @@ DelfinoSlot_Draw:
 	; Change to last sprite
 	TYA
 	ADD #(4 * 4)
-	STA <Temp_Var11
+	STA <var11
 
 	; Get 3-over object sprite base
 	LDA #2
@@ -2360,7 +2360,7 @@ DelfinoSlot_Draw:
 	; Change to last sprite
 	TYA
 	ADD #(4 * 4)
-	STA <Temp_Var12
+	STA <var12
 	
 	; Move over to next reel
 	LDA <Objects_X,X
@@ -2373,7 +2373,7 @@ DelfinoSlot_Draw:
 	; Draw it!
 	LDA Objects_Var12,X
 	AND #%00111111		; Bit 6 & 7 are stop indicators
-	STA <Temp_Var1
+	STA <var1
 	JSR_THUNKA 41, DelfinoSlot_DrawSlot
 	
 
@@ -2392,19 +2392,19 @@ DelfinoSlots_SetFrAndPal:
 	LSR A
 	PHA
 	AND #%00000011		; Bits 4-5 (top reel image)
-	STA <Temp_Var13
+	STA <var13
 	TAY
 	LDA ReelPal_PerImage,Y 
-	STA <Temp_Var9	; Top reel image palette
+	STA <var9	; Top reel image palette
 	
 	PLA
 	AND #%00001100		; Bits 2-3 (bottom reel image)
 	LSR A
 	LSR A
-	STA <Temp_Var14
+	STA <var14
 	TAY
 	LDA ReelPal_PerImage,Y 
-	STA <Temp_Var10	; Bottom reel image palette
+	STA <var10	; Bottom reel image palette
 
 	RTS
 
@@ -2418,22 +2418,22 @@ ObjHit_DelfinoSlots42:
 	ASL A
 	TAY		; Y = 0, 2, 4
 	
-	; Store address of reel's Y position -> Temp_Var1/2
+	; Store address of reel's Y position -> var1/2
 	LDA Reel_PositionAddrs,Y
 	ADD <SlotIndexBackup
-	STA <Temp_Var1
+	STA <var1
 	LDA Reel_PositionAddrs+1,Y
 	ADC #0
-	STA <Temp_Var2
+	STA <var2
 	
 	LDY #0
 	
-	LDA [Temp_Var1], Y
+	LDA [var1], Y
 	BMI DelfinoReel_AlreadyStop		; If reel already stopping/stopped, jump to DelfinoReel_AlreadyStop
 	
 	; Mark reel to stop
 	ORA #%10000000
-	STA [Temp_Var1], Y
+	STA [var1], Y
 	
 	LDA #SND_PLAYERSWIM
 	STA Sound_QPlayer
@@ -2498,10 +2498,10 @@ Petey_Walk:
 	ASL A
 	ASL A
 	AND #$80
-	STA <Temp_Var1
+	STA <var1
 	LDA Objects_Frame,X
 	AND #~$80
-	ORA <Temp_Var1
+	ORA <var1
 	STA Objects_Frame,X
 	
 
@@ -2605,7 +2605,7 @@ Petey_YVelSet:
 	BNE Petey_FlyCont
 
 	JSR Level_ObjCalcXDiffs
-	LDA <Temp_Var16
+	LDA <var16
 	ADD #4
 	CMP #8
 	BGE Petey_FlyCont
@@ -2877,7 +2877,7 @@ Petey_NotFlashing:
 
 	JSR Object_CalcSpriteXY_NoHi
 
-	; Temp_Var4 sets mouth closed or open (0 or 8)
+	; var4 sets mouth closed or open (0 or 8)
 	; Bit 7 of frame sets this
 	LDA Objects_Frame,X
 	AND #$80
@@ -2885,7 +2885,7 @@ Petey_NotFlashing:
 	LSR A
 	LSR A
 	LSR A
-	STA <Temp_Var4
+	STA <var4
 
 	; HEAD UPPER HALF
 
@@ -2893,12 +2893,12 @@ Petey_NotFlashing:
 	LDY Object_SprRAM,X
 		
 	LDA #0
-	STA <Temp_Var3	; 0 or SPR_VFLIP for bottom half of head
+	STA <var3	; 0 or SPR_VFLIP for bottom half of head
 	
 	LDA <Objects_SpriteX,X
-	STA <Temp_Var11
+	STA <var11
 	LDA <Objects_SpriteY,X
-	STA <Temp_Var12
+	STA <var12
 		
 	JSR Petey_DrawHeadHalf
 
@@ -2910,13 +2910,13 @@ Petey_NotFlashing:
 	JSR Object_StealAdjSprite
 	
 	LDA #SPR_VFLIP
-	STA <Temp_Var3
+	STA <var3
 	
 	LDA <Objects_SpriteX,X
-	STA <Temp_Var11
+	STA <var11
 	LDA <Objects_SpriteY,X
 	ADD #16
-	STA <Temp_Var12
+	STA <var12
 		
 	JSR Petey_DrawHeadHalf
 	
@@ -2928,7 +2928,7 @@ Petey_NotFlashing:
 	AND #%01111111	; Bit 7 is mouth open/closed
 	TAY
 	LDA Petey_BodyPatternByFrame,Y
-	STA <Temp_Var1
+	STA <var1
 	
 	; Object+2 slot sprites...
 	LDA #1
@@ -2936,49 +2936,49 @@ Petey_NotFlashing:
 		
 	LDA <Objects_SpriteX,X
 	ADD #8
-	STA <Temp_Var11
+	STA <var11
 	LDA <Objects_SpriteY,X
 	ADD #31
-	STA <Temp_Var12
+	STA <var12
 			
 	; Normally incrementing forward, 2 patterns at a time
 	LDA #2
-	STA <Temp_Var2
+	STA <var2
 	
 	LDA Objects_FlipBits,X
 	AND #SPR_HFLIP
 	BEQ Petey_BodyNotHFlipped	; If not horizontally flipped, jump to Petey_BodyNotHFlipped
 	
 	; If horizontally flipped, start at end, go in reverse
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #4
-	STA <Temp_Var1
+	STA <var1
 	
 	LDA #-2
-	STA <Temp_Var2
+	STA <var2
 
 	; Move body over
-	LDA <Temp_Var11
+	LDA <var11
 	SUB #8
-	STA <Temp_Var11	
+	STA <var11	
 	
 Petey_BodyNotHFlipped:
 		
 
 	LDA #3
-	STA <Temp_Var10
+	STA <var10
 Petey_BodyLoop:
 	
 	; Y
-	LDA <Temp_Var12
+	LDA <var12
 	STA Sprite_RAM+$00,Y
 	
 	; Pattern
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$01,Y
 	
-	ADD <Temp_Var2
-	STA <Temp_Var1		; Pattern += Temp_Var2
+	ADD <var2
+	STA <var1		; Pattern += var2
 	
 	; Attribute
 	LDA Objects_SprAttr,X
@@ -2986,11 +2986,11 @@ Petey_BodyLoop:
 	STA Sprite_RAM+$02,Y
 	
 	; X
-	LDA <Temp_Var11
+	LDA <var11
 	STA Sprite_RAM+$03,Y
 
 	ADD #8
-	STA <Temp_Var11		; Sprite X += 8
+	STA <var11		; Sprite X += 8
 
 	; Y += 4
 	INY
@@ -2998,8 +2998,8 @@ Petey_BodyLoop:
 	INY
 	INY
 	
-	DEC <Temp_Var10			; Temp_Var10--
-	BNE Petey_BodyLoop		; While Temp_Var10 > 0, loop!
+	DEC <var10			; var10--
+	BNE Petey_BodyLoop		; While var10 > 0, loop!
 
 	; No real good bbox for Petey, so offset his hit detection down 8
 	LDA <Objects_SpriteY,X
@@ -3009,65 +3009,65 @@ Petey_BodyLoop:
 	RTS
 
 Petey_DrawHeadHalf:
-	; Temp_Var3 is vertical flip or not (as in, bottom half of head)
-	; Temp_Var4 is open or closed mouth (0 or 8)
-	; Temp_Var11 is Sprite X
-	; Temp_Var12 is Sprite Y
+	; var3 is vertical flip or not (as in, bottom half of head)
+	; var4 is open or closed mouth (0 or 8)
+	; var11 is Sprite X
+	; var12 is Sprite Y
 	; 'Y' is offset into Sprite_RAM
 
 
 	; Petey head patterns start at $C1 for closed mouth, $C9 for open mouth
 	LDA #$C1
-	ADD <Temp_Var4
-	STA <Temp_Var1
+	ADD <var4
+	STA <var1
 	
 	; Normally incrementing forward, 2 patterns at a time
 	LDA #2
-	STA <Temp_Var2
+	STA <var2
 	
 	LDA Objects_FlipBits,X
 	AND #SPR_HFLIP
 	BEQ Petey_HeadNotHFlipped	; If not horizontally flipped, jump to Petey_HeadNotHFlipped
 	
 	; If horizontally flipped, start at end, go in reverse
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #6
-	STA <Temp_Var1
+	STA <var1
 	
 	LDA #-2
-	STA <Temp_Var2
+	STA <var2
 	
 Petey_HeadNotHFlipped:
 
 	LDA #4
-	STA <Temp_Var10
+	STA <var10
 Petey_HeadHalfLoop:
 	
 	; Y
-	LDA <Temp_Var12
+	LDA <var12
 	STA Sprite_RAM+$00,Y
 	
 	; Pattern
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$01,Y
 	
-	ADD <Temp_Var2
-	STA <Temp_Var1		; Pattern += Temp_Var2
+	ADD <var2
+	STA <var1		; Pattern += var2
 	
 	; Attribute
 	LDA Objects_ColorCycle,X
 	AND #3
 	EOR #3		; Idle at palette 3
 	ORA Objects_FlipBits,X
-	ORA <Temp_Var3
+	ORA <var3
 	STA Sprite_RAM+$02,Y
 	
 	; X
-	LDA <Temp_Var11
+	LDA <var11
 	STA Sprite_RAM+$03,Y
 
 	ADD #8
-	STA <Temp_Var11		; Sprite X += 8
+	STA <var11		; Sprite X += 8
 
 	; Y += 4
 	INY
@@ -3075,8 +3075,8 @@ Petey_HeadHalfLoop:
 	INY
 	INY
 	
-	DEC <Temp_Var10			; Temp_Var10--
-	BNE Petey_HeadHalfLoop	; While Temp_Var10 > 0, loop!
+	DEC <var10			; var10--
+	BNE Petey_HeadHalfLoop	; While var10 > 0, loop!
 
 	RTS
 
@@ -3363,14 +3363,14 @@ Mouser_HurlBobomb:
 	LDA #-$10	 ; A = -$10
 
 Mouser_HurlRight:
-	STY <Temp_Var1	 ; Temp_Var1 = $0A or $0B
+	STY <var1	 ; var1 = $0A or $0B
 	STA <Objects_XVel,X	 ; Set Bob-omb's X velocity (-$10 or $10)
 
 	ASL A		 ; Shift sign bit into carry
 
-	; Temp_Var2 = $00 (16-bit sign extension)
+	; var2 = $00 (16-bit sign extension)
 	LDA #$FF
-	STA <Temp_Var2
+	STA <var2
 
 	LDY <SlotIndexBackup	 ; Y = Mouser's object slot index
 
@@ -3378,12 +3378,12 @@ Mouser_HurlRight:
 	LDA #-$08	 ; A = $08
 	BCC Mouser_BCFC	 ; If this is a right-shot Bob-omb, jump to Mouser_BCFC
 	LDA #$08	 ; A = -$08
-	INC <Temp_Var2	 ; Temp_Var2 = $00 (16-bit sign extension)
+	INC <var2	 ; var2 = $00 (16-bit sign extension)
 Mouser_BCFC:
 	ADD Objects_X,Y
 	STA <Objects_X,X
 	LDA Objects_XHi,Y
-	ADC <Temp_Var2	
+	ADC <var2	
 	STA <Objects_XHi,X
 
 
@@ -3430,7 +3430,7 @@ ArenaClear_Loop:
 Arena_Clear:
 	; Clear Arena Door 1
 	INY		; Because lowest is actually arena 1 (starting from 0)
-	STY <Temp_Var1
+	STY <var1
 	JSR_THUNKA 41, ArenaCtl_ExitBoss
 	JMP Object_Delete
 
@@ -3821,17 +3821,17 @@ Wart_SpitAlt:
 	JSR SpecialObj_FindEmptyAbort
 	
 	; Set X/Y
-	LDA <Temp_Var1
+	LDA <var1
 	STA SpecialObj_YLo,Y
-	LDA <Temp_Var2
+	LDA <var2
 	STA SpecialObj_YHi,Y
 
-	LDA <Temp_Var3
+	LDA <var3
 	STA SpecialObj_XLo,Y
 
 	; Zeroes the spit X velocity
 	LDA #0
-	STA <Temp_Var1
+	STA <var1
 	
 	JSR Wart_SpitAlt_Cont
 	
@@ -3847,9 +3847,9 @@ Wart_Spit:
 	LSR A
 	TAY
 	LDA Wart_SpitXVels,Y
-	STA <Temp_Var1
+	STA <var1
 	LDA Wart_SpitYVels,Y
-	STA <Temp_Var2
+	STA <var2
 
 	JSR SpecialObj_FindEmptyAbort	 
 
@@ -3873,10 +3873,10 @@ Wart_SpitAlt_Cont:
 	LDA #(2 | 1)
 	STA SpecialObj_Data,Y
 	
-	LDA <Temp_Var2
+	LDA <var2
 	STA SpecialObj_YVel,Y
 
-	LDA <Temp_Var1
+	LDA <var1
 	STA SpecialObj_XVel,Y
 	
 	RTS		 ; Return
@@ -3926,13 +3926,13 @@ Wart_LowerAtk:
 
 	LDA <Objects_Y,X
 	ADD #32
-	STA <Temp_Var1
+	STA <var1
 	LDA <Objects_YHi,X
 	ADC #0
-	STA <Temp_Var2
+	STA <var2
 
 	LDA Objects_Var1,X
-	STA <Temp_Var3
+	STA <var3
 	
 	JSR Wart_SpitAlt
 
@@ -4230,7 +4230,7 @@ BJrW7_BowserJr_PLanded:
 BJrW7_MoveVertToPlayer:
 	JSR Object_CalcCoarseYDiff
 	
-	LDA <Temp_Var16		; 255 too high, 0 too low
+	LDA <var16		; 255 too high, 0 too low
 	ADD #1
 	EOR Objects_ReverseGrav,X
 	TAY
@@ -4270,20 +4270,20 @@ BJrW7_Draw:
 	LDA Objects_ReverseGrav,X
 	ROR A
 	ROR A
-	STA <Temp_Var13
+	STA <var13
 
 	LDA Objects_SprVVis,X
-	STA <Temp_Var14
+	STA <var14
 
 	LDA Objects_Frame,X
 	ASL A
 	ASL A
 	ASL A
 	ASL A
-	STA <Temp_Var15		; 15 = offset for head frame change
+	STA <var15		; 15 = offset for head frame change
 
 	JSR Object_GetRandNearUnusedSpr
-	STY <Temp_Var16		; 16 = additional sprite index needed
+	STY <var16		; 16 = additional sprite index needed
 
 	JSR Object_DetermineVertVis
 
@@ -4292,12 +4292,12 @@ BJrW7_Draw:
 	LDX <SlotIndexBackup
 	LDA Objects_ColorCycle,X
 	AND #3
-	STA <Temp_Var4
+	STA <var4
 
-	LDX <Temp_Var16
+	LDX <var16
 
 	; Sprite Y
-	LDA <Temp_Var14
+	LDA <var14
 	AND #1
 	BEQ BJrW7_TopVis
 	
@@ -4305,14 +4305,14 @@ BJrW7_Draw:
 	BNE BJrW7_TopInvis
 		
 BJrW7_TopVis:
-	LDA <Temp_Var1
+	LDA <var1
 
 BJrW7_TopInvis:
 	STA Sprite_RAM+$00,X	; Left half of head
 	STA Sprite_RAM+$00,Y	; Right half of head
 	STA Sprite_RAM+$04,Y	; Top of ship
 
-	LDA <Temp_Var14
+	LDA <var14
 	AND #1
 	BEQ BJrW7_BotVis
 	
@@ -4320,7 +4320,7 @@ BJrW7_TopInvis:
 	BNE BJrW7_BotInvis
 		
 BJrW7_BotVis:
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #16
 	
 BJrW7_BotInvis:
@@ -4330,7 +4330,7 @@ BJrW7_BotInvis:
 	STA Sprite_RAM+$14,Y
 	
 	
-	LDA <Temp_Var13
+	LDA <var13
 	BEQ BJrW7_NoVFlip
 	
 	LDA Sprite_RAM+$00,X
@@ -4352,7 +4352,7 @@ BJrW7_NoVFlip:
 	; 08 0C 10 14
 	
 	; Sprite X
-	LDA <Temp_Var2
+	LDA <var2
 	STA Sprite_RAM+$0B,Y	; Lower left ship
 	ADD #8
 	STA Sprite_RAM+$03,X	; Left half of head
@@ -4365,10 +4365,10 @@ BJrW7_NoVFlip:
 	STA Sprite_RAM+$17,Y	; Lower right ship
 	
 	LDA #$A3
-	ADD <Temp_Var15
+	ADD <var15
 	STA Sprite_RAM+$01,X	; Left half of head
 	LDA #$A5
-	ADD <Temp_Var15
+	ADD <var15
 	STA Sprite_RAM+$01,Y	; Right half of head
 	LDA #$A7
 	STA Sprite_RAM+$05,Y	; Top right ship
@@ -4382,22 +4382,22 @@ BJrW7_NoVFlip:
 	STA Sprite_RAM+$15,Y	; Lower right ship
 	
 	LDA #SPR_PAL1
-	ORA <Temp_Var3
-	ORA <Temp_Var13
-	EOR <Temp_Var4
+	ORA <var3
+	ORA <var13
+	EOR <var4
 	STA Sprite_RAM+$02,X	; Right half of head
 	STA Sprite_RAM+$02,Y	; Left half of head
 	LDA #SPR_PAL3
-	ORA <Temp_Var3
-	ORA <Temp_Var13
-	EOR <Temp_Var4
+	ORA <var3
+	ORA <var13
+	EOR <var4
 	STA Sprite_RAM+$06,Y	; Top right ship
 	STA Sprite_RAM+$0A,Y	; Bottom left ship
 	STA Sprite_RAM+$0E,Y	; Mid left ship
 	STA Sprite_RAM+$12,Y	; Mid right ship
 	STA Sprite_RAM+$16,Y	; Lower right ship
 
-	LDA <Temp_Var3
+	LDA <var3
 	AND #SPR_HFLIP
 	BEQ BJrW7_DrawNoHFlip
 
@@ -4443,7 +4443,7 @@ BJ7SFire_YCoarseOff:	.byte 0, 4
 BJrW7_SpitFire:
 	LDY Objects_ReverseGrav,X
 	LDA BJ7SFire_YOff,Y
-	STA <Temp_Var1
+	STA <var1
 
 	LDY <SlotIndexBackup
 	JSR PrepareNewObjectOrAbort
@@ -4455,7 +4455,7 @@ BJrW7_SpitFire:
 	STA Level_ObjectID,X
 
 	LDA Objects_Y,Y
-	ADD <Temp_Var1
+	ADD <var1
 	STA <Objects_Y,X
 	LDA Objects_YHi,Y
 	ADC #0
@@ -4470,7 +4470,7 @@ BJrW7_SpitFire:
 	STA Objects_SprAttr,X
 
 	JSR Object_CalcCoarseXDiff
-	LDA <Temp_Var16
+	LDA <var16
 	ROL A
 	ROL A
 	ROL A
@@ -4530,7 +4530,7 @@ BJrW7_CineNot48:
 	STA Sound_QLevel1
 	
 	LDA #24
-	STA <Temp_Var2
+	STA <var2
 	LDA #0
 	JSR BJrW7_CinePoof
 	LDA #16
@@ -4547,7 +4547,7 @@ BJrW7_CinePointing:
 	RTS
 
 BJrW7_CinePoof:
-	STA <Temp_Var1
+	STA <var1
 
 	JSR SpecialObj_FindEmptyAbort	; Find an empty special object slot or don't come back here!
 
@@ -4558,10 +4558,10 @@ BJrW7_CinePoof:
 	; Set the poof where the box will be
 	LDA <Objects_X,X
 	SUB #8
-	ADD <Temp_Var1
+	ADD <var1
 	STA SpecialObj_XLo,Y
 	LDA <Objects_Y,X
-	ADD <Temp_Var2
+	ADD <var2
 	STA SpecialObj_YLo,Y
 	LDA <Objects_YHi,X
 	ADC #0
@@ -4702,7 +4702,7 @@ BJrW7_FindLS_Loop:
 	
 	; Found the launch star...
 	LDA #4
-	STA <Temp_Var2
+	STA <var2
 	LDA #8
 	JSR BJrW7_CinePoof
 	LDA #24
@@ -5052,11 +5052,11 @@ Bleck_NotOORHorz:
 	; Randomly select next direction
 	LDA RandomN
 	AND #%00000011
-	STA <Temp_Var1
+	STA <var1
 	
 	LDA Objects_Var1,X
 	AND #%11111100
-	ORA <Temp_Var1
+	ORA <var1
 	STA Objects_Var1,X
 
 	INC <Objects_Var5,X
@@ -5131,7 +5131,7 @@ Bleck_StillBlackHoling:
 	;BNE Bleck_DragEnd
 
 	; Black hole FX	
-	STX <Temp_Var11
+	STX <var11
 	JSR Bleck_SpawnFX
 
 Bleck_NoBHFX:
@@ -5215,7 +5215,7 @@ BleckProj_ResetTimer:
 BleckProj_ProjectileMode:
 	JSR_THUNKA 41, Object_HandleBumpUnderneath
 
-	;STX <Temp_Var11
+	;STX <var11
 	;JSR Bleck_SpawnFX
 
 	RTS
@@ -5223,48 +5223,48 @@ BleckProj_ProjectileMode:
 Bleck_SpawnFX:
 	; Take advantage of the Boo Loop code!
 	LDA RandomN
-	STA <Temp_Var1
+	STA <var1
 	JSR_THUNKA 3, BooLoop_GetOffsetXY_TV1
 
 	; Divide Y offset by 2
-	LDA <Temp_Var2
+	LDA <var2
 	ASR A
-	STA <Temp_Var2
-	LDA <Temp_Var1
+	STA <var2
+	LDA <var1
 	ROR A
-	STA <Temp_Var1
+	STA <var1
 
 	; Divide X offset by 2
-	LDA <Temp_Var4
+	LDA <var4
 	ASR A
-	STA <Temp_Var4
-	LDA <Temp_Var3
+	STA <var4
+	LDA <var3
 	ROR A
-	STA <Temp_Var3
+	STA <var3
 
-	LDY <Temp_Var11
+	LDY <var11
 
 	LDA Objects_X,Y
-	ADD <Temp_Var3
-	STA <Temp_Var3
+	ADD <var3
+	STA <var3
 	LDA Objects_XHi,Y
-	ADC <Temp_Var4
-	STA <Temp_Var4
+	ADC <var4
+	STA <var4
 
 	LDA Objects_Y,Y
-	ADD <Temp_Var1
-	STA <Temp_Var1
+	ADD <var1
+	STA <var1
 	LDA Objects_YHi,Y
-	ADC <Temp_Var2
-	STA <Temp_Var2
+	ADC <var2
+	STA <var2
 	
 
-	; Temp_Var1 = Y
-	; Temp_Var2 = YHi
-	; Temp_Var3 = X
-	; Temp_Var4 = XHi
+	; var1 = Y
+	; var2 = YHi
+	; var3 = X
+	; var4 = XHi
 	
-	; Temp_Var11 = index of target
+	; var11 = index of target
 
 	JSR PrepareNewObjectOrAbort
 
@@ -5273,23 +5273,23 @@ Bleck_SpawnFX:
 	STA Level_ObjectID,X
 
 	; Set Bleck's projectile Y
-	LDA <Temp_Var1
+	LDA <var1
 	STA <Objects_Y,X
-	LDA <Temp_Var2
+	LDA <var2
 	STA <Objects_YHi,X
 
 	; Set Bleck's projectile X
-	LDA <Temp_Var3
+	LDA <var3
 	STA <Objects_X,X
-	LDA <Temp_Var4
+	LDA <var4
 	STA <Objects_XHi,X
 
 	LDA #$14
 	JSR BleckFX_CalcVelPath
 	
-	LDA <Temp_Var1
+	LDA <var1
 	STA <Objects_YVel,X
-	LDA <Temp_Var2
+	LDA <var2
 	STA <Objects_XVel,X
 	
 
@@ -5301,9 +5301,9 @@ Bleck_SpawnFX:
 	RTS
 
 BleckFX_CalcVelPath:
-	STA <Temp_Var2	; Store input value -> Temp_Var2
+	STA <var2	; Store input value -> var2
 
-	; Temp_Var11 holds the index of the object to be targeted
+	; var11 holds the index of the object to be targeted
 
 	; Backup 'X' and 'Y'
 	TXA
@@ -5311,95 +5311,95 @@ BleckFX_CalcVelPath:
 	TYA
 	PHA
 
-	LDY <Temp_Var11
+	LDY <var11
 	JSR BleckProj_ObjCalcYDiffs
-	STY <Temp_Var3		 ; Store Y difference indicator -> Temp_Var3
+	STY <var3		 ; Store Y difference indicator -> var3
 
 	; Get absolute value of Y difference
-	LDA <Temp_Var16
+	LDA <var16
 	BPL PRG042_BCAA
 	JSR Negate
 PRG042_BCAA:
-	STA <Temp_Var13		 ; -> Temp_Var13
+	STA <var13		 ; -> var13
  
-	LDY <Temp_Var11
+	LDY <var11
 	JSR BleckProj_ObjCalcXDiffs
-	STY <Temp_Var4		 ; Store X difference indicator -> Temp_Var4
+	STY <var4		 ; Store X difference indicator -> var4
 
 	; Get absolute value of X difference
-	LDA <Temp_Var16
+	LDA <var16
 	BPL PRG042_BCB8
 	JSR Negate
 PRG042_BCB8:
-	STA <Temp_Var14		 ; -> Temp_Var14
+	STA <var14		 ; -> var14
 
 	LDY #$00	 ; Y = 0
-	LDA <Temp_Var14	
-	CMP <Temp_Var13	
+	LDA <var14	
+	CMP <var13	
 	BGE PRG042_BCCB	 ; If Y difference >= X difference, jump to PRG042_BCCB
 
 	INY		 ; Y = 1
 
-	; Swap differences (so greater difference will be in Temp_Var14)
+	; Swap differences (so greater difference will be in var14)
 	PHA
-	LDA <Temp_Var13
-	STA <Temp_Var14
+	LDA <var13
+	STA <var14
 	PLA
-	STA <Temp_Var13
+	STA <var13
 
 PRG042_BCCB:
 	LDA #$00
-	STA <Temp_Var12	; Clear Temp_Var12
-	STA <Temp_Var1	; Clear Temp_Var1
+	STA <var12	; Clear var12
+	STA <var1	; Clear var1
 
-	LDX <Temp_Var2		 ; X = Temp_Var2 (original input value)
+	LDX <var2		 ; X = var2 (original input value)
 
 PRG042_BCD3:
-	LDA <Temp_Var12
-	ADD <Temp_Var13		; A = Temp_Var12 + Temp_Var13 (the lesser difference)
-	CMP <Temp_Var14		
-	BLT PRG042_BCE0	 	; If (Temp_Var12 + Temp_Var13) < Temp_Var14 (the greater difference), jump to PRG042_BCE0
+	LDA <var12
+	ADD <var13		; A = var12 + var13 (the lesser difference)
+	CMP <var14		
+	BLT PRG042_BCE0	 	; If (var12 + var13) < var14 (the greater difference), jump to PRG042_BCE0
 
-	; If (Temp_Var12 + Temp_Var13) >= Temp_Var14
+	; If (var12 + var13) >= var14
 
-	SBC <Temp_Var14		 ; Subtract total from Temp_Var14
-	INC <Temp_Var1		 ; Temp_Var1++
+	SBC <var14		 ; Subtract total from var14
+	INC <var1		 ; var1++
 
 PRG042_BCE0:
-	STA <Temp_Var12		 ; Update Temp_Var12 with the previous total
+	STA <var12		 ; Update var12 with the previous total
 	DEX		 	; X--
 	BNE PRG042_BCD3		; While X >= 0, loop!
 
 	TYA		 ; A = 0 or 1
 	BEQ PRG042_BCF2	 ; If zero (don't need to swap), jump to PRG042_BCF2
 
-	; Swap Temp_Var1 and Temp_Var2
-	LDA <Temp_Var1
+	; Swap var1 and var2
+	LDA <var1
 	PHA	
-	LDA <Temp_Var2
-	STA <Temp_Var1
+	LDA <var2
+	STA <var1
 	PLA	
-	STA <Temp_Var2
+	STA <var2
 
 PRG042_BCF2:
-	LDA <Temp_Var1		 ; A = Temp_Var1
+	LDA <var1		 ; A = var1
 
-	LDY <Temp_Var3		 ; Y = Temp_Var3 (Y difference indicator)
+	LDY <var3		 ; Y = var3 (Y difference indicator)
 	BEQ PRG042_BCFD	 	; If Player was lower than object, jump to PRG042_BCFD
 
-	; Otherwise, negate Temp_Var1
+	; Otherwise, negate var1
 	JSR Negate
-	STA <Temp_Var1
+	STA <var1
 
 PRG042_BCFD:
-	LDA <Temp_Var2		 ; A = Temp_Var2
+	LDA <var2		 ; A = var2
 
-	LDY <Temp_Var4		 ; Y = Temp_Var4 (X difference indicator)
+	LDY <var4		 ; Y = var4 (X difference indicator)
 	BEQ PRG042_BD08	 	; If Player was lower than object, jump to PRG042_BD08
 
-	; Otherwise, negate Temp_Var2
+	; Otherwise, negate var2
 	JSR Negate
-	STA <Temp_Var2
+	STA <var2
 
 PRG042_BD08:
 
@@ -5415,7 +5415,7 @@ PRG042_BD08:
 BleckProj_ObjCalcXDiffs:
 	LDA Objects_X,Y
 	SUB <Objects_X,X
-	STA <Temp_Var16	 ; Temp_Var16 = difference between Player's X and object's X
+	STA <var16	 ; var16 = difference between Player's X and object's X
 
 	LDA Objects_XHi,Y
 	PHA
@@ -5435,7 +5435,7 @@ PRG042_DD3C:
 BleckProj_ObjCalcYDiffs:
 	LDA Objects_Y,Y
 	SUB <Objects_Y,X
-	STA <Temp_Var16		 ; Temp_Var16 = difference between Player's Y and object's Y
+	STA <var16		 ; var16 = difference between Player's Y and object's Y
 
 	LDA Objects_YHi,Y
 	PHA
@@ -5487,9 +5487,9 @@ Bleck_Shoot:
 	LDA #1
 	STA <Objects_Var5,X
 
-	LDA <Temp_Var1
+	LDA <var1
 	STA <Objects_YVel,X
-	LDA <Temp_Var2
+	LDA <var2
 	STA <Objects_XVel,X
 
 	LDY <SlotIndexBackup
@@ -5576,16 +5576,16 @@ Bleck_StarCoinAddHack:
 	LDA Inventory_Cards
 	ASL A
 	ASL A
-	STA Temp_Var1
+	STA var1
 
 	LDA Inventory_Cards+1
 	ASL A
-	ORA Temp_Var1
-	STA Temp_Var1
+	ORA var1
+	STA var1
 
 	LDA Inventory_Cards+2
-	ORA Temp_Var1
-	STA Temp_Var1
+	ORA var1
+	STA var1
 
 	; Now take whatever star cards were already collected out of the equation
 	EOR Level_IsComplete
@@ -6038,17 +6038,17 @@ Fish_KilledEnough:
 Fish_DrawHUD:
 	LDY World_Num
 	LDA BCW_SprOff_ByWorld,Y
-	STA <Temp_Var3	; Pattern offset
+	STA <var3	; Pattern offset
 
 	LDA BCW_SprAttr_ByWorld,Y
-	STA <Temp_Var4	; Sprite attribute
+	STA <var4	; Sprite attribute
 
 	
 	; Draw HUD
 	LDX <SlotIndexBackup
 
 	LDA <Objects_Var4,X
-	STA <Temp_Var2
+	STA <var2
 
 	LDY Object_SprRAM,X
 	LDX #0	; World 1 starts here
@@ -6059,7 +6059,7 @@ Fish_DrawHUD:
 	TAX
 
 	LDA #$70
-	STA <Temp_Var1
+	STA <var1
 	
 BCW1_SprLoop:
 	LDA #$08
@@ -6069,21 +6069,21 @@ BCW1_SprLoop:
 	BNE BCW1_Other
 	
 	; Number!
-	LDA <Temp_Var2
+	LDA <var2
 	ASL A
 	ADD #$81
-	ADD <Temp_Var3
+	ADD <var3
 
 BCW1_Other:
 	STA Sprite_RAM+$01,Y
-	LDA <Temp_Var4
+	LDA <var4
 	STA Sprite_RAM+$02,Y
-	LDA <Temp_Var1
+	LDA <var1
 	STA Sprite_RAM+$03,Y
 	
-	LDA <Temp_Var1
+	LDA <var1
 	ADD #8
-	STA <Temp_Var1
+	STA <var1
 	
 	INY
 	INY
