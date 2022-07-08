@@ -118,7 +118,7 @@ PRG046_LevelLoad_loop:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LoadLevel_Generator_TS16
 ;
-; Based on the values in Temp_Var15 and LL_ShapeDef, chooses an
+; Based on the values in Temp_Var15 and generator_index, chooses an
 ; appropriate generator function to builds this piece of the
 ; level.  Tedious, but saves space and is paper-design friendly.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -127,7 +127,7 @@ PRG046_A419:
 
 LoadLevel_Generator_TS16:
 	; From level loader function:
-	; * Temp_Var15, Temp_Var16, and LL_ShapeDef are three bytes read from the data
+	; * Temp_Var15, Temp_Var16, and generator_index are three bytes read from the data
 
 	LDA <Temp_Var15
 	AND #%11100000
@@ -138,15 +138,15 @@ LoadLevel_Generator_TS16:
 	LSR A		
 	TAX		 	; X = upper 3 bits of Temp_Var15 (0-7) (selects a multiple of 15 as the base)
 
-	LDA LL_ShapeDef
+	LDA generator_index
 	LSR A	
 	LSR A	
 	LSR A	
-	LSR A			; A = upper 4 bits of LL_ShapeDef shifted down
+	LSR A			; A = upper 4 bits of generator_index shifted down
 	ADD PRG046_A419,X	; Add multiple of 15
 	TAX
 	DEX
-	TXA		 ; A = ((LL_ShapeDef >> 4) + PRG046_A419[X]) - 1
+	TXA		 ; A = ((generator_index >> 4) + PRG046_A419[X]) - 1
 
 
 	; Regular Generators
@@ -239,15 +239,15 @@ LoadLevel_Generator_TS16:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LeveLoad_FixedSizeGen_TS16:
 	; It is verified before calling this function that all of
-	; the upper 4 bits of LL_ShapeDef are ZERO
+	; the upper 4 bits of generator_index are ZERO
 
 	; So the upper 3 bits of Temp_Var15 serve as the most significant bits
-	; to a value where LL_ShapeDef provide the 4 least significant bits
+	; to a value where generator_index provide the 4 least significant bits
 
 	LDA <Temp_Var15
 	AND #%11100000
 	LSR A		
-	ADD LL_ShapeDef	
+	ADD generator_index	
 	TAX		 	; Resultant index is put into 'X'
 	JSR DynJump	 
 
@@ -312,9 +312,9 @@ LeveLoad_FixedSizeGen_TS16:
 ; Places a single corner tile in sewer levels
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_ActionSwitch46: 
-	LDY TileAddr_Off
+	LDY level_data_offset
 	LDA TILEA_EXSWITCH	 ; Get switch
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	RTS
 
 
@@ -480,6 +480,215 @@ LL_45SewersB2TCeiling:
 	.byte TILE14_ABOVE_S45B2T_CEIL, TILE14_SLOPE45B2T_CEIL, TILE14_WSLOPE45B2T_CEIL
 
 
+; General Methods
+
+;;
+; Gets the next char from generator data and increment the pointer to the next index.
+;
+; Parameters
+; ----------
+; char: *level_generator_pointer
+;     The pointer to the level generator data.
+;
+; Updates
+; -------
+; char: *level_generator_pointer
+;     The pointer to the level generator data incremented.
+;
+; Returns
+; -------
+; char: A
+;     The next char of generator data.
+;
+get_next_char_from_generator_data:
+	; Get the next char from the data.
+	LDY #$00
+	LDA [level_generator_pointer],Y
+	PHA
+
+	; Increment level_generator_pointer.
+	LDA <level_generator_pointer
+	ADD #$01	 
+	STA <level_generator_pointer
+	LDA <level_generator_pointer+1
+	ADC #$00
+	STA <level_generator_pointer+1
+
+	; Restore the the char and return.
+	PLA
+	RTS
+
+
+;;
+; Moves the index to the next row.
+;
+; Parameters
+; ----------
+; char: *level_data_pointer
+;     The pointer to the level data.
+; char: level_data_offset
+;     The offset of `level_data_pointer` to the level data.
+;
+; Updates
+; -------
+; char: *level_data_pointer
+;     The pointer to the level data moved one below.
+; char: level_data_offset
+;     The offset of `level_data_pointer` to the level data moved one below.
+;
+; Returns
+; -------
+; char: Y
+;     A copy of `level_data_offset` for easier use.
+;
+update_level_data_pointer_downwards:
+	LDA level_data_offset
+	ADD #16
+	TAY
+	STA level_data_offset
+
+	LDA <level_data_pointer+1
+	ADC #$00
+	STA <level_data_pointer+1
+
+	RTS
+
+
+;;
+; Moves the index to the prior row.
+;
+; Parameters
+; ----------
+; char: *level_data_pointer
+;     The pointer to the level data.
+; char: level_data_offset
+;     The offset of `level_data_pointer` to the level data.
+;
+; Updates
+; -------
+; char: *level_data_pointer
+;     The pointer to the level data moved one above.
+; char: level_data_offset
+;     The offset of `level_data_pointer` to the level data moved one above.
+;
+; Returns
+; -------
+; char: Y
+;     A copy of `level_data_offset` for easier use.
+;
+update_level_data_pointer_upwards:
+	LDA level_data_offset
+	SUB #16
+	STA level_data_offset
+	TAY	
+
+	LDA <level_data_pointer+1
+	SBC #$00	 
+	STA <level_data_pointer+1
+
+	RTS
+
+
+;;
+; Moves the index to the next column.
+;
+; Parameters
+; ----------
+; char: *level_data_pointer
+;     The pointer to the level data.
+; char: level_data_offset
+;     The offset of `level_data_pointer` to the level data.
+;
+; Updates
+; -------
+; char: *level_data_pointer
+;     The pointer to the level data moved one to the right.
+; char: level_data_offset
+;     The offset of `level_data_pointer` to the level data moved one to the right.
+;
+; Returns
+; -------
+; char: Y
+;     A copy of `level_data_offset` for easier use.
+;
+update_level_data_pointer_rightwards:
+	LDY level_data_offset
+	INY
+
+	; Return if we are on a screen border.
+	TYA
+	AND #$0F
+	BNE Terminate46
+
+	; Go to the next screen by adding 0x01B0 to the index
+	LDA <level_data_pointer
+	ADD #$B0	 
+	STA <level_data_pointer
+	LDA <level_data_pointer+1
+	ADC #$01	 
+	STA <level_data_pointer+1
+
+	; Get level_data_offset and only keep the row, but clear 'Y' lower bits since
+	; we're going to column 0 on the same row, new screen...
+	LDA level_data_offset
+	AND #$F0
+	TAY
+
+Terminate46:
+	STY level_data_offset
+	RTS
+
+
+;;
+; Moves the index to the prior column.
+;
+; Parameters
+; ----------
+; char: *level_data_pointer
+;     The pointer to the level data.
+; char: level_data_offset
+;     The offset of `level_data_pointer` to the level data.
+;
+; Updates
+; -------
+; char: *level_data_pointer
+;     The pointer to the level data moved one to the left.
+; char: level_data_offset
+;     The offset of `level_data_pointer` to the level data moved one to the left.
+;
+; Returns
+; -------
+; char: Y
+;     A copy of `level_data_offset` for easier use.
+;
+update_level_data_pointer_leftwards:
+	LDY level_data_offset
+	DEY
+
+	; If we haven't left the left edge of this screen, finish
+	TYA
+	AND #$0F
+	CMP #$0F
+	BNE Terminate46
+
+	; Move back one screen by subtracting $1B0 from Map_Tile_Addr
+	LDA <level_data_pointer
+	SUB #$B0	 
+	STA <level_data_pointer
+	LDA <level_data_pointer+1
+	SBC #$01	 
+	STA <level_data_pointer+1
+
+	; Transfer `level_data_offset` to the other side
+	INY
+	TYA
+	AND #$F0
+	ORA #$0F
+	TAY
+	STY level_data_offset
+
+	RTS
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LoadLevel_Corner
@@ -487,43 +696,44 @@ LL_45SewersB2TCeiling:
 ; Places a single corner tile in sewer levels
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_Corner46:
-	LDX LL_ShapeDef		 ; LL_ShapeDef is limited 0-15 because of fixed size gen mode, so it's perfect! 
+	LDX generator_index		 ; generator_index is limited 0-15 because of fixed size gen mode, so it's perfect! 
 	LDA LL_Corners46,X	 ; Get corner tile
 	JMP GenerateShading
 
 
 ; Two Block Generator
 LoadLevel_DoubleBlock46:
-	LDA LL_ShapeDef		; LL_ShapeDef is limited 0-15 because of fixed size gen mode, so it's perfect! 
+	LDA generator_index		; generator_index is limited 0-15 because of fixed size gen mode, so it's perfect! 
 	ASL A
 	TAX
 
-	LDY TileAddr_Off
+	LDY level_data_offset
 	LDA DoubleBlocks,X	 ; Get first block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	INX
 	LDA DoubleBlocks,X	 ; Get second block
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 	RTS		 ; Return
 
 
 GenerateTopLeftShading:
 	; Save offset
-	LDA TileAddr_Off
+	LDA level_data_offset
 	PHA
 
 	; Save Address to contain issues.
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	PHA
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	PHA
 
-	JSR UpdateBlockIndexToPriorColumn	; Get to the left column index.
-	JSR UpdateBlockIndexToPriorRow
+	; Move to the top left of the block.
+	JSR update_level_data_pointer_leftwards
+	JSR update_level_data_pointer_upwards
 
-	LDA [Map_Tile_AddrL], Y
+	LDA [level_data_pointer], Y
 	CMP #TILE16_SHADOW_S_BR
 	BEQ GenerateTopLeftShadingLoopFinish
 
@@ -541,7 +751,7 @@ GenerateTopLeftShadingLoop:
 
 			; Apply the alternative block to index and jump out of this method.
 			LDA GenerateTopLeftShadingBlocksAlternative, X
-			STA [Map_Tile_AddrL], Y
+			STA [level_data_pointer], Y
 			JMP GenerateTopLeftShadingLoopFinish
 
 	; Continue looping while X >= 0
@@ -553,31 +763,31 @@ GenerateTopLeftShadingLoopContinue:
 GenerateTopLeftShadingLoopFinish:
 	; Restore address
 	PLA
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 	PLA
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 
 	; Restore offset
 	PLA
-	STA TileAddr_Off
+	STA level_data_offset
 	RTS
 
 
 GenerateTopRightShading:
 	; Save offset
-	LDA TileAddr_Off
+	LDA level_data_offset
 	PHA
 
 	; Save Address to contain issues.
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	PHA
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	PHA
 
-	JSR UpdateBlockIndexToNextColumn	; Get to the right column index.
-	JSR UpdateBlockIndexToPriorRow
+	JSR update_level_data_pointer_rightwards	; Get to the right column index.
+	JSR update_level_data_pointer_upwards
 
-	LDA [Map_Tile_AddrL], Y
+	LDA [level_data_pointer], Y
 	CMP #TILE16_SHADOW_S_BL
 	BEQ GenerateTopRightShadingLoopFinish
 
@@ -595,7 +805,7 @@ GenerateTopRightShadingLoop:
 
 			; Apply the alternative block to index and jump out of this method.
 			LDA GenerateTopRightShadingBlocksAlternative, X
-			STA [Map_Tile_AddrL], Y
+			STA [level_data_pointer], Y
 			JMP GenerateTopRightShadingLoopFinish
 
 	; Continue looping while X >= 0
@@ -607,31 +817,31 @@ GenerateTopRightShadingLoopContinue:
 GenerateTopRightShadingLoopFinish:
 	; Restore address
 	PLA
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 	PLA
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 
 	; Restore offset
 	PLA
-	STA TileAddr_Off
+	STA level_data_offset
 	RTS
 
 
 GenerateBottomLeftShading:
 	; Save offset
-	LDA TileAddr_Off
+	LDA level_data_offset
 	PHA
 
 	; Save Address to contain issues.
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	PHA
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	PHA
 
-	JSR UpdateBlockIndexToPriorColumn	; Get to the left column index.
-	JSR UpdateBlockIndexToNextRow
+	JSR update_level_data_pointer_leftwards	; Get to the left column index.
+	JSR update_level_data_pointer_downwards
 
-	LDA [Map_Tile_AddrL], Y
+	LDA [level_data_pointer], Y
 	CMP #TILE16_SHADOW_S_TR
 	BEQ GenerateBottomLeftShadingLoopFinish
 
@@ -649,7 +859,7 @@ GenerateBottomLeftShadingLoop:
 
 			; Apply the alternative block to index and jump out of this method.
 			LDA GenerateBottomLeftShadingBlksAlternative, X
-			STA [Map_Tile_AddrL], Y
+			STA [level_data_pointer], Y
 			JMP GenerateBottomLeftShadingLoopFinish
 
 	; Continue looping while X >= 0
@@ -661,31 +871,31 @@ GenerateBottomLeftShadingLoopContinue:
 GenerateBottomLeftShadingLoopFinish:
 	; Restore address
 	PLA
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 	PLA
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 
 	; Restore offset
 	PLA
-	STA TileAddr_Off
+	STA level_data_offset
 	RTS
 
 
 GenerateBottomRightShading:
 	; Save offset
-	LDA TileAddr_Off
+	LDA level_data_offset
 	PHA
 
 	; Save Address to contain issues.
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	PHA
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	PHA
 
-	JSR UpdateBlockIndexToNextColumn	; Get to the right column index.
-	JSR UpdateBlockIndexToNextRow
+	JSR update_level_data_pointer_rightwards	; Get to the right column index.
+	JSR update_level_data_pointer_downwards
 
-	LDA [Map_Tile_AddrL], Y
+	LDA [level_data_pointer], Y
 	CMP #TILE16_SHADOW_S_TL
 	BEQ GenerateBottomRightShadingLoopFinish
 
@@ -703,7 +913,7 @@ GenerateBottomRightShadingLoop:
 
 			; Apply the alternative block to index and jump out of this method.
 			LDA GenerateBottomRightShadingBlksAlternative, X
-			STA [Map_Tile_AddrL], Y
+			STA [level_data_pointer], Y
 			JMP GenerateBottomRightShadingLoopFinish
 
 	; Continue looping while X >= 0
@@ -715,23 +925,23 @@ GenerateBottomRightShadingLoopContinue:
 GenerateBottomRightShadingLoopFinish:
 	; Restore address
 	PLA
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 	PLA
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 
 	; Restore offset
 	PLA
-	STA TileAddr_Off
+	STA level_data_offset
 	RTS
 
 
 GenerateBottomShading:
-	JSR UpdateBlockIndexToNextRow  ; Get the block one below the current block
+	JSR update_level_data_pointer_downwards  ; Get the block one below the current block
 
 	LDX #(EndGenerateBottomShadingBlocksToChange - GenerateBottomShadingBlocksToChange)
 
 GenerateBottomShadingLoop:
-		LDA [Map_Tile_AddrL], Y
+		LDA [level_data_pointer], Y
 		CMP GenerateBottomShadingBlocksToChange, X
 		
 		; If the not block equal, continue looping...
@@ -739,7 +949,7 @@ GenerateBottomShadingLoop:
 
 			; Apply the alternative block to index and jump out of this method.
 			LDA GenerateBottomShadingBlocksAlternative, X
-			STA [Map_Tile_AddrL], Y
+			STA [level_data_pointer], Y
 			JMP GenerateBottomShadingLoopFinish
 
 	; Continue looping while X >= 0
@@ -749,16 +959,16 @@ GenerateBottomShadingLoopContinue:
 	BPL GenerateBottomShadingLoop	 	
 
 GenerateBottomShadingLoopFinish:
-	JMP UpdateBlockIndexToPriorRow	; Restore the column index.
+	JMP update_level_data_pointer_upwards	; Restore the column index.
 
 
 GenerateTopShading:
-	JSR UpdateBlockIndexToPriorRow	; Get the block one above the current block
+	JSR update_level_data_pointer_upwards	; Get the block one above the current block
 
 	LDX #(EndGenerateTopShadingBlocksToChange - GenerateTopShadingBlocksToChange)
 
 GenerateTopShadingLoop:
-		LDA [Map_Tile_AddrL], Y
+		LDA [level_data_pointer], Y
 		CMP GenerateTopShadingBlocksToChange, X
 		
 		; If the not block equal, continue looping...
@@ -766,7 +976,7 @@ GenerateTopShadingLoop:
 
 			; Apply the alternative block to index and jump out of this method.
 			LDA GenerateTopShadingBlocksAlternative, X
-			STA [Map_Tile_AddrL], Y
+			STA [level_data_pointer], Y
 			JMP GenerateTopShadingLoopFinish
 
 	; Continue looping while X >= 0
@@ -776,23 +986,23 @@ GenerateTopShadingLoopContinue:
 	BPL GenerateTopShadingLoop	 	
 
 GenerateTopShadingLoopFinish:
-	JMP UpdateBlockIndexToNextRow	; Restore the column index.
+	JMP update_level_data_pointer_downwards	; Restore the column index.
 
 
 GenerateLeftShading:
 	; Save offset
-	LDA TileAddr_Off
+	LDA level_data_offset
 	PHA
 
 	; Save Address to contain issues.
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	PHA
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	PHA
 
-	JSR UpdateBlockIndexToPriorColumn	; Get to the left column index.
+	JSR update_level_data_pointer_leftwards	; Get to the left column index.
 
-	LDA [Map_Tile_AddrL], Y
+	LDA [level_data_pointer], Y
 	CMP #TILE16_SHADOW_LEFT
 	BEQ GenerateLeftShadingLoopFinish
 
@@ -810,7 +1020,7 @@ GenerateLeftShadingLoop:
 
 			; Apply the alternative block to index and jump out of this method.
 			LDA GenerateLeftShadingBlocksAlternative, X
-			STA [Map_Tile_AddrL], Y
+			STA [level_data_pointer], Y
 			JMP GenerateLeftShadingLoopFinish
 
 	; Continue looping while X >= 0
@@ -822,31 +1032,31 @@ GenerateLeftShadingLoopContinue:
 GenerateLeftShadingLoopFinish:
 	; Restore address
 	PLA
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 	PLA
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 
 	; Restore offset
 	PLA
-	STA TileAddr_Off
+	STA level_data_offset
 	RTS
 	
 
 GenerateRightShading:
 	; Save offset
-	LDA TileAddr_Off
+	LDA level_data_offset
 	PHA
 
 	; Save Address to contain issues.
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	PHA
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	PHA
 
-	JSR UpdateBlockIndexToNextColumn	; Get to the right column index.
+	JSR update_level_data_pointer_rightwards	; Get to the right column index.
 	
 	; If we already have a shadow, do nothing
-	LDA [Map_Tile_AddrL], Y
+	LDA [level_data_pointer], Y
 	CMP #TILE16_SHADOW_RIGHT
 	BEQ GenerateRightShadingLoopFinish
 
@@ -864,7 +1074,7 @@ GenerateRightShadingLoop:
 
 			; Apply the alternative block to index and jump out of this method.
 			LDA GenerateRightShadingBlocksAlternative, X
-			STA [Map_Tile_AddrL], Y
+			STA [level_data_pointer], Y
 			JMP GenerateRightShadingLoopFinish
 
 	; Continue looping while X >= 0
@@ -876,96 +1086,13 @@ GenerateRightShadingLoopContinue:
 GenerateRightShadingLoopFinish:
 	; Restore address
 	PLA
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 	PLA
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 
 	; Restore offset
 	PLA
-	STA TileAddr_Off
-	RTS
-
-
-UpdateBlockIndexToNextColumn:
-	; Increment Y
-	INY
-
-	; Check if we hit a boundry.  If did not hit boundry, terminate.
-	TYA
-	AND #$0f
-	BNE Terminate46
-
-	; Add 0x01B0 to the index
-	LDA <Map_Tile_AddrL
-	ADD #$b0	 
-	STA <Map_Tile_AddrL
-	LDA <Map_Tile_AddrH
-	ADC #$01	 
-	STA <Map_Tile_AddrH
-
-	; Get TileAddr_Off and only keep the row, but clear 'Y' lower bits since
-	; we're going to column 0 on the same row, new screen...
-	LDA TileAddr_Off
-	AND #$f0
-	TAY	
-
-Terminate46:
-	RTS
-
-
-UpdateBlockIndexToPriorColumn:
-	DEY		 ; Y--
-	TYA	
-	AND #$0F
-	CMP #$0F
-	BNE Terminate46		; If we haven't left the left edge of this screen, finish
-
-	; Move back one screen by subtracting $1B0 from Map_Tile_Addr
-	LDA <Map_Tile_AddrL
-	SUB #$b0	 
-	STA <Map_Tile_AddrL
-	LDA <Map_Tile_AddrH
-	SBC #$01	 
-	STA <Map_Tile_AddrH
-
-	; Transfer 'Y' to the other side
-	INY	
-	TYA	
-	AND #$F0
-	ORA #$0F
-	TAY
-	RTS
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; UpdateBlockIndexToNextRow
-;
-; Moves the index to the next column.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-UpdateBlockIndexToNextRow:
-	; Go to next column by adding 16 to tile offset
-	TYA
-	ADD #16
-	TAY
-	LDA <Map_Tile_AddrH
-	ADC #$00	 
-	STA <Map_Tile_AddrH
-	RTS
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; UpdateBlockIndexToPriorRow
-;
-; Moves the index to the next column.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-UpdateBlockIndexToPriorRow:
-	; Go to next row by subtracting 16 to tile offset
-	TYA
-	SUB #16
-	TAY	
-	LDA <Map_Tile_AddrH
-	SBC #$00	 
-	STA <Map_Tile_AddrH
+	STA level_data_offset
 	RTS
 
 
@@ -997,20 +1124,18 @@ LevelLoad_TopMiddleBottomVerticle:
 	STX <Temp_Var10
 
 	; Get the low block index
-	LDY TileAddr_Off
+	LDY level_data_offset
 
 	; Place the top block and generate shading for pillar
 	LDA TopMiddleBottomBlocks, X
 	JSR GenerateShading
 
 	; Get ready to place middle block
-	LDY TileAddr_Off
-	JSR UpdateBlockIndexToNextRow
-	STY TileAddr_Off
+	JSR update_level_data_pointer_downwards
 	INC <Temp_Var10
 
 	; Find the size 1-16 of the block run
-	LDA LL_ShapeDef
+	LDA generator_index
 	AND #$0f	 
 	STA <Temp_Var11	
 
@@ -1021,9 +1146,7 @@ LevelLoad_TopMiddleBottomVerticle:
 		LDA TopMiddleBottomBlocks, X
 		JSR GenerateShading
 
-		LDY TileAddr_Off
-		JSR UpdateBlockIndexToNextRow
-		STY TileAddr_Off
+		JSR update_level_data_pointer_downwards
 
 		DEC <Temp_Var11
 	BPL TopMiddleBottomVerticle_PlaceMiddleBlock46	 	
@@ -1139,14 +1262,14 @@ LevelLoad_CrumblingBlock46:
 LLM46_SeTTile:
 	STA <Temp_Var5
 
-	LDA LL_ShapeDef	
+	LDA generator_index	
 	AND #$0f	
-	TAX		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
-	LDY TileAddr_Off	 ; Y = TileAddr_Off
+	TAX		 ; Temp_Var4 = lower 4 bits of generator_index
+	LDY level_data_offset	 ; Y = level_data_offset
 
 PRG046_A6DD:
 	LDA <Temp_Var5
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEX		 	 ; X--
 	BPL PRG046_A6DD	 	 ; While X >= 0, loop!
@@ -1162,16 +1285,16 @@ PRG046_A6DD:
 LLM46_SeTTile_WithShadow:
 	STA <Temp_Var5
 
-	LDA LL_ShapeDef	
+	LDA generator_index	
 	AND #$0f	
-	TAX		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
-	LDY TileAddr_Off	 ; Y = TileAddr_Off
+	TAX		 ; Temp_Var4 = lower 4 bits of generator_index
+	LDY level_data_offset	 ; Y = level_data_offset
 
 PRG046_A6DF:
 	TXA
 	PHA
 	LDA <Temp_Var5
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	PLA
 	TAX
 
@@ -1192,10 +1315,10 @@ PRG046_A6DF:
 LLM46_SeTTile_WithTopShadow:
 	STA <Temp_Var5
 
-	LDA LL_ShapeDef	
+	LDA generator_index	
 	AND #$0f	
-	TAX		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
-	LDY TileAddr_Off	 ; Y = TileAddr_Off
+	TAX		 ; Temp_Var4 = lower 4 bits of generator_index
+	LDY level_data_offset	 ; Y = level_data_offset
 
 PRG046_A6E0:
 	TXA
@@ -1205,7 +1328,7 @@ PRG046_A6E0:
 	TAX
 
 	LDA <Temp_Var5
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Next column
 	DEX		 	 ; X--
@@ -1222,10 +1345,10 @@ PRG046_A6E0:
 LLM46_SeTTile_WithBottomShadow:
 	STA <Temp_Var5
 
-	LDA LL_ShapeDef	
+	LDA generator_index	
 	AND #$0f	
-	TAX		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
-	LDY TileAddr_Off	 ; Y = TileAddr_Off
+	TAX		 ; Temp_Var4 = lower 4 bits of generator_index
+	LDY level_data_offset	 ; Y = level_data_offset
 
 PRG046_A6E1:
 	TXA
@@ -1235,7 +1358,7 @@ PRG046_A6E1:
 	TAX
 
 	LDA <Temp_Var5
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Next column
 	DEX		 	 ; X--
@@ -1268,21 +1391,21 @@ LevelLoad_RightShadow46:
 LLM46_SeTTileV:
 	STA <Temp_Var5
 
-	LDA LL_ShapeDef
-	PHA	 			 ; Save LL_ShapeDef
+	LDA generator_index
+	PHA	 			 ; Save generator_index
 	AND #$0f	 
-	STA <Temp_Var1	 ; Temp_Var1 = lower 4 bits of LL_ShapeDef
-	PLA				 ; Restore LL_ShapeDef
+	STA <Temp_Var1	 ; Temp_Var1 = lower 4 bits of generator_index
+	PLA				 ; Restore generator_index
 	
-	LDY TileAddr_Off 	; Y = TileAddr_Off
+	LDY level_data_offset 	; Y = level_data_offset
 
 ; Loop through the number of times defined by Temp_Var1 placing Temp_Var5 into level memory vertically.
 PRG046_D811:
 	; Store into tile mem
 	LDA <Temp_Var5
-	STA [Map_Tile_AddrL],Y	 
+	STA [level_data_pointer],Y	 
 
-	JSR UpdateBlockIndexToNextRow
+	JSR update_level_data_pointer_downwards
 
 	; While Temp_Var1 >= 0, loop!
 	DEC <Temp_Var1
@@ -1312,23 +1435,23 @@ LevelLoad_TL_BR_CHAIN46Alternative:
 	.byte TILE16_TL_BR_BL_CHAIN2
 
 LevelLoad_TL_BR_CHAIN46:
-	LDA LL_ShapeDef
-	PHA	 			 ; Save LL_ShapeDef
+	LDA generator_index
+	PHA	 			 ; Save generator_index
 	AND #$0f	 
-	STA <Temp_Var1	 ; Temp_Var1 = lower 4 bits of LL_ShapeDef
-	PLA				 ; Restore LL_ShapeDef
+	STA <Temp_Var1	 ; Temp_Var1 = lower 4 bits of generator_index
+	PLA				 ; Restore generator_index
 	
-	LDY TileAddr_Off 	; Y = TileAddr_Off
+	LDY level_data_offset 	; Y = level_data_offset
 
 ; Loop through the number of times defined by Temp_Var1 placing Temp_Var5 into level memory vertically.
 Loop_LLM46_SeTTileTL_BR:
 	; Store into tile mem
 
-	LDA [Map_Tile_AddrL],Y	 
+	LDA [level_data_pointer],Y	 
 	LDX #(EndLevelLoad_TL_BR_CHAIN46 - LevelLoad_TL_BR_CHAIN46ToChange)
 
 Loop_LLM46_SeTTileTL_BRLoop:
-		LDA [Map_Tile_AddrL], Y
+		LDA [level_data_pointer], Y
 		CMP LevelLoad_TL_BR_CHAIN46ToChange, X
 		
 		; If the not block equal, continue looping...
@@ -1336,7 +1459,7 @@ Loop_LLM46_SeTTileTL_BRLoop:
 
 			; Apply the alternative block to index and jump out of this method.
 			LDA LevelLoad_TL_BR_CHAIN46Alternative, X
-			STA [Map_Tile_AddrL], Y
+			STA [level_data_pointer], Y
 			JMP LLM46_SeTTileTL_BRLoopLoopFinish
 
 	; Continue looping while X >= 0
@@ -1345,11 +1468,11 @@ LLM46_SeTTileTL_BRLoopLoopContinue:
 
 	BPL Loop_LLM46_SeTTileTL_BRLoop
 	LDA TILE16_TL_BR_CHAIN
-	STA [Map_Tile_AddrL],Y	 
+	STA [level_data_pointer],Y	 
 
 LLM46_SeTTileTL_BRLoopLoopFinish:
-	JSR UpdateBlockIndexToNextRow
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_downwards
+	JSR update_level_data_pointer_rightwards
 
 	; While Temp_Var1 >= 0, loop!
 	DEC <Temp_Var1
@@ -1379,21 +1502,21 @@ LevelLoad_BL_TR_CHAIN46Alternative:
 	.byte TILE16_BR_TL_TL_CHAIN2
 
 LevelLoad_BL_TR_CHAIN46:
-	LDA LL_ShapeDef
-	PHA	 			 ; Save LL_ShapeDef
+	LDA generator_index
+	PHA	 			 ; Save generator_index
 	AND #$0f	 
-	STA <Temp_Var1	 ; Temp_Var1 = lower 4 bits of LL_ShapeDef
-	PLA				 ; Restore LL_ShapeDef
+	STA <Temp_Var1	 ; Temp_Var1 = lower 4 bits of generator_index
+	PLA				 ; Restore generator_index
 	
-	LDY TileAddr_Off 	; Y = TileAddr_Off
+	LDY level_data_offset 	; Y = level_data_offset
 
 ; Loop through the number of times defined by Temp_Var1 placing Temp_Var5 into level memory vertically.
 Loop_LLM46_SeTTileBL_TR:
-	LDA [Map_Tile_AddrL],Y	 
+	LDA [level_data_pointer],Y	 
 	LDX #(EndLevelLoad_BL_TR_CHAIN46 - LevelLoad_BL_TR_CHAIN46ToChange)
 
 Loop_LLM46_SeTTileBL_TRLoop:
-		LDA [Map_Tile_AddrL], Y
+		LDA [level_data_pointer], Y
 		CMP LevelLoad_BL_TR_CHAIN46ToChange, X
 		
 		; If the not block equal, continue looping...
@@ -1401,7 +1524,7 @@ Loop_LLM46_SeTTileBL_TRLoop:
 
 			; Apply the alternative block to index and jump out of this method.
 			LDA LevelLoad_BL_TR_CHAIN46Alternative, X
-			STA [Map_Tile_AddrL], Y
+			STA [level_data_pointer], Y
 			JMP LLM46_SeTTileBL_TRLoopLoopFinish
 
 	; Continue looping while X >= 0
@@ -1410,12 +1533,12 @@ LLM46_SeTTileBL_TRLoopLoopContinue:
 
 	BPL Loop_LLM46_SeTTileBL_TRLoop
 	LDA TILE16_BL_TR_CHAIN
-	STA [Map_Tile_AddrL],Y	 
+	STA [level_data_pointer],Y	 
 
 LLM46_SeTTileBL_TRLoopLoopFinish:
 
-	JSR UpdateBlockIndexToPriorRow
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_upwards
+	JSR update_level_data_pointer_rightwards
 
 	; While Temp_Var1 >= 0, loop!
 	DEC <Temp_Var1
@@ -1429,8 +1552,8 @@ LLM46_SeTTileBL_TRLoopLoopFinish:
 ; Puts down 1-256 wall blocks, up to 16 tiles tall
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_Wall46:
-	LDX #$01	 ; X = 1 (bright diamond blocks)
-	BNE PRG046_A678	 ; Jump to PRG046_A678
+	LDA #$01	 ; X = 1 (bright diamond blocks)
+	BNE _apply_sewer_extended_horizontal_generator
 
 LL_LargeGenerator46:
 	.byte TILE16_GROUNDMM, TILE16_GROUNDMM
@@ -1441,77 +1564,120 @@ LL_LargeGenerator46:
 ; Puts down 1-256 solid bricks, up to 16 tiles tall
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_SolidBrick46:
-	LDX #$00	 ; X = 0 (solid brick)
-
-PRG046_A678:
-	JSR LL46_InitLongRun	 ; Get setup for long run
-
-PRG046_A67B:
-	LDA <Temp_Var3		 
-	STA <Temp_Var5		 ; Temp_Var5 = Temp_Var3 (backup run width)
-
-PRG046_A67F:
-	LDA LL_LargeGenerator46,X	 ; Get appropriate tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
-	JSR LoadLevel_NextColumn ; Next column
-	DEC <Temp_Var5		 ; Temp_Var5-- (width decrement)
-
-	LDA <Temp_Var5
-	CMP #$ff
-	BNE PRG046_A67F	 	; While Temp_Var5 >= 0, loop!
-
-	JSR LL46_LongRunNextRow	 ; Go to next row
-	DEC <Temp_Var4		 ; Temp_Var4-- (height decrement)
-	BPL PRG046_A67B	 	; While Temp_Var4 >= 0, loop!
-	RTS		 ; Return
+	LDA #$00	 ; X = 0 (solid brick)
 
 
-	; This routine prepares for a long run of tiles by getting an additional
-	; byte from the layout stream and preparing the Map_Tile_Addr backup
-LL46_InitLongRun:
-	LDY #$00	 ; Y = 0
-	LDA [Level_LayPtr_AddrL],Y	 ; Get another byte from layout
-	STA <Temp_Var3		 	; Store into Temp_Var3
+;;
+;
+;
+_apply_sewer_extended_horizontal_generator:
+	; Move the accomulator to the X register
+	TAX
 
-	; Level_LayPtr_Addr++
-	LDA <Level_LayPtr_AddrL
-	ADD #$01	 
-	STA <Level_LayPtr_AddrL
-	LDA <Level_LayPtr_AddrH
-	ADC #$00	 
-	STA <Level_LayPtr_AddrH
+	; Save offset
+	LDA level_data_offset
+	PHA
 
-	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
-	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var2	
+	; Save address.
+	LDA <level_data_pointer
+	PHA
+	LDA <level_data_pointer+1
+	PHA
 
-	LDA LL_ShapeDef	
-	AND #$0f	
-	STA <Temp_Var4		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef
-	LDY TileAddr_Off	 ; Y = TileAddr_Off
-	RTS		 	; Return
+	; Save parent variables
+	LDA <Temp_Var10
+	PHA
+	LDA <Temp_Var11
+	PHA
+	LDA <Temp_Var12
+	PHA
+	LDA <Temp_Var13
+	PHA
+	LDA <Temp_Var14
+	PHA
+	LDA <Temp_Var15
+	PHA
 
+	; Get the horizontal size of the generator.
+	JSR get_next_char_from_generator_data
+	STA <Temp_Var10
+	INC <Temp_Var10  ; Makes looping nicer
 
-	; This routine goes to the next row of the long run
-LL46_LongRunNextRow:
-	; Restore Map_Tile_Addr from backup
-	LDA <Temp_Var1		 
-	STA <Map_Tile_AddrL	
-	LDA <Temp_Var2		
-	STA <Map_Tile_AddrH	
+	; Determine the height of the slope.
+	LDA generator_index
+	AND #$0F
+	STA <Temp_Var11
 
-	; Go to next row by adding 16 to tile offset
-	LDA TileAddr_Off
-	ADD #16
-	STA TileAddr_Off
-	TAY		
-	LDA <Map_Tile_AddrH
-	ADC #$00
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2	 	; Update Map_Tile_AddrH backup
-	RTS		 ; Return
+	; Counter of the number of the inner blocks to create.
+	STA <Temp_Var12
+	INC <Temp_Var12  ; Makes looping nicer
+
+_loop_horizontal_sewer_extended_horizontal_generator:
+	; Save offset and address for looping.
+	LDA level_data_offset
+	TAY
+	STA <Temp_Var13
+	LDA <level_data_pointer
+	STA <Temp_Var14
+	LDA <level_data_pointer+1
+	STA <Temp_Var15
+
+_loop_vertical_sewer_extended_horizontal_generator:
+	LDA LL_LargeGenerator46,X
+	STA [level_data_pointer],Y
+
+	JSR update_level_data_pointer_downwards
+
+	DEC <Temp_Var12
+	BNE _loop_vertical_sewer_extended_horizontal_generator
+
+	; Reset the counter for the next row.
+	LDA <Temp_Var11
+	STA <Temp_Var12
+	INC <Temp_Var12  ; Makes looping nicer
+
+	; Restore offset and address for looping.
+	LDA <Temp_Var13
+	TAY
+	STA level_data_offset
+	LDA <Temp_Var14
+	STA <level_data_pointer
+	LDA <Temp_Var15
+	STA <level_data_pointer+1
+
+	JSR update_level_data_pointer_rightwards
+
+	; Check if we have more blocks to place horizontally.
+	DEC <Temp_Var10
+	BEQ _finished_loop_vertical_sewer_extended_horizontal_generator
+
+	JMP _loop_horizontal_sewer_extended_horizontal_generator
+
+_finished_loop_vertical_sewer_extended_horizontal_generator:
+	; Restore parent variables
+	PLA
+	STA <Temp_Var15
+	PLA
+	STA <Temp_Var14
+	PLA
+	STA <Temp_Var13
+	PLA
+	STA <Temp_Var12
+	PLA
+	STA <Temp_Var11
+	PLA
+	STA <Temp_Var10
+
+	; Restore address
+	PLA
+	STA <level_data_pointer+1
+	PLA
+	STA <level_data_pointer
+
+	; Restore offset
+	PLA
+	STA level_data_offset
+	RTS
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1531,25 +1697,24 @@ LevelLoad_LeftWall46:
 LLM46_SeTTileV_LeftShadow:
 	STA <Temp_Var10
 
-	LDA LL_ShapeDef
-	PHA	 			 ; Save LL_ShapeDef
+	LDA generator_index
+	PHA	 			 ; Save generator_index
 	AND #$0f	 
-	STA <Temp_Var11	 ; Temp_Var11 = lower 4 bits of LL_ShapeDef
-	PLA				 ; Restore LL_ShapeDef
+	STA <Temp_Var11	 ; Temp_Var11 = lower 4 bits of generator_index
+	PLA				 ; Restore generator_index
 	
-	LDY TileAddr_Off 	; Y = TileAddr_Off
+	LDY level_data_offset 	; Y = level_data_offset
 
 ; Loop through the number of times defined by Temp_Var11 placing Temp_Var10 into level memory vertically.
 PRG046_D812:
 	JSR GenerateLeftShading
 
 	; Store into tile mem
-	LDY TileAddr_Off
+	LDY level_data_offset
 	LDA <Temp_Var10
-	STA [Map_Tile_AddrL],Y	 
+	STA [level_data_pointer],Y	 
 
-	JSR UpdateBlockIndexToNextRow
-	STY TileAddr_Off
+	JSR update_level_data_pointer_downwards
 
 	; While Temp_Var11 >= 0, loop!
 	DEC <Temp_Var11
@@ -1574,25 +1739,24 @@ LevelLoad_RightWall46:
 LLM46_SeTTileV_RightShadow:
 	STA <Temp_Var10
 
-	LDA LL_ShapeDef
-	PHA	 			 ; Save LL_ShapeDef
+	LDA generator_index
+	PHA	 			 ; Save generator_index
 	AND #$0f	 
-	STA <Temp_Var11	 ; Temp_Var1 = lower 4 bits of LL_ShapeDef
-	PLA				 ; Restore LL_ShapeDef
+	STA <Temp_Var11	 ; Temp_Var1 = lower 4 bits of generator_index
+	PLA				 ; Restore generator_index
 	
-	LDY TileAddr_Off 	; Y = TileAddr_Off
+	LDY level_data_offset 	; Y = level_data_offset
 
 ; Loop through the number of times defined by Temp_Var1 placing Temp_Var10 into level memory vertically.
 LLM46_SeTTileV_RightShadow_Loop:
 	JSR GenerateRightShading
 
 	; Store into tile mem
-	LDY TileAddr_Off
+	LDY level_data_offset
 	LDA <Temp_Var10
-	STA [Map_Tile_AddrL],Y	 
+	STA [level_data_pointer],Y	 
 
-	JSR UpdateBlockIndexToNextRow
-	STY TileAddr_Off
+	JSR update_level_data_pointer_downwards
 
 	; While Temp_Var1 >= 0, loop!
 	DEC <Temp_Var11
@@ -1607,31 +1771,31 @@ LLM46_SeTTileV_RightShadow_Loop:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 GenerateShading:
 	; Store the block into memory
-	LDY TileAddr_Off
-	STA [Map_Tile_AddrL],Y	 
+	LDY level_data_offset
+	STA [level_data_pointer],Y	 
 
-	LDY TileAddr_Off
+	LDY level_data_offset
 	JSR GenerateRightShading
 
-	LDY TileAddr_Off
+	LDY level_data_offset
 	JSR GenerateLeftShading
 
-	LDY TileAddr_Off
+	LDY level_data_offset
 	JSR GenerateTopShading
 	
-	LDY TileAddr_Off
+	LDY level_data_offset
 	JSR GenerateBottomShading
 
-	LDY TileAddr_Off
+	LDY level_data_offset
 	JSR GenerateTopLeftShading
 
-	LDY TileAddr_Off
+	LDY level_data_offset
 	JSR GenerateTopRightShading
 
-	LDY TileAddr_Off
+	LDY level_data_offset
 	JSR GenerateBottomLeftShading
 
-	LDY TileAddr_Off
+	LDY level_data_offset
 	JSR GenerateBottomRightShading
 
 	RTS
@@ -1652,13 +1816,13 @@ GenerateShading:
 
 LoadLevel_Sewer_Slope45T2B:	
 	; Save offset
-	LDA TileAddr_Off
+	LDA level_data_offset
 	PHA
 
 	; Save address.
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	PHA
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	PHA
 
 	; Save parent variables
@@ -1683,12 +1847,12 @@ LoadLevel_Sewer_Slope45T2B:
 	STA <Temp_Var16
 
 	; Determine the size of the slope.
-	LDA LL_ShapeDef
+	LDA generator_index
 	AND #$0F
 	STA <Temp_Var11
 
 	; Find the relative index of the slope.
-	LDA LL_ShapeDef	 
+	LDA generator_index	 
 	SUB #$10
 	AND #$c0
 	CLC	
@@ -1699,12 +1863,12 @@ LoadLevel_Sewer_Slope45T2B:
 
 Sewer_Slope45T2B_LoopRow:
 	; Save offset and address for looping
-	LDA TileAddr_Off
+	LDA level_data_offset
 	TAY
 	STA <Temp_Var13
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	STA <Temp_Var14
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	STA <Temp_Var15
 
 Sewer_Slope45T2B_LoopInnerGround:
@@ -1717,10 +1881,10 @@ Sewer_Slope45T2B_LoopInnerGround:
 	; Place the inner ground.
 	LDX <Temp_Var12
 	LDA LL_SewerInnerGround,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	; Move to the right one.
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 
 	DEC <Temp_Var10
 	JMP Sewer_Slope45T2B_LoopInnerGround
@@ -1733,34 +1897,32 @@ Sewer_Slope45T2B_FinishedLoopInnerGround:
 	; Add the middle ground
 	LDX <Temp_Var12
 	LDA LL_SewerMiddleGroundTL, X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	
 	; Move to the right one.
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 
 Sewer_Slope45T2B_PlaceSlope:
 	; Place a slope block.
 	LDX <Temp_Var12
 	LDA LL_45SewersT2B,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	; Generate right shading.
-	JSR UpdateBlockIndexToPriorColumn
+	JSR update_level_data_pointer_leftwards
 	JSR GenerateTopRightShading
 
 	; Restore offset and address for looping
 	LDA <Temp_Var13
 	TAY
-	STA TileAddr_Off
+	STA level_data_offset
 	LDA <Temp_Var14
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA <Temp_Var15
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Go down one block.
-	JSR UpdateBlockIndexToNextRow
-	TYA
-	STA TileAddr_Off
+	JSR update_level_data_pointer_downwards
 
 	; Each row is one larger.
 	INC <Temp_Var16
@@ -1778,7 +1940,7 @@ Sewer_Slope45T2B_PlaceLowerMiddleGround:
 	BCC Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
 	BEQ Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
 
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 
 	DEC <Temp_Var10
 	JMP Sewer_Slope45T2B_PlaceLowerMiddleGround
@@ -1787,7 +1949,7 @@ Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
 	; Place the lower inner slope
 	LDX <Temp_Var12
 	LDA LL_SewerMiddleGroundTL,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	JMP Sewer_Slope_Finish
 
@@ -1806,13 +1968,13 @@ Sewer_Slope45T2B_FinishedPlaceLowerMiddleGround
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_Sewer_Slope45B2T:
 	; Save offset
-	LDA TileAddr_Off
+	LDA level_data_offset
 	PHA
 
 	; Save address.
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	PHA
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	PHA
 
 	; Save parent variables
@@ -1837,13 +1999,13 @@ LoadLevel_Sewer_Slope45B2T:
 	STA <Temp_Var16
 
 	; Determine the size of the slope.
-	LDA LL_ShapeDef
+	LDA generator_index
 	AND #$0F
 	STA <Temp_Var11
 	INC <Temp_Var11  ; Makes looping easier
 
 	; Find the relative index of the slope.
-	LDA LL_ShapeDef	 
+	LDA generator_index	 
 	SUB #$10
 	AND #$c0
 	CLC	
@@ -1854,43 +2016,43 @@ LoadLevel_Sewer_Slope45B2T:
 
 Sewer_Slope45B2T_LoopRow:
 	; Save offset and address for looping
-	LDA TileAddr_Off
+	LDA level_data_offset
 	TAY
 	STA <Temp_Var13
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	STA <Temp_Var14
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	STA <Temp_Var15
 
 	; Generate the shading for the current slope
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 	JSR GenerateTopLeftShading
 
 	; Restore the offset and address
 	LDA <Temp_Var13
 	TAY
-	STA TileAddr_Off
+	STA level_data_offset
 	LDA <Temp_Var14
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA <Temp_Var15
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Place a slope block.
 	LDX <Temp_Var12
 	LDA LL_45SewersB2T,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	; Jump if there are no blocks to place.
 	LDA <Temp_Var10
 	BEQ Sewer_Slope45B2T_FinishMiddleGround
 	
 	; Move to the right one
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 
 	; Place the middle ground
 	LDX <Temp_Var12
 	LDA LL_SewerMiddleGroundTR, X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	
 	; Jump if there are no blocks to place.
 	DEC <Temp_Var10
@@ -1898,11 +2060,11 @@ Sewer_Slope45B2T_LoopRow:
 
 Sewer_Slope45B2T_LoopInnerGround:
 	; Move to the right one
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 	
 	LDX <Temp_Var12
 	LDA LL_SewerInnerGround,X	 ; Get mid-ground tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 	; Jump if there are no blocks to place.
 	DEC <Temp_Var10
@@ -1913,18 +2075,15 @@ Sewer_Slope45B2T_FinishMiddleGround:
 	; Restore offset and address for looping
 	LDA <Temp_Var13
 	TAY
-	STA TileAddr_Off
+	STA level_data_offset
 	LDA <Temp_Var14
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA <Temp_Var15
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Go back one block and down one.
-	JSR UpdateBlockIndexToPriorColumn
-	JSR UpdateBlockIndexToNextRow
-
-	TYA
-	STA TileAddr_Off
+	JSR update_level_data_pointer_leftwards
+	JSR update_level_data_pointer_downwards
 
 	; Each row is one larger.
 	INC <Temp_Var16
@@ -1936,11 +2095,11 @@ Sewer_Slope45B2T_FinishMiddleGround:
 	BNE Sewer_Slope45B2T_LoopRow
 
 	; Place the lower inner slope
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 
 	LDX <Temp_Var12
 	LDA LL_SewerMiddleGroundTR,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	JMP Sewer_Slope_Finish
 
@@ -1959,13 +2118,13 @@ Sewer_Slope45B2T_FinishMiddleGround:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_Sewer_Slope45T2BCeiling:
 	; Save offset
-	LDA TileAddr_Off
+	LDA level_data_offset
 	PHA
 
 	; Save address.
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	PHA
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	PHA
 
 	; Save parent variables
@@ -1985,7 +2144,7 @@ LoadLevel_Sewer_Slope45T2BCeiling:
 	PHA
 
 	; Determine the size of the slope.
-	LDA LL_ShapeDef
+	LDA generator_index
 	AND #$0F
 	STA <Temp_Var11
 	INC <Temp_Var11  ; Makes looping easier
@@ -1995,7 +2154,7 @@ LoadLevel_Sewer_Slope45T2BCeiling:
 	STA <Temp_Var16
 
 	; Find the relative index of the slope.
-	LDA LL_ShapeDef	 
+	LDA generator_index	 
 	SUB #$10
 	AND #$c0
 	CLC	
@@ -2005,60 +2164,60 @@ LoadLevel_Sewer_Slope45T2BCeiling:
 	STA <Temp_Var12
 
 	; Save offset and address for looping
-	LDA TileAddr_Off
+	LDA level_data_offset
 	TAY
 	STA <Temp_Var13
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	STA <Temp_Var14
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	STA <Temp_Var15
 
 	; Place the middle ground one above the start of the slope.
-	JSR UpdateBlockIndexToPriorRow
+	JSR update_level_data_pointer_upwards
 
 	LDX <Temp_Var12
 	LDA LL_SewerMiddleGroundBR,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 Sewer_Slope45T2BCeiling_LoopRow:
 	; Save offset and address for looping
-	LDA TileAddr_Off
+	LDA level_data_offset
 	TAY
 	STA <Temp_Var13
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	STA <Temp_Var14
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	STA <Temp_Var15
 
 	; Place a slope block.
 	LDX <Temp_Var12
 	LDA LL_45SewersT2BCeiling,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	; Generate right shading.
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 	JSR GenerateBottomLeftShading
 
 	; Restore offset and address for looping
 	LDA <Temp_Var13
 	TAY
-	STA TileAddr_Off
+	STA level_data_offset
 	LDA <Temp_Var14
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA <Temp_Var15
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Jump if there are no blocks to place.
 	LDA <Temp_Var10
 	BEQ Sewer_Slope45T2BC_FinishMiddleGround
 	
 	; Move to the right one
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 
 	; Place the middle ground
 	LDX <Temp_Var12
 	LDA LL_SewerMiddleGroundBR, X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 	
 	; Jump if there are no blocks to place.
 	DEC <Temp_Var10
@@ -2066,12 +2225,12 @@ Sewer_Slope45T2BCeiling_LoopRow:
 
 Sewer_Slope45T2BC_LoopInnerGround:
 	; Move to the right one.
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 	
 	; Place the inner ground.
 	LDX <Temp_Var12
 	LDA LL_SewerInnerGround,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	; Jump if there are no blocks to place.
 	DEC <Temp_Var10
@@ -2081,18 +2240,15 @@ Sewer_Slope45T2BC_FinishMiddleGround:
 	; Restore offset and address for looping
 	LDA <Temp_Var13
 	TAY
-	STA TileAddr_Off
+	STA level_data_offset
 	LDA <Temp_Var14
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA <Temp_Var15
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Go down one block and right one.
-	JSR UpdateBlockIndexToNextColumn
-	JSR UpdateBlockIndexToNextRow
-
-	TYA
-	STA TileAddr_Off
+	JSR update_level_data_pointer_rightwards
+	JSR update_level_data_pointer_downwards
 
 	; Each row is one smaller.
 	DEC <Temp_Var16
@@ -2120,13 +2276,13 @@ Sewer_Slope45T2BC_FinishMiddleGround:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 LoadLevel_Sewer_Slope45B2TCeiling:
 	; Save offset
-	LDA TileAddr_Off
+	LDA level_data_offset
 	PHA
 
 	; Save address.
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	PHA
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	PHA
 
 	; Save parent variables
@@ -2146,7 +2302,7 @@ LoadLevel_Sewer_Slope45B2TCeiling:
 	PHA
 
 	; Determine the size of the slope.
-	LDA LL_ShapeDef
+	LDA generator_index
 	AND #$0F
 	STA <Temp_Var11
 	INC <Temp_Var11  ; Makes looping easier
@@ -2156,7 +2312,7 @@ LoadLevel_Sewer_Slope45B2TCeiling:
 	STA <Temp_Var16
 
 	; Find the relative index of the slope.
-	LDA LL_ShapeDef	 
+	LDA generator_index	 
 	SUB #$10
 	AND #$c0
 	CLC	
@@ -2166,20 +2322,16 @@ LoadLevel_Sewer_Slope45B2TCeiling:
 	STA <Temp_Var12
 
 	; Save offset and address for looping
-	LDA TileAddr_Off
+	LDA level_data_offset
 	TAY
 	STA <Temp_Var13
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	STA <Temp_Var14
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	STA <Temp_Var15
 
 	; Place the middle ground one above the start of the slope.
-	JSR UpdateBlockIndexToPriorRow
-
-	; Store offset
-	TYA
-	STA TileAddr_Off
+	JSR update_level_data_pointer_upwards
 
 	; Skip moving to the right if first slope.
 	LDA <Temp_Var10
@@ -2187,7 +2339,7 @@ LoadLevel_Sewer_Slope45B2TCeiling:
 
 ; Must get all the way to the right.
 Sewer_Slope45B2TCeiling_FirstMiddleLoop
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 
 	DEC <Temp_Var10
 	BNE Sewer_Slope45B2TCeiling_FirstMiddleLoop
@@ -2200,25 +2352,25 @@ Sewer_Slope45B2TCeiling_FinishedFirstMiddle
 	; Place the middle ground.
 	LDX <Temp_Var12
 	LDA LL_SewerMiddleGroundBL,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	; Restore offset and address for looping
 	LDA <Temp_Var13
 	TAY
-	STA TileAddr_Off
+	STA level_data_offset
 	LDA <Temp_Var14
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA <Temp_Var15
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 Sewer_Slope45B2TCeiling_LoopRow:
 	; Save offset and address for looping
-	LDA TileAddr_Off
+	LDA level_data_offset
 	TAY
 	STA <Temp_Var13
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	STA <Temp_Var14
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	STA <Temp_Var15
 
 Sewer_Slope45T2BCeiling_LoopInnerGround:
@@ -2231,10 +2383,10 @@ Sewer_Slope45T2BCeiling_LoopInnerGround:
 	; Place the inner ground.
 	LDX <Temp_Var12
 	LDA LL_SewerInnerGround,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	; Move to the right one.
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 
 	DEC <Temp_Var10
 	JMP Sewer_Slope45T2BCeiling_LoopInnerGround
@@ -2247,34 +2399,32 @@ Sewer_Slope45T2BCeiling_FinishedLoopInnerGround:
 	; Add the middle ground
 	LDX <Temp_Var12
 	LDA LL_SewerMiddleGroundBL, X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	
 	; Move to the right one.
-	JSR UpdateBlockIndexToNextColumn
+	JSR update_level_data_pointer_rightwards
 
 Sewer_Slope45T2BCeiling_PlaceSlope:
 	; Place a slope block.
 	LDX <Temp_Var12
 	LDA LL_45SewersB2TCeiling,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	; Generate right shading.
-	JSR UpdateBlockIndexToPriorColumn
+	JSR update_level_data_pointer_leftwards
 	JSR GenerateBottomRightShading
 
 	; Restore offset and address for looping
 	LDA <Temp_Var13
 	TAY
-	STA TileAddr_Off
+	STA level_data_offset
 	LDA <Temp_Var14
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA <Temp_Var15
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Go down one block.
-	JSR UpdateBlockIndexToNextRow
-	TYA
-	STA TileAddr_Off
+	JSR update_level_data_pointer_downwards
 
 	; Each row is one smaller.
 	DEC <Temp_Var16
@@ -2305,13 +2455,13 @@ Sewer_Slope_Finish:
 
 	; Restore address
 	PLA
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 	PLA
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 
 	; Restore offset
 	PLA
-	STA TileAddr_Off
+	STA level_data_offset
 	RTS
 
 

@@ -1712,11 +1712,11 @@ MapClear_PoofOver:
 	TAY		 ; -> Y
 	LDA Tile_Mem_Addr,Y	; Get tile address low for this map screen
 	ADD #$f0	 	; Base map offset
-	STA <Map_Tile_AddrL	; -> Map_Tile_AddrL
+	STA <level_data_pointer	; -> level_data_pointer
 
 	LDA Tile_Mem_Addr+1,Y	; Get tile address high for this map screen
 	ADC #$00	 	; Apply carry
-	STA <Map_Tile_AddrH	; -> Map_Tile_AddrH
+	STA <level_data_pointer+1	; -> level_data_pointer+1
 
 	; Calculate a row/column offset
 	LDA <World_Map_X,X
@@ -1727,7 +1727,7 @@ MapClear_PoofOver:
 	ORA <World_Map_Y,X
 	TAY		 ; -> 'Y'
 
-	LDA [Map_Tile_AddrL],Y	 ; Get the tile here
+	LDA [level_data_pointer],Y	 ; Get the tile here
 	PHA		 ; Save tile value
 
 	AND #%11000000
@@ -1777,7 +1777,7 @@ Complete_OtherTile_NotMatch:
 	BPL Complete_OtherTile_Loop	; While X >= 0, loop!
 
 Complete_PrimaryLevel:
-	STA [Map_Tile_AddrL],Y	; Set it in memory
+	STA [level_data_pointer],Y	; Set it in memory
 	STA <World_Map_Tile	; ... as well as the tile detected
 
 	; Backup 'Y', the tile offset
@@ -2719,7 +2719,7 @@ PRG011_B3D3:
 	STA <Temp_Var16
 
 	LDY <Temp_Var3		; Y = Temp_Var3 (travel target)
-	LDA [Map_Tile_AddrL],Y	; Get tile here
+	LDA [level_data_pointer],Y	; Get tile here
 
 	LDY #(Map_Object_Valid_Tiles2Check-1)	; Check all possible travel-over tiles
 PRG011_B3EC:
@@ -2740,7 +2740,7 @@ PRG011_B3F5:
 	JSR Map_Object_March_PickTravel	 ; Get next tile over, "landing zone"
 
 	LDY <Temp_Var3			; Y = Temp_Var3 (travel target)
-	LDA [Map_Tile_AddrL],Y		; Get tile here
+	LDA [level_data_pointer],Y		; Get tile here
 
 	LDY #(MOV_Landings2Check-1)
 PRG011_B406:
@@ -2815,10 +2815,10 @@ Map_Object_March_PickTravel:
 	; Get to proper offset for where object stands, +$F0
 	LDA Tile_Mem_Addr,X
 	ADD #$f0
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_Addr+1,X
 	ADC #$00
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	LDA <Temp_Var4	
 	LSR A		

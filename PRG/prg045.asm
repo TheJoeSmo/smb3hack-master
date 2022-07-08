@@ -422,19 +422,19 @@ LeveLoad_FixedSizeGen_TS15:
 LL45_ReturnTileAndNextRow:
 	; Restore Map_Tile_Addr from backup
 	LDA <Temp_Var1
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA <Temp_Var2
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Go to next row by adding 16 to tile offset
 	LDA TileAddr_Off
 	ADD #16
 	STA TileAddr_Off
 	TAY
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	ADC #$00	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2	; Update Map_Tile_AddrH backup
+	STA <level_data_pointer+1
+	STA <Temp_Var2	; Update level_data_pointer+1 backup
 
 	RTS		 ; Return
 	
@@ -487,10 +487,10 @@ LLExtect_InnerLoop:
 	LDA <Temp_Var4
 	BEQ LLExtect_InnerLoop_End	; Using "0" as loop termination so allow for no middle rows
 
-	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
+	; Backup level_data_pointer/H into Temp_Var1/2
+	LDA <level_data_pointer
 	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	STA <Temp_Var2	
 
 	; Reset width counter
@@ -520,19 +520,19 @@ LLExtect_ColLoop_End:
 
 	; Restore Map_Tile_Addr from backup
 	LDA <Temp_Var1		 
-	STA <Map_Tile_AddrL	
+	STA <level_data_pointer	
 	LDA <Temp_Var2		
-	STA <Map_Tile_AddrH	
+	STA <level_data_pointer+1	
 	
 	; Go to next row by adding 16 to address
 	LDA TileAddr_Off
 	ADD #16
 	STA TileAddr_Off
 	TAY
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	ADC #$00	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
+	STA <level_data_pointer+1
+	STA <Temp_Var2		 ; Update level_data_pointer+1 backup
 	
 	DEC <Temp_Var4
 	JMP LLExtect_InnerLoop	; Loop around...
@@ -552,14 +552,14 @@ LLExtect_EndFence:
 LLExtect_PlaceTile:
 	PHA	; Save tile
 
-	CMP [Map_Tile_AddrL],Y
+	CMP [level_data_pointer],Y
 	BEQ LLExtect_PlaceTile_Normal	; If placing the same tile, just stick with it
 	
 	
 	; Fortress tile check...
 	; If covering up an existing fence tile, use the "mid fence"
 	; TILE15_LINEBLK_UL >= x >= TILE15_LINEBLK_LR
-	LDA [Map_Tile_AddrL],Y
+	LDA [level_data_pointer],Y
 	CMP #TILE15_LINEBLK_UL
 	BLT LLExtect_PlaceTile_Normal
 	CMP #TILE15_LINEBLK_LR+1
@@ -572,7 +572,7 @@ LLExtect_PlaceTile:
 
 LLExtect_PlaceTile_Normal:
 	PLA
-	STA [Map_Tile_AddrL],Y	; Store tile
+	STA [level_data_pointer],Y	; Store tile
 
 	RTS
 	
@@ -585,12 +585,12 @@ LoadLevel_PrevColumn45:
 	BNE PRG045_A7D6	 ; If we haven't crossed left screen boundary, jump to PRG020_A7D6
 
 	; Go to previous screen by subtracting $1B0
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	SUB #$b0
-	STA <Map_Tile_AddrL
-	LDA <Map_Tile_AddrH
+	STA <level_data_pointer
+	LDA <level_data_pointer+1
 	SBC #$01
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	INY
 	TYA
@@ -621,10 +621,10 @@ LoadLevel_BGChain:
 	ASL A
 	TAX
 
-	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
+	; Backup level_data_pointer/H into Temp_Var1/2
+	LDA <level_data_pointer
 	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	STA <Temp_Var2	
 
 	LDA LL_ShapeDef	 
@@ -635,7 +635,7 @@ LoadLevel_BGChain:
 	LDY TileAddr_Off	; Y = TileAddr_Off
 BGChainLoop:
 	LDA BGChain_Tiles,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 	TXA
 	EOR #1
@@ -660,7 +660,7 @@ LoadLevel_BGChainTerminus:
 	LDA #TILE15_BGCHAINTERM
 
 	LDY TileAddr_Off ; Y = TileAddr_Off
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 
 	RTS		 ; Return	
@@ -680,14 +680,14 @@ LoadLevel_WoodRun:
 	LDX #TILE15_WOOD_L
 WoodPlanksLoop:
 	TXA
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	EOR #1
 	TAX
 
 	JSR LoadLevel_NextColumn
 
 	TXA
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	EOR #1
 	TAX
 
@@ -726,10 +726,10 @@ LL15_CommonRect:
 	ADC #$00	 
 	STA <Level_LayPtr_AddrH
 
-	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL
+	; Backup level_data_pointer/H into Temp_Var1/2
+	LDA <level_data_pointer
 	STA <Temp_Var1	
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	STA <Temp_Var2	
 
 	LDA LL_ShapeDef	
@@ -744,7 +744,7 @@ Brick15Ground_RowLoop:
 
 Brick15Ground_WidthLoop:
 	LDA LLGB15_Tiles,X
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 	JSR LoadLevel_NextColumn ; Go to next column
 
@@ -784,10 +784,10 @@ LoadLevel_WindowTall45:
 PRG045_A57A:
 	STX <Temp_Var12		 ; Temp_Var12 = 'X' (0 or 1)
 
-	; Backup Map_Tile_AddrL/H into Temp_Var1/2
-	LDA <Map_Tile_AddrL	
+	; Backup level_data_pointer/H into Temp_Var1/2
+	LDA <level_data_pointer	
 	STA <Temp_Var1		
-	LDA <Map_Tile_AddrH	
+	LDA <level_data_pointer+1	
 	STA <Temp_Var2		
 
 	LDA LL_ShapeDef
@@ -803,14 +803,14 @@ PRG045_A58B:
 	LDY TileAddr_Off	 ; Y = TileAddr_Off
 
 	LDA #TILE15_WINDOW_TOP	 ; Top of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 	JMP PRG045_A5A0	 	; Jump to PRG045_A5A0
 
 	; Loop for all middle sections of window
 PRG045_A59C:
 	LDA #TILE15_WINDOW_MID	 ; Middle of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 PRG045_A5A0:
 
@@ -821,13 +821,13 @@ PRG045_A5A0:
 	BNE PRG045_A59C	 	; While Temp_Var3 <> 0, loop!
 
 	LDA #TILE15_WINDOW_MID	 ; Bottom of window
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 	; Restore Map_Tile_Addr from backup
 	LDA <Temp_Var1
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA <Temp_Var2	
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	LDX #$03	 ; X = 3  (three tile spacing between windows)
 	LDY TileAddr_Off ; Y = TileAddr_Off
@@ -841,14 +841,14 @@ PRG045_A5C0:
 	BNE PRG045_A5DD  ; If on column 1-15, jump to PRG045_CE05
 
 	; Otherwise, need to move over to the next screen (+$1B0)
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	ADD #$b0	 
-	STA <Map_Tile_AddrL
-	STA <Temp_Var1		 ; Update Map_Tile_AddrL backup
-	LDA <Map_Tile_AddrH
+	STA <level_data_pointer
+	STA <Temp_Var1		 ; Update level_data_pointer backup
+	LDA <level_data_pointer+1
 	ADC #$01	 
-	STA <Map_Tile_AddrH
-	STA <Temp_Var2		 ; Update Map_Tile_AddrH backup
+	STA <level_data_pointer+1
+	STA <Temp_Var2		 ; Update level_data_pointer+1 backup
 
 	; Get TileAddr_Off and only keep the row, but clear 'Y' lower bits since
 	; we're going to column 0 on the same row, new screen...
@@ -896,7 +896,7 @@ PRG045_A6F7:
 
 PRG045_A701:
 	LDA LL_Spike45,X	 	 ; Get appropriate spike tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEC <Temp_Var4		 ; Temp_Var4--
 	BPL PRG045_A701	 	; While Temp_Var4 >= 0, loop!
@@ -938,7 +938,7 @@ LLBGLines_Bottom:
 	LDA #TILE15_BGLINES_T
 
 LLBGLines_Top:
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	
 	JSR LoadLevel_TileMemNextRow ; Next column
 	
@@ -961,7 +961,7 @@ LoadLevel_GNWBrick:
 
 GNWBrick_Loop:
 	LDA #TILE15_GNWBRICK	 	 ; Get appropriate spike tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEC <Temp_Var4		 ; Temp_Var4--
 	BPL GNWBrick_Loop	 	; While Temp_Var4 >= 0, loop!
@@ -981,7 +981,7 @@ LoadLevel_GNWBrickV:
 
 GNWBrick_LoopV:
 	LDA #TILE15_GNWBRICK	 	 ; Get appropriate spike tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 	JSR LoadLevel_TileMemNextRow ; Next row
 	DEC <Temp_Var4		 ; Temp_Var4--
 	BPL GNWBrick_LoopV	 	; While Temp_Var4 >= 0, loop!
@@ -1032,12 +1032,12 @@ LLBBP_BlockIt:
 	LDY TileAddr_Off ; Y = TileAddr_Off
 
 	TXA
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 	JSR LoadLevel_TileMemNextRow
 	
 	TXA
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	STA [level_data_pointer],Y	 ; Store into tile mem
 
 	RTS
 

@@ -1241,13 +1241,13 @@ Map_Intro_Erase1Strip:
 	LSR A		
 	TAY		 	; Y = (Scroll_ColumnL & $F0) >> 3 (basically current "screen" of map * 2, for indexing Tile_Mem_Addr)
 
-	; Store starting offset for this map screen into Map_Tile_AddrL/H
+	; Store starting offset for this map screen into level_data_pointer
 	LDA Tile_Mem_Addr,Y
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_Addr+1,Y
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
-	INC <Map_Tile_AddrH	; Effectively adds $100 to the address (maps get loaded at screen base + $110)
+	INC <level_data_pointer+1	; Effectively adds $100 to the address (maps get loaded at screen base + $110)
 
 
 	; Calculates the base offset into the nametable for erasing the "World X" intro box
@@ -1312,7 +1312,7 @@ PRG010_C5CC:
 	STA <Temp_Var16	
 
 	LDY <Temp_Var1		 	; Get offset to current 16x16 tile we want to grab
-	LDA [Map_Tile_AddrL],Y	 	; Grab it!
+	LDA [level_data_pointer],Y	 	; Grab it!
 	TAY		 		; Y = tile
 
 	; The 16x16 tile is laid out in four 256 byte sized "chunks" which define each 8x8
@@ -2106,11 +2106,11 @@ Map_Do_Borders:
 	LDA Tile_Mem_Addr,Y	; Beginning of tiles we're going to modify
 	ADD #$f0	 	; Add $f0 to it??
 
-	; Store address into [<Map_Tile_AddrH][Map_Tile_AddrL]
-	STA <Map_Tile_AddrL
+	; Store address into [<level_data_pointer+1][level_data_pointer]
+	STA <level_data_pointer
 	LDA Tile_Mem_Addr+1,Y
 	ADC #$00	 	; if any overflow from the addition
-	STA <Map_Tile_AddrH	
+	STA <level_data_pointer+1	
 
 	PLA		 	; Restore A (Screen_ColumnL + value)
 	AND #$0f	 	; Screen-relative column index 
@@ -2122,11 +2122,11 @@ Map_Do_Borders:
 	LDX #$06	 	; Otherwise, X = 6
 PRG010_CACF:
 	LDY <Temp_Var5		; Y = Temp_Var5 (screen-relative column index)
-	LDA [Map_Tile_AddrL],Y	; Get tile
+	LDA [level_data_pointer],Y	; Get tile
 	AND #$c0	 	; Only keep its upper 2 bits ($00, $40, $80, $C0)
 	STA <Temp_Var1		; Store this into Temp_Var1
 	INY		 	; Y++
-	LDA [Map_Tile_AddrL],Y	; Get the next tile
+	LDA [level_data_pointer],Y	; Get the next tile
 	AND #$c0	 	; Only keep its upper 2 bits ($00, $40, $80, $C0)
 	STA <Temp_Var2		; Store this into Temp_Var2
 
@@ -2134,11 +2134,11 @@ PRG010_CACF:
 	ADD #15
 	TAY		 	; Y += 15 (next row)
 
-	LDA [Map_Tile_AddrL],Y	; Get this tile
+	LDA [level_data_pointer],Y	; Get this tile
 	AND #$c0	 	; Only keep its upper 2 bits ($00, $40, $80, $C0)
 	STA <Temp_Var3		; Store this into Temp_Var3
 	INY		 	; Y++
-	LDA [Map_Tile_AddrL],Y	; Get this tile
+	LDA [level_data_pointer],Y	; Get this tile
 	AND #$c0	 	; Only keep its upper 2 bits ($00, $40, $80, $C0)
 	STA <Temp_Var4		; Store this into Temp_Var4
 
@@ -2425,13 +2425,13 @@ Map_PanRight:
 	LSR A
 	TAY		 ; -> 'Y'
 
-	; Set Map_Tile_AddrL/H 
+	; Set level_data_pointer 
 	LDA Tile_Mem_Addr,Y
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_Addr+1,Y
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
-	INC <Map_Tile_AddrH	; Map is always on the "lower" tile memory
+	INC <level_data_pointer+1	; Map is always on the "lower" tile memory
 
 	LDA <Scroll_ColumnL
 	AND #$0f
@@ -2452,7 +2452,7 @@ PRG010_CC7A:
 
 	LDY <Temp_Var1		 ; Y = Temp_Var1
 
-	LDA [Map_Tile_AddrL],Y	; Get tile
+	LDA [level_data_pointer],Y	; Get tile
 	TAY		 	; -> 'Y'
 
 	LDA <Map_ScrollOddEven
@@ -3386,13 +3386,13 @@ Map_GetTile:
 	ASL A		 
 	TAY		 
 
-	; Store starting offset for this map screen into Map_Tile_AddrL/H
+	; Store starting offset for this map screen into level_data_pointer
 	LDA Tile_Mem_Addr,Y
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_Addr+1,Y
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
-	INC <Map_Tile_AddrH	; Effectively adds $100 to the address (maps get loaded at screen base + $110)
+	INC <level_data_pointer+1	; Effectively adds $100 to the address (maps get loaded at screen base + $110)
 
 	LDA <World_Map_X,X
 	LSR A		 
@@ -3408,7 +3408,7 @@ Map_GetTile:
 
 	TAY		 	; Store this offset value into 'Y'
 
-	LDA [Map_Tile_AddrL],Y
+	LDA [level_data_pointer],Y
 	STA <World_Map_Tile	
 	RTS		 ; Return
 
@@ -3739,13 +3739,13 @@ MapTile_Get_By_Offset:	; $D369
 	ASL A		 	; Take result, left shift 1 (two byte offset into Tile_Mem_Addr)
 	TAX		 	; X = A (selects starting offset for this screen)
 
-	; Store starting offset for this map screen into Map_Tile_AddrL/H
+	; Store starting offset for this map screen into level_data_pointer
 	LDA Tile_Mem_Addr,X
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_Addr+1,X
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
-	INC <Map_Tile_AddrH	; Effectively adds $100 to the address (maps get loaded at screen base + $110)
+	INC <level_data_pointer+1	; Effectively adds $100 to the address (maps get loaded at screen base + $110)
 
 	LDA <Temp_Var16
 	LSR A
@@ -3758,7 +3758,7 @@ MapTile_Get_By_Offset:	; $D369
 	AND #$f0		; Aligns Player's Y to a tile
 	ORA <Temp_Var16
 	TAY		 	; Y = (Temp_Var15 & 0xF0) | Temp_Var15 (offset to specific tile Player is at)
-	LDA [Map_Tile_AddrL],Y	; Get this tile
+	LDA [level_data_pointer],Y	; Get this tile
 	RTS		 	; Return!
  
 	; Offsets around Player for darkness effect
@@ -4283,10 +4283,10 @@ MapCompletion_FixAdjPaths:
 	JSR MapCompletion_FixAdjPath
 
 	; Left/right checks aren't quite as clean...
-	; Back up Map_Tile_AddrL/H and 'Y' in case we modify them
-	LDA <Map_Tile_AddrL
+	; Back up level_data_pointer and 'Y' in case we modify them
+	LDA <level_data_pointer
 	PHA
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	PHA
 	TYA
 	SUB #16	; -16 (1 row up, back to where we started)
@@ -4304,12 +4304,12 @@ MapCompletion_FixAdjPaths:
 	BEQ MComp_NoLeftAtAll	; ... unless we're on the first screen, in which case there's no left at all; jump to MComp_NoLeftAtAll
 
 	; Move one screen to the left
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	SUB #$b0	
-	STA <Map_Tile_AddrL
-	LDA <Map_Tile_AddrH
+	STA <level_data_pointer
+	LDA <level_data_pointer+1
 	SBC #$01
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Fix 'Y' to be end of the row of the previous screen
 	TYA
@@ -4326,13 +4326,13 @@ MComp_LeftFixed:
 	JSR MapCompletion_FixAdjPath
 
 MComp_NoLeftAtAll:
-	; Restore 'Y' and Map_Tile_AddrH/L in case they were modified
+	; Restore 'Y' and level_data_pointer in case they were modified
 	PLA
 	TAY
 	PLA
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 	PLA
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 
 
 	; Now for the right hand side...
@@ -4386,7 +4386,7 @@ MapCompletion_FixAdjPath:
 	LDA AdjPath_LoopStarts,X
 	TAX
 
-	LDA [Map_Tile_AddrL],Y
+	LDA [level_data_pointer],Y
 	STA <World_Map_Tile	; ... as well as the tile detected
 
 	; For all known completable path tiles...
@@ -4397,7 +4397,7 @@ MComp_AdjPath_Loop:
 
 	; We matched a tile!
 	LDA AdjPath_Change,X	; Get tile to change it to
-	STA [Map_Tile_AddrL],Y	; Change it!
+	STA [level_data_pointer],Y	; Change it!
 	STA <World_Map_Tile	; ... as well as the tile detected
 
 	; If Temp_VarNP0 has bit 7 set, we will not do video updates for this tile
@@ -4468,12 +4468,12 @@ MComp_AdjPath_Done:
 
 	; Might as well make this a subroutine...
 Map_NextScreen:
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	ADD #$b0	
-	STA <Map_Tile_AddrL
-	LDA <Map_Tile_AddrH
+	STA <level_data_pointer
+	LDA <level_data_pointer+1
 	ADC #$01
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 	RTS
 
 

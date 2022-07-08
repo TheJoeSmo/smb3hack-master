@@ -1125,7 +1125,7 @@ PRG026_A6D2:
 	PHA		 	; Save 'A' (map tile minus TILE_ROCKBREAKH, either 0 or 1)
 	TAX		 	; X = A
 	LDA RockBreak_Replace,X	; Get the tile number that replaces this rock
-	STA [Map_Tile_AddrL],Y	; Store it in place!
+	STA [level_data_pointer],Y	; Store it in place!
 
 	; "Poof" where the rock sits
 	TYA

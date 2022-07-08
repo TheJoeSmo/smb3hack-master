@@ -785,7 +785,7 @@ PRG022_C67B:
 
 PRG022_C681:
 	LDA #TILE19_BRICKFLOOR
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	INY		 ; Y++  (NOT SAFE!)
 

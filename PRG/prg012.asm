@@ -196,11 +196,11 @@ PRG012_A462:
 	; After these two, Map_Tile_Addr = Tile_Mem_Addr + $110
 	LDA Tile_Mem_Addr
 	ADD #$10	 
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 
 	LDA Tile_Mem_Addr+1
 	ADC #$01	 
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Temp_Var1/2 will form an address pointing at the beginning of this world's map tile layout...
 	LDA World_Num
@@ -225,7 +225,7 @@ PRG012_A498:
 	LDA [Temp_Var1],Y	; Get byte from tile layout
 	CMP #$ff	 
 	BEQ PRG012_A4C1	 	; If it's $FF (terminator), jump to PRG012_A4C1
-	STA [Map_Tile_AddrL],Y	; Copy byte to RAM copy of tiles
+	STA [level_data_pointer],Y	; Copy byte to RAM copy of tiles
 	
 	; SB: Special -- world zero locks
 	CMP #TILE_ROCKBREAKH
@@ -239,7 +239,7 @@ PRG012_A498:
 	
 	; Lock is unlocked; replace with path tile!
 	LDA #TILE_HORZPATH
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 	
 MRWC_NotUnlocked:
 	ASL <Temp_Var3	; Next lock bit
@@ -265,12 +265,12 @@ MRWC_NotROCKBREAKH:
 	; unused vertical space (used for level layout) so
 	; this needs to add a significant amount more ($1b0)
 	; to the Map_Tile_Addr
-	LDA <Map_Tile_AddrL
+	LDA <level_data_pointer
 	ADD #$b0	
-	STA <Map_Tile_AddrL
-	LDA <Map_Tile_AddrH
+	STA <level_data_pointer
+	LDA <level_data_pointer+1
 	ADC #$01
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 	JMP PRG012_A496	 	; Do next 144 bytes...
 
 PRG012_A4C1:
@@ -300,10 +300,10 @@ PRG012_A4C9:
 	; So first, initial screen setup... this actually points to
 	; row "1", and that the "highest" level start is on row "2"
 	LDA Tile_Mem_Addr
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_Addr+1
-	STA <Map_Tile_AddrH
-	INC <Map_Tile_AddrH	; Because map is always on the "lower" screen (as far as tile memory goes)
+	STA <level_data_pointer+1
+	INC <level_data_pointer+1	; Because map is always on the "lower" screen (as far as tile memory goes)
 
 
 	; Current screen we're working on (used to check for screen shift)
@@ -402,7 +402,7 @@ MapCompletions_SameScreen:
 
 
 MapCompletion_CompleteTile:
-	LDA [Map_Tile_AddrL],Y	 ; Get this tile
+	LDA [level_data_pointer],Y	 ; Get this tile
 
 	STY <Temp_Var4	 ; Y -> Temp_Var4
 	STA <World_Map_Tile	 ; -> World_Map_Tile
@@ -434,7 +434,7 @@ PRG031_A556:
 
 PRG031_A581:
 	LDY <Temp_Var4		 ; Y = Temp_Var4 (offset to tile)
-	STA [Map_Tile_AddrL],Y	 ; Set proper completion tile!
+	STA [level_data_pointer],Y	 ; Set proper completion tile!
 
 PRG012_A597:
 

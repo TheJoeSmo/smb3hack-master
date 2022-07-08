@@ -493,13 +493,18 @@ PAD_RIGHT	= $01
 				.ds 1	; $5F unused
 				.ds 1	; $60 unused
 
+	level_generator_pointer:
 	Level_LayPtr_AddrL:	.ds 1	; Low byte of address to tile layout (ORIGINAL stored in Level_LayPtrOrig_AddrL)
 	Level_LayPtr_AddrH:	.ds 1	; High byte of address to tile layout (ORIGINAL stored in Level_LayPtrOrig_AddrH)
 
-			; Typical use pair at $63/$64
-	Map_Tile_AddrL:		.ds 1	; Low byte of tile address
-	Map_Tile_AddrH:		.ds 1	; High byte of tile address
+	; Required for NoDice
+	Map_Tile_AddrL:
 
+	; The location often used to load level data into memory.
+	level_data_pointer:			.ds 1
+
+	; Required for NoDice
+	Map_Tile_AddrH:				.ds 1
 
 	.org $63	; NOTE, the following two are also $63/$64, bonus game context
 	BonusText_BaseL:	.ds 1	; Instruction text base address low
@@ -2135,6 +2140,7 @@ ObjState_LAVADEATH  = 9 ; Fall into lava a die slowly
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	.org $0700
 
+	level_data_offset:
 	TileAddr_Off:		.ds 1	; During level loading, specifies an offset into the current Mem_Tile_Addr setting
 
 	; LevLoad_Unused1-4 are initialized when about to load a level, 
@@ -2147,6 +2153,7 @@ ObjState_LAVADEATH  = 9 ; Fall into lava a die slowly
 
 				.ds 1	; $0705 unused
 
+	generator_index:
 	LL_ShapeDef:		.ds 1	; During level loading, defines a shape of something (context-specific)
 
 	Scroll_UpdAttrFlag:	.ds 1	; Set when it is time to update attributes

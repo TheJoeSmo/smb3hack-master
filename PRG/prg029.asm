@@ -2507,9 +2507,9 @@ BlockChange_Do:
 
 	; Get tile here
 	LDA Tile_Mem_AddrVL,Y
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_AddrVH,Y
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Temp_Var6 = block change screen Y aligned to grid
 	LDA Level_BlockChgYLo
@@ -2539,11 +2539,11 @@ PRG029_DC36:
 	ASL A		 ; Multiply by 2 (2 byte index per Tile_Mem_Addr)
 	TAX		 ; -> 'X'
 
-	; Set address in tile memory to Map_Tile_AddrL/H
+	; Set address in tile memory to level_data_pointer/H
 	LDA Tile_Mem_Addr,X
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_Addr+1,X
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Temp_Var7 = 0
 	LDA #$00
@@ -2552,7 +2552,7 @@ PRG029_DC36:
 	LDA Level_BlockChgYHi
 	BEQ PRG029_DC50	 ; If block change is not on the lower part of the screen, jump to PRG029_DC50
 
-	INC <Map_Tile_AddrH	; Otherwise, jump to lower screen address
+	INC <level_data_pointer+1	; Otherwise, jump to lower screen address
 
 PRG029_DC50:
 
@@ -2729,7 +2729,7 @@ TileChng_OneTile:
 
 	; Change the tile to the proper target tile
 	LDA OneTile_ChangeToTile,X
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	LDA Level_BlockChgXLo
 	CMP <Horz_Scroll
@@ -2837,7 +2837,7 @@ TileChng_DoorAppear:
 
 	; Set upper tile of door
 	LDA #TILEA_DOOR1
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	; +16 (next row of tiles)
 	TYA
@@ -2846,13 +2846,13 @@ TileChng_DoorAppear:
 
 	BCC PRG029_DD77	 ; If no carry, jump to PRG029_DD77
 
-	INC <Map_Tile_AddrH	; Apply carry
+	INC <level_data_pointer+1	; Apply carry
 
 PRG029_DD77:
 
 	; Set lower tile of door
 	LDA #TILEA_DOOR1
-	STA [Map_Tile_AddrL],Y
+	STA [level_data_pointer],Y
 
 	LDY #$00	 ; Y = 0
 
@@ -3011,7 +3011,7 @@ ChngTile_32x32:
 
 	LDY <Temp_Var5	 ; Y = Temp_Var5 (row/column offset value)
 
-	LDA [Map_Tile_AddrL],Y	 ; Get tile currently here
+	LDA [level_data_pointer],Y	 ; Get tile currently here
 	CMP #TILE10_4WAYCANNON_45_UL
 	BEQ PRG029_DEF9	 ; If cannon is at 45 degree position, jump to PRG029_DEF9
 	BNE PRG029_DEF8	 ; Otherwise, jump to PRG029_DEF8
@@ -3128,10 +3128,10 @@ PRG029_DF4C:
 	LDX <Temp_Var11	 ; X = Temp_Var11
 
 	LDA CBig_ChngTiles,X	 ; Get tile 
-	STA [Map_Tile_AddrL],Y	 ; Set tile
+	STA [level_data_pointer],Y	 ; Set tile
 	INY		 ; Next column
 	LDA CBig_ChngTiles+1,X	 ; Get tile
-	STA [Map_Tile_AddrL],Y	 ; Set tile
+	STA [level_data_pointer],Y	 ; Set tile
 
 	; Temp_Var5 += 16 (next tile row)
 	LDA <Temp_Var5
@@ -3139,9 +3139,9 @@ PRG029_DF4C:
 	STA <Temp_Var5
 
 	; Apply carry if needed
-	LDA <Map_Tile_AddrH
+	LDA <level_data_pointer+1
 	ADC #$00
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Temp_Var11 += 2
 	INC <Temp_Var11
@@ -3217,7 +3217,7 @@ FixAttr_Lower:
 	BEQ FixAttr_InitNoCarry	; If not actually on row $10x, jump to FixAttr_InitNoCarry
 
 	; We're on the fringe row $10x, need to backtrack
-	DEC Map_Tile_AddrH
+	DEC level_data_pointer+1
 
 FixAttr_InitNoCarry:
 	JMP FixAttr_Cont
@@ -3259,10 +3259,10 @@ FixAttr_Cont:
 
 
 	; Get top two tiles of affected zone
-	LDA [Map_Tile_AddrL],Y
+	LDA [level_data_pointer],Y
 	STA <Temp_Var1
 	INY
-	LDA [Map_Tile_AddrL],Y
+	LDA [level_data_pointer],Y
 	STA <Temp_Var2
 
 	TYA
@@ -3270,15 +3270,15 @@ FixAttr_Cont:
 	TAY
 	BCC FixAttr_TileNoCarry
 
-	INC <Map_Tile_AddrH
+	INC <level_data_pointer+1
 
 FixAttr_TileNoCarry:
 
 	; Get bottom two tiles of affected zone
-	LDA [Map_Tile_AddrL],Y
+	LDA [level_data_pointer],Y
 	STA <Temp_Var3
 	INY
-	LDA [Map_Tile_AddrL],Y
+	LDA [level_data_pointer],Y
 	STA <Temp_Var4
 
 	; Pack an attribute quadrant

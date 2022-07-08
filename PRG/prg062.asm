@@ -2033,9 +2033,9 @@ PRG062_8B9A:
 ;	; Set address as appropriate for vertical
 ;	LDY Level_SizeOrig
 ;	LDA Tile_Mem_AddrVL,Y
-;	STA <Map_Tile_AddrL
+;	STA <level_data_pointer
 ;	LDA Tile_Mem_AddrVH,Y
-;	STA <Map_Tile_AddrH
+;	STA <level_data_pointer+1
 
 ;	JMP PRG062_8BDF	; Jump to PRG062_8BDF
 
@@ -2043,9 +2043,9 @@ PRG062_8B9A:
 
 ;	; First screen is always where non-vertical maps start
 ;	LDA Tile_Mem_Addr
-;	STA <Map_Tile_AddrL
+;	STA <level_data_pointer
 ;	LDA Tile_Mem_Addr+1
-;	STA <Map_Tile_AddrH
+;	STA <level_data_pointer+1
 
 ;PRG062_8BDF:
 ;	LDA #$00	
@@ -2056,9 +2056,9 @@ PRG062_8B9A:
 
 ;	; Otherwise, offset initial address by $F0 (15 rows) and
 ;	; flag we're performing this on the lower vertical
-;	LDA <Map_Tile_AddrL
+;	LDA <level_data_pointer
 ;	ADD #$f0	 
-;	STA <Map_Tile_AddrL	; Map_Tile_AddrL += $F0
+;	STA <level_data_pointer	; level_data_pointer += $F0
 
 ;	LDA #$01
 ;	STA Map_EntTran_VLHalf	 ; Map_EntTran_VLHalf = 1
@@ -4002,18 +4002,18 @@ PRG062_962C:
 
 ;	; Correct base address for vertical levels
 ;	LDA Tile_Mem_AddrVL,Y
-;	STA <Map_Tile_AddrL
+;	STA <level_data_pointer
 ;	LDA Tile_Mem_AddrVH,Y
-;	STA <Map_Tile_AddrH
+;	STA <level_data_pointer+1
 
 ;	JMP PRG062_965E	 	; Jump to PRG062_965E
 
 ;PRG062_9654:
 ;	; Correct base address for non-vertical levels
 ;	LDA Tile_Mem_Addr
-;	STA <Map_Tile_AddrL
+;	STA <level_data_pointer
 ;	LDA Tile_Mem_Addr+1
-;	STA <Map_Tile_AddrH
+;	STA <level_data_pointer+1
 
 ;PRG062_965E:
 ;	LDA Map_EntTran_VAddrH
@@ -4021,9 +4021,9 @@ PRG062_962C:
 ;	BEQ PRG062_966C	 ; If "high" address is not halfway through vertically, jump to PRG062_966C
 
 ;	; Otherwise, offset halfway through screen
-;	LDA <Map_Tile_AddrL
+;	LDA <level_data_pointer
 ;	ADD #$f0
-;	STA <Map_Tile_AddrL	; Map_Tile_AddrL += $F0
+;	STA <level_data_pointer	; level_data_pointer += $F0
 
 ;PRG062_966C:
 ;	LDA Level_Tileset
@@ -4037,7 +4037,7 @@ PRG062_962C:
 ;	STA <Temp_Var14	
 
 ;	LDY Map_EntTran_TileOff
-;	LDA [Map_Tile_AddrL],Y	 ; Get the tile we're working on
+;	LDA [level_data_pointer],Y	 ; Get the tile we're working on
 
 ;	TAY		 
 ;	LDA Map_EntTran_Tile8x8
@@ -4758,7 +4758,7 @@ PRG062_9934:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; LoadLevel_Set_TileMemAddr
 ;
-; Used while loading a level.  Sets the Map_Tile_AddrL/H pointer
+; Used while loading a level.  Sets the level_data_pointer/H pointer
 ; to a specified "screen", and also sets TileAddr_Off to an offset
 ; within that screen.
 ;
@@ -4770,13 +4770,13 @@ PRG062_9934:
 ; FEDC BA98  7654 3210	<-- bits
 ;
 ;
-; * Map_Tile_AddrL/H points to Tile_Mem_Addr(V)[7654 0] <-- '0' is a one-up shift, not bit 0 of Temp_Var16; (V) is the "Vertical" table, used if applicable
+; * level_data_pointer/H points to Tile_Mem_Addr(V)[7654 0] <-- '0' is a one-up shift, not bit 0 of Temp_Var16; (V) is the "Vertical" table, used if applicable
 ;
-; * If 'C' (bit 4) of Temp_Var15 is set, then Map_Tile_AddrH is incremented
+; * If 'C' (bit 4) of Temp_Var15 is set, then level_data_pointer+1 is incremented
 ;
-; * Temp_Var5 = Map_Tile_AddrH + 1 -- Pre-'C' increment, ONLY WHEN NOT VERTICAL (otherwise unassigned)
+; * Temp_Var5 = level_data_pointer+1 + 1 -- Pre-'C' increment, ONLY WHEN NOT VERTICAL (otherwise unassigned)
 ;
-; * Temp_Var6 = Map_Tile_AddrH -- Post-'C' increment (i.e. equals whatever Map_Tile_AddrH does at end of function)
+; * Temp_Var6 = level_data_pointer+1 -- Post-'C' increment (i.e. equals whatever level_data_pointer+1 does at end of function)
 ;
 ; * TileAddr_Off = BA98 3210 -OR- (Temp_Var15 << 4) | (Temp_Var16 & $f)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -4817,11 +4817,11 @@ LoadLevel_Set_TileMemAddr:
 	LSR A
 	TAX		; X >>= 1 (single byte index, since the Tile_Mem_AddrV lookup is split into two tables)
 
-	; Load the target address into Map_Tile_AddrH/L
+	; Load the target address into level_data_pointer+1/L
 	LDA Tile_Mem_AddrVL,X
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_AddrVH,X
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	JMP PRG062_997F	 ; Jump to PRG062_997F
 
@@ -4838,25 +4838,25 @@ PRG062_9963:
 
 PRG062_9969:
 
-	; Load the target address into Map_Tile_AddrH/L
+	; Load the target address into level_data_pointer+1/L
 	LDA Tile_Mem_Addr,X
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_Addr+1,X
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	STA <Temp_Var5	
-	INC <Temp_Var5		; Temp_Var5 = Map_Tile_AddrH + 1
+	INC <Temp_Var5		; Temp_Var5 = level_data_pointer+1 + 1
 
 	LDA <Temp_Var15	
 	AND #$10	
 	BEQ PRG062_997F		; If bit 4 of the first byte is not set, jump to PRG062_997F
 
-	; Otherwise, Map_Tile_AddrH++
-	INC <Map_Tile_AddrH
+	; Otherwise, level_data_pointer+1++
+	INC <level_data_pointer+1
 
 PRG062_997F:
-	LDA <Map_Tile_AddrH
-	STA <Temp_Var6		; Temp_Var6 = Map_Tile_AddrH
+	LDA <level_data_pointer+1
+	STA <Temp_Var6		; Temp_Var6 = level_data_pointer+1
 
 	RTS		 ; Return
 
@@ -5038,11 +5038,11 @@ LevelLoad_ByTileset:
 ; DEC <Temp_Var(.)		 ; .*
 ; DEC <Temp_Var\1		 ; Temp_Var\1--
 
-; LDA <Map_Tile_AddrL.*\n.*STA <Temp_Var1.*\n.*LDA <Map_Tile_AddrH.*\n.*STA <Temp_Var2.*
-;; Backup Map_Tile_AddrL/H into Temp_Var1/2\n\tLDA <Map_Tile_AddrL\n\tSTA <Temp_Var1\n\tLDA <Map_Tile_AddrH\n\tSTA <Temp_Var2
+; LDA <level_data_pointer.*\n.*STA <Temp_Var1.*\n.*LDA <level_data_pointer+1.*\n.*STA <Temp_Var2.*
+;; Backup level_data_pointer/H into Temp_Var1/2\n\tLDA <level_data_pointer\n\tSTA <Temp_Var1\n\tLDA <level_data_pointer+1\n\tSTA <Temp_Var2
 
-; LDA <Temp_Var1.*\n.*STA <Map_Tile_AddrL.*\n.*LDA <Temp_Var2.*\n.*STA <Map_Tile_AddrH.*
-;; Restore Map_Tile_Addr from backup\n\tLDA <Temp_Var1\n\tSTA <Map_Tile_AddrL\n\tLDA <Temp_Var2\n\tSTA <Map_Tile_AddrH
+; LDA <Temp_Var1.*\n.*STA <level_data_pointer.*\n.*LDA <Temp_Var2.*\n.*STA <level_data_pointer+1.*
+;; Restore Map_Tile_Addr from backup\n\tLDA <Temp_Var1\n\tSTA <level_data_pointer\n\tLDA <Temp_Var2\n\tSTA <level_data_pointer+1
 
 LeveLoad_Generators:
 	LDA Level_Tileset
@@ -5675,9 +5675,9 @@ VScroll_DoPatternAndAttrRow:
 
 	; Get address of tile at this vertical position
 	LDA Tile_Mem_AddrVL,Y
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_AddrVH,Y
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Temp_Var9 = offset at leftmost column in current row
 	LDA <Scroll_VOffsetT,X
@@ -5690,7 +5690,7 @@ VScroll_DoPatternAndAttrRow:
 
 PRG062_9D5A:
 	LDY <Temp_Var9		 ; Y = current offset along row
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA [level_data_pointer],Y	 ; Get tile here
 	STA <Temp_Var11		 ; -> Temp_Var11
 
 	INC <Temp_Var9		 ; Temp_Var9++ (next column)
@@ -5791,9 +5791,9 @@ Scroll_Do_AttrRow:
 
 	; Get address of tile at this vertical position
 	LDA Tile_Mem_AddrVL,Y
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_AddrVH,Y
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Temp_Var9 = offset at leftmost column in current row
 	LDA <Scroll_VOffsetT,X
@@ -5877,7 +5877,7 @@ TileLayout_GetBaseAddr:
 VScroll_TileQuads2Attrs:
 	LDX <Temp_Var8		 ; X = Temp_Var8 (Scroll_AttrStrip offset)
 
-	LDA [Map_Tile_AddrL],Y	 ; Get the tile
+	LDA [level_data_pointer],Y	 ; Get the tile
 
 	; "Quadrant" bits (6 and 7) are pushed in as attribute bits
 	ASL A
@@ -5887,7 +5887,7 @@ VScroll_TileQuads2Attrs:
 
 	DEY		 ; Y--
 
-	LDA [Map_Tile_AddrL],Y	 ; Get the tile
+	LDA [level_data_pointer],Y	 ; Get the tile
 
 	; "Quadrant" bits (6 and 7) are pushed in as attribute bits
 	ASL A
@@ -5921,9 +5921,9 @@ Player_GetTileV:	; $9E3C
 
 	; Select root offset into tile memory
 	LDA Tile_Mem_AddrVL,Y
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_AddrVH,Y
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	; Combine positions into Temp_Var15 to form tile mem offset
 	LDA <Temp_Var14
@@ -5945,7 +5945,7 @@ Player_GetTileV:	; $9E3C
 	PLA		 ; Restore original value for Temp_Var13
 	STA <Temp_Var13	 ; Store it
 
-	LDA [Map_Tile_AddrL],Y	 ; Get tile
+	LDA [level_data_pointer],Y	 ; Get tile
 	STA <Level_Tile	 ; Store into Level_Tile
 
 	RTS		 ; Return
@@ -6026,16 +6026,16 @@ Player_GetTileAndSlope_Normal:	; $9E9D
 	ASL A		
 	TAX		 ; X = (Temp_Var15 & $0F) << 1 (current "high" part of Player X shifted up by 1, indexing Tile Mem)
 
-	; Set Map_Tile_AddrL/H to appropriate screen based on Player's position
+	; Set level_data_pointer/H to appropriate screen based on Player's position
 	LDA Tile_Mem_Addr,X
-	STA <Map_Tile_AddrL
+	STA <level_data_pointer
 	LDA Tile_Mem_Addr+1,X
-	STA <Map_Tile_AddrH
+	STA <level_data_pointer+1
 
 	LDA <Temp_Var13
 	BEQ PRG062_9EC3	 ; If Temp_Var13 (Y Hi) = 0, jump to PRG062_9EC3
 
-	INC <Map_Tile_AddrH ; Otherwise, go to second half of screen
+	INC <level_data_pointer+1 ; Otherwise, go to second half of screen
 
 PRG062_9EC3:
 	LDA <Temp_Var14
@@ -6047,7 +6047,7 @@ PRG062_9EC3:
 	STA <Temp_Var12		 ; ... and copied into Temp_Var12
 
 	TAY		 	; Y = current offset
-	LDA [Map_Tile_AddrL],Y	; Get tile here
+	LDA [level_data_pointer],Y	; Get tile here
 	STA <Level_Tile	; Store into Level_Tile
 
 	LDY Level_Tileset
@@ -6067,7 +6067,7 @@ PRG062_9EDB:
 	STA <Temp_Var1		 ; Temp_Var1 = 0
 
 	LDY <Temp_Var12		 ; Y = current offset in Tile Mem
-	LDA [Map_Tile_AddrL],Y	 ; Get tile here
+	LDA [level_data_pointer],Y	 ; Get tile here
 	STA <Temp_Var2		 ; Store into Temp_Var2
 
 PGSAT_GetSlope:
