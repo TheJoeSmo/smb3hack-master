@@ -2965,7 +2965,7 @@ AltLvlMod_List:
 	ALMList 5, W6G1CL, W6G1CO	; 22
 	ALMList 8, W7F2CL, W7F2CO	; 23
 
-	; Based on Object_CalcCoarseXDiff, for priority special objects ONLY!
+	; Based on entity_player_x_coarse_difference, for priority special objects ONLY!
 	; i.e. requires Var3 to be a surrogate "X Hi"
 PrioSpecObj_CalcCoarseXDiff:
 	; Trigger when close enough X

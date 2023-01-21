@@ -1668,7 +1668,7 @@ Bobomb_BustBrickFX:
 CFire_CalcCoarseXDiff:
 	; var13 is X
 	; var14 is XHi
-	; Calculate coarse X difference -> var15 (basically Object_CalcCoarseXDiff)
+	; Calculate coarse X difference -> var15 (basically entity_player_x_coarse_difference)
 	LDA CannonFire_X,X	 
 	SUB <var13
 	STA <var15		; var15 = difference between Object and Player X

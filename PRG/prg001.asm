@@ -2323,7 +2323,7 @@ ObjNorm_PDoor:
 	BEQ PRG001_ADBB	 ; If Player is NOT pressing up, jump to PRG001_ADBB
 
 	; If Player is NOT within range of the door X-wise, jump to PRG001_ADBB
-	JSR Object_CalcCoarseXDiff	 
+	JSR entity_player_x_coarse_difference	 
 	LDA <var15	
 	ADD #$02	
 	CMP #$04	
@@ -5331,7 +5331,7 @@ OHLS_PlayingSound:
 	STA <player_lo_y_velocity
 
 OHLS_PlayerNotReverse:
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	LDA <var15
 	ADD #2
 	ASL A
@@ -5434,7 +5434,7 @@ Topmaniac_Chase:
 	LDA #3
 	STA entity_animation_frame,X
 	
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	LDA <var15
 	ASL A
 	ASL A
@@ -5552,7 +5552,7 @@ Topmaniac_KnockedOutWait:
 	STA <entity_var5,X
 
 Topmaniac_StillKO:
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 
 	LDA entity_type,X
 	CMP #OBJ_TOPMAN

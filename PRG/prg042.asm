@@ -1262,7 +1262,7 @@ BJrW4_Normal:
 
 
 BJrW4_ShellFound:
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	LDA <var15
 	ADD #2
 	CMP #4
@@ -4469,7 +4469,7 @@ BJrW7_SpitFire:
 	LDA #SPR_PAL2
 	STA Objects_SprAttr,X
 
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	LDA <var16
 	ROL A
 	ROL A

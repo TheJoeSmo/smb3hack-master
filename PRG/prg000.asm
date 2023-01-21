@@ -364,7 +364,7 @@ Object_AttrFlags:
 	.byte OAT_BOUNDBOX08 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $3E - OBJ_WOODENPLATFORMFLOAT
 	.byte OAT_BOUNDBOX01 | OAT_BOUNCEOFFOTHERS | OAT_FIREIMMUNITY	; Object $3F - OBJ_DRYBONES
 	.byte OAT_BOUNDBOX03 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $40 - OBJ_DESERTBONES
-	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $41 - OBJ_ENDLEVELCARD
+	.byte OAT_BOUNDBOX02 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $41 - OBJ_ENDLEVELCARD
 	.byte OAT_BOUNDBOX01 | OAT_BOUNCEOFFOTHERS	; Object $42 - OBJ_REX_PARTLYSQUASHED
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY	; Object $43 - OBJ_KIRUBO
 	.byte OAT_BOUNDBOX08 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $44 - OBJ_WOODENPLATUNSTABLE
@@ -6475,7 +6475,7 @@ PRG000_DC91:
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Object_CalcCoarseXDiff
+; entity_player_x_coarse_difference
 ;
 ; Calculates a "coarse" X difference with the Player,
 ; returning a one byte value that determines the
@@ -6484,7 +6484,7 @@ PRG000_DC91:
 ; carry flag is set if the difference was negative.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $DCA2 
-Object_CalcCoarseXDiff:
+entity_player_x_coarse_difference:
 	LDA <entity_lo_x,X	 
 	SUB <player_lo_x	
 	STA <var15		; var15 = difference between Object and Player X

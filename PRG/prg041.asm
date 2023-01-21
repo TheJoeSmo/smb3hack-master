@@ -4215,7 +4215,7 @@ Clyde_DigSeek:
 	RTS
 	
 Clyde_SeekPlayer:
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	LDA <var15
 	ADD #2
 	BPL Clyde_DigSeek_Right

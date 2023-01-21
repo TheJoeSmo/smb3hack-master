@@ -560,7 +560,7 @@ ObjNorm_ContinueMovement:
 	BNE ObjNorm_GoombaDoNotDetermineDirection
 
 	; Flip to face Player
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	STA entity_flipped_animation,X
 
 	ASL A
@@ -1792,7 +1792,7 @@ ObjNorm_Hotfoot:
 
 	BCC PRG002_A8B3	 ; If Var5 bit 7 not set, jump to PRG002_A8B3
 
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	EOR #SPR_HFLIP
 	STA entity_flipped_animation,X	 ; Store flip towards Player
 
@@ -1805,7 +1805,7 @@ PRG002_A8B6:
 Boo_CheckPlayerSight:
 	LDY <entity_var5,X
 
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	EOR <player_flipped_animation	 ; Check flip direction against Player; if Player and Boo are facing eachother, result is non-zero
 	ASL A		 ; Push up result so it is $00 or $80
 	BPL PRG002_A8C5	 ; If Player is not facing Boo, jump to PRG002_A8C5
@@ -1983,7 +1983,7 @@ Goblin_NotHitWall:
 
 	; Goblin needs to look for Player
 
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 
 	LDA <var15
 	CMP #18
@@ -3097,7 +3097,7 @@ PRG002_AD3F:
 	ADC Entropy_BySlot,X	; Add an arbitrary value based on which slot this Spike is in
 	BMI PRG002_AD95	 ; If the result has bit 7 set, jump to PRG002_AD95
 
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	EOR entity_flipped_animation,X
 	ASL A
 	BPL PRG002_AD6E	 ; If the signs aren't different, Spike doesn't change direction; jump to PRG002_AD6E
@@ -3781,7 +3781,7 @@ ObjNorm_Nipper:
 	AND #$02	 
 	TAY		 ; Y = 0 or 2
 
-	JSR Object_CalcCoarseXDiff	 ; Get X difference between Nipper and Player
+	JSR entity_player_x_coarse_difference	 ; Get X difference between Nipper and Player
 	STA <var14		 ; Store flip direction -> var14
 
 	LDA <var15	
@@ -4051,7 +4051,7 @@ Toad_NotPrincess:
 	STA LevelJctBQ_Flag
 
 	; Always turn to face Player
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	STA entity_flipped_animation,X
 
 	; Do Toad's dialog message
@@ -4475,7 +4475,7 @@ ObjNorm_NipperFireBreathe:
 	JSR Object_DeleteOrDraw	 	; Delete if Nipper off-screen or draw it
 	JSR Object_HitTestRespond	; Do collision test with Player and respond
 
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	STA entity_flipped_animation,X	 ; Set flip towards Player
  
 	LDA <Counter_1
@@ -4620,7 +4620,7 @@ PRG002_B6B2:
 	BNE PRG002_B6C2	 ; If Var5 <> 0 (still reassembling), jump to PRG002_B6C2
 
 	; Dry Bones gets back up and faces Player!
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	STA entity_flipped_animation,X
 
 	RTS		 ; Return
@@ -5038,7 +5038,7 @@ PRG002_B8CA:
 	EOR #SPR_HFLIP	; Flip it
 	STA entity_flipped_animation,X	 ; Store horizontal flip bit
 
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	LDA <var15		 ; Get coarse X diff
 	ADD BigBertha_XCoarseLimit,Y
 	BPL PRG002_B8E4	 ; If limit not reached, jump to PRG002_B8E4
@@ -5107,7 +5107,7 @@ PRG002_B925:
 	CPY #$02
 	BGE PRG002_B95C	 ; If frame >= 2, jump to PRG002_B95C
 
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	LDY <entity_var5,X	; get direction flag
 	LDA <var15
 	ADD BigBertha_EatLimit,Y
@@ -5347,7 +5347,7 @@ PRG002_BA52:
 	EOR #SPR_HFLIP
 	STA entity_flipped_animation,X	 ; Store flip bit by X velocity
 
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	LDA <var15	
 	ADD #$40
 	CMP #$80
@@ -5634,7 +5634,7 @@ ObjNorm_EndLevelCard:
 
 exit_flag_unactivated:
 	; Trigger when close enough X
-	JSR Object_CalcCoarseXDiff
+	JSR entity_player_x_coarse_difference
 	LDA <var15	
 	CMP #$01
 	BGE exit_flag_unactivated_hit_test
@@ -5699,6 +5699,14 @@ exit_flag_slide_down_pole:
 	SBC #0
 	STA <entity_hi_x,X
 
+	; Check if the player hit the ground
+	LDA <player_is_in_air
+	BNE exit_flag_player_not_hit_ground
+		LDA #$00
+		STA <entity_lo_y_velocity,X
+		BEQ exit_flag_not_hit_floor
+
+exit_flag_player_not_hit_ground:
 	; Check if hit floor to stop moving
 	LDA <entity_collision_flags,X
 	AND #$04
@@ -5791,7 +5799,7 @@ exit_flag_skip_timer_checks:
 		STA entity_timer,X
 
 exit_flag_player_run_off_finish:
-	RTS		 ; Return
+	JMP exit_flag_draw
 
 
 exit_flag_do_message:
