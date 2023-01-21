@@ -5634,15 +5634,24 @@ ObjNorm_EndLevelCard:
 
 exit_flag_unactivated:
 	; Trigger when close enough X
-	JSR entity_player_x_coarse_difference
-	LDA <var15	
-	CMP #$01
-	BGE exit_flag_unactivated_hit_test
-
-	LDA entity_lo_x,X
-	STA player_lo_x
 	LDA entity_hi_x,X
-	STA player_hi_x
+	STA entity_var2,X
+	LDA entity_lo_x,X
+	STA entity_var1,X
+	ADD #16
+	STA entity_lo_x,X
+	LDA entity_hi_x,X
+	ADC #$00
+	STA entity_hi_x,X
+
+	JSR entity_player_x_coarse_difference
+	LDA entity_var1,X
+	STA entity_lo_x,X
+	LDA entity_var2,X
+	STA entity_hi_x,X
+	LDA <var15	
+	CMP #4
+	BGE exit_flag_unactivated_hit_test
 
 	; If Player is above flag, jump to exit_flag_unactivated_hit_test
 	JSR Object_CalcCoarseYDiff
@@ -5652,7 +5661,25 @@ exit_flag_unactivated:
 	BLS exit_flag_unactivated_hit_test
 	CMP #$25
 	BGS exit_flag_unactivated_hit_test
-	
+
+	; Allign the player with the flag
+	LDA entity_lo_x,X
+	STA player_lo_x
+	LDA entity_hi_x,X
+	STA player_hi_x
+
+	; Move the player to the right of the pole when holding left.
+	LDA player_flipped_animation
+	BNE exit_flag_pole_slide_fix
+		LDA player_lo_x
+		ADD #16
+		STA player_lo_x
+		LDA player_hi_x
+		ADC #$00
+		STA player_hi_x
+
+exit_flag_pole_slide_fix:
+
 	; Calculate award score
 	LSR A
 	LSR A
