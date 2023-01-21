@@ -607,7 +607,7 @@ DBSS_NoFlip:
 	JSR Object_ShakeAndCalcSprite	; Calculate sprite info
 	LDX <entity_index
 
-	;LDA Objects_ReverseGrav,X
+	;LDA entity_reverse_gravity,X
 	;BEQ DBSS_NoRevGrav
 
 	;LDA <var3
@@ -1371,7 +1371,7 @@ BJrW4_NotAtVSpeed:
 	STA <entity_lo_y_velocity,X
 	
 	JSR Object_ApplyXVel
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 	
 	RTS
 
@@ -3893,7 +3893,7 @@ Wart_Downward:
 	LDA #$10
 	STA <entity_lo_y_velocity,X
 	
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 
 	INC entity_var6,X
 	LDA entity_var6,X
@@ -3981,7 +3981,7 @@ Wart_Upward:
 	LDA #-$10
 	STA <entity_lo_y_velocity,X
 	
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 
 	DEC entity_var6,X
 	LDA entity_var6,X
@@ -4105,9 +4105,9 @@ BJrW7_BowserJrHit:
 	BEQ BJrW7_Finished
 
 	; Reverse gravity
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	EOR #1
-	STA Objects_ReverseGrav,X
+	STA entity_reverse_gravity,X
 	STA Player_ReverseGrav
 	
 	; Ensure Player removes from planet...
@@ -4201,7 +4201,7 @@ BJrW7_PerformFlip:
 	; Landed!
 	
 	; Set BJr Y
-	LDY Objects_ReverseGrav,X
+	LDY entity_reverse_gravity,X
 	LDA BJrW7_YPos,Y
 	STA <entity_lo_y,X
 	LDA BJrW7_YPosHi,Y
@@ -4232,7 +4232,7 @@ BJrW7_MoveVertToPlayer:
 	
 	LDA <var16		; 255 too high, 0 too low
 	ADD #1
-	EOR Objects_ReverseGrav,X
+	EOR entity_reverse_gravity,X
 	TAY
 	
 	LDA <entity_lo_y_velocity,X
@@ -4243,7 +4243,7 @@ BJrW7_MoveVertToPlayer:
 	STA <entity_lo_y_velocity,X
 	
 BJrW7_AtYVelLimit:
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 
 	LDA <Counter_1
 	CMP #$5F
@@ -4267,7 +4267,7 @@ BJrW7_FacePlayer:
 	RTS
 
 BJrW7_Draw:
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	ROR A
 	ROR A
 	STA <var13
@@ -4441,7 +4441,7 @@ BJ7SFire_YOff:			.byte 16, 0
 BJ7SFire_YCoarseOff:	.byte 0, 4
 
 BJrW7_SpitFire:
-	LDY Objects_ReverseGrav,X
+	LDY entity_reverse_gravity,X
 	LDA BJ7SFire_YOff,Y
 	STA <var1
 
@@ -4684,7 +4684,7 @@ BJrW7_CineLaunch:
 
 	LDA #-$40
 	STA <entity_lo_y_velocity,X
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 
 	LDA <entity_hi_y,X
 	BNE BJrW7_CineLCont
@@ -4784,7 +4784,7 @@ BJrWZ_NotAtVSpeed:
 	STA <entity_lo_y_velocity,X
 	
 	JSR Object_ApplyXVel
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 	
 	JSR BowserJr_Draw
 	JMP BowserJr_DrawClownCar
@@ -5036,7 +5036,7 @@ Bleck_NotOORHorz:
 	STA <entity_lo_y_velocity,X
 	
 	JSR Object_ApplyXVel
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 	
 
 	; Only have to check Y since Bleck moves on diagonals
@@ -5184,7 +5184,7 @@ Bleck_DragEnd:
 
 ObjNorm_BleckProj42:
 	JSR Object_ApplyXVel
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 	JSR Object_DeleteOffScreen
 
 	JSR_THUNKA 41, Object_ShakeAndDraw

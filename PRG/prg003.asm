@@ -1015,7 +1015,7 @@ PRG003_A30E:
 	STA <entity_hi_y,X
 
 TBoxItem_NotTooHigh:
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	INC <entity_lo_y_velocity,X
 	BMI PRG003_A33A	 ; If Y velocity is still negative, jump to PRG003_A33A
@@ -1182,7 +1182,7 @@ PRG003_A3AA:
 	STA entity_timer,X
 
 PRG003_A3C2:
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	LDA <entity_lo_y_velocity,X
 	BPL PRG003_A3CD	 ; If Podoboo is moving downward, jump to PRG003_A3CD
@@ -1268,7 +1268,7 @@ PRG003_A40F:
 
 PRG003_A424:
 	JSR Object_ApplyXVel	 ; Apply X Velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	LDA <entity_lo_y_velocity,X
 	BMI PRG003_A434	 ; If Piledriver is moving upward, jump to PRG003_A434
@@ -2976,7 +2976,7 @@ PRG003_AC80:
 
 BoomBoom_FlightToPlan:
 	JSR Object_ApplyXVel	; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	LDY #$00	 ; Y = 0
 
@@ -3029,7 +3029,7 @@ BoomBoom_ExecuteFlight:
 
 PRG003_ACD1:
 	JSR Object_ApplyXVel	 ; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	LDA <entity_lo_y,X
 	CMP #80
@@ -4206,7 +4206,7 @@ PRG003_B814:
 	BEQ PRG003_B826	 ; If Blooper is not in water, jump to PRG003_B826
 
 PRG003_B823:
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y Velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y Velocity
 
 PRG003_B826:
 	PLA		 ; Restore Y Velocity
@@ -4616,7 +4616,7 @@ PRG003_BA72:
 	STA <entity_lo_y_velocity,X
 
 PRG003_BAA0:
-	JMP Object_ApplyYVel_NoLimit	 ; Apply Y velocity and don't come back!
+	JMP entity_do_y_velocity_unbounded	 ; Apply Y velocity and don't come back!
 
 	; Moves all tail segments based on screen scroll change
 TailEnemy_MoveTailWithScroll:
@@ -5109,7 +5109,7 @@ FireSnake_OK:
 	LSR A
 	AND #SPR_HFLIP
 	
-	LDY Objects_ReverseGrav,X
+	LDY entity_reverse_gravity,X
 	BEQ FireSnake_NotGravFlipped
 	
 	ORA #SPR_VFLIP
@@ -5141,7 +5141,7 @@ PRG003_BD95:
 	BNE PRG003_BDE6	 ; If timer not expired, jump to PRG003_BDE6
 
 	JSR Object_ApplyXVel	 ; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	LDA <entity_lo_y_velocity,X
 	BMI PRG003_BDA8	 ; If Fire Snake is moving upward, jump to PRG003_BDA8
@@ -5305,7 +5305,7 @@ PRG003_BE52:
 	ROR entity_flipped_animation,X
 
 	JSR Object_ApplyXVel	 ; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	LDA <entity_lo_y_velocity,X
 	BMI PRG003_BE67	 ; If enemy moving upward, jump to PRG003_BE67
@@ -5648,7 +5648,7 @@ PRG003_A6A6:
 	RTS		 ; Return
 
 Thwomp_FallToGround:
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y Velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y Velocity
  
 	LDA <entity_lo_y_velocity,X
 	CMP #$70
@@ -5705,7 +5705,7 @@ PRG003_A6E5:
 	LDA #-$10
 	STA <entity_lo_y_velocity,X
 
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 PRG003_A6EC:
 	RTS		 ; Return
@@ -5973,7 +5973,7 @@ ThwompVert_Slide:
 
 PRG003_A82B:
 	JSR Object_ApplyXVel	 	; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	; Apply Y velocity
 
 PRG003_A831:
 	RTS		 ; Return

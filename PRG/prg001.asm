@@ -514,7 +514,7 @@ ObjNorm_SpinyCheep:
 
 PRG001_A23F:
 	JSR Object_ApplyXVel	 ; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	LDA <entity_lo_x,X
 	CMP entity_var10,X
@@ -562,7 +562,7 @@ ObjInit_BounceDU:
 	LDA Player_ReverseGrav
 	BEQ ObjInit_BounceDU_NoRev
 
-	STA Objects_ReverseGrav,X
+	STA entity_reverse_gravity,X
 
 	; SB: If reverse gravity and downward direction, need to push Player away 
 	; a little bit or else he gets stuck for some reason
@@ -824,7 +824,7 @@ PRG001_A5BB:
 	JSR Level_ChangeTile_ByTempVars
 
 PRG001_A5D5:
-	JSR Object_ApplyYVel	 ; Apply Y velocity
+	JSR entity_do_y_velocity	 ; Apply Y velocity
 	JSR BounceBlock_Update
 
 	LDY Level_BlkBump_Pos-6,X	; Y = block bump pos
@@ -1051,7 +1051,7 @@ Star_Palettes:
 ObjInit_StarOrSuit:
 	; Set gravity by Player
 	LDA Player_ReverseGrav
-	STA Objects_ReverseGrav,X
+	STA entity_reverse_gravity,X
 
 	JSR Mushroom_SetFall	 ; Figure the way that the star should fall
 
@@ -1133,7 +1133,7 @@ ObjNorm_StarOrSuit:
 	STA <entity_lo_y_velocity,X
 	
 	JSR Object_ApplyXVel
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 	
 	DEC <entity_var5,X			; Var5--
 	BNE SOS_Cine_StillGoing		; If Var5 > 0, jump to SOS_Cine_StillGoing
@@ -1262,7 +1262,7 @@ ObjInit_PUpMush:
  
 	; Set gravity by Player
 	LDA Player_ReverseGrav
-	STA Objects_ReverseGrav,X
+	STA entity_reverse_gravity,X
 
 	JSR Mushroom_SetFall	 ; Figure the way that the mushroom should fall
 
@@ -1315,7 +1315,7 @@ PRG001_A86E:
 ObjNorm_PUpMush:
 
 	; Display vertically flipped if reverse gravity
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	ROR A
 	ROR A	; Convert 1 -> $80 (SPR_VFLIP)
 	STA entity_flipped_animation,X
@@ -1433,7 +1433,7 @@ PRG001_A8D5:
 
 	; Game not halted...
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ DoRaise_NoRev
 
 	; Move powerup down 1 pixel
@@ -1472,7 +1472,7 @@ PRG001_A8F7:
 
 	STY <var1	; Backup 'Y'
 
-	LDY Objects_ReverseGrav,X	; Y = 0 or 1
+	LDY entity_reverse_gravity,X	; Y = 0 or 1
 
 	LDA <entity_lo_y,X
 	AND #$f0	 	; Align object Y to tile
@@ -1644,7 +1644,7 @@ PRG001_A9B7:
 ObjInit_FireFlower:
 	; Set gravity by Player
 	LDA Player_ReverseGrav
-	STA Objects_ReverseGrav,X
+	STA entity_reverse_gravity,X
 
 	LDA #$10
 	STA entity_no_collision_timer,X	 ; Fire flower's timer 2 = $10
@@ -1679,7 +1679,7 @@ PRG001_A9D5:
 
 ObjNorm_FireFlower:
 	; Display vertically flipped if reverse gravity
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	ROR A
 	ROR A	; Convert 1 -> $80 (SPR_VFLIP)
 	STA entity_flipped_animation,X
@@ -1951,7 +1951,7 @@ Leaf_TimerVals:	.byte $08, $FF, $FF, $FF
 ObjInit_SuperLeaf:
 	; Set gravity by Player
 	LDA Player_ReverseGrav
-	STA Objects_ReverseGrav,X
+	STA entity_reverse_gravity,X
 
 	LDA #$00
 	STA <entity_lo_x_velocity,X	 ; Halt X velocity
@@ -2007,7 +2007,7 @@ ObjNorm_SuperLeaf:
 	LDA entity_timer,X
 	BEQ PRG001_ABEC	 ; If timer expired, jump to PRG001_ABEC
 
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y Velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y Velocity
 	INC <entity_lo_y_velocity,X	 ; YVel ++
 
 	LDA <entity_lo_y_velocity,X
@@ -2049,7 +2049,7 @@ PRG001_AC07:
 	STA <entity_lo_y_velocity,X	; -> Y Velocity
 
 	JSR Object_ApplyXVel	 ; Apply X Velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y Velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y Velocity
 
 PRG001_AC15:
 	LDA #SPR_HFLIP	 ; A = SPR_HFLIP (horizontal flip)
@@ -2064,7 +2064,7 @@ PRG001_AC1F:
 	STA entity_flipped_animation,X	 ; Set flip
 
 	; Display vertically flipped if reverse gravity
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	ROR A
 	ROR A	; Convert 1 -> $80 (SPR_VFLIP)
 	STA entity_flipped_animation,X
@@ -2132,7 +2132,7 @@ ObjNorm_Vine:
 	LDA #-$10
 	STA <entity_lo_y_velocity,X
 
-	JSR Object_ApplyYVel	; Apply Y Velocity
+	JSR entity_do_y_velocity	; Apply Y Velocity
 
 	LDA <entity_hi_y,X
 	BMI PRG001_AC80	 ; If vine goes off absolute top, jump to PRG001_AC80
@@ -2769,7 +2769,7 @@ Bowser_BurnSound:
 	LDA #-$30
 	STA <entity_lo_y_velocity,X
 	
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 
 	LDA <entity_hi_y,X
 	BPL BFUP_TooLow
@@ -3711,7 +3711,7 @@ PRG001_BBDC:
 Bowser_DetectTiles:
 	; Apply Bowser's X and Y Velocities
 	JSR Object_ApplyXVel	 
-	JSR Object_ApplyYVel_NoLimit
+	JSR entity_do_y_velocity_unbounded
 
 	LDY <entity_lo_x,X	 ; Y = Bowser's X
 
@@ -4178,7 +4178,7 @@ PRG001_BEA4:
 	ROR entity_flipped_animation,X
 
 PRG001_BEB2:
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	LDA <entity_lo_y_velocity,X
 	CMP #$25
@@ -4436,7 +4436,7 @@ ObjInit_RGravEnmy:
 	STA ObjGroupRel_Idx
 
 	; Enable reverse gravity
-	INC Objects_ReverseGrav,X
+	INC entity_reverse_gravity,X
 
 	LDA #4	; Page 4 objects
 	JMP ObjState_InitPageMismatch	; Jump to ObjState_InitReverseGrav
@@ -5122,7 +5122,7 @@ ObjNorm_ParaDryBones:
 	LDA Wing_YVel,Y
 	STA <entity_lo_y_velocity,X
 
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 
 	JSR Bowser_FacePlayer
 
@@ -5254,7 +5254,7 @@ LaunchStar_Halt:
 
 
 LaunchStar_Draw:
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ LSDraw_NotReverse
 	
 	LDA #SPR_VFLIP

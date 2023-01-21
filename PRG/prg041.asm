@@ -1159,7 +1159,7 @@ BigBoo_DontHurt:
 	
 BigBoo_Common:
 	JSR Object_ApplyXVel
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 
 	; Big Boo Y Tracking
 	LDA #$90
@@ -4104,7 +4104,7 @@ Clyde_DigDown:
 
 	; Dive in the sand!
 	INC <entity_lo_y_velocity,X
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 	
 	JMP Clyde_DoNothing
 

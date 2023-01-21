@@ -585,7 +585,7 @@ PRG005_A2AF:
 	RTS		 ; Return
 
 PRG005_A2C9:
-	JSR Object_ApplyYVel_NoLimit	; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	; Apply Y velocity
 
 	LDA entity_timer_secondary,X
 	BNE PRG005_A2DE	 ; If Timer3 not expired, jump to PRG005_A2DE
@@ -711,7 +711,7 @@ Spark_NotFastV:
 	JSR Object_DeleteOffScreen_N2	 ; Delete object if it falls off-screen
 	JSR Object_HandleBumpUnderneath
 	JSR Object_ApplyXVel
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 	JSR Object_ShakeAndDrawMirrored
 	
 	; Check if spark is on a new tile alignment
@@ -1802,7 +1802,7 @@ PRG005_A7DC:
 	; Piranha is not fully extended/retracted...
 
 	STA <entity_lo_y_velocity,X	 ; Set Y velocity as appropriate
-	JMP Object_ApplyYVel_NoLimit	 ; Apply Y velocity and don't come back!!
+	JMP entity_do_y_velocity_unbounded	 ; Apply Y velocity and don't come back!!
 
 
 Piranha_Attack:
@@ -2923,7 +2923,7 @@ Sun_TimerReload:	.byte $40, $60, $80, $A0
 	
 Sun_WaitForUpperReturn:
 	JSR Object_ApplyXVel	  	; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	; Apply Y Velocity
+	JSR entity_do_y_velocity_unbounded	; Apply Y Velocity
 
 	DEC <entity_lo_y_velocity,X	; Sun slows down and moves upward
 
@@ -2965,7 +2965,7 @@ PRG005_ADE3:
 
 Sun_WaitForUpperReturn2:
 	JSR Object_ApplyXVel	 	; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	; Apply Y velocity
 
 	DEC <entity_lo_y_velocity,X	; Sun slows down and moves upward
 
@@ -3021,7 +3021,7 @@ PRG005_AE21:
 
 Sun_DoMovement:
 	JSR Object_ApplyXVel	  	; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	; Apply Y velocity
 
 	; Objects_TargetingXVal is used as a horizontal direction here
 	LDA Objects_TargetingXVal,X
@@ -3260,7 +3260,7 @@ PRG005_AF4F:
 	LDA ArrowPlat_YVel,Y
 	STA <entity_lo_y_velocity,X
 
-	JSR Object_ApplyYVel_NoLimit	; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	; Apply Y velocity
 	JSR Object_ApplyXVel	 	; Apply X velocity
 
 	; Arrow platform is always X Hi = 0 (arrow platforms are only going to work in "vertical" levels)
@@ -3665,7 +3665,7 @@ PRG005_B105:
 
 	INC entity_var3,X	 ; Var3++
 
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 	JSR Object_ApplyXVel	 	; Apply X velocity
 
 	; Temp_VarNP0 = Player hit status bits (previous frame's detection status)
@@ -6552,7 +6552,7 @@ ObjNorm_ClimbingKoopa:
 	BNE ClimbingKoopa_Halt	; If object is not in normal state, jump to ClimbingKoopa_Halt
 
 	JSR Object_ApplyXVel
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 	JSR Object_HandleBumpUnderneath
 	JSR Object_DeleteOffScreen_N2
 	

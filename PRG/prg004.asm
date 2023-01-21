@@ -541,7 +541,7 @@ PRG004_A2E6:
 	STA entity_animation_frame,X
 
 	JSR Object_ApplyXVel	 ; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	LDA <entity_var4,X
 	BNE PRG004_A32D	 ; If Var4 <> 0, jump to PRG004_A32D
@@ -1109,7 +1109,7 @@ PRG004_A843:
 	INC <entity_var5,X	 ; Var5++
 
 	JSR Object_ApplyXVel	 ; Apply X Velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y Velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y Velocity
 
 	LDA <entity_var5,X
 	AND #$01
@@ -1565,7 +1565,7 @@ PRG004_AA62:
 	BEQ PRG004_AABF	 ; If Var5 = 0, jump to PRG004_AABF
 
 	JSR Object_ApplyXVel	 	; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 	JSR Object_WorldDetectN1	 ; Detect against world
 	JSR Object_HandleBumpUnderneath	 ; Handle getting bumped from underneath
 
@@ -1906,7 +1906,7 @@ PRG004_AC99:
 	INC <entity_lo_y_velocity,X
 
 PRG004_ACA3:
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 	JSR Object_ApplyXVel	 ; Apply X velocity
 	JSR Object_WorldDetect4	 ; Detect against world
 
@@ -2654,7 +2654,7 @@ PRG004_B011:
 	STA <entity_lo_y_velocity,X
 
 PRG004_B015:
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	JMP PRG004_B046		; Jump to PRG004_B046
 
@@ -2726,7 +2726,7 @@ PRG004_B05B:
 
 PRG004_B06E:
 	JSR Object_ApplyXVel	 ; Apply X Velocity
-	JMP Object_ApplyYVel_NoLimit	 ; Apply Y velocity and don't come back!
+	JMP entity_do_y_velocity_unbounded	 ; Apply Y velocity and don't come back!
 
 Paragoomba_SpawnMicroGoomba:
 	LDY #$05	 ; Searching special object slots 0 - 5
@@ -2770,7 +2770,7 @@ ObjNorm_JumpingCheepCheep:
 	INC <entity_var5,X	 ; Var5++
 
 	JSR Object_ApplyXVel	 	; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	; Apply Y velocity
 	JSR Object_WorldDetectN1	; Detect against world
 
 	INC <entity_lo_y_velocity,X	 ; YVel++
@@ -2868,7 +2868,7 @@ PRG004_B0FE:
 
 PRG004_B121:
 	JSR Object_ApplyXVel	 	; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	; Apply Y velocity
 
 	LDA entity_var1,X
 	BNE PRG004_B14A	 ; If Var1 <> 0, jump to PRG004_B14A
@@ -3327,7 +3327,7 @@ PRG004_B2C1:
 	STA entity_animation_frame,X
 
 	JSR Object_ApplyXVel	 ; Apply X velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	LDA entity_timer,X
 	BNE PRG004_B2FB	 ; If timer is not expired, jump to PRG004_B2FB
@@ -3387,7 +3387,7 @@ ObjNorm_FlyingRedTroopa:
 	AND #$01
 	STA entity_animation_frame,X
 
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	LDA entity_timer,X
 	BNE PRG004_B34B	 ; If timer not expired, jump to PRG004_B34B
@@ -3854,7 +3854,7 @@ PRG004_B4FB:
 	; Starting here, we begin the process of drawing the tip of the head,
 	; correcting the lower head's attribute, and drawing the feet...
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ Object_TroopHead_NoRev	; If troopa is not under reverse gravity, jump to Object_TroopHead_NoRev
 
 	; Reverse gravity must place head LOWER
@@ -3905,7 +3905,7 @@ PRG004_B520:
 	CMP #OBJ_PARATROOPAGREENHOP
 	BLT PRG004_B55D	 ; If this is not a paratroopa, jump to PRG004_B55D
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ Object_TroopWing_NoRev	; If paratroopa is not under reverse gravity, jump to Object_TroopWing_NoRev
 
 	; Reverse gravity must place wing LOWER
@@ -3959,7 +3959,7 @@ PRG004_B548:
 
 PRG004_B55D:
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ Object_TroopFeet_NoRev	; If troopa is not under reverse gravity, jump to Object_TroopFeet_NoRev
 
 	; Reverse gravity: Feet appear at -16 offset
@@ -4496,7 +4496,7 @@ PRG004_B7E6:
 	; Giant Piranha is not fully extended/retracted...
 
 	STA <entity_lo_y_velocity,X	 ; Set Y velocity as appropriate
-	JMP Object_ApplyYVel_NoLimit	 ; Apply Y velocity and don't come back!!
+	JMP entity_do_y_velocity_unbounded	 ; Apply Y velocity and don't come back!!
 
 GiantPiranha_Chomp:
 	LDA entity_timer,X
@@ -4773,7 +4773,7 @@ GroundTroop_DrawOffsetInY:
 PRG004_B938:
 	STA <var9		 ; var9 = $00 (non-mirrored sprite) or SPR_VFLIP (mirrored sprite), depending on entry
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ GroundTroop_DrawOffNoRev	; If this object is NOT under reverse gravity, jump to GroundTroop_DrawOffNoRev
 
 	; Reverse gravity; negate the offset!
@@ -4879,7 +4879,7 @@ PRG004_B9B8:
 
 	LDX <entity_index	 ; X = object slot index
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ TroopDraw_NoRev
 
 	; If gravity is reversed, must apply VFLIP to sprite attributes!
@@ -5498,7 +5498,7 @@ PRG004_BCB4:
 	RTS		 ; Return
 
 ChainChomp_MoveChain:
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 	STA <var1		 ; Store carry flag -> var1
 
 	JSR Object_ApplyXVel	; Apply X velocity

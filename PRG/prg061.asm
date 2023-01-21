@@ -12,7 +12,7 @@ Level_PrepareNewObjectAlt:
 	STA entity_flipped_animation,X
 	STA entity_animation_frame,X	
 	STA Objects_ColorCycle,X
-	STA Objects_ReverseGrav,X	; SB
+	STA entity_reverse_gravity,X	; SB
 	STA Objects_FrozenTimer,X	; SB
 	STA Objects_IsBehind,X		; SB
 	STA Objects_StompDisable,X	; SB
@@ -396,11 +396,11 @@ PRG000_CF49:
 
 	; SB: Match Player's gravity setting too
 	LDA Player_ReverseGrav
-	CMP Objects_ReverseGrav,X
+	CMP entity_reverse_gravity,X
 	BEQ ObjectHeld_GravMatch
 
 	; Match gravity
-	STA Objects_ReverseGrav,X
+	STA entity_reverse_gravity,X
 
 	; If gravities mismatch, vertically flip object!
 	LDA entity_flipped_animation,X

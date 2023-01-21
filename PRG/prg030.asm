@@ -2284,9 +2284,9 @@ ActSw_ReverseGrav:
 ;	BEQ ASRG_DeadEmpty	; If object is dead/empty, jump to ASRG_DeadEmpty
 
 	; Otherwise, reverse their gravity!
-;	LDA Objects_ReverseGrav,X
+;	LDA entity_reverse_gravity,X
 ;	EOR #1
-;	STA Objects_ReverseGrav,X
+;	STA entity_reverse_gravity,X
 
 ;ASRG_DeadEmpty:
 ;	DEX				; X--

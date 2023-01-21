@@ -2155,7 +2155,7 @@ ObjState_LAVADEATH  = 9 ; Fall into lava a die slowly
 	Objects_QSandCtr:	.ds 8	; $06EB-$06F2 When enemy has fallen into quicksand, increments until $90 which deletes it
 
 	Player_ReverseGrav:	.ds 1	; When set, Player reverse gravity (due to many, many dependencies, expecting exactly $01 to set reverse gravity)
-	Objects_ReverseGrav:	.ds 8	; $06F4-$06FB Object with reverse gravity (SB)
+	entity_reverse_gravity:	.ds 8	; $06F4-$06FB Object with reverse gravity (SB)
 
 	LevelJctBQ_Flag:	.ds 1	; Set to '1' while in a Big Question block area, locks horizontal scrolling
 	Level_JctBackupTileset:	.ds 1	; Level Junction tileset backup
@@ -2320,7 +2320,7 @@ ObjState_LAVADEATH  = 9 ; Fall into lava a die slowly
 				.ds 6	; $0758-$075E unused
 
 	; WARNING: The distance between Player/Objects_XVelFrac and Player/Objects_YVelFrac must be same as Player/entity_lo_x/YVel!
-	Object_YVelCarry:	.ds 1	; '1' when last Object Y Velocity fraction accumulation rolled over (SB: It's specific now)
+	entity_y_velocity_carry:	.ds 1	; '1' when last Object Y Velocity fraction accumulation rolled over (SB: It's specific now)
 	Player_YVelFrac:	.ds 1	; Y velocity fractional accumulator
 	Objects_YVelFrac:	.ds 8	; $0760-$0767 Other object's Y velocity fractional accumulator
 
@@ -3724,7 +3724,7 @@ PLAYER_PENGUIN_MAXYVEL	= -$20
 ; Applies only to objects following Object_Move's standard movements, but most write their own physics
 OBJECT_FALL		= $03
 OBJECT_FALLINWATER	= $01
-OBJECT_MAXFALL		= $40
+entity_min_vertical_velocity		= $40
 OBJECT_MAXFALLINWATER	= $10
 OBJECT_MAXWATERUPWARD	= -$18
 OBJECT_FALLRATE		= $03

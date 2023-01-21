@@ -1035,7 +1035,7 @@ PRG002_A30C:
 	LDA PRG002_A27B,Y	
 	STA <entity_lo_y_velocity,X	 ; Applies a staggering Y velocity
 
-	JMP Object_ApplyYVel	 ; Apply Y velocity and don't come back!
+	JMP entity_do_y_velocity	 ; Apply Y velocity and don't come back!
 
 GiantBlockCtl_DebrisXOff:	.byte $00, $10, $00, $10
 GiantBlockCtl_DebrisYOff:	.byte $00, $00, $10, $10
@@ -1661,7 +1661,7 @@ ObjNorm_HotfootShy:
 	STA Sound_QPlayer
 	
 HotFoot_NotInWater:
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	JSR entity_do_y_velocity	 ; Apply Y Velocity
 
 	; Hotfoot's gravity
 	INC <entity_lo_y_velocity,X
@@ -1920,7 +1920,7 @@ PRG002_A901:
 
 PRG002_A90E:
 	JSR Object_ApplyXVel	 ; Apply X velocity
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	JSR entity_do_y_velocity	 ; Apply Y Velocity
 	LDA #$01	 ; A = 1 (frame 1, chase!)
 
 PRG002_A916:
@@ -2421,7 +2421,7 @@ AlbaPlatformCont:
 	BNE PRG002_AA85	 ; If gameplay halted, jump to PRG002_AA85 (RTS)
 
 	JSR Object_ApplyXVel	 	; Apply object's X velocity
-	JSR Object_ApplyYVel	 	; Apply object's Y velocity
+	JSR entity_do_y_velocity	 	; Apply object's Y velocity
 	JMP Object_HitTestRespond	; Do hit test and respond, and don't come back!
 
 
@@ -2590,7 +2590,7 @@ ObjNorm_OscillatingV:
 	LDA <entity_lo_x_velocity,X
 	STA <entity_lo_y_velocity,X
 
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	JSR entity_do_y_velocity	 ; Apply Y Velocity
 
 	; Clear X velocity remainders
 	LDA #$00
@@ -2652,7 +2652,7 @@ PRG002_AB5E:
 	ADD Float_YAccel,Y
 	STA <entity_lo_y_velocity,X
 
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	JSR entity_do_y_velocity	 ; Apply Y Velocity
 
 	; 
 	LDA <entity_var5,X
@@ -2706,7 +2706,7 @@ ObjNorm_DesertBones:
 	LDA <Player_HaltGame
 	BNE PRG002_ABAA	 	; If gameplay halted, jump to PRG002_ABAA (RTS)
 
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	JSR entity_do_y_velocity	 ; Apply Y Velocity
 	JSR Object_ApplyXVel	 ; Apply X velocity
 	JSR PlayerPlatform_Collide	 ; Player collision with platform
 
@@ -2772,7 +2772,7 @@ ObjNorm_WoodenPlatform:
 	LDA <Player_HaltGame
 	BNE PRG002_ABAA	 	; If gameplay halted, jump to PRG002_ABAA (RTS)
 
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	JSR entity_do_y_velocity	 ; Apply Y Velocity
 	JSR Object_ApplyXVel	 ; Apply X velocity
 	JSR PlayerPlatform_Collide	 ; Player collision with platform
 
@@ -3000,7 +3000,7 @@ PRG002_AC9C:
 	STA <entity_lo_y_velocity,X
 
 PRG002_ACAB:
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	JSR entity_do_y_velocity	 ; Apply Y Velocity
 	JSR Object_ApplyXVel	 ; Apply X velocity
 	
 	LDA <player_lo_y_velocity
@@ -4024,7 +4024,7 @@ Rosalina_FloatYAccel:
 
 Rosalina_KeepGoing:
 	JSR Object_ApplyXVel
-	JSR Object_ApplyYVel
+	JSR entity_do_y_velocity
 	
 	; Jump to PRG002_B272 if not far enough in
 	LDA <entity_hi_x,X
@@ -5005,7 +5005,7 @@ PRG002_B897:
 
 PRG002_B8A0:
 	JSR Object_ApplyXVel	 ; Apply X velocity
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	JSR entity_do_y_velocity	 ; Apply Y Velocity
 	JSR Object_HitTestRespond	 ; Do collision test with Player and respond
 
 	LDA entity_animation_frame,X
@@ -5313,7 +5313,7 @@ PRG002_BA20:
 	STA entity_animation_frame,X
 
 	JSR Object_ApplyXVel	 ; Apply X velocity
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	JSR entity_do_y_velocity	 ; Apply Y Velocity
 	JSR Object_HandleBumpUnderneath	 ; Get killed if hit underneath by block
 
 	LDA <entity_var4,X
@@ -5678,7 +5678,7 @@ exit_flag_unactivated_hit_test:
 
 
 exit_flag_slide_down_pole:
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	JSR entity_do_y_velocity	 ; Apply Y Velocity
 
 	LDA <entity_collision_flags,X
 	PHA

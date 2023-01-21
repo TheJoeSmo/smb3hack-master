@@ -844,7 +844,7 @@ Object_HitGround:
 	JMP PRG000_C53D	 ; Jump to PRG000_C53D
 
 PRG000_C533:
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BNE Object_HitGround_Rev	; If object has reversed gravity, jump to Object_HitGround_Rev
 
 	LDA <entity_lo_y,X
@@ -908,7 +908,7 @@ PRG000_C559:
 	STA Object_SlopeHeight	; Clear Object's slope height
 	STA LRBounce_Vel	; Clear left/right bounce power
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ Objects_WDetect_NoRevSlopeH
 
 	; In reverse gravity, default Object_SlopeHeight to 15
@@ -1067,7 +1067,7 @@ PRG000_C5EC:
 	ADD <var16	 ; Add the tile-relative horizontal position (offset to pixel specific height on this slope)
 	TAY
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ Object_WorldDetect_SlopeNoRev	; If object is NOT under reverse gravity, jump to Object_WorldDetect_SlopeNoRev
 
 	; SB: Reverse gravity slope calculation
@@ -1171,7 +1171,7 @@ PRG000_C649:
 	; down in to the tile, it will not count as having hit the floor.
 
 	; If gravity is reversed, must use an inverted check!
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BNE Object_WorldDetect_FHChkRev
 
 	LDA <entity_lo_y,X
@@ -1202,7 +1202,7 @@ PRG000_C65D:
 
 	LDY #$00	 ; Y = 0
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ Object_WDetSlopeFix_NoRev
 
 	; Reverse gravity, reverse magnitude of slope correction
@@ -1262,7 +1262,7 @@ Object_SlopeFlat_Correct:
 	BEQ PRG000_C69C	 ; If object is being held, jump to PRG000_C69C (RTS)
 
 
-	LDY Objects_ReverseGrav,X
+	LDY entity_reverse_gravity,X
 	BNE Object_SlopeFlats_Rev	; If object has reversed gravity, jump to Object_SlopeFlats_Rev
 
 
@@ -1771,7 +1771,7 @@ Object_DetectTile_NoFixedFC:
 
 PRG000_C7D9:
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ Object_ODT_NoRev	; If object's gravity is not reversed, jump to Object_DetectTile_NoRev
 
 	; SB: Under reverse gravity, use reverse gravity Y offset
@@ -1931,7 +1931,7 @@ PRG000_C85C:
 
 	; Vertical level object detect tile
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ Object_ODTV_NoRev	; If object's gravity is not reversed, jump to Object_DetectTile_NoRev
 
 	; SB: Under reverse gravity, use reverse gravity Y offset
@@ -3428,7 +3428,7 @@ StandardLavaDeathInit:
 	LDA #-$18
 	STA <entity_lo_y_velocity,X
 
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	INC entity_var1, X
 
@@ -3569,7 +3569,7 @@ PRG000_D02E:
 	LDA #$04
 	STA <entity_lo_y_velocity,X
 
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 
 	; Set sprite priority 
 	LDA entity_flipped_animation,X
@@ -3629,7 +3629,7 @@ ObjState_Squashed:
 	JMP_THUNKA 61, ObjState_Squashed61
 
 Object_MaxFalls:
-	.byte OBJECT_MAXFALL, OBJECT_MAXFALLINWATER
+	.byte entity_min_vertical_velocity, OBJECT_MAXFALLINWATER
 
 	; Gravity of object 
 Object_Gravity:
@@ -3664,7 +3664,7 @@ PRG000_D0A9:
 
 	STA <entity_lo_x_velocity,X	 ; Undoes Object_ApplyXVel
 
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity without limit
+	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity without limit
 
 	; SB: Kicked SMB2 objects should ignore detecting world
 	LDA entity_state,X	
@@ -4076,7 +4076,7 @@ PRG000_D218:
 	; OR Player is sliding...
 
 	; SB: If Player and object gravities mismatch, you just can't stomp them, sorry!
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	EOR Player_ReverseGrav
 	BNE Jmp_HoldKickOrHurtPlayer
 
@@ -4125,7 +4125,7 @@ PRG000_D22E:
 	STY <var2		 ; -> var2 (height above object considered "stompable" range)
 
 ; Begin Here
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BNE ObjStomp_Rev	; If object gravity is reversed, jump to ObjStomp_Rev
 
 ; End Here
@@ -4410,7 +4410,7 @@ Object_SetShellState:
 	LDA #$ff
 	STA entity_timer_secondary,X
 
-	LDA Objects_ReverseGrav,X
+	LDA entity_reverse_gravity,X
 	BEQ Object_SetShell_NoRev
 
 	; SB: If object is under reverse gravity, set vertical flip on the object
@@ -6549,48 +6549,43 @@ Object_CalcCoarseYDiff
 	RTS		 ; Return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Object_ApplyYVel
-; Object_ApplyYVel_NoLimit
+; entity_do_y_velocity
+; entity_do_y_velocity_unbounded
 ;
 ; Adds the 4.4FP Y velocity to object and prevents object
-; from falling faster than OBJECT_MAXFALL (unless using
-; Object_ApplyYVel_NoLimit which does not enforce this)
+; from falling faster than entity_min_vertical_velocity (unless using
+; entity_do_y_velocity_unbounded which does not enforce this)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; $DCCD
-Object_ApplyYVel:
+entity_do_y_velocity:
+	; If moving upward or not too fast downward, do not change the velocity.
 	LDA <entity_lo_y_velocity,X	 
-	BMI Object_ApplyYVel_NoLimit	 ; If Object's Y Vel < 0 (moving upward), jump to Object_ApplyYVel_NoLimit
+	BMI entity_do_y_velocity_unbounded
+	CMP #entity_min_vertical_velocity	 
+	BLS entity_do_y_velocity_unbounded
+		; Enforce the minimum vertical velocity
+		LDA #entity_min_vertical_velocity	 
+		STA <entity_lo_y_velocity,X
 
-	CMP #OBJECT_MAXFALL	 
-	BLS Object_ApplyYVel_NoLimit	 ; If Object's Y Vel < OBJECT_MAXFALL, jump to Object_ApplyYVel_NoLimit
-
-	LDA #OBJECT_MAXFALL	 
-	STA <entity_lo_y_velocity,X	 ; Cap Y Velocity to OBJECT_MAXFALL
-
-; $DCD9
-Object_ApplyYVel_NoLimit:
+entity_do_y_velocity_unbounded:
 	TXA		 
 	ADD #(entity_lo_y_velocity - entity_lo_x_velocity)
 	TAX		 ; Offset to Y velocities
 
 	LDY #(entity_lo_y_velocity - entity_lo_x_velocity)	; SB: For offsetting Object_[X/Y]VelCarry
 
-	LDA Objects_ReverseGrav - (entity_lo_y_velocity - entity_lo_x_velocity),X
-	BEQ Object_ApplyYVel_NoRev	; If this object is not under reverse gravity, jump to Object_ApplyYVel_NoRev
+	LDA entity_reverse_gravity - (entity_lo_y_velocity - entity_lo_x_velocity),X
+	BEQ entity_do_y_velocity_standard	; If this object is not under reverse gravity, jump to entity_do_y_velocity_standard
 
-	; Object has reversed gravity...
-	JSR Object_AddVelFrac_Rev	 ; Apply the reversed velocity to the object's position
-	JMP Object_ApplyYVel_Done	; Jump to Object_ApplyYVel_Done
+entity_do_y_velocity_reversed:
+		JSR entity_calculate_velocity_reversed	 ; Apply the reversed velocity to the object's position
+		LDX <entity_index
+		RTS
 
-Object_ApplyYVel_NoRev:
-	JSR Object_AddVelFrac	 ; Apply the velocity to the object's position
-	STA Object_YVelCarry	 ; Set to '1' if fractional part rolled over
-
-Object_ApplyYVel_Done:
-	LDX <entity_index	 ; Restore X as Object slot index
-
-	RTS		 ; Return
-
+entity_do_y_velocity_standard:
+	JSR entity_calculate_velocity	 ; Apply the velocity to the object's position
+	STA entity_y_velocity_carry	 ; Set to '1' if fractional part rolled over
+	LDX <entity_index
+	RTS
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -6602,7 +6597,7 @@ Object_ApplyYVel_Done:
 ; $DCE4
 Object_ApplyXVel:
 	LDY #0	; SB: For offsetting Object_[X/Y]VelCarry
-	JSR Object_AddVelFrac
+	JSR entity_calculate_velocity
 	STA Object_XVelCarry	 ; Set to '1' if fractional part rolled over
 
 	LDY Level_7Vertical
@@ -6626,24 +6621,24 @@ PRG000_DCFA:
 	RTS		 ; Return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Object_AddVelFrac
+; entity_calculate_velocity
 ;
 ; Adds the 4.4FP velocity to X or Y of object
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Object_AddVelFrac_Rev:	; SB: For reverse gravity
+entity_calculate_velocity_reversed:	; SB: For reverse gravity
 	LDA <entity_lo_x_velocity,X	; Get (Y) Velocity
 	PHA			; Save it
 	JSR Negate		; Negate 
 	STA <entity_lo_x_velocity,X	; Set reversed (Y) Velocity
 
-	JSR Object_AddVelFrac	; Add velocity in reverse
-	STA Object_YVelCarry	; Set to '1' if fractional part rolled over (SB: Assuming 'Y' because this is reverse gravity, reverse on Y axis)
+	JSR entity_calculate_velocity	; Add velocity in reverse
+	STA entity_y_velocity_carry	; Set to '1' if fractional part rolled over (SB: Assuming 'Y' because this is reverse gravity, reverse on Y axis)
 
 	PLA			; Restore prior velocity
 	STA <entity_lo_x_velocity,X	; Get (Y) Velocity
 	RTS
 
-Object_AddVelFrac:
+entity_calculate_velocity:
 	LDA <entity_lo_x_velocity,X	; Get Velocity
 	ASL A		 
 	ASL A		 
