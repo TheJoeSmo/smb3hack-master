@@ -5531,6 +5531,13 @@ ObjInit_EndLevelCard:
 	SBC #0
 	STA <entity_hi_x,X
 
+	LDA <entity_lo_y,X
+	ADD #8
+	STA <entity_lo_y,X
+	LDA <entity_hi_y,X
+	ADC #0
+	STA <entity_hi_y,X
+
 OIELC_DDCometNotYet:
 	RTS
 
@@ -5623,13 +5630,10 @@ ObjNorm_EndLevelCard:
 	LDA <entity_collision_flags,X	 ; Mis-used as tracking for the current internal state
 	JSR DynJump
 	.word exit_flag_unactivated			; 0: Wait for the player to touch the flag
-	.word $0000
-	.word $0000
-	.word $0000
-	.word exit_flag_slide_down_pole		; 4: Player slides down the flag pole
-	.word exit_flag_player_run_off		; 5: Player runs off to the right
-	.word exit_flag_do_message			; 6: Draws the course clear message
-	.word exit_flag_exit_to_world		; 7: Exit to the overworld
+	.word exit_flag_slide_down_pole		; 1: Player slides down the flag pole
+	.word exit_flag_player_run_off		; 2: Player runs off to the right
+	.word exit_flag_do_message			; 3: Draws the course clear message
+	.word exit_flag_exit_to_world		; 4: Exit to the overworld
 
 
 exit_flag_unactivated:
@@ -5763,7 +5767,7 @@ exit_flag_player_hit_floor:
 	INC <entity_collision_flags,X
 
 	; Set how long the player will walk
-	LDA #$E0
+	LDA #$C0
 	STA entity_timer,X
 
 	; Release the player and set direction to the right
@@ -5797,7 +5801,7 @@ exit_flag_player_run_off:
 
 		exit_flag_reset_timer:
 		; Set how long the player will walk
-		LDA #$E0
+		LDA #$C0
 		STA entity_timer,X
 		BNE exit_flag_skip_timer_checks
 
@@ -5978,9 +5982,8 @@ PRG002_BF4B:
 
 	LDX <entity_index		 ; X = object slot index
 
-	; Jump to internal state 4 (Regular get card, no fanfare)
-	LDA #$04
-	STA <entity_collision_flags,X
+	; Go to next state
+	INC <entity_collision_flags,X
 
 	; Stop music
 	LDA #MUS1_STOPMUSIC
