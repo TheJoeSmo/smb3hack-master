@@ -877,12 +877,12 @@ Object_HitGround_Rev:
 ; Only detect blocks that are inside itself.
 entity_static_detection_inside:
 	LDA #$ff
-	BNE entity_static_collision_detection
+	BNE entity_static_detection
 
 ; Detect blocks that are up to eight pixels away.
 entity_static_detection_8_pixels:
 	LDA #$08
-	BNE entity_static_collision_detection
+	BNE entity_static_detection
 
 ; Detect blocks that are up to four pixels away.
 entity_static_detection_4_pixels:
