@@ -3,22 +3,12 @@
 
 	.byte OBJ_ACTIONSWITCH, $00, $0B
 	.byte OBJ_ENDLEVELCARD, $09, $10
+	.byte OBJ_PINATA, $13, $0A
+	.byte OBJ_PINATA, $23, $08
 	.byte OBJ_GREENTROOPA, $25, $11
 	.byte OBJ_REDTROOPA, $45, $0E
-	.byte OBJ_GREENTROOPA, $67, $18
-	.byte OBJ_GOOMBA, $6D, $18
-	.byte OBJ_GOOMBA, $6F, $18
-	.byte OBJ_GOOMBA, $71, $18
-	.byte OBJ_GREENTROOPA, $83, $18
-	.byte OBJ_GREENTROOPA, $85, $18
-	.byte OBJ_GREENTROOPA, $87, $18
-	.byte OBJ_GREENTROOPA, $8E, $18
-	.byte OBJ_GREENTROOPA, $90, $18
-	.byte OBJ_GREENTROOPA, $98, $18
-	.byte OBJ_GREENTROOPA, $9A, $18
-	.byte OBJ_GREENTROOPA, $9C, $18
-	.byte OBJ_GREENPIRANHA, $9E, $16
-	.byte OBJ_GOOMBA, $A4, $18
-	.byte OBJ_GOOMBA, $A6, $18
-	.byte OBJ_GOOMBA, $A8, $18
+	.byte OBJ_PINATA, $54, $0A
+	.byte OBJ_PINATA, $62, $0A
+	.byte OBJ_PINATA, $69, $0C
+	.byte OBJ_PINATA, $7B, $0C
 	.byte $FF
