@@ -448,7 +448,7 @@ SObjFence_WaitForPlayer:
 	LDA Player_IsClimbing
 	BEQ FenceCtl_NotTouching	; If Player is not climbing (on fence), jump to FenceCtl_NotTouching
 
-	BIT <Pad_Input
+	BIT <buttons_clicked
 	BVC FenceCtl_NotTouching	; If Player is not pushing 'B', jump to FenceCtl_NotTouching
 	
 	JSR SObj_CalcCoarseXDiff
@@ -1462,7 +1462,7 @@ PRG043_B5DC:
 	INC SpecialObj_Data,X	 ; SpecialObj_Data++ (Increase "stickiness", up to 5)
 
 PRG043_B5F6:
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	AND #$ff	 ; This probably was intended to be a specific button rather than "everything"
 	BEQ PRG043_B617	 ; If Player is not pressing anything, jump to PRG043_B617
 

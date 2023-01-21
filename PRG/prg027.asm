@@ -85,8 +85,8 @@ EndWorldSeq_VictoryMusNotDone:
 	BEQ EndWorldSeq_NotEnding
 
 	; Ending only: Hit A or START to reset
-	LDA <Pad_Input
-	AND #(PAD_A | PAD_START)
+	LDA <buttons_clicked
+	AND #(button_a_mask | button_start_mask)
 	BEQ EndWorldSeq_NotEnding
 	
 	LDA #MUS1_STOPMUSIC
@@ -224,7 +224,7 @@ PrincessCopy_NotW7:
 	JSR Letter_PaletteKludge	 ; Not sure what this is for; sets up the graphics buffer to patch a single palette color?
 
 PRG027_A169:
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	BPL PRG027_A174		; If Player is NOT pressing A, jump to PRG027_A174
 
 	JSR_THUNKC 10, Map_CompleteWorld

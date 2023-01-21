@@ -3759,8 +3759,8 @@ PRG005_B175:
 	STA <Player_YVel
 	STA <Player_InAir
 
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask)
 	BNE PRG005_B1A7	 ; If Player is not pressing left or right, jump to PRG005_B1A7 (RTS)
 
 	JSR Fish_FixedYIfAppro	 ; ?? Also a strange thing to call, would align parabeetles with the vertical scroll in a raster-effect
@@ -4008,8 +4008,8 @@ PRG005_B2C6:
 	RTS
 
 PRG005_B2E2:
-	LDA <Pad_Holding		  
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held		  
+	AND #(button_left_mask | button_right_mask)
 	BNE PRG005_B2F4
 
 	LDA <Player_XVel
@@ -4613,8 +4613,8 @@ PRG005_B6BA:
 	JSR Level_ObjCalcXDiffs
 	INY	; Makes this value agree with Player pressing left/right on pad
 
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask)
 	STA <var1	 ; var1 = non-zero if Player is pressing left or right
 
 	LDA #$00	; Halt Player if he presses direction "into" the Big ? Block

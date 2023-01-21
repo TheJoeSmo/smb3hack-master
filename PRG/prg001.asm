@@ -844,8 +844,8 @@ PRG001_A5EE:
 	STA <Objects_YVel,X	 ; Set Y Velocity 
 	STA <Player_YVel	 ; ... of Player too
 
-	LDA <Pad_Input
-	AND #PAD_A
+	LDA <buttons_clicked
+	AND #button_a_mask
 	BEQ PRG001_A5FD	 ; If Player is not pressing A, jump to PRG001_A5FD
 
 	; Otherwise, Timer 2 = 11
@@ -2318,8 +2318,8 @@ ObjNorm_PDoor:
 	LDA <Player_InAir
 	BNE PRG001_ADBB	 ; If Player is mid air, jump to PRG001_ADBB
 
-	LDA <Pad_Holding
-	AND #PAD_UP
+	LDA <buttons_held
+	AND #button_up_mask
 	BEQ PRG001_ADBB	 ; If Player is NOT pressing up, jump to PRG001_ADBB
 
 	; If Player is NOT within range of the door X-wise, jump to PRG001_ADBB
@@ -4573,8 +4573,8 @@ CoinSnake_NoChange:
 	TAY
 
 	; Queue a direction change? (Left/right only)
-	LDA <Pad_Input
-	AND #(PAD_RIGHT | PAD_LEFT)
+	LDA <buttons_clicked
+	AND #(button_right_mask | button_left_mask)
 	BEQ CoinSnakeV_NoLRChange	; If Player did not press left/right, jump to CoinSnakeV_NoLRChange
 
 	; Player pressed left/right...
@@ -4616,8 +4616,8 @@ CoinSnake_Horz:
 	TAY
 
 	; Queue a direction change? (Left/right only)
-	LDA <Pad_Input
-	AND #(PAD_DOWN | PAD_UP)
+	LDA <buttons_clicked
+	AND #(button_down_mask | button_up_mask)
 	BEQ CoinSnakeV_NoUDChange	; If Player did not press down/up, jump to CoinSnakeV_NoUDChange
 
 	; Player pressed down/up...

@@ -288,7 +288,7 @@ PRG024_A260:
 
 
 TAndK_WaitPlayerButtonA:
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	BPL PRG024_A282	 ; If Player is not pushing 'A', jump to PRG024_A282 (RTS)
 
 	LDA Map_Objects_IDs
@@ -1491,7 +1491,7 @@ Title_3GlowColors:
 IntroChar_X:		.byte $C0, $80, $40
 IntroChar_SprOff:	.byte $00, $18, $30
 
-Title_DebugCodePattern:	.byte PAD_UP, PAD_UP, PAD_DOWN, PAD_DOWN, PAD_LEFT, PAD_RIGHT, PAD_LEFT, PAD_RIGHT, PAD_B, PAD_A, $FF
+Title_DebugCodePattern:	.byte button_up_mask, button_up_mask, button_down_mask, button_down_mask, button_left_mask, button_right_mask, button_left_mask, button_right_mask, button_b_mask, button_a_mask, $FF
 
 Title_CommonHeroWalk:
 	JSR Title_DrawHeroWalk
@@ -1503,8 +1503,8 @@ Title_CommonHeroWalk:
 Title_WaitStart:
 	JSR Title_CommonHeroWalk
 	
-	LDA <Pad_Input
-	AND #PAD_START
+	LDA <buttons_clicked
+	AND #button_start_mask
 	BEQ TitleWaitStart_NotHit	 	; If Player is not pressing START, jump to TitleWaitStart_NotHit
 
 	INC <Title_State ; Next title state...
@@ -1512,7 +1512,7 @@ Title_WaitStart:
 TitleWaitStart_NotHit:
 	
 	; Debug code...
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	BEQ Title_CheatEntered
 	
 	LDY Title_CheatIndex
@@ -1520,7 +1520,7 @@ TitleWaitStart_NotHit:
 	CMP #$FF
 	BEQ Title_CheatEntered	; If cheat already entered, jump to Title_CheatEntered
 	
-	CMP <Pad_Input
+	CMP <buttons_clicked
 	BEQ Title_CheatNext		; If Player hit exactly the right button, jump to Title_CheatNext
 	
 	; Wrong button!
@@ -1767,8 +1767,8 @@ Title_DoSaveMenu:
 
 	JSR Title_CommonHeroWalk
 	
-	LDA <Pad_Input
-	AND #(PAD_UP | PAD_DOWN)
+	LDA <buttons_clicked
+	AND #(button_up_mask | button_down_mask)
 	BEQ TDSM_NotUpDown
 	
 	LSR A
@@ -1801,14 +1801,14 @@ TDSM_NotUpDown:
 
 	; Counter not running...
 
-	LDA <Pad_Input
-	AND #PAD_START
+	LDA <buttons_clicked
+	AND #button_start_mask
 	BEQ TitleDoSaveMenu_NotHit	 	; If Player is not pressing START, jump to TitleWaitStart_NotHit
 
 	; If holding A+B, this is an erase operation!
-	LDA <Pad_Holding
-	AND #(PAD_A | PAD_B)
-	CMP #(PAD_A | PAD_B)
+	LDA <buttons_held
+	AND #(button_a_mask | button_b_mask)
+	CMP #(button_a_mask | button_b_mask)
 	BEQ TDSM_ClearSave
 
 	LDA #SND_LEVELCOIN	 
@@ -1830,8 +1830,8 @@ TitleWaitStart_Cnt:
 	CMP #$80
 	BNE Title_NormalStart
 
-	LDA <Pad_Holding
-	AND #PAD_A
+	LDA <buttons_held
+	AND #button_a_mask
 	BEQ Title_NormalStart
 
 	; Init debug menu!
@@ -2037,8 +2037,8 @@ Title_ConfigMenu:
 	LDA <var2
 	BNE PRG024_AD9C
 
-	;LDA <Pad_Input
-	;AND #PAD_START
+	;LDA <buttons_clicked
+	;AND #button_start_mask
 	;BEQ PRG024_AD9C	 ; If Player is NOT pressing START, jump to PRG024_AD9C
 
 	; SB: Stop music
@@ -2084,7 +2084,7 @@ PRG024_AD7F:
 PRG024_AD9C:
 
 	LDA <Controller2Press
-	AND #PAD_START
+	AND #button_start_mask
 	BEQ ConfigMenu_DrawCursors	; If Player 2 hasn't hit start, jump to ConfigMenu_DrawCursors
 
 	LDA Total_Players
@@ -2172,7 +2172,7 @@ ConfigMenu_PlayerNoSelect:
 	BNE ConfigMenu_NoSelChange	; Jump (technically always) to ConfigMenu_NoSelChange
 	
 Title_ConfigMenu_NotA:
-	AND #(PAD_LEFT | PAD_RIGHT)
+	AND #(button_left_mask | button_right_mask)
 	BEQ ConfigMenu_NoSelChange
 
 	TAX		; X = 1 if Right, 2 if Left
@@ -3404,11 +3404,11 @@ Title_DoDebugMenu:
 	LDA #$08
 	STA Sprite_RAM+$03
 
-	LDA <Pad_Input
-	AND #(PAD_UP | PAD_DOWN)
+	LDA <buttons_clicked
+	AND #(button_up_mask | button_down_mask)
 	BEQ DebugMenu_NoSelChange
 
-	; PAD_UP would equate to 8, so...
+	; button_up_mask would equate to 8, so...
 	LSR A
 	LSR A
 	LSR A	; Now 0 (down) or 1 (up)
@@ -3593,23 +3593,23 @@ DSPV_None:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 DebugMenu_DoSoundTest:
-	LDA <Pad_Input
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_clicked
+	AND #(button_left_mask | button_right_mask)
 	BEQ DMDST_NotLR
 
 	JMP DMDST_LR
 
 DMDST_NotLR:
-	LDA <Pad_Input
-	AND #PAD_A
+	LDA <buttons_clicked
+	AND #button_a_mask
 	BEQ DMDST_NotSkip10
 
 	JMP DMDST_Skip10
 
 DMDST_NotSkip10:
 
-	LDA <Pad_Input
-	AND #PAD_START
+	LDA <buttons_clicked
+	AND #button_start_mask
 	BEQ DMDST_NotPlay
 	
 	; If the Hurry Up song is playing, nothing we do here has effect ultimately
@@ -3633,8 +3633,8 @@ DMDST_CantSlowDown:
 
 DMDST_NotPlay:
 
-	LDA <Pad_Input
-	AND #PAD_B
+	LDA <buttons_clicked
+	AND #button_b_mask
 	BEQ DMDST_NotHurryUp
 
 	LDA SndCur_Music2
@@ -3662,8 +3662,8 @@ DMDST_LowOK:
 
 DMDST_NotHurryUp:
 
-	LDA <Pad_Input
-	AND #PAD_SELECT
+	LDA <buttons_clicked
+	AND #button_select_mask
 	BEQ DMDST_NotInvert
 
 	LDA Music_InvertEn
@@ -3803,8 +3803,8 @@ DMDGS_GetStarLevels_Offsets:
 	.byte 0, 6, 12, 18, 24, 30
 
 DebugMenu_DoGetStar:
-	LDA <Pad_Input
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_clicked
+	AND #(button_left_mask | button_right_mask)
 	BEQ DMDGS_NotLR
 
 	LSR A	; A = 0 (right) or 1 (left)
@@ -3874,8 +3874,8 @@ DMDGS_NotLR:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 DebugMenu_DoCompleteWorld:
-	LDA <Pad_Input
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_clicked
+	AND #(button_left_mask | button_right_mask)
 	BEQ DMDCW_NotLR
 
 	LSR A	; A = 0 (right) or 1 (left)
@@ -3921,8 +3921,8 @@ DMDCW_NotLR:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 DebugMenu_DoWorldEnd:
-	LDA <Pad_Input
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_clicked
+	AND #(button_left_mask | button_right_mask)
 	BEQ DMDWE_NotLR
 
 	LSR A	; A = 0 (right) or 1 (left)
@@ -3963,8 +3963,8 @@ DMDWE_NoZeroAdj:
 	JSR Debug_PrintChar
 
 DMDWE_NotLR:
-	LDA <Pad_Input
-	AND #PAD_START
+	LDA <buttons_clicked
+	AND #button_start_mask
 	BEQ DMDWE_NoStart
 
 	LDX #0
@@ -4002,8 +4002,8 @@ DMDWE_NoStart:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 DebugMenu_DoEnding:
-	LDA <Pad_Input
-	AND #PAD_START
+	LDA <buttons_clicked
+	AND #button_start_mask
 	BEQ DMDE_NoStart
 	
 	JSR Debug_GetStarCoins
@@ -4028,8 +4028,8 @@ DMDE_NoStart:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 DebugMenu_DoEnding2:
-	LDA <Pad_Input
-	AND #PAD_START
+	LDA <buttons_clicked
+	AND #button_start_mask
 	BEQ DMDE2_NoStart
 	
 	JSR Debug_GetStarCoins
@@ -4055,8 +4055,8 @@ DMDE2_NoStart:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 DebugMenu_Start:
-	LDA <Pad_Input
-	AND #PAD_START
+	LDA <buttons_clicked
+	AND #button_start_mask
 	BEQ DMS_NoStart
 	
 	LDA #1
@@ -4336,7 +4336,7 @@ EndingWZ_PartII:
 	; Timer expired...
 	LDA Controller1Press
 	ORA Controller2Press
-	AND #(PAD_A | PAD_START)
+	AND #(button_a_mask | button_start_mask)
 	BEQ Bowser_NotLandedYet
 	
 	LDA #1

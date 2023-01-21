@@ -826,25 +826,25 @@ PRG008_A6D2:
 	; Remove horizontal velocity and cancel controller inputs
 	LDA #$00	
 	STA <Player_XVel
-	STA <Pad_Holding
-	STA <Pad_Input	
+	STA <buttons_held
+	STA <buttons_clicked	
 
 PRG008_A6DA:
 	LDA Player_Slide
 	BEQ PRG008_A6E5	 	; If Player is NOT sliding down slope, jump to PRG008_A6E5
 
-	LDA <Pad_Input
-	AND #~PAD_B
-	STA <Pad_Input		; Otherwise, disable 'B' button
+	LDA <buttons_clicked
+	AND #~button_b_mask
+	STA <buttons_clicked		; Otherwise, disable 'B' button
 
 PRG008_A6E5:
 	LDA Level_Objects+1
 	;CMP #OBJ_TOADANDKING
 	;BNE PRG008_A6F2	 	; If first object is not "Toad and the King" (i.e. we're in the end of world castle), jump to PRG008_A6F2
 
-	;LDA <Pad_Holding
-	;AND #~(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
-	;STA <Pad_Holding	; Otherwise, disable all directional inputs
+	;LDA <buttons_held
+	;AND #~(button_left_mask | button_right_mask | button_up_mask | button_down_mask)
+	;STA <buttons_held	; Otherwise, disable all directional inputs
 
 ;PRG008_A6F2:
 	LDY <Player_Suit
@@ -887,9 +887,9 @@ PRG008_A71C:
 	BNE PRG008_A736	 	; If Player has a slide magnitude, jump to PRG008_A736
 
 PRG008_A72B:
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
-	CMP #PAD_DOWN
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask | button_up_mask | button_down_mask)
+	CMP #button_down_mask
 	BNE PRG008_A736	 	; If Player is not just holding down, jump to PRG008_A736
 
 PRG008_A733:
@@ -978,10 +978,10 @@ PRG008_A77E:
 
 	; Stop Player horizontally, disable controls
 	STA <Player_XVel
-	STA <Pad_Input
+	STA <buttons_clicked
 
-	;AND #~PAD_A
-	;STA <Pad_Input	; ?? it's still zero?
+	;AND #~button_a_mask
+	;STA <buttons_clicked	; ?? it's still zero?
 
 	; Player_LowClearance = 1 (Player is in a "low clearance" situation!)
 	LDA #$01
@@ -1094,19 +1094,19 @@ PRG008_A7EA:
 PRG008_A7F1:
 	STY <Player_YVel ; Update Player_YVel
 
-	LDA <Pad_Input
-	AND #~PAD_A
-	STA <Pad_Input	 ; Strip out 'A' button press
+	LDA <buttons_clicked
+	AND #~button_a_mask
+	STA <buttons_clicked	 ; Strip out 'A' button press
 
-	LDA <Pad_Holding
-	TAY		 ; Y = Pad_Holding
+	LDA <buttons_held
+	TAY		 ; Y = buttons_held
 
-	AND #~PAD_UP
-	STA <Pad_Holding ; Strip out 'Up'
+	AND #~button_up_mask
+	STA <buttons_held ; Strip out 'Up'
 
-	TYA		 ; A = original Pad_Holding
-	AND #(PAD_UP | PAD_A)
-	CMP #(PAD_UP | PAD_A)
+	TYA		 ; A = original buttons_held
+	AND #(button_up_mask | button_a_mask)
+	CMP #(button_up_mask | button_a_mask)
 	BNE PRG008_A827	 ; If Player is not pressing UP + A, jump to PRG008_A827
 
 	; Player wants to exit water!
@@ -1181,8 +1181,8 @@ PRG008_A83F:
 	CMP #MAPOBJ_PURPLECOMET
 	BEQ PRG008_A86C	 ; If Purple Comet is active, jump to PRG008_A86C
 
-	LDA <Pad_Input
-	AND #PAD_UP
+	LDA <buttons_clicked
+	AND #button_up_mask
 	BEQ PRG008_A86C	 ; If Player is not pressing up in front of a door, jump to PRG008_A86C
 
 	LDA <Player_InAir
@@ -1234,14 +1234,14 @@ PRG008_A86C:
 	LDA Player_IsClimbing
 	BNE PRG008_A898	 ; If climbing flag is set, jump to PRG008_A898
 
-	LDA <Pad_Holding
-	AND #(PAD_UP | PAD_DOWN)
+	LDA <buttons_held
+	AND #(button_up_mask | button_down_mask)
 	BEQ PRG008_A890	 ; If Player is not pressing up or down, jump to PRG008_A890
 
 	LDY <Player_InAir
 	BNE PRG008_A898	 ; If Player is in the air, jump to PRG008_A898
 
-	AND #PAD_UP
+	AND #button_up_mask
 	BNE PRG008_A898	 ; If Player is pressing up, jump to PRG008_A898
 
 PRG008_A890:
@@ -1274,13 +1274,13 @@ Player_CJUF_NotSet:
 
 	LDY #$10 	; Y = $10 (will be Y velocity down if Player is pressing down)
 
-	LDA <Pad_Holding
-	AND #(PAD_UP | PAD_DOWN)
+	LDA <buttons_held
+	AND #(button_up_mask | button_down_mask)
 	BEQ PRG008_A8CA	 ; If Player is not pressing up or down, jump to PRG008_A8CA
 
 	; Player is pressing UP or DOWN...
 
-	AND #PAD_UP
+	AND #button_up_mask
 	BEQ PRG008_A8C8	 ; If Player is NOT pressing UP, jump to PRG008_A8C8
 
 	; Player is pressing UP...
@@ -1312,11 +1312,11 @@ PRG008_A8C8:
 PRG008_A8CA:
 	LDY #$10	 ; Y = $10 (rightward X velocity)
 
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask)
 	BEQ PRG008_A8DA	 ; If Player is NOT pressing LEFT or RIGHT, jump to PRG008_A8DA
 
-	AND #PAD_LEFT
+	AND #button_left_mask
 	BEQ PRG008_A8D8	 ; If Player is NOT pressing LEFT, jump to PRG008_A8D8
 
 	LDY #-$10	 ; Y = -$10 (leftward X velocity)
@@ -1330,7 +1330,7 @@ PRG008_A8DA:
 
 	; Player is climbing...
 	
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	BPL PlayerClimb_NotJumping	; If Player is not pressing 'A' while climbing, jump to PlayerClimb_NotJumping
 	
 	; Clear Player_IsClimbing and allow Player to jump!
@@ -1346,8 +1346,8 @@ PlayerClimb_NotJumping:
 	LDA <Player_InAir
 	BNE PRG008_A8EC	 ; If Player is in air, jump to PRG008_A8EC
 
-	LDA <Pad_Holding
-	AND #(PAD_UP | PAD_DOWN)
+	LDA <buttons_held
+	AND #(button_up_mask | button_down_mask)
 	BNE PRG008_A8EC	 ; If Player is pressing UP or DOWN, jump to PRG008_A8EC
 
 	STA Player_IsClimbing	 ; Set climbing flag
@@ -1491,7 +1491,7 @@ PRG008_A956:
 
 	LDY Player_Current
 	LDA Controller1,Y
-	AND #PAD_SELECT
+	AND #button_select_mask
 	BEQ PUM_NoFreeMove
 	
 	JSR_THUNKC 30, Debug_FreeMovement
@@ -1651,8 +1651,8 @@ Swim_Penguin:
 	BEQ Swim_Penguin_Normal
 
 	; Force Player to swim down!
-	LDA #(PAD_DOWN | PAD_A)
-	STA <Pad_Holding
+	LDA #(button_down_mask | button_a_mask)
+	STA <buttons_held
 	BNE Player_EndLevel_SwimForce
 
 Swim_Penguin_Normal:
@@ -1662,8 +1662,8 @@ Swim_Penguin_Normal:
 	LDX #$ff	 ; X = $FF
 
 Player_EndLevel_SwimForce:
-	LDA <Pad_Holding
-	AND #(PAD_UP | PAD_DOWN)
+	LDA <buttons_held
+	AND #(button_up_mask | button_down_mask)
 	BEQ PRG008_AA61	 ; If Player is NOT pressing up/down, jump to PRG008_AA61
 
 	; 
@@ -1683,7 +1683,7 @@ Player_EndLevel_SwimForce:
 	LDA #$00	 ; A = 0
 
 PRG008_AA4D:
-	LDY <Pad_Holding
+	LDY <buttons_held
 	BPL PRG008_AA52	 ; If Player is not pressing 'A', jump to PRG008_AA52
 
 	ASL A		 ; Double vertical speed
@@ -1717,8 +1717,8 @@ PRG008_AA6C:
 	STY <Player_YVel ; Update Y Velocity
 
 PRG008_AA6E:
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask)
 	BEQ PRG008_AA84	 ; If Player is not pressing left or right, jump to PRG008_AA84
 
 	; Player is pressing left/right...
@@ -1727,7 +1727,7 @@ PRG008_AA6E:
 	TAY
 	LDA Penguin_Velocity,Y	; Get base penguin velocity
 
-	LDY <Pad_Holding
+	LDY <buttons_held
 	BPL PRG008_AA7E	 ; If Player is not pressing 'A', jump to PRG008_AA7E
 
 	ASL A		 ; Double horizontal velocity
@@ -1771,7 +1771,7 @@ PRG008_AA9C:
 
 	LDY #$00	 ; Y = 0
 
-	BIT <Pad_Holding
+	BIT <buttons_held
 	BMI PRG008_AAAB	 ; If Player is holding 'A', jump to PRG008_AAAB
 
 	LSR A		 ; Otherwise, reduce velocity adjustment
@@ -1846,7 +1846,7 @@ Player_GroundHControl:
 
 	LDY #10	 ; Y = 10 (Player NOT holding B)
 
-	BIT <Pad_Holding
+	BIT <buttons_held
 	BVC PRG008_AB5B	 ; If Player is NOT holding 'B', jump to PRG008_AB5B
 
 	LDY #1	 ; Y = 1 (Player holding B)
@@ -1867,7 +1867,7 @@ PRG008_AB5B:
 PRG008_AB62:
 	LDY #PLAYER_TOPWALKSPEED
 
-	BIT <Pad_Holding
+	BIT <buttons_held
 	BVC PRG008_AB83	; If Player is NOT holding 'B', jump to PRG008_AB83
 
 	; Player is holding B...
@@ -1919,7 +1919,7 @@ PRG008_AB98:
 	TAY		 ; Y = Player_Suit << 3
 
 PRG008_AB9E:
-	BIT <Pad_Holding
+	BIT <buttons_held
 	BVC PRG008_ABA6	 ; If Player is NOT pressing 'B', jump to PRG008_ABA6
 
 	; Otherwise...
@@ -1929,8 +1929,8 @@ PRG008_AB9E:
 	INY	; Y += 4 (offset 4 inside Player_XAccel* tables)
 
 PRG008_ABA6:
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask)
 	BNE PRG008_ABB8	 ; If Player is pressing LEFT or RIGHT, jump to PRG008_ABB8
 
 	; Player not pressing LEFT/RIGHT...
@@ -1974,8 +1974,8 @@ PRG008_ABCD:
 	; less than the specified maximum, clear if over the max
 
 
-	LDA <Pad_Holding
-	AND #PAD_RIGHT
+	LDA <buttons_held
+	AND #button_right_mask
 	BNE PRG008_ABEB	 ; If Player is holding RIGHT, jump to PRG008_ABEB (moving rightward code)
 
 PRG008_ABD3:
@@ -2032,8 +2032,8 @@ Player_UnderwaterHControl:
 	LDA <Player_InAir
 	BEQ PRG008_AC14	 ; If Player is not in the air, jump to PRG008_AC14
 
-	LDA #Pad_Input
-	STA <var14	 ; var14 = actual Pad_Input (as compared to what happened above)
+	LDA #buttons_clicked
+	STA <var14	 ; var14 = actual buttons_clicked (as compared to what happened above)
 
 	INY
 	INY
@@ -2092,8 +2092,8 @@ Player_JumpFlyFlutter:
 
 PRG008_AC30:
 
-	LDA <Pad_Input
-	AND #PAD_A
+	LDA <buttons_clicked
+	AND #button_a_mask
 	STA <var1	 ; var1 = $80 if Player is pressing 'A', otherwise 0
 	BEQ PRG008_AC9E	 ; If Player is NOT pressing 'A', jump to PRG008_AC9E
 
@@ -2213,7 +2213,7 @@ Player_GravityModComplete
 	LDA Player_mGoomba
 	BNE PRG008_ACCD	 ; If Player has got a microgoomba stuck to him, jump to PRG008_ACCD
 
-	LDA <Pad_Holding
+	LDA <buttons_held
 	BPL PRG008_ACC8	 ; If Player is NOT pressing 'A', jump to PRG008_ACC8
 
 	LDY #$01	 ; Y = 1
@@ -2244,8 +2244,8 @@ PRG008_ACD9:
 	BEQ PRG008_ACEF	 	; If this power up does not have flight, jump to PRG008_ACEF
 
 	; SB: Refactored logic; now you can just hold 'A' instead of mash 'A' to fly/flutter
-	LDA <Pad_Holding
-	AND #PAD_A
+	LDA <buttons_held
+	AND #button_a_mask
 	BEQ PRG008_ACEF	 	; If Player is not holding 'A', jump to PRG008_ACEF
 
 	; SB: Player is holding 'A'...
@@ -2347,7 +2347,7 @@ SwimSpeedStart:	.byte PLAYER_SWIMSTART_YVEL,	PLAYER_SWIMSTART_YVEL / 3,	PLAYER_S
 SwimSpeedDelta:	.byte PLAYER_SWIM_YVEL, 		PLAYER_SWIM_YVEL / 3, 		PLAYER_SWIM_YVEL * 3, $1E
 
 Player_SwimV:
-	LDA <Pad_Input		 
+	LDA <buttons_clicked		 
 	BPL PRG008_AD4C	 ; If Player is NOT pressing 'A', jump to PRG008_AD4C
 
 	; Player swimming sound
@@ -2369,8 +2369,8 @@ Player_SwimV:
 
 SwimV_NotMuck:
 	; Set 'Y' to index based on Player's use of up/down to limit swim speeds
-	LDA <Pad_Holding
-	AND #(PAD_UP | PAD_DOWN)
+	LDA <buttons_held
+	AND #(button_up_mask | button_down_mask)
 	LSR A
 	LSR A
 	TAY		; 0 if not pressing up or down, 1 if pressing down, 2 if pressing up
@@ -2449,7 +2449,7 @@ Player_SwimAnim:
 	LDA <Player_InAir
 	BEQ PRG008_ADBC	 ; If Player is NOT swimming above ground, jump to PRG008_ADBC (RTS)
 
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	BPL PRG008_AD9A	 ; If Player is NOT pressing 'A', jump to PRG008_AD9A
 
 	LDA Player_SwimCnt
@@ -2583,8 +2583,8 @@ PRG008_ADE0:
 
 PRG008_AE03:
 
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask)
 	BNE PRG008_AE11	 ; If Player is pressing left or right, jump to PRG008_AE11
 
 	; Player NOT pressing left/right
@@ -2599,8 +2599,8 @@ PRG008_AE11:
 	LDA Player_TailAttack
 	BNE PRG008_AE26	 ; If Player is performing tail attack, jump to PRG008_AE26
 
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask)
 	BEQ PRG008_AE26	 ; If Player is NOT pressing left or right, jump to PRG008_AE26
 
 	; Player is pressing left/right
@@ -2636,7 +2636,7 @@ PRG008_AE26:
 	BLT PRG008_AE90	 ; If (Player_XVel + 1) < 3, jump to PRG008_AE90
 
 	LDA Player_MoveLR
-	AND <Pad_Holding
+	AND <buttons_held
 	BEQ PRG008_AE90	 ; If Player is pressing the opposite direction from his movement, jump to PRG008_AE90
 
 	LDY <Player_Suit
@@ -2676,8 +2676,8 @@ PRG008_AEA2:
 	LDA <Player_InAir
 	BNE PRG008_AEB1	 ; If Player is mid air, jump to PRG008_AEB1
 
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT | PAD_UP)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask | button_up_mask)
 	BEQ PRG008_AEB6	 ; If Player is not holding LEFT, RIGHT, or UP, jump to PRG008_AEB6
 
 PRG008_AEB1:
@@ -2734,7 +2734,7 @@ Player_AnimTailWag:
 	LDA Player_IsDucking
 	BNE PRG008_B082	 ; If Player is ducking, jump to PRG008_B082
 
-	LDA <Pad_Holding	; SB
+	LDA <buttons_held	; SB
 	BPL PRG008_B062	 ; If Player is NOT HOLDING A, jump to PRG008_B062
 
 
@@ -2878,11 +2878,11 @@ Player_TailAttackAnim:
 	LDA Player_DisTailAtk
 	BNE Player_DisableTailAtk	; SB: If Player_DisTailAtk is set, jump to Player_DisableTailAtk
 
-	LDA <Pad_Holding
-	AND #PAD_DOWN
+	LDA <buttons_held
+	AND #button_down_mask
 	BNE PRG008_B109	 ; If Player is holding down, jump to PRG008_B109
 
-	BIT <Pad_Input
+	BIT <buttons_clicked
 	BVC PRG008_B0E2	 ; If Player is NOT pressing 'B', jump to PRG008_B0E2
 
 	LDA Player_TailAttack
@@ -4245,7 +4245,7 @@ Level_DoCommonSpecialTiles:
 	BNE PRG008_B604	; If player is moving horizontally, jump to PRG008_B604
  
 	; Player is touching an ice block...
-	BIT <Pad_Input
+	BIT <buttons_clicked
 	BVC PRG008_B604	 ; If Player is not pushing 'B', jump to PRG008_B604
 
 	CPX #$02
@@ -6054,9 +6054,9 @@ PRG008_BBBF:
 	LDA Player_Kuribo
 	BNE PRG008_BC0D	 ; If Player is wearing Kuribo's shoe, jump to PRG008_BC0D
 
-	LDA <Pad_Holding
-	AND #(PAD_DOWN | PAD_LEFT | PAD_RIGHT)	; checking down/left/right
-	CMP #PAD_DOWN	; but we only want down
+	LDA <buttons_held
+	AND #(button_down_mask | button_left_mask | button_right_mask)	; checking down/left/right
+	CMP #button_down_mask	; but we only want down
 	BNE PRG008_BC0D	 ; If NOT only pressing ONLY down, jump to PRG008_BC0D
 
 	JSR PRG008_AEB6	 ; Set sliding frame
@@ -6187,8 +6187,8 @@ PRG008_BC43:
 	.byte $08, $04, $04	; Offset applied to Player_X when: in air or level is sloped, Player is NOT small, Player is small
 
 Pipe_PadDirForEnter:	
-	.byte PAD_RIGHT, PAD_LEFT	; What to press to enter a horizontal pipe; pad right and left, respectively
-	.byte PAD_DOWN, PAD_UP		; What to press to enter a vertical pipe; pad down and up, respectively
+	.byte button_right_mask, button_left_mask	; What to press to enter a horizontal pipe; pad right and left, respectively
+	.byte button_down_mask, button_up_mask		; What to press to enter a vertical pipe; pad down and up, respectively
 
 
 	; The sliding values applied when Player is touching a conveyor
@@ -6252,7 +6252,7 @@ PRG008_BC92:
 	CMP #MAPOBJ_PURPLECOMET
 	BEQ PRG008_BCAA		; If Purple Comet is active, no pipes!
 
-	LDA <Pad_Holding
+	LDA <buttons_held
 	AND Pipe_PadDirForEnter,X
 	BEQ PRG008_BCAA	 ; If Player is NOT pressing correct direction to enter pipe, jump to PRG008_BCAA
 
@@ -6352,7 +6352,7 @@ PRG008_BCFA:
 	CMP #MAPOBJ_PURPLECOMET
 	BEQ PRG008_BD4B		; If Purple Comet is active, no pipes!
 
-	LDA <Pad_Holding
+	LDA <buttons_held
 	AND Pipe_PadDirForEnter,X
 	BEQ PRG008_BD4B	 ; If Player is NOT pressing the correct direction to enter pipe, jump to PRG008_BD4B
 
@@ -6621,8 +6621,8 @@ PRG008_BE31:
 	;BEQ PRG008_BE76	 ; Jump (technically always) to PRG008_BE76
 
 ;PRG008_BE4E:
-	;LDA <Pad_Holding
-	;AND #PAD_DOWN
+	;LDA <buttons_held
+	;AND #button_down_mask
 	;BEQ PRG008_BE47	 ; If Player is NOT pressing down, jump to PRG008_BE47
 
 	;INC Player_WhiteBlkCnt	 ; Player_WhiteBlkCnt++
@@ -6648,9 +6648,9 @@ PRG008_BE31:
 	;INC <Player_InAir	 ; Set Player as in air
 
 	; Don't register 'A' button
-	;LDA <Pad_Input
-	;AND #~PAD_A
-	;STA <Pad_Input
+	;LDA <buttons_clicked
+	;AND #~button_a_mask
+	;STA <buttons_clicked
 
 ;PRG008_BE76:
 
@@ -6713,7 +6713,7 @@ PRG008_BEAC:
 	LDY #-$30	 ; Otherwise, Y = -$30 (escape jump vel, almost out!)
 
 PRG008_BEC7:
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	BMI PRG008_BED2	 ; If Player is pressing 'A', jump to PRG008_BED2
 
 	INC Player_SandSink	; Set bit 0 of Player_SandSink (sinking)
@@ -6918,8 +6918,8 @@ Player_ApplyYVelocity:
 	LDA <Player_YVel
 	BMI PRG008_BFF9	 ; If PRG008_BFF9 < 0, jump to PRG008_BFF9
 
-	LDA <Pad_Holding
-  	AND #PAD_A
+	LDA <buttons_held
+  	AND #button_a_mask
   	BNE SlowMaxYVel
 
   	LDA <Player_YVel

@@ -217,8 +217,8 @@ PRG030_BADC:
 
 	INY		 ; Y = 1 or 2, depending on Player's relative position
 
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask)
 	STA <var1	 ; var1 is non-zero if Player is pressing left/right
 
 	CPY <var1	 ; Check if Player is pressing a direction favorable to his position
@@ -2499,8 +2499,8 @@ Pause_NoPauseOnMap:
 	LDA #$50
 	STA Sprite_RAM+$03,Y
 	
-	LDA <Pad_Input
-	AND #(PAD_UP | PAD_DOWN)
+	LDA <buttons_clicked
+	AND #(button_up_mask | button_down_mask)
 	BEQ PAUSEMenu_NoUD 
 	
 	LSR A
@@ -2529,7 +2529,7 @@ PAUSEMenu_NotHigh:
 PAUSEMenu_NoUD:
 	LDX Player_Current
 	LDA <Controller1Press,X
-	AND #PAD_START
+	AND #button_start_mask
 	BEQ PAUSEMenu_NoStart
 
 	LDA Level_Tileset
@@ -2577,8 +2577,8 @@ PAUSEMenu_HandleSelect:
 	
 	
 	; Level is already complete...
-	LDA <Pad_Input
-	AND #PAD_SELECT
+	LDA <buttons_clicked
+	AND #button_select_mask
 	BEQ PAUSEMenu_NoStart	; If Player is not pressing SELECT, jump to PAUSEMenu_NoStart
 	
 	; Start+Select exit level!
@@ -2623,9 +2623,9 @@ Map_WZeroDeny:
 
 
 Debug_PauseStuff:
-	LDA <Pad_Holding
-	AND #(PAD_UP | PAD_A)
-	CMP #(PAD_UP | PAD_A)
+	LDA <buttons_held
+	AND #(button_up_mask | button_a_mask)
+	CMP #(button_up_mask | button_a_mask)
 	BNE PauseDebug_NoExit2
 
 	; Exit secret
@@ -2633,9 +2633,9 @@ Debug_PauseStuff:
 	BNE PauseDebug_Exit1
 
 PauseDebug_NoExit2:
-	LDA <Pad_Holding
-	AND #(PAD_DOWN | PAD_A)
-	CMP #(PAD_DOWN | PAD_A)
+	LDA <buttons_held
+	AND #(button_down_mask | button_a_mask)
+	CMP #(button_down_mask | button_a_mask)
 	BNE PauseDebug_NoExit1
 
 PauseDebug_Exit1:
@@ -2658,8 +2658,8 @@ Debug_FreeMovement:
 	INC Player_DebugNoHitFlag
 
 	; Some extra niceities for me...
-	LDA <Pad_Holding
-	AND #PAD_UP
+	LDA <buttons_held
+	AND #button_up_mask
 	BNE PFM_NotHoldingUp
 	
 	;LDA #1
@@ -2679,18 +2679,18 @@ Debug_FreeMovement:
 	
 PFM_NotHoldingUp:
 	; Nintendo's old code starts here...
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask)
 	TAY		 ; Y = 1 or 2
 
 	; Set Player X velocity directly??
 	LDA PRG030_C3E7,Y
 	STA <Player_XVel
 
-	LDA <Pad_Holding
+	LDA <buttons_held
 	LSR A
 	LSR A
-	AND #((PAD_UP | PAD_DOWN) >> 2)
+	AND #((button_up_mask | button_down_mask) >> 2)
 	TAY		 ; Y = 1 or 2
 
 	; Set Player Y velocity directly??

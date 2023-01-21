@@ -3021,7 +3021,7 @@ MODLS_NotDDComet:
 	STA Sprite_RAM+$9E,Y	
 
 	; If Player pushes A, do enter logic, otherwise do nothing
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	BPL MODLS_NoAButton
 
 	JSR Map_CheckValidObjEntry

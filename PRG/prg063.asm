@@ -3519,10 +3519,10 @@ PRG063_FEC3:
 	EOR Controller1,Y	; 
 	AND <var3	 	; 
 	STA Controller1Press,Y	; Figures which buttons have only been PRESSED this frame as opposed to those which are being held down
-	STA <Pad_Input	 	; 
+	STA <buttons_clicked	 	; 
 	PLA		 	; Restore A
 	STA Controller1,Y	; 
-	STA <Pad_Holding	 ; 
+	STA <buttons_held	 ; 
 	DEY		 ; Y-- 
 	BPL PRG063_FEC0	 ; If Y hasn't gone negative (it should just now be 0), Read other joypad
 
@@ -3536,14 +3536,14 @@ PRG063_FEC3:
 	LDA <Controller2
 	AND #$cf
 	ORA <var1
-	STA <Pad_Holding
+	STA <buttons_held
 	LDA <Controller1Press
 	AND #$30
 	STA <var1
 	LDA <Controller2Press
 	AND #$cf
 	ORA <var1
-	STA <Pad_Input
+	STA <buttons_clicked
 
 PRG063_FF11:
 
@@ -3551,13 +3551,13 @@ PRG063_FF11:
 	LDA Player_ReverseGrav
 	BEQ ReadJoypad_NotRev
 
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	JSR Input_ReverseUpDown	
-	STA <Pad_Input
+	STA <buttons_clicked
 
-	LDA <Pad_Holding
+	LDA <buttons_held
 	JSR Input_ReverseUpDown	
-	STA <Pad_Holding
+	STA <buttons_held
 
 ReadJoypad_NotRev:
 	RTS		 ; Return

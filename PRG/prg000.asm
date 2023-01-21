@@ -3310,7 +3310,7 @@ ObjState_Held:
 PRG000_CE28:
 	JSR Object_ShellDoWakeUp ; Wake up while Player is holding object... 
 
-	BIT <Pad_Holding 
+	BIT <buttons_held 
 	BVC Player_KickObject	 ; If Player is NOT holding B button, jump to Player_KickObject  
 
 PRG000_CE2F:
@@ -4437,7 +4437,7 @@ PRG000_D343:
 	LDA Player_ISHolding_OLD
 	BNE PRG000_D39F	 ; If Player WAS holding something, jump to PRG000_D39F (RTS)
 
-	BIT <Pad_Holding
+	BIT <buttons_held
 	BVS PRG000_D34F	 	; If Player is holding B, jump to PRG000_D34F
 	JMP Player_KickObject	 ; Kick away the object and don't come back!
 

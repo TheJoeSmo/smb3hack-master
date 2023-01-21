@@ -2436,7 +2436,7 @@ ShyGuy_StandingOn:
 	INC Player_DisTailAtk
 
 	; Player is standing on SMB2 type object...
-	BIT <Pad_Input 
+	BIT <buttons_clicked 
 	BVC ShyGuy_NoHold	 ; If Player did not press B button, jump to ShyGuy_NoHold
 
 	; Player grabs SMB2 object!

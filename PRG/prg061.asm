@@ -175,16 +175,16 @@ PRG000_CE94:
 HeldKickRegular:
 	LDY #0	 	; Y = 0
 
-	LDA <Pad_Holding
-	AND #PAD_UP
+	LDA <buttons_held
+	AND #button_up_mask
 	BEQ HeldKickSmall			; Not holding up when let go of B, so do a normal kick
 	INY
 	INY
 	JMP NormalHeldKick
 
 HeldKickSmall:
-	LDA <Pad_Holding
-	AND #PAD_DOWN
+	LDA <buttons_held
+	AND #button_down_mask
 	BEQ NormalHeldKick			; Not holding up when let go of B, so do a normal kick
 	INY 
 	INY 

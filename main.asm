@@ -457,17 +457,17 @@ MMC3_IRQENABLE	= $E001 ; Enables IRQ generation
 
 	PPU_CTL2_Copy:		.ds 1	; Essentially a copy of PPU_CTL2, which updates it as well, though the sprite/BG visibility setting is usually (always?) forced on
 
-PAD_A		= $80
-PAD_B		= $40
-PAD_SELECT	= $20
-PAD_START	= $10
-PAD_UP		= $08
-PAD_DOWN	= $04
-PAD_LEFT	= $02
-PAD_RIGHT	= $01
+button_a_mask		= $80
+button_b_mask		= $40
+button_select_mask	= $20
+button_start_mask	= $10
+button_up_mask		= $08
+button_down_mask	= $04
+button_left_mask	= $02
+button_right_mask	= $01
 
-	Pad_Holding:		.ds 1	; Active player's inputs (i.e. 1P or 2P, whoever's playing) buttons being held in (continuous)
-	Pad_Input:		.ds 1	; Active player's inputs (i.e. 1P or 2P, whoever's playing) buttons newly pressed only (one shot)
+	buttons_held:			.ds 1	; Active buttons that are actively pressed.
+	buttons_clicked:		.ds 1	; Active buttons that were just actively pressed.
 
 	Roulette_RowIdx:	.ds 1	; Roulette Bonus Game only obviously
 

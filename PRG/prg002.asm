@@ -4061,7 +4061,7 @@ Toad_NotPrincess:
 	ORA InvFlip_Counter
 	BNE PRG002_B261	 ; If Player is still halted or inventory is open, jump to PRG002_B261
 
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	AND #$10
 	BEQ PRG002_B261	 ; If Player is NOT pressing START, jump to PRG002_B261
 
@@ -4078,13 +4078,13 @@ PRG002_B261:
 	CMP #$04
 	BNE PRG002_B272	 ; If Inventory is fully open, jump to PRG002_B272
 
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	AND #%11110011
 	BEQ PRG002_B272	 ; If Player is not pressing anything (besides up/down), jump to PRG002_B272
 
 	; Force like Player pressed 'B' (close inventory)
 	LDA #$40
-	STA <Pad_Input
+	STA <buttons_clicked
 
 PRG002_B272:
 	JSR Object_Draw16x32Sprite	 ; Draw Toad/Peach's sprite
@@ -5498,8 +5498,8 @@ PRG002_BAF4:
 
 	INY		 ; Y = 1 or 2, depending on Player's relative position
 
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask)
 	STA <var1	 ; var1 is non-zero if Player is pressing left/right
 
 	CPY <var1	 ; Check if Player is pressing a direction favorable to his position
@@ -6025,7 +6025,7 @@ Egg_Carry:
 	INC Player_DisTailAtk
 
 	; Player is standing on SMB2 type object...
-	BIT <Pad_Input 
+	BIT <buttons_clicked 
 	BVC Egg_CarryNoHold	 ; If Player did not press B button, jump to ShyGuy_NoHold
 
 	; Player grabs SMB2 object!

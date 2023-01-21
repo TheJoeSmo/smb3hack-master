@@ -54,8 +54,8 @@ Player_DoClimbAnim60:
 	LDA Player_ClimbFrame,Y	 ; Get appropriate climbing frame
 	STA <Player_Frame	 ; Store into Player_Frame
 
-	LDA <Pad_Holding
-	AND #(PAD_UP | PAD_DOWN | PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_up_mask | button_down_mask | button_left_mask | button_right_mask)
 	BEQ PRG060_B035	 ; If Player is NOT pressing a direction, jump to PRG008_B035
 
 	; Every 8 ticks, flip Player horizontally
@@ -147,10 +147,10 @@ Move_Kuribo60:
 	LDA Player_InWater
 	BNE DoNotExistKuribo
 	
-	LDA <Pad_Holding
-	AND #PAD_UP
+	LDA <buttons_held
+	AND #button_up_mask
 	BEQ DoNotExistKuribo
-	BIT <Pad_Input
+	BIT <buttons_clicked
 	BPL DoNotExistKuribo
 	
 ; Exit Kuribo
@@ -181,8 +181,8 @@ PRG008_AAFF:
 	LDA <Player_InAir
 	BNE PRG008_AB25	 ; If Player is mid air, jump to PRG008_AB25
 
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask)
 	STA Player_KuriboDir	 ; Store left/right pad input -> Player_KuriboDir
 	BEQ PRG008_AB25	 	; If Player is not pressing left or right, jump to PRG008_AB25
 	INC <Player_InAir	 ; Flag as in air (Kuribo's shoe bounces along)
@@ -191,7 +191,7 @@ PRG008_AAFF:
 	STY <Player_YVel	 ; Player_YVel = -$20
 
 PRG008_AB17:
-	LDA <Pad_Input
+	LDA <buttons_clicked
 	BPL PRG008_AB25	 ; If Player is NOT pressing 'A', jump to PRG008_AB25
 
 	LDA #$00

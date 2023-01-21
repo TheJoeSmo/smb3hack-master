@@ -947,8 +947,8 @@ PRG010_C3F2:
 	INC Map_MoveRepeat,X	; Map_MoveRepeat++
 
 PRG010_C403:
-	LDA <Pad_Holding
-	BNE PRG010_C40C	 	; If Pad_Holding <> 0, jump to PRG010_C40C
+	LDA <buttons_held
+	BNE PRG010_C40C	 	; If buttons_held <> 0, jump to PRG010_C40C
 
 	; Player has stopped holding a direction; stop the repeat
 	LDA #$ff	 
@@ -971,8 +971,8 @@ PRG010_C413:
 	CMP #$0d	 
 	BNE PRG010_C46B	 	; If Map_Operation <> $D (Normal), jump to PRG010_C46B
 
-	LDA <Pad_Input
-	AND #PAD_B	
+	LDA <buttons_clicked
+	AND #button_b_mask	
 	BEQ PRG010_C46B		; If Player is NOT pressing B, jump to PRG010_C46B
 
 	; Player is pressing B button...
@@ -1561,8 +1561,8 @@ PRG010_C712:
 	JMP PRG010_C772	 ; Jump to PRG010_C772
 
 GameOver_DoMenu:
-	LDA <Pad_Input
-	AND #(PAD_UP | PAD_DOWN)
+	LDA <buttons_clicked
+	AND #(button_up_mask | button_down_mask)
 	BEQ PRG010_C72B	 ; If Player is pressing neither UP nor DOWN, jump to PRG010_C72B
 
 	; Play the bleep noise
@@ -1580,8 +1580,8 @@ PRG010_C72B:
 
 	; Player not pressing UP or DOWN...
 
-	LDA <Pad_Input
-	AND #PAD_START
+	LDA <buttons_clicked
+	AND #button_start_mask
 	BEQ PRG010_C748	 ; If Player is NOT pressing START, jump to PRG010_C748
 
 	; Play the starry entrance sound (this is never heard!)
@@ -2690,8 +2690,8 @@ PRG010_CDDC:
 	JMP WorldMap_UpdateAndDraw
 
 MNME_Cont:
-	LDA <Pad_Input	
-	AND #(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)	 
+	LDA <buttons_clicked	
+	AND #(button_left_mask | button_right_mask | button_up_mask | button_down_mask)	 
 	BEQ PRG010_CDEC	 	; If Player is not pushing up/down/left/right, jump to PRG010_CDEC
 
 	LDA #SND_PLAYERBUMP	 
@@ -2731,7 +2731,7 @@ PRG010_CE78:
 	; SB: If Player presses START, open menu
 	LDX Player_Current
 	LDA <Controller1Press,X
-	AND #PAD_START
+	AND #button_start_mask
 	BEQ Map_NoPressStart
 
 	; Initiate warp whistle mode
@@ -2746,8 +2746,8 @@ PRG010_CE78:
 
 Map_NoPressStart:
 	; SB: Disabling old 2P Vs
-	LDA <Pad_Input
-	AND #PAD_A
+	LDA <buttons_clicked
+	AND #button_a_mask
 	BEQ PRG010_CEE1
 	BNE PRG010_CEBF
 
@@ -2798,8 +2798,8 @@ PRG010_CEAC:
 PRG010_CEBF:
 	; A Player pressed 'A' but they were not on top of each other, so no 2P vs...
 
-	LDA <Pad_Input
-	AND #PAD_A	
+	LDA <buttons_clicked
+	AND #button_a_mask	
 	BEQ PRG010_CEE1	 	; If Player is not pressing 'A', jump to PRG010_CEE1
 
 	LDA <World_Map_Tile
@@ -3491,8 +3491,8 @@ Map_CanoeCheckXHiOff:	.byte  0,  $FF, 0,   0	; Remember, this is used more as a 
 ; Checks if able to move and performs moves based on Player's pad input
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Map_CheckDoMove:
-	LDA <Pad_Holding
-	STA <var4		; var4 = Pad_Holding
+	LDA <buttons_held
+	STA <var4		; var4 = buttons_held
 
 	LDA Debug_Flag
 	CMP #$80
@@ -3500,10 +3500,10 @@ Map_CheckDoMove:
 	
 	LDX Player_Current
 	LDA <Controller1,X
-	AND #PAD_SELECT
+	AND #button_select_mask
 	BEQ MCDM_NotHoldingSelectDebug
 	LDA <var4
-	AND #(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
+	AND #(button_left_mask | button_right_mask | button_up_mask | button_down_mask)
 	BEQ MCDM_NotHoldingSelectDebug
 	JMP PRG010_D336
 
@@ -3523,8 +3523,8 @@ MCDM_NotHoldingSelectDebug:
 PRG010_D296:
 
 	LDY #$03	 	; Y = 3
-	LDA <var4		; A = Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)	 	; Just up/down/left/right
+	LDA <var4		; A = buttons_held
+	AND #(button_left_mask | button_right_mask | button_up_mask | button_down_mask)	 	; Just up/down/left/right
 
 PRG010_D29C:
 	CMP Map_HoldPadDir,Y
@@ -3536,7 +3536,7 @@ PRG010_D29C:
 
 PRG010_D2A5:
 
-	; 'A' is the Pad_Holding value...
+	; 'A' is the buttons_held value...
 
 	; This loop converts R01 L02 D04 U08 to 0, 1, 2, 3
 	LDY #$00	 	; Y = 0
@@ -3625,8 +3625,8 @@ PRG010_D2E1:
 	;BNE PRG010_D306	 	; If X > 0, loop! (NOTE: Does not check map object index 0 as a canoe
 
 PRG010_D310:
-	LDA Pad_Input
-	AND #(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
+	LDA buttons_clicked
+	AND #(button_left_mask | button_right_mask | button_up_mask | button_down_mask)
 	BEQ PRG010_D31C	 	; If Player is not pressing left/right/down/up, jump to PRG010_D31C (RTS)
 
 	LDA #SND_PLAYERBUMP	 
@@ -3689,8 +3689,8 @@ PRG010_D349:
 	LDX Player_Current
 	STA <World_Map_Move,X	 	; Tell Player to move 'A' units
 
-	LDA <var4			; A = Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)	; Just the left/right/down/up bits
+	LDA <var4			; A = buttons_held
+	AND #(button_left_mask | button_right_mask | button_up_mask | button_down_mask)	; Just the left/right/down/up bits
 	STA <World_Map_Dir,X	 	; Store as movement direction!
 	STA Map_PrevMoveDir	 	; Store as previous move!
 

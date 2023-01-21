@@ -833,7 +833,7 @@ SpringNotSprang:
 	ORA Objects_Timer, X
 	BNE SpringNotHeld
 
-	BIT <Pad_Holding
+	BIT <buttons_held
 	BVC SpringNotHeld
 
 	; Reset the state of the spring, in the advent it was in lava

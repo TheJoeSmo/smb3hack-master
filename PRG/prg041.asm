@@ -2129,10 +2129,10 @@ Yoshi_NotInv:
 	BNE Yoshi_NoGetOff
 
 	
-	LDA <Pad_Holding
-	AND #PAD_UP
+	LDA <buttons_held
+	AND #button_up_mask
 	BEQ Yoshi_NoGetOff
-	BIT <Pad_Input
+	BIT <buttons_clicked
 	BPL Yoshi_NoGetOff
 	
 	LDA #-$30
@@ -2256,7 +2256,7 @@ Yoshi_NoVertMove:
 	LDA Objects_Var11,X
 	BNE Yoshi_HoldInMouth		; If Yoshi's got something in his mouth, spit it out!~
 
-	BIT <Pad_Input
+	BIT <buttons_clicked
 	BVC Yoshi_DisTounge	; If Player is not pressing 'B', jump to Yoshi_DisTounge
 	
 	LDA #$20
@@ -2302,7 +2302,7 @@ Yoshi_HoldInMouth:
 	LDA #2
 	STA Objects_Var2,X
 	
-	BIT <Pad_Input
+	BIT <buttons_clicked
 	BVC Yoshi_DisTounge	; If Player is not pressing 'B', jump to Yoshi_DisTounge
 
 	; Yoshi's got something in his mouth; spit it out!
@@ -4628,7 +4628,7 @@ ObjHit_Pinata:
 	;LDA Player_HaltTick
 	;BEQ Pinata_NoUpdateFace
 
-	;LDA <Pad_Holding
+	;LDA <buttons_held
 	;AND #%00000011
 	;TAY
 

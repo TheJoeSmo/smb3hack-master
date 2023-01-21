@@ -1234,8 +1234,8 @@ PRG022_C880:
 	CMP #$07
 	BLT PRG022_C8A0	 ; If Bonus_GameState < 7, jump to PRG022_C8A0
 
-	LDA <Pad_Input
-	AND #(PAD_A | PAD_B)
+	LDA <buttons_clicked
+	AND #(button_a_mask | button_b_mask)
 	BEQ PRG022_C8A0	 ; If Player is pushing neither A nor B, jump to PRG022_C8A0
 
 	; Player pushing A or B...
@@ -1937,8 +1937,8 @@ Bonus_DieRotate:
 	STA Bonus_DiePos
 
 PRG022_CC18:
-	LDA <Pad_Input
-	AND #PAD_A
+	LDA <buttons_clicked
+	AND #button_a_mask
 	BEQ Bonus_DrawDie	; If Player is not pressing 'A', just go draw the Die
 
 	; Player pressed 'A'...
@@ -2805,8 +2805,8 @@ Roulette_Init:
 	JMP Roulette_DrawBorderSprites	 ; Draw border sprites and don't come back!
 
 Roulette_Run:
-	LDA <Pad_Input
-	AND #(PAD_A | PAD_B)
+	LDA <buttons_clicked
+	AND #(button_a_mask | button_b_mask)
 	BEQ PRG022_D0DF	 ; If Player is NOT pressing A or B, jump to PRG022_D0DF
 
 	; Player is pressing A or B...
@@ -3124,8 +3124,8 @@ PRG022_D224:
 
 	; At least one turn remaining ... (this is UNUSED!)
 
-	LDA <Pad_Holding
-	AND #(PAD_A | PAD_B | PAD_START)
+	LDA <buttons_held
+	AND #(button_a_mask | button_b_mask | button_start_mask)
 	BEQ PRG022_D237	 ; If Player is not pressing A, B, or START, jump to PRG022_D237
 
 	DEC Roulette_Turns	 ; Roulette_Turns--
@@ -4755,8 +4755,8 @@ Card_DoSelection:
 	RTS		 ; Return
 
 PRG022_DBA5:
-	LDA <Pad_Holding
-	AND #PAD_A
+	LDA <buttons_held
+	AND #button_a_mask
 	BEQ PRG022_DBAF	 ; If Player is not pressing A, jump to PRG022_DBAF
 
 	INC Card_GameState	 ; Card_GameState = 1
@@ -4764,8 +4764,8 @@ PRG022_DBA5:
 	RTS		 ; Return
 
 PRG022_DBAF:
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
+	LDA <buttons_held
+	AND #(button_left_mask | button_right_mask | button_up_mask | button_down_mask)
 	BEQ PRG022_DC1D	 ; If Player is not pressing a direction, jump to PRG022_DC1D (RTS)
 
 	; Card_MoveDelay = 8
@@ -4776,8 +4776,8 @@ PRG022_DBAF:
 	LDA #SND_LEVELBLIP
 	STA Sound_QLevel1
 
-	LDA <Pad_Holding
-	AND #PAD_UP
+	LDA <buttons_held
+	AND #button_up_mask
 	BEQ PRG022_DBD9	 ; If Player is not pressing UP, jump to PRG022_DBD9
 
 	; Card_Index -= 6 (one row up)
@@ -4793,8 +4793,8 @@ PRG022_DBAF:
 	STA Card_Index
 
 PRG022_DBD9:
-	LDA <Pad_Holding
-	AND #PAD_DOWN
+	LDA <buttons_held
+	AND #button_down_mask
 	BEQ PRG022_DBF8	 ; If Player is not pressing DOWN, jump to PRG022_DBF8
 
 	; Card_Index += 6 (one row down)
@@ -4812,8 +4812,8 @@ PRG022_DBD9:
 	STA Card_Index
 
 PRG022_DBF8:
-	LDA <Pad_Holding
-	AND #PAD_RIGHT
+	LDA <buttons_held
+	AND #button_right_mask
 	BEQ PRG022_DC0D	 ; If Player is not pressing RIGHT, jump to PRG022_DC0D
 
 	INC Card_Index	 ; Card_Index++
@@ -4827,8 +4827,8 @@ PRG022_DBF8:
 	STA Card_Index
 
 PRG022_DC0D:
-	LDA <Pad_Holding
-	AND #PAD_LEFT
+	LDA <buttons_held
+	AND #button_left_mask
 	BEQ PRG022_DC1D	 ; If Player is not pressing LEFT, jump to PRG022_DC1D (RTS)
 
 	DEC Card_Index	 ; Card_Index--

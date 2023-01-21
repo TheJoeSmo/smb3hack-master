@@ -2513,7 +2513,7 @@ PRG062_8DF4:
 	; Game is not paused...
 	LDX Player_Current
 	LDA <Controller1Press,X
-	AND #PAD_START
+	AND #button_start_mask
 	BEQ PRG062_8EAD	 ; If Player is NOT pressing START, jump to PRG062_8EAD
 
 	; Game is pausing!
@@ -2530,7 +2530,7 @@ PRG062_8DF4:
 	; Clearing start so it's not immediately handled
 	LDX Player_Current
 	LDA <Controller1Press,X
-	AND #~PAD_START
+	AND #~button_start_mask
 	STA <Controller1Press,X
 
 Game_ContinuePause:
@@ -6263,22 +6263,22 @@ PRG062_9FAF:
 
 
 Input_ReverseUpDown:
-	PHA		; Save input (Pad_Input or Pad_Holding)
-	PHA		; Save input (Pad_Input or Pad_Holding)
+	PHA		; Save input (buttons_clicked or buttons_held)
+	PHA		; Save input (buttons_clicked or buttons_held)
 
 	; Reverse up/down bits
-	AND #PAD_UP		; Take current "up" status...
+	AND #button_up_mask		; Take current "up" status...
 	LSR A			; ... move it into "down" bit...
 	STA <var1	; -> var1
 	
-	PLA		; Restore input (Pad_Input or Pad_Holding)
-	AND #PAD_DOWN	; Take current "down" status...
+	PLA		; Restore input (buttons_clicked or buttons_held)
+	AND #button_down_mask	; Take current "down" status...
 	ASL A			; ... move it into "up" bit...
 	ORA <var1	; ... combine with reversed up
 	STA <var1	; -> var1
 
-	PLA		; Restore input (Pad_Input or Pad_Holding)
-	AND #~(PAD_UP | PAD_DOWN)
+	PLA		; Restore input (buttons_clicked or buttons_held)
+	AND #~(button_up_mask | button_down_mask)
 	ORA <var1
 	RTS
 

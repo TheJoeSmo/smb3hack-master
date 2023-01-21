@@ -2109,8 +2109,8 @@ Gameover_Continue_Menu:
 	LDA #$60
 	STA Sprite_RAM+$FF
 
-	LDA <Pad_Input
-	AND #(PAD_UP | PAD_DOWN)
+	LDA <buttons_clicked
+	AND #(button_up_mask | button_down_mask)
 	BEQ Gameover_Menu_NotUD
 
 	LDA Level_PauseSelect
@@ -2118,8 +2118,8 @@ Gameover_Continue_Menu:
 	STA Level_PauseSelect
 
 Gameover_Menu_NotUD:
-	LDA <Pad_Input
-	AND #(PAD_A | PAD_START)
+	LDA <buttons_clicked
+	AND #(button_a_mask | button_start_mask)
 	BEQ Gameover_Menu_NotAS
 	
 	LDA Level_PauseSelect

@@ -670,7 +670,7 @@ PRG007_A251:
 	LDA Player_DisTailAtk
 	BNE Player_DisWeapon 
 
-	BIT <Pad_Input
+	BIT <buttons_clicked
 	BVC PRG007_A268	 ; If Player is NOT pressing B, jump to PRG007_A268
 
 	JSR PlayerProj_ThrowWeapon	 ; Player throws weapon, whatever's appropriate
@@ -973,8 +973,8 @@ PRG007_A7F1:
 
 	LDY #$7f	 ; Y = $7F ("slow" mask value for idle underwater player)
 
-	LDA <Pad_Holding
-	AND #(PAD_A | PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_held
+	AND #(button_a_mask | button_left_mask | button_right_mask)
 	BEQ PRG007_A7FB	 ; If Player is not pressing A, LEFT, or RIGHT (swim controls), jump to PRG007_A7FB
 
 	LDY #$3f	 ; Y = $3F ("fast" mask value for idle underwater player)

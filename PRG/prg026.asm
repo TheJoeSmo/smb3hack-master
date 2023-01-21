@@ -773,8 +773,8 @@ Inventory_DoPowerupUse:
 
 PRG026_A41A:
 	; Not using item
-	LDA Pad_Input	 ; Get Player 
-	AND #(PAD_B | PAD_START)	; B or START close the Inventory panel
+	LDA buttons_clicked	 ; Get Player 
+	AND #(button_b_mask | button_start_mask)	; B or START close the Inventory panel
 	BEQ PRG026_A436	 ; If neither B nor START are pressed, jump to PRG026_A436
 
 	; Need to close the panel
@@ -815,8 +815,8 @@ PRG026_A436:
 
 
 PRG026_A4A7:
-	LDA <Pad_Input	 
-	AND #(PAD_LEFT | PAD_RIGHT)
+	LDA <buttons_clicked	 
+	AND #(button_left_mask | button_right_mask)
 	BEQ PRG026_A4F6	 	; If neither left nor right is pressed, jump to PRG026_A4F6
 
 	LSR A		 	; Diminish to 0/1 condition (right = 0, left = 1)
@@ -854,8 +854,8 @@ PRG026_A4D9:
 	JMP PRG026_A511	 	; Then jump to PRG026_A511
 
 PRG026_A4F6:
-	LDA <Pad_Input		
-	AND #PAD_A
+	LDA <buttons_clicked		
+	AND #button_a_mask
 	BEQ PRG026_A511	 	; If Player is NOT pressing A, jump to PRG026_A511
 
 PRG026_A4FC:
