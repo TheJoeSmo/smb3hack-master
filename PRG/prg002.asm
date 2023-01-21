@@ -5545,8 +5545,6 @@ OIELC_DDCometTboxGoal:
 	LDA <Horz_Scroll
 	BNE OIELC_DDCometNotYet
 		
-	INC LevelJctBQ_Flag
-
 	LDX #4
 OIELC_PoofEverythingLoop:
 
@@ -5616,67 +5614,44 @@ OIELC_NoNeedPoof2:
 	
 OIELC_TBoxSpawnSlot:	.byte 1, 2, 3, 4, 0, 1, 2, 3
 
+EndPlayerSpeed:
+	.byte 16, -16
+EndPlayerFlipBits:
+	.byte $41, $01
+
 ObjNorm_EndLevelCard:
 	LDA <Objects_DetStat,X	 ; Mis-used as tracking for the current internal state
 	JSR DynJump
-
-	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
-	.word EndLevelCard_Untouched		; 0: Initial state before Player touches card
-
-	; Triple card match
-	.word $0000	; 1: Halts Player, sets palette, draws card
-	.word $0000	; 2: The giant shape in the sky appears
-	.word $0000	; 3: Draws the "YOU GOT A CARD" message and inits for extra lives (triple card match)
-
-	; Not Triple card match
-	.word EndLevelCard_WaitFlyAway		; 4: Starts Player running off, spins card away until off-screen
-	.word EndLevelCard_MsgAndCard		; 5: Draws the messages "COURSE CLEAR!"/"YOU GOT A CARD" and the cards (two places)
-
-	; Extra lives
-	.word $0000				; 6 - Give lives until done
-	.word EndLevelCard_Exit			; 7: Exit
+	.word exit_flag_unactivated			; 0: Wait for the player to touch the flag
+	.word $0000
+	.word $0000
+	.word $0000
+	.word exit_flag_slide_down_pole		; 4: Player slides down the flag pole
+	.word exit_flag_player_run_off		; 5: Player runs off to the right
+	.word exit_flag_do_message			; 6: Draws the course clear message
+	.word exit_flag_exit_to_world		; 7: Exit to the overworld
 
 
-EndLevelCard_Untouched:
-	;LDA <Counter_1		 
-	;AND #$07
-	;BNE PRG002_BB65	 ; 1:8 ticks continue, otherwise jump to PRG002_BB65
-
-	; Run through frames 0-2
-	;INC Objects_Frame,X
-	;LDA Objects_Frame,X
-	;CMP #$03
-	;BLT PRG002_BB65
-
-	; Restart animation loop
-	;LDA #$00
-	;STA Objects_Frame,X
-
-;PRG002_BB65:
-
-	; SB: "Card" (now flag) is grabbed by Player going passed it
-
+exit_flag_unactivated:
 	; Trigger when close enough X
 	JSR Object_CalcCoarseXDiff
 	LDA <var15	
 	CMP #$01
-	BGE EndFlagNotGrabbed
+	BGE exit_flag_unactivated_hit_test
 
 	LDA Objects_X,X
 	STA Player_X
 	LDA Objects_XHi,X
 	STA Player_XHi
-	LDA #0
-	STA Player_XVel
 
-	; If Player is above flag, jump to EndFlagNotGrabbed
+	; If Player is above flag, jump to exit_flag_unactivated_hit_test
 	JSR Object_CalcCoarseYDiff
 	LDA <var15
 	JSR Negate
 	CMP #-$2
-	BLS EndFlagNotGrabbed
+	BLS exit_flag_unactivated_hit_test
 	CMP #$25
-	BGS EndFlagNotGrabbed
+	BGS exit_flag_unactivated_hit_test
 	
 	; Calculate award score
 	LSR A
@@ -5684,35 +5659,25 @@ EndLevelCard_Untouched:
 	ADD #1
 	STA <var1
 	
-
 	LDA #12
 	SUB <var1
 	JSR Score_PopUp
 
-
 	LDA #PF_HOLDBIG_BASE
-
 	LDY <Player_Suit
-	BNE EndFlag_SetFrame
-
-	LDA #PF_HOLDSMALL_BASE
-
-EndFlag_SetFrame:
+	BNE exit_flag_unactivated_set_frame
+		LDA #PF_HOLDSMALL_BASE
+exit_flag_unactivated_set_frame:
 	STA <Player_Frame
-
-
-	LDA #$FF
-	STA Player_HaltTick
-
 	JSR ObjHit_EndLevelCard
 
-EndFlagNotGrabbed:
+exit_flag_unactivated_hit_test:
 	JSR Object_HitTestRespond	 ; Do collision test with Player and respond
 	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
-	JMP EndLevelCard_Draw	 	; Jump off to draw End Level card
+	JMP exit_flag_draw
 
 
-EndLevelCard_WaitFlyAway:
+exit_flag_slide_down_pole:
 	JSR Object_ApplyYVel	 ; Apply Y Velocity
 
 	LDA <Objects_DetStat,X
@@ -5734,21 +5699,26 @@ EndLevelCard_WaitFlyAway:
 	SBC #0
 	STA <Objects_XHi,X
 
+	; Check if hit floor to stop moving
 	LDA <Objects_DetStat,X
 	AND #$04
-	BEQ EndFlag_NotHitFloor		; If flag has not hit ground, jump to EndFlag_NotHitFloor
+	BEQ exit_flag_not_hit_floor
+		LDA #$00
+		STA <Objects_YVel,X
+		BNE exit_flag_player_hit_floor
 
-	; Hit floor; stop moving!
-	LDA #0
-	STA <Objects_YVel,X
+exit_flag_not_hit_floor:
+	LDA #$18
+	STA <Player_YVel
+	LDA #$00
+	STA <Player_XVel
 
-
-EndFlag_NotHitFloor:
+exit_flag_player_hit_floor:
 	PLA
 	STA <Objects_DetStat,X
 
 	LDA <Objects_YVel,X
-	BNE EndFlag_StillMoving		; If flag is still lowering, jump to EndFlag_StillMoving
+	BNE exit_flag_hit_floor		; If flag is still lowering, jump to exit_flag_hit_floor
 
 	; Play "Course Clear" song
 	LDA #MUS1_COURSECLEAR
@@ -5757,17 +5727,14 @@ EndFlag_NotHitFloor:
 	; Go to next internal state
 	INC <Objects_DetStat,X
 
-	; Set flag's timer to $60
-	LDA #$60
+	; Set how long the player will walk
+	LDA #$E0
 	STA Objects_Timer,X
 
-	; Select bank to support "COURSE CLEAR" font
-	LDA #$5e
-	STA PatTable_BankSel+1
-
-	; Release the Player
-	LDA #0
+	; Release the player and set direction to the right
+	LDA #$00
 	STA Player_HaltTick
+	STA Objects_Var3, X
 
 	; A little kick in the right direction
 	LDA #1
@@ -5777,83 +5744,71 @@ EndFlag_NotHitFloor:
 	STA <Player_XVel
 
 	LDA #-$40
-	STA <Player_YVel
+	STA <Player_YVel	
 
-EndFlag_StillMoving:
-	JSR EndLevelCard_Draw 	; Draw the card
+exit_flag_hit_floor:
+	JMP exit_flag_draw 	; Draw the card
 
-EndLevelCard_PlayerRunOff:
-	JSR EndLevelCard_ClearPlayerIfOff	; Clear Player's sprites as he walks off-screen
 
-	; Always set Player facing correct direction
-	LDA #$41
+exit_flag_player_run_off:
+	; If the player is not moving, then turn around.
+	LDA <Player_XVel
+	BNE exit_flag_player_skip_about_face
+		; Turn around
+		INC Objects_Var3, X
+		LDA Objects_Var3, X
+		AND #$01
+		STA Objects_Var3, X
+
+		; Set how long the player will walk
+		LDA #$E0
+		STA Objects_Timer,X
+
+exit_flag_player_skip_about_face:
+	LDY Objects_Var3, X
+	LDA EndPlayerSpeed, Y
+	STA <Player_XVel
+
+	; Always set player facing correct direction
+	LDA EndPlayerFlipBits, Y
 	STA <Player_FlipBits
 
-	; Does the Player's "run off to the right" sequence
-	LDY #$ff
-	STY Player_EndLevel
+	; Check if the timer has expired or not.
+	LDA Objects_Timer,X
+	BNE exit_flag_player_run_off_finish	
+		; Move to the next state
+		INC <Objects_DetStat,X
 
-	; Technically the Player runs around and loops back left
-	LDA <Player_SpriteX
-	LSR A		; divide by 2
-	CMP #$10	; so really checking if it's around 32 or 33
-	BNE PRG002_BCA7	 ; If Player's not there yet, jump to PRG002_BCA7
+		; Set timer for next state
+		LDA #$80
+		STA Objects_Timer,X
 
-	STY Player_HaltTick	 ; If Player has run far enough, set halt
-
-PRG002_BCA7:
+exit_flag_player_run_off_finish:
 	RTS		 ; Return
 
-ELC_HighOrLow:	.byte $2C, $2D
 
-EndLevelCard_MsgAndCard:
-	JSR EndLevelCard_Draw
-	JSR EndLevelCard_PlayerRunOff	 ; Keep checking for Player having run off to the right
+exit_flag_do_message:
+	; Freeze the player
+	LDA #$FF
+	STA Player_HaltTick
+
+	; Draw the flag
+	JSR exit_flag_draw
 
 	LDA Objects_Timer,X
-	CMP #$1e
-	BNE PRG002_BCC6	 ; If timer = $1E, jump to PRG002_BCC4
+	BNE exit_flag_do_time_bonus
+		; Move to the next state
+		INC <Objects_DetStat,X
 
-	LDX <Player_YHi
-	LDY ELC_HighOrLow,X	 ; Y = $2C/$2D ("COURSE CLEAR")
-	LDX <SlotIndexBackup
-	STY <Graphics_Queue	 ; Set Graphics_Queue as appropriate
+		; Turn time into score
+		JSR DoTimeBonus
 
-PRG002_BCC6:
-	JSR DoTimeBonus	 	; Turn time into score
+exit_flag_do_time_bonus:
+	RTS
 
-	;ORA Objects_Timer,X
-	BNE PRG002_BD02	 ; If clock not run out or timer not expired, jump to PRG002_BD02
 
-	; All clock converted to score and timer expired...
-
-	LDA <Player_SpriteX
-	LSR A		; divide by 2
-	CMP #$10	; so really checking if it's around 32 or 33
-	BNE PRG002_BD02	 ; If Player's not there yet, jump to PRG002_BD02
-
-	; SB: No triple card checks
-
-	JSR PRG002_BD35	 ; Prepare for exit
-
-PRG002_BD02:
-	RTS		 ; Return
-
-PRG002_BD35:
-	; Go to internal state 7
-	LDA #$07
-	STA <Objects_DetStat,X
-
-	; Set timer to $80
-	LDA #$80
-	STA Objects_Timer,X
-
-PRG002_BD3E:
-	RTS		 ; Return
-
-EndLevelCard_Exit:
-	JSR EndLevelCard_Draw 	; Draw the card
-	JSR EndLevelCard_ClearPlayerIfOff	; Clear Player's sprites as he walks off-screen
+exit_flag_exit_to_world:
+	JSR exit_flag_draw 	; Draw the card
 
 	LDY #0	; SB: Inventory offset, former 2P specific offsets removed
 
@@ -5869,10 +5824,9 @@ EndLevelCard_Exit:
 	STA Map_ReturnStatus	 ; Return Status = 0 (clear level)
 	INC Level_ExitToMap	 ; Flag to exit to map
 
-	RTS		 ; Return
-
 PRG002_BD6B:
 	RTS
+
 
 PRG002_BEA3:
 	JSR StatusBar_DrawCardPiece	 ; Redraw the card
@@ -5881,45 +5835,11 @@ Object_ResetXToSlotIndex:
 	LDX <SlotIndexBackup		 ; X = object slot index
 	RTS		 ; Return
 
-
-	; Clears the Player's sprites if they've gone off-screen
-EndLevelCard_ClearPlayerIfOff:
-	LDY Player_SprOff	 ; Y = Player's sprite offset
-
-	; var1 = 5 (all of the Player's potential sprites)
-	LDA #$05
-	STA <var1
-PRG002_BEC1:
-	LDA Sprite_RAM+$03,Y
-	CMP #64
-	BGE PRG002_BECD	 ; If Player's Sprite X > 64, jump to PRG002_BECD
-
-	; Otherwise, set Player's Sprite Y to really low (invisible)
-	LDA #248
-	STA Sprite_RAM+$00,Y
-
-PRG002_BECD:
-	INY
-	INY
-	INY
-	INY	; Y += 4 (next sprite)
-
-	DEC <var1	 ; var1--
-	BPL PRG002_BEC1	 ; While var1 >= 0, loop!
-
-	RTS		 ; Return
-
-	; Var1 values for Mushroom, Flower, Star
-EndLevelCard_Var1:	.byte $24, $25, $26
-
 ObjHit_EndLevelCard:
 
 	; Clear relevant gameplay variables
 	LDA #$00
-	STA Player_StarInv
 	STA Kill_Tally
-	STA Level_PSwitchCnt
-	STA Level_AScrlConfig
 	STA <Player_YVel
 	STA PlayerProj_ID	
 	STA PlayerProj_ID+1
@@ -5941,8 +5861,6 @@ PRG002_BEFC:
 	BEQ PRG002_BF4B	 ; If object slot is dead/empty, jump to PRG002_BF4B
 
 	LDA Level_ObjectID,X
-	;CMP #OBJ_WARPHIDE
-	;BEQ PRG002_BF46	 ; If this is the World 1-3 Warp Whistle trigger object, jump to  PRG002_BF46
 	CMP #OBJ_YOSHI
 	BNE GoalHit_NotYoshi
 
@@ -6007,28 +5925,20 @@ PRG002_BF4B:
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 
-	; Stop the level clock and animations
-	LDA #$81
+	; Stop the level clock
+	LDA #$01
 	STA Level_TimerEn
-	STA EndCard_Flag	 ; Flag end level card as grabbed
 
-	; Card moves down (SB)
+	; Move the flag and player down
 	LDA #$28
 	STA <Objects_YVel,X
-
-	LDY Objects_Frame,X	 ; Y = current frame 
-
-	; Set Var1
-	LDA EndLevelCard_Var1,Y
-	STA Objects_Var1,X
+	STA <Player_YVel
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 
 	; Jump to internal state 4 (Regular get card, no fanfare)
 	LDA #$04
 	STA <Objects_DetStat,X
-
-	; SB: No more victory fanfare stuff!
 
 	; Stop music
 	LDA #MUS1_STOPMUSIC
@@ -6041,21 +5951,7 @@ PRG002_BF4B:
 PRG002_BF9F:
 	RTS		 ; Return
 
-EndLevelCard_Draw:
-	;LDA Objects_Frame,X
-
-	;JSR Object_ShakeAndCalcSprite
-
-	;LDA #$05
-	;ADD Counter_7to0
-	;TAY		 ; Y = 5 to 12
-
-	;LDA SprRamOffsets,Y	 ; Get special "safe" Sprite_RAM offset area
-	;ADD #$08
-	;TAY		 ; -> 'Y'
-
-	;JSR Object_Draw16x16Sprite	 ; Draw the End Level card
-
+exit_flag_draw:
 	JSR Object_ShakeAndDraw
 
 	LDX <SlotIndexBackup	 ; X = object slot index
