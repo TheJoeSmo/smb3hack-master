@@ -40,7 +40,7 @@ Player_GrowFrames:
 	.byte PF_MIDGROW_SMALL, PF_MIDGROW_HALFWAY
 
 	; This defines a table of lookups that point to the start of
-	; each Player_Frame's six patterns
+	; each player_animation_frame's six patterns
 SPPF_LookupByFrame:
 	.word PF00, PF01, PF02, PF03, PF04, PF05, PF06, PF07
 	.word PF08, PF09, PF0A, PF0B, PF0C, PF0D, PF0E, PF0F
@@ -55,7 +55,7 @@ SPPF_LookupByFrame:
 	.word PF50, PF51, PF52, PF53, PF54, PF55, PF56, PF57
 	.word PF58, PF59, PF5A, PF5B, PF5C
 
-	; The six Patterns per Player_Frame to start each of the six Player sprites with!
+	; The six Patterns per player_animation_frame to start each of the six Player sprites with!
 	; Note the order is the three patterns for the three sprites that make the upper 
 	; half followed by the next three for the lower half.
 	; $F1 is a magic value reserved as a "don't display this sprite" flag
@@ -157,7 +157,7 @@ PF5C:	.byte $15, $17, $F1, $25, $27, $3D
 
 ; We should be good now up to 128 frames
 
-	; Selects a VROM page offset per Player_Frame
+	; Selects a VROM page offset per player_animation_frame
 Player_FramePageOff:
 	.byte 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0	; 00 - 0F
 	.byte 0,  0,  2,  2,  0,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1	; 10 - 1F
@@ -190,7 +190,7 @@ Player_PUpRootIndex:
 ; etc. all handled by this major subroutine...
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_Draw:
-	LDX <Player_Frame
+	LDX <player_animation_frame
 	LDA Player_FramePageOff,X
 	STA <var1		 ; Get VROM page offset for this animation frame -> var1
 
@@ -198,7 +198,7 @@ Player_Draw:
 	LDA Player_Character,Y	; Get this player's select character
 	TAY						; -> 'Y'
 	
-	LDA <Player_Suit			; Get current suit
+	LDA <player_powerup			; Get current suit
 	ADD Player_PUpRootIndex,Y	; Add the base index for this character
 	TAY							; -> 'Y'
 	
@@ -207,15 +207,15 @@ Player_Draw:
 
 	STA PatTable_BankSel+2	 ; Set VROM bank switch for sprites 1/4
 
-	LDA <Player_X
+	LDA <player_lo_x
 	SUB <Horz_Scroll
-	STA <Player_SpriteX	 ; Player_SpriteX = Player_X - Horz_Scroll
+	STA <player_sprite_lo_x	 ; player_sprite_lo_x = player_lo_x - Horz_Scroll
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	SUB Level_VertScroll
-	STA <Player_SpriteY	; Player_SpriteY = Player_Y - Level_VertScroll
+	STA <player_sprite_lo_y	; player_sprite_lo_y = player_lo_y - Level_VertScroll
 
-	LDA <Player_YHi	
+	LDA <player_hi_y	
 	SBC Level_VertScrollH
 	STA Player_AboveTop	 ; Player_Above top calculated if Player is off top of screen
 
@@ -293,7 +293,7 @@ PRG029_CF0B:
 	STA <var1
 
 PRG029_CF1E:
-	; X = Player_Frame
+	; X = player_animation_frame
 
 	TXA
 	ASL A	; 2 byte lookup
@@ -336,7 +336,7 @@ PRG029_CF1E:
 	LDA [Player_SprWorkL],Y	 
 	STA Sprite_RAM+$09,X	 
 
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	AND #$c0
 	ORA <var1		 ; Merge with possible other attributes (the star invincibility palette cycle)
 
@@ -366,7 +366,7 @@ PRG029_CF1E:
 PRG029_CF88:
 
 	; First row sprites
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	STA Sprite_RAM+$0C,X
 	STA Sprite_RAM+$10,X
 	STA Sprite_RAM+$14,X
@@ -378,7 +378,7 @@ PRG029_CF88:
 	STA Sprite_RAM+$08,X
 
 	; Left column
-	LDA <Player_SpriteX
+	LDA <player_sprite_lo_x
 	STA Sprite_RAM+$03,X
 	STA Sprite_RAM+$0F,X
 
@@ -392,7 +392,7 @@ PRG029_CF88:
 	STA Sprite_RAM+$0B,X
 	STA Sprite_RAM+$17,X
 
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	AND #$40
 	BEQ PRG029_D010	 ; If Player sprite is NOT horizontally flipped, jump to PRG029_D010
 
@@ -448,7 +448,7 @@ PRG029_D010:
 
 	; Reverse sprite Ys
 	; Second row sprites
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	STA Sprite_RAM+$00,X
 	STA Sprite_RAM+$04,X
 	STA Sprite_RAM+$08,X
@@ -485,16 +485,16 @@ NotNormalPDraw_NoRevGrav:
 PDraw_NoRevGravWithKuribo:
 	; In short, if Player is small, use var1 = 6, otherwise var1 = 0 (sprite vertical offset in shoe)
 	LDY #$00
-	LDA <Player_Suit
+	LDA <player_powerup
 	BNE KPRG029_D01D
 	LDY #$06
 KPRG029_D01D:
 	STY <var1
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ KPRG029_D029	 ; If Player is not mid-air, jump to KPRG029_D029
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BPL KPRG029_D029	 ; If Player is falling, jump to KPRG029_D029
 
 	EOR #$ff	 ; Otherwise negate it (sort of)
@@ -513,7 +513,7 @@ KPRG029_D029:
 
 KPRG029_D036:
 	ADD <var1	 ; Add that to the initial offset
-	ADD <Player_SpriteY	 ; And add in the Player's sprite Y position
+	ADD <player_sprite_lo_y	 ; And add in the Player's sprite Y position
 
 	; Store that as the new Y position on the "first row" sprites
 	STA Sprite_RAM+$0C,X
@@ -531,7 +531,7 @@ KPRG029_D036:
 PDraw_NoRevGravWithYoshi:
 	; Sprite vertical offset on Yoshi
 	LDY #-12
-	LDA <Player_Suit
+	LDA <player_powerup
 	BNE PRG029_D01D
 	LDY #-12
 PRG029_D01D:
@@ -540,7 +540,7 @@ PRG029_D01D:
 	; Check if Yoshi is tounge-out; if so, need to offset a little lower
 	LDY Player_Kuribo
 	DEY
-	LDA Objects_Var5,Y
+	LDA entity_var5,Y
 	BEQ Yoshi_No8Offset
 
 	LDA <var1
@@ -548,10 +548,10 @@ PRG029_D01D:
 	STA <var1
 
 Yoshi_No8Offset:
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG029_D036	 ; If Player is not mid-air, jump to PRG029_D036
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BPL PRG029_D029	 ; If Player is falling, jump to PRG029_D029
 
 	EOR #$ff	 ; Otherwise negate it (sort of)
@@ -570,7 +570,7 @@ PRG029_D029:
 
 PRG029_D036:
 	ADD <var1	 ; Add that to the initial offset
-	ADD <Player_SpriteY	 ; And add in the Player's sprite Y position
+	ADD <player_sprite_lo_y	 ; And add in the Player's sprite Y position
 
 	; Store that as the new Y position on the "first row" sprites
 	STA Sprite_RAM+$0C,X
@@ -590,9 +590,9 @@ PRG029_D036:
 	;STA Sprite_RAM+$06,X
 
 PRG029_D050:
-	LDA <Player_Frame
+	LDA <player_animation_frame
 	CMP #PF_KICK_BIG 
-	BNE PRG029_D076	 ; If Player_Frame <> PF_KICK_BIG (kicking shell, etc. when not small), jump to PRG029_D076
+	BNE PRG029_D076	 ; If player_animation_frame <> PF_KICK_BIG (kicking shell, etc. when not small), jump to PRG029_D076
 
 	; Otherwise the third "first row" sprite is pulled down to "second row"
 	; This becomes the foot involved in the kick!
@@ -601,7 +601,7 @@ PRG029_D050:
 
 	; If Player is not horizontally flipped, A = -8, otherwise A = 16
 	LDA #-8
-	LDY <Player_FlipBits
+	LDY <player_flipped_animation
 	BEQ PRG029_D064
 	LDA #16
 PRG029_D064:
@@ -617,7 +617,7 @@ PRG029_D064:
 	STA Sprite_RAM+$16,X	; Attributes are copied (is this necessary?)
 
 PRG029_D076:
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	AND #$80	 
 	BEQ PRG029_D094	 
 
@@ -642,7 +642,7 @@ PRG029_D094:
 	LDA Player_AboveTop
 	BPL PRG029_D0AE	 	; If Player is not above top of screen, jump to PRG029_D0AE
 
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	ADD #16
 	LDA #$00
 	ADC Player_AboveTop
@@ -653,12 +653,12 @@ PRG029_D094:
 PRG029_D0AE:
 	BNE PRG029_D0BC	 ; Jump reserved for when Player is already known as off screen, so jump (technically always) to PRG029_D0BC
 
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	CMP #$c0	 
-	BGE PRG029_D0BC	 ; If Player_SpriteY >= $C0, he's below the status bar, so jump to PRG029_D0BC
+	BGE PRG029_D0BC	 ; If player_sprite_lo_y >= $C0, he's below the status bar, so jump to PRG029_D0BC
 
 	CMP #$b0
-	BGE PRG029_D0C9	 ; If Player_SpriteY >= $B0, he's halway below the status bar, so jump to PRG029_D0C9
+	BGE PRG029_D0C9	 ; If player_sprite_lo_y >= $B0, he's halway below the status bar, so jump to PRG029_D0C9
 	BLT PRG029_D0D3	 ; Otherwise, Player is totally visible, jump to PRG029_D0D3
 
 PRG029_D0BC:
@@ -779,7 +779,7 @@ Player_DrawAndDoActions:
 	LDA Level_AScrlConfig
 	BEQ PRG029_D1CD	 		; If Level_AScrlConfig = 0 (no auto scroll going on), jump to PRG029_D1CD
 
-	JSR AutoScroll_CalcPlayerY	; Adjust Player_Y and Player_YHi for auto scroll
+	JSR AutoScroll_CalcPlayerY	; Adjust player_lo_y and player_hi_y for auto scroll
 
 PRG029_D1CD:
 	RTS		 ; Return
@@ -809,12 +809,12 @@ Player_IsNotLavaImmune:
 	; Release holding anything and stop horizontal movement
 	LDA #$00	 
 	STA Player_IsHolding
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 
 	; Produces an initial burst of upward Y velocity which slows down
 	INC Level_CoinHeav	; Level_CoinHeav++
 	LDA Level_CoinHeav
-	STA <Player_YVel
+	STA <player_lo_y_velocity
 	BNE PRG029_D1EE	 	; If Level_CoinHeav <> 0, jump to PRG029_D1EE
 
 	INC Level_CoinHeav	; Level_CoinHeav++
@@ -824,10 +824,10 @@ PRG029_D1EE:
 	BEQ Player_CoinHeavNoRev
 
 	; Reverse gravity...
-	LDA <Player_YHi
+	LDA <player_hi_y
 	CMP #1
 	BLT Player_CoinHeavNoRev	; If Player is not way below, jump to Player_CoinHeavNoRev
-	LDA <Player_Y
+	LDA <player_lo_y
 	CMP #$B0
 	BLT Player_CoinHeavNoRev	; If Player is not way below, jump to Player_CoinHeavNoRev
 	
@@ -835,15 +835,15 @@ PRG029_D1EE:
 	BGE Player_CoinHeavExecute
 
 Player_CoinHeavNoRev:
-	LDA <Player_YHi
+	LDA <player_hi_y
 	BPL PRG029_D205	 ; If Player hasn't gone above top of screen yet, jump to PRG029_D205
 
 	; Once Player crosses top of screen, he is then placed at halfway 
 	; above the status bar (16 pixels above the death point!)
 	LDA #$01
-	STA <Player_YHi	; Player_YHi = 1 (really low)
+	STA <player_hi_y	; player_hi_y = 1 (really low)
 	LDA #$b0	 
-	STA <Player_Y	; Player_Y = $B0 (near the bottom)
+	STA <player_lo_y	; player_lo_y = $B0 (near the bottom)
 
 	LDA #$d0
 	STA Level_CoinHeav
@@ -904,7 +904,7 @@ PRG029_D224:
 	LSR A
 	TAX		 ; X = Player_Grow >> 2
 
-	LDY <Player_Suit ; Y = Player_Suit
+	LDY <player_powerup ; Y = player_powerup
 	BNE PRG029_D238	 ; If Y <> 0 (small), jump to PRG029_D238
 
 	STX <var1
@@ -917,7 +917,7 @@ PRG029_D238:
 	PHP		 ; Save result
 
 	LDA Player_GrowFrames,X	 ; Get this grow frame
-	STA <Player_Frame	 ; Set as current frame
+	STA <player_animation_frame	 ; Set as current frame
 
 	JSR Player_Draw		 ; Draw Player
 
@@ -964,9 +964,9 @@ PRG029_D26B:
 
 	; SB: Now supporting a little air time while doing the end level run-off
 	LDA #$14
-	STA <Player_XVel	; Player_XVel = $14
+	STA <player_lo_x_velocity	; player_lo_x_velocity = $14
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PlayerRunOff_ApplyXVel	; If Player is mid-air, jump to PRG029_D279
 
 	DEC Player_EndLevel	; Player_EndLevel--
@@ -994,7 +994,7 @@ Player_NewPUpEffect_Draw:
 	TAY	; 'A' -> 'Y' (save Player_Grow value)
 
 	; Backup the actual power up in case we're doing the "Super" toggle
-	LDA <Player_Suit
+	LDA <player_powerup
 	PHA	; Save actual powerup
 
 	TYA	; 'Y' -> 'A' (restore Player_Grow value)
@@ -1004,14 +1004,14 @@ Player_NewPUpEffect_Draw:
 
 	; Do "previous powerup" toggle!
 	LDA <Player_OldSuit
-	STA <Player_Suit
+	STA <player_powerup
 
 Player_NewPUpEffect_Odd:
 
 	; Set grab frame as appropriate by suit
-	LDY <Player_Suit
+	LDY <player_powerup
 	LDA Airship_JumpFrameByPup,Y
-	STA <Player_Frame
+	STA <player_animation_frame
 
 	; Set power up's correct palette
 	JSR Level_SetPlayerPUpPal
@@ -1020,7 +1020,7 @@ Player_NewPUpEffect_Odd:
 
 	; Restore powerup
 	PLA
-	STA <Player_Suit
+	STA <player_powerup
 
 	RTS
 
@@ -1066,11 +1066,11 @@ PRG029_D296:
 
 	INC <Vert_Scroll
 
-	LDA <Objects_Y+4
+	LDA <entity_lo_y+4
 	SUB #$01
-	STA <Objects_Y+4	; Anchor's Y minus 1
+	STA <entity_lo_y+4	; Anchor's Y minus 1
 	BCS PRG029_D2AF
-	DEC <Objects_YHi+4	; If overflow occurred, propogate the carry
+	DEC <entity_hi_y+4	; If overflow occurred, propogate the carry
 PRG029_D2AF: 
 
 	PLA		 ; Restore Level_AirshipCtl
@@ -1096,43 +1096,43 @@ AirshipCtl_RunAndJump:
 
 	; Player makes the jump!
 	LDA #-$60
-	STA <Player_YVel	 ; Player_YVel = -$60
+	STA <player_lo_y_velocity	 ; player_lo_y_velocity = -$60
 	INC Level_AirshipCtl	 ; Next Level_AirshipCtl!
 
 PRG029_D2D0:
 	LDA #$01
-	STA <Player_FlipBits	 ; Player_FlipBits = 1
+	STA <player_flipped_animation	 ; player_flipped_animation = 1
 
 	LDA #$20
-	STA <Player_XVel	 ; Player_XVel = $20
+	STA <player_lo_x_velocity	 ; player_lo_x_velocity = $20
 
 	JMP PRG029_D457	 ; $D2D8 
 
 
 AirshipCtl_Catch:
-	LDA <Player_X
+	LDA <player_lo_x
 	CMP #$36	
-	BLT PRG029_D2FF	 ; If Player_X < $36, jump to PRG029_D2FF
+	BLT PRG029_D2FF	 ; If player_lo_x < $36, jump to PRG029_D2FF
 
 	; Apply Player's velocities
 	JSR Player_ApplyYVelocity
 	JSR Player_ApplyXVelocity
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	ADD #$04
-	STA <Player_YVel ; Player_YVel += 4
+	STA <player_lo_y_velocity ; player_lo_y_velocity += 4
 
 	CMP #$0f
-	BLS PRG029_D2F5	 ; If Player_YVel < $0F, jump to PRG029_D2F5
+	BLS PRG029_D2F5	 ; If player_lo_y_velocity < $0F, jump to PRG029_D2F5
 
 	INC Level_AirshipCtl	 ; Otherwise, next Level_AirshipCtl!
 
 PRG029_D2F5:
 
 	; Set mid-air jump frame as appropriate by suit and draw Player...
-	LDY <Player_Suit
+	LDY <player_powerup
 	LDA Airship_JumpFrameByPup,Y
-	STA <Player_Frame
+	STA <player_animation_frame
 	JMP Player_Draw	
 
 PRG029_D2FF:
@@ -1141,10 +1141,10 @@ PRG029_D2FF:
 
 AirshipCtl_HoldAnchor:
 	LDA #$02
-	STA <Player_FlipBits	 ; Player_FlipBits = 2 (use "caught anchor" frame)
+	STA <player_flipped_animation	 ; player_flipped_animation = 2 (use "caught anchor" frame)
 
 	LDA #-$14
-	STA <Player_YVel ; Player_YVel = -$14
+	STA <player_lo_y_velocity ; player_lo_y_velocity = -$14
 	JSR PRG029_D457	 ; Continue using the "run" code
 
 	LDA <Vert_Scroll
@@ -1168,7 +1168,7 @@ AirshipCtl_LandOnDeck:
 
 	JSR Player_ApplyYVelocity	 ; Apply Player's Y velocity
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI PRG029_D330	 	; If Player's Y velocity is negative (still rising), jump to PRG029_D330
 
 	LDA #$00
@@ -1176,9 +1176,9 @@ AirshipCtl_LandOnDeck:
 	STA Level_TimerEn	; Level_TimerEn = 0 (level timer enabled!)
 
 PRG029_D330:
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	ADD #$04
-	STA <Player_YVel ; Player_YVel += 4 (Player falling to airship)
+	STA <player_lo_y_velocity ; player_lo_y_velocity += 4 (Player falling to airship)
 
 	JSR Player_DoScrolling	; Update scrolling at Player's position
 
@@ -1197,18 +1197,18 @@ PRG029_D33E:
 	BLS PRG029_D354	 ; If Level_GetWandState < 7, jump to PRG029_D354
 
 	; Player's slow decent...
-	LDA <Player_Y
+	LDA <player_lo_y
 	ADD #$02
-	STA <Player_Y	 ; Player_Y += 2
+	STA <player_lo_y	 ; player_lo_y += 2
 
 	BCC PRG029_D354	 ; If no carry, jump to PRG029_D354
-	INC <Player_YHi	 ; Otherwise, apply carry
+	INC <player_hi_y	 ; Otherwise, apply carry
 
 PRG029_D354:
 	; Player holding wand!
-	LDY <Player_Suit ; Y = Player_Suit
+	LDY <player_powerup ; Y = player_powerup
 	LDA Airship_JumpFrameByPup,Y	 
-	STA <Player_Frame	; Use proper "mid-air" frame
+	STA <player_animation_frame	; Use proper "mid-air" frame
 	JSR Player_Draw	 	; Draw Player
 	JMP Wand_Offset_BySuit	 	; Jump to Wand_Offset_BySuit
 
@@ -1325,8 +1325,8 @@ PRG029_D3CB:
 
 	LDA Player_SprOff
 
-	LDX <Player_YVel
-	BPL PRG029_D3DF	 ; If Player_YVel >= 0 (going down), jump to PRG029_D3DF
+	LDX <player_lo_y_velocity
+	BPL PRG029_D3DF	 ; If player_lo_y_velocity >= 0 (going down), jump to PRG029_D3DF
 
 	ADD #$0c	 ; Remove other half of Player
 
@@ -1358,9 +1358,9 @@ Wand_YOff_BySuit:	.byte  1, -9, -9, -9,  3, -9, -9
 
 Wand_Offset_BySuit:
 	LDY Object_SprRAM+5	; Y = 5th index object Sprite RAM offset
-	LDX <Player_Suit	; X = Player's suit
+	LDX <player_powerup	; X = Player's suit
 
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	PHP		 	; Save Player flip bits
 
 	LDA Wand_XOff_BySuitR,X	; Wand offset, held right
@@ -1371,14 +1371,14 @@ Wand_Offset_BySuit:
 	LDA Wand_XOff_BySuitL,X	; Wand offset, held left
 
 PRG029_D415:
-	ADD <Player_SpriteX	; Add offset to Player sprite X
+	ADD <player_sprite_lo_x	; Add offset to Player sprite X
 	STA Sprite_RAM+$03,Y	; -> Sprite X
 
 	ADD #$08		; +8
 	STA Sprite_RAM+$07,Y	; -> Sprite X
 
-	; var1 = Player_YHi
-	LDA <Player_YHi
+	; var1 = player_hi_y
+	LDA <player_hi_y
 	STA <var1
 
 	LDA Wand_YOff_BySuit,X
@@ -1387,7 +1387,7 @@ PRG029_D415:
 	DEC <var1		; Otherwise, var1--
 
 PRG029_D42C:
-	ADD <Player_SpriteY	; Add offset to Player Y
+	ADD <player_sprite_lo_y	; Add offset to Player Y
 	BCC PRG029_D433	 	; If no carry, jump to PRG029_D433
 
 	INC <var1		; Otherwise, apply carry
@@ -1427,24 +1427,24 @@ PRG029_D457:
 	; The "run forward" bit at the end of a level...
 	; OR the run & jump for the airship!
 
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	AND #$02
-	BEQ PRG029_D468	 ; If (Player_FlipBits & 2) = 0, jump to PRG029_D468
+	BEQ PRG029_D468	 ; If (player_flipped_animation & 2) = 0, jump to PRG029_D468
 
 	JSR Player_ApplyYVelocity	 ; Apply Y velocity
 
 	; Used by airship only (the "caught anchor" frames)
-	LDY <Player_Suit
+	LDY <player_powerup
 	LDA Player_ClimbFrame,Y ; Get "caught anchor" frame
 	JMP PRG029_D49B	 	  ; Jump to PRG029_D49B
 
 PRG029_D468:
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	AND #$01
-	TAY		; Y = Player_FlipBits & 1 
+	TAY		; Y = player_flipped_animation & 1 
 	LDA Level_EndFlipBits,Y	 ; Get proper flip bit
-	ORA <Player_FlipBits	
-	STA <Player_FlipBits	 ; Level_EndFlipBits |= Level_EndFlipBits[Y]
+	ORA <player_flipped_animation	
+	STA <player_flipped_animation	 ; Level_EndFlipBits |= Level_EndFlipBits[Y]
 
 	JSR Player_ApplyXVelocity ; Apply X Velocity
 
@@ -1456,15 +1456,15 @@ PRG029_D468:
 
 PRG029_D47E:	; Jump point for horizontal pipe-walking
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	ASL A
 	ASL A		
 	ORA <var1
-	TAY		; Y = (Player_Suit << 2) | var1 (0 to 3)
+	TAY		; Y = (player_powerup << 2) | var1 (0 to 3)
 	LDA Player_WalkFramesByPUp,Y	; Get appropriate frame
 
 PRG029_D49B:
-	STA <Player_Frame	; Whatever the result, store as Player frame!
+	STA <player_animation_frame	; Whatever the result, store as Player frame!
 	JSR Player_Draw	 	; Draw Player
 	RTS		 ; Return
 
@@ -1542,10 +1542,10 @@ Pipe_Move_Down:
 	; Level_PipeMove = $82 (indicates Player is moving down through pipe, no additional action to be taken)
 	LDA #$82
 	STA Level_PipeMove
-	STA <Player_InAir 	; Flag Player as being mid-air (going to fall out the bottom)
+	STA <player_is_in_air 	; Flag Player as being mid-air (going to fall out the bottom)
 
 	LDA #$30
-	STA <Player_YVel 	; Player_YVel = $30 
+	STA <player_lo_y_velocity 	; player_lo_y_velocity = $30 
 
 	; SB: I'm overriding my override! (In Player_ApplyYVelocity)
 	LDA Level_PipeMove
@@ -1566,10 +1566,10 @@ Pipe_Move_Down:
 	LDA #$00	 
 	STA Player_IsDucking	; Clear ducking flag (since Player pressed down on a pipe, it's incorrectly set)
 	STA Level_PipeMove	; Not moving through a pipe anymore
-	STA <Player_XVel	; Not horizontally moving, period
+	STA <player_lo_x_velocity	; Not horizontally moving, period
 
 	LDA #$38
-	STA <Player_YVel	; Player_IsDucking = $38 (fall out the bottom)
+	STA <player_lo_y_velocity	; Player_IsDucking = $38 (fall out the bottom)
 
 PRG029_D50E:
 	RTS		 ; Return
@@ -1580,7 +1580,7 @@ Pipe_Move_Right:
 	STA Level_PipeMove
 
 	LDA #$40
-	STA <Player_FlipBits ; Player_FlipBits = $40 (facing right)
+	STA <player_flipped_animation ; player_flipped_animation = $40 (facing right)
 
 	LDY #$00	 ; Y = 0 (moving right)
 
@@ -1636,7 +1636,7 @@ Pipe_Move_Left:
 	STA Level_PipeMove
 
 	LDA #$00
-	STA <Player_FlipBits ; Player_FlipBits = $00 (facing left)
+	STA <player_flipped_animation ; player_flipped_animation = $00 (facing left)
 
 	LDY #$01	 ; Y = 1 (moving left)
 
@@ -1666,8 +1666,8 @@ Pipe_Transit:
 
 	LDA #-2		 ; A = -2 (scroll upward)
 	LDX #$01	 ; X = 1
-	LDY <Player_YVel ; Y = Player_YVel
-	BMI PRG029_D56F	 ; If Player_YVel < 0, jump to PRG029_D56F
+	LDY <player_lo_y_velocity ; Y = player_lo_y_velocity
+	BMI PRG029_D56F	 ; If player_lo_y_velocity < 0, jump to PRG029_D56F
 
 	; If Player_Vel >= 0...
 	LDA #$02	 ; A = 2 (scroll downward)
@@ -1680,8 +1680,8 @@ PRG029_D56F:
 	STA <Vert_Scroll 	; Vert_Scroll += A
 	STA Level_VertScroll	; Level_VertScroll += A
 
-	LDY <Player_YVel	; Y = Player_YVel
-	BPL PRG029_D584	 	; If Player_YVel >= 0, jump to PRG029_D584
+	LDY <player_lo_y_velocity	; Y = player_lo_y_velocity
+	BPL PRG029_D584	 	; If player_lo_y_velocity >= 0, jump to PRG029_D584
 
 	BCS PRG029_D59B	 	; If carry occurred from addition to Vert_Scroll, jump to PRG029_D59B
 
@@ -1704,8 +1704,8 @@ PRG029_D58A:
 
 	LDA #$00	; Level_PipeExitDir = 1 (exiting up) (SB: Starting 1 less for rev grav trick)
 
-	LDY <Player_YVel
-	BMI PRG029_D598	 	; If Player_YVel < 0, jump to PRG029_D598
+	LDY <player_lo_y_velocity
+	BMI PRG029_D598	 	; If player_lo_y_velocity < 0, jump to PRG029_D598
 
 	ADD #1	 ; Otherwise, Level_PipeExitDir = 2 (exiting down) (SB: Starting 1 less for rev grav trick)
 
@@ -1737,17 +1737,17 @@ PRG029_D59B:
 
 	; Player was going up
 
-	DEC <Player_YHi	 ; Player_YHi--
+	DEC <player_hi_y	 ; player_hi_y--
 	LDA #-16	 ; A = 16
 
 PRG029_D5B8:
-	ADD <Player_Y	
+	ADD <player_lo_y	
 	AND #$f0	
-	STA <Player_Y	 ; Player_Y = (Player_Y + A) & $F0  (tile-aligned move)
+	STA <player_lo_y	 ; player_lo_y = (player_lo_y + A) & $F0  (tile-aligned move)
 
 	BCC PRG029_D5C3	 ; If no carry, jump to PRG029_D5C3
 
-	INC <Player_YHi	 ; Otherwise, apply carry
+	INC <player_hi_y	 ; Otherwise, apply carry
 
 PRG029_D5C3:
 	RTS		 ; Return
@@ -1786,36 +1786,36 @@ PRG029_D5DC:
 
 	; Direction is down or up
 
-	LDX #(Player_Y - Player_X)	; Index Player's Y instead
+	LDX #(player_lo_y - player_lo_x)	; Index Player's Y instead
 
 	LDA PipeTransit_YDelta,Y	; Get delta
 	BPL PRG029_D5FD	 		; If it's not negative, jump to PRG029_D5FD
 
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	CMP #$68
 	LDA #$00
-	BLT PRG029_D608	 ; If Player_SpriteY < $68, jump to PRG029_D608
+	BLT PRG029_D608	 ; If player_sprite_lo_y < $68, jump to PRG029_D608
 
-	DEC <Player_XHi,X ; Decrement approprate Player Hi
+	DEC <player_hi_x,X ; Decrement approprate Player Hi
 	JMP PRG029_D605	 ; Jump to PRG029_D605
 
 PRG029_D5FD:
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	CMP #$38	 
 	LDA #$00	 
-	BGE PRG029_D608	 ; If Player_SpriteY >= $38, jump to PRG029_D608
+	BGE PRG029_D608	 ; If player_sprite_lo_y >= $38, jump to PRG029_D608
 
 PRG029_D605:
 	LDA PipeTransit_YDelta,Y 	; Get delta
 
 PRG029_D608:
-	ADD <Player_X,X		; Apply delta to Player X or Y (as appropriate)
+	ADD <player_lo_x,X		; Apply delta to Player X or Y (as appropriate)
 	AND #$fe	 	; Align to nearest 2 pixels
-	STA <Player_X,X	 	; Store it
+	STA <player_lo_x,X	 	; Store it
 
 	BCC PRG029_D613	 	; If no carry, jump to PRG029_D613
 
-	INC <Player_XHi,X	; Otherwise, apply carry
+	INC <player_hi_x,X	; Otherwise, apply carry
 
 PRG029_D613:
 	AND #$0f	 ; Lower 4 bits of Player's X or Y
@@ -1826,10 +1826,10 @@ PRG029_D613:
 
 	; Down or up
 
-	LDA <Player_X
+	LDA <player_lo_x
 	AND #$f0
 	ORA #$08
-	STA <Player_X	 ; Player_X = (Player_X & $F0) | 8  (nearest column, centered)
+	STA <player_lo_x	 ; player_lo_x = (player_lo_x & $F0) | 8  (nearest column, centered)
 
 	LDA #$01
 	STA <Scroll_LastDir ; Scroll_LastDir = 1 (down)
@@ -1859,9 +1859,9 @@ PRG029_D63F:
 	STA <Vert_Scroll
 	STY <Vert_Scroll_Hi
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	SUB Level_VertScroll
-	STA <Player_SpriteY	 ; Player_SpriteY = relative Y position
+	STA <player_sprite_lo_y	 ; player_sprite_lo_y = relative Y position
 
 PRG029_D651:
 	PLA		 ; Restore the lower 2 bits of Level_PipeMove (the direction)
@@ -1940,10 +1940,10 @@ PRG029_D69C:
 	TAY		 	; Y = lower 2 bits of Level_PipeMove (the direction)
 	BNE PRG029_D6AB	 	; If direction is not rightward, jump to PRG029_D6AB
 
-	; Otherwise, add 16 to Player_X
-	LDA <Player_X
+	; Otherwise, add 16 to player_lo_x
+	LDA <player_lo_x
 	ADD #16
-	STA <Player_X
+	STA <player_lo_x
 
 PRG029_D6AB:
 
@@ -1989,10 +1989,10 @@ Player_Die_Dying:
 	LDA Player_AboveTop
 	BNE PRG029_D6DA	 ; If Player is above top of screen, jump to PRG029_D6DA
 
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	AND #$f0
 	CMP #$b0
-	BEQ PRG029_D6E5	 ; If Player_SpriteY >= $B0 && Player_SpriteY <= $BF (Player is halfway below status bar), jump to PRG029_D6E5
+	BEQ PRG029_D6E5	 ; If player_sprite_lo_y >= $B0 && player_sprite_lo_y <= $BF (Player is halfway below status bar), jump to PRG029_D6E5
 
 PRG029_D6DA:
 	LDA Event_Countdown
@@ -2255,7 +2255,7 @@ PDTUGO_NotRev:
 	BNE PDTUGO_NotVert
 	
 	; Fix for Big Bertha: If Player's Y Hi is really big in a non-vertical level, count it!
-	LDA <Player_YHi
+	LDA <player_hi_y
 	CMP #2
 	BGE PDTUGO_IsOffScreen
 
@@ -2263,10 +2263,10 @@ PDTUGO_NotVert:
 	LDA Player_AboveTop
 	BNE PDTUGO_CheckNotOffScreen	 ; If Player is off top of screen, jump to PRG029_D71E
 
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	AND #$f0
 	CMP #$b0
-	BEQ PDTUGO_IsOffScreen	 ; If Player_SpriteY >= $B0 && Player_SpriteY <= $BF (Player is halfway below status bar), jump to PRG029_D729
+	BEQ PDTUGO_IsOffScreen	 ; If player_sprite_lo_y >= $B0 && player_sprite_lo_y <= $BF (Player is halfway below status bar), jump to PRG029_D729
 
 PDTUGO_CheckNotOffScreen:
 	CLC
@@ -2352,8 +2352,8 @@ PRG029_D6FB_fix:
 
 PRG029_D768:
 	; Player gravity while dying
-	INC <Player_YVel
-	INC <Player_YVel ; Player_YVel += 2
+	INC <player_lo_y_velocity
+	INC <player_lo_y_velocity ; player_lo_y_velocity += 2
 
 	LDX #$00	 ; X = 0 (?)
 
@@ -2361,7 +2361,7 @@ PRG029_D768:
 
 PRG029_D771:
 	LDA #PF_DIE
-	STA <Player_Frame ; Player_Frame = PF_DIE
+	STA <player_animation_frame ; player_animation_frame = PF_DIE
 
 	JSR Player_Draw	 ; Draw Player
 	RTS		 ; Return
@@ -2374,13 +2374,13 @@ PipeMove_LeftRight:
 	TAY		 ; Y = 0 (right) or 1 (left) 
 
 	LDA PipeMove_XVel,Y	 	; Get appropriate X velocity
-	STA <Player_XVel	 	; Set it!
+	STA <player_lo_x_velocity	 	; Set it!
 
 	JSR Player_ApplyXVelocity 	; Apply Player's X velocity
 
 	; A little "step up" into the pipe
-	DEC <Player_Y
-	DEC <Player_Y	 ; Player_Y -= 2
+	DEC <player_lo_y
+	DEC <player_lo_y	 ; player_lo_y -= 2
 
 	LDA <Counter_1
 	AND #$0c	
@@ -2391,8 +2391,8 @@ PipeMove_LeftRight:
 	JSR PRG029_D47E	 ; Do walking animation and draw Player
 
 	; Undo "step up"
-	INC <Player_Y
-	INC <Player_Y	 ; Player_Y += 2
+	INC <player_lo_y
+	INC <player_lo_y	 ; player_lo_y += 2
 
 	RTS		 ; Return
 
@@ -2410,7 +2410,7 @@ PipeMove_UpDown_Cont:
 	TAY		 ; Y = 0 (down) or 1 (up)
 
 	LDA PipeMove_YVel,Y	 	; Get appropriate Y velocity
-	STA <Player_YVel	 	; Set it!
+	STA <player_lo_y_velocity	 	; Set it!
 
 	JSR Player_ApplyYVelocity	; Apply Player's Y velocity
 
@@ -2420,9 +2420,9 @@ PipeMove_UpDown_Cont:
 Player_StopMovement:
 	LDA #$00
 	STA Level_PipeMove	; Not moving through a pipe
-	STA <Player_XVel	; Player stopped horizontall
-	STA <Player_YVel	; Player stopped vertically
-	STA <Player_InAir	; Not mid-air
+	STA <player_lo_x_velocity	; Player stopped horizontall
+	STA <player_lo_y_velocity	; Player stopped vertically
+	STA <player_is_in_air	; Not mid-air
 	RTS		 ; Return
 
 SuitLost_Poof_Patterns:
@@ -2445,7 +2445,7 @@ Player_SuitLost_DoPoof:
 
 PRG029_D7D3:
 	; Sprite Y
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	ADD #$08	 	; Start at 8 pixels below Player sprite Y pos
 	STA Sprite_RAM+$00,Y	 ; Store into sprite Y
 
@@ -2458,7 +2458,7 @@ PRG029_D7D3:
 	STA Sprite_RAM+$02,Y
 
 	; Sprite X
-	LDA <Player_X
+	LDA <player_lo_x
 	SUB <Horz_Scroll
 	STA Sprite_RAM+$03,Y
 
@@ -3745,8 +3745,8 @@ Player_DigSandFrames:
 
 Player_SetSpecialFramesAndDraw:
 
-	; Get absolute value of Player_XVel
-	LDA <Player_XVel
+	; Get absolute value of player_lo_x_velocity
+	LDA <player_lo_x_velocity
 	BPL PRG029_AECA
 	NEG
 PRG029_AECA:
@@ -3765,7 +3765,7 @@ PRG029_AECA:
 
 	LDY <Player_WalkFrame	; Y = Player_WalkFrame (0 - 3)
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BNE PRG029_AEEB	 ; If Player is NOT small, jump to PRG029_AEEB
 
 	INY
@@ -3775,7 +3775,7 @@ PRG029_AECA:
 
 PRG029_AEEB:
 	LDA Player_SpreadEagleFrames,Y	 ; Get cooresponding spread-eagle frame
-	STA <Player_Frame		 ; Store that!
+	STA <player_animation_frame		 ; Store that!
 
 PRG029_AEF0:
 	LDA Player_Flip
@@ -3790,18 +3790,18 @@ PRG029_AEF0:
 
 	LDA Player_SomersaultFlipBits,Y	 ; Get proper somersault flip bits
 
-	LDY <Player_XVel
-	BPL PRG029_AF05	 ; If Player_XVel >= 0, jump to PRG029_AF05
+	LDY <player_lo_x_velocity
+	BPL PRG029_AF05	 ; If player_lo_x_velocity >= 0, jump to PRG029_AF05
 
 	EOR #SPR_HFLIP	 ; Otherwise, horizontally flip!
 
 PRG029_AF05:
-	STA <Player_FlipBits		 ; Update Player flip bits
+	STA <player_flipped_animation		 ; Update Player flip bits
 	PLA		 ; Restore Counter_1 >> 1
 
 	AND #$03	 ; Cap 0 - 3
 	ADD #PF_SOMERSAULT_BASE	 ; Add base somersault frame
-	STA <Player_Frame ; Update Player_Frame!
+	STA <player_animation_frame ; Update player_animation_frame!
 
 PRG029_AF0F:
 	LDA Player_IsHolding
@@ -3814,12 +3814,12 @@ PRG029_AF0F:
 
 	LDY #$00	; Otherwise, Y = 0
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BNE PRG029_AF22	
 	INY		 ; ... unless small, in which case, Y = 1
 
 PRG029_AF22:
-	LDA <Player_Suit
+	LDA <player_powerup
 	BNE PRG029_AF2A	 ; If Player is NOT small, jump to PRG029_AF2A
 
 	INY
@@ -3829,7 +3829,7 @@ PRG029_AF22:
 
 PRG029_AF2A:
 	LDA Player_HoldingFrames,Y ; Get appropriate "holding" frame
-	STA <Player_Frame	 ; Update Player frame!
+	STA <player_animation_frame	 ; Update Player frame!
 
 PRG029_AF2F:
 	LDA Player_PipeFace
@@ -3838,7 +3838,7 @@ PRG029_AF2F:
 	LDA Player_IsHolding
 	BEQ PRG029_AF52	 ; If Player is NOT holding something, jump to PRG029_AF52
 
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	CMP Player_FlipBits_OLD
 	BEQ PRG029_AF52	 ; If Player's flip bits haven't changed, jump to PRG029_AF52
 
@@ -3850,13 +3850,13 @@ PRG029_AF45:
 
 	LDA #PF_INPIPE_BIG	; Face-forward frame when Player is NOT small
 
-	LDY <Player_Suit
+	LDY <player_powerup
 	BNE PRG029_AF50	 ; If Player is NOT small, jump to PRG029_AF50
 
 	LDA #PF_INPIPE_SMALL	 ; Face-forward frame when Player is small
 
 PRG029_AF50:
-	STA <Player_Frame ; Update Player frame !
+	STA <player_animation_frame ; Update Player frame !
 
 PRG029_AF52:
 	LDA Player_Kuribo
@@ -3866,7 +3866,7 @@ PRG029_AF52:
 	; Set riding frame
 	LDY #PF_RIDEYOSHI_SMALL
 	
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PSSFAD_FrameSet	; If small, set frame
 	
 	; Not small...
@@ -3879,7 +3879,7 @@ PRG029_AF52:
 	LDY #PF_RIDEYOSHI_RACCOON
 	
 PSSFAD_FrameSet:
-	STY <Player_Frame
+	STY <player_animation_frame
 
 PSSFAD_NotRidingYoshi:
 	LDA Player_Kick
@@ -3890,13 +3890,13 @@ PSSFAD_NotRidingYoshi:
 
 	LDY #PF_KICK_SMALL	 ; Kick frame when small
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PRG029_AF64	 ; If Player is small, jump to PRG029_AF64
 
 	LDY #PF_KICK_BIG	 ; Kick frame when NOT small
 
 PRG029_AF64:
-	STY <Player_Frame ; Update Player frame!
+	STY <player_animation_frame ; Update Player frame!
 
 	DEC Player_Kick	 ; PRG029_AF64--
 
@@ -3908,7 +3908,7 @@ PRG029_AF69:
 
 	LDY #$00	; Y = 0 (base index for small or penguin)
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PRG029_AF87	 ; If Player is small, jump to PRG029_AF87
 
 	LDY #$04	 ; Y = 4 (base index all suits that can slide on slopes)
@@ -3941,7 +3941,7 @@ PRG029_AF87:
 	LSR A		 ; Shift down one more time
 	TAY		 ; -> 'Y'
 	LDA TwisterSpin_FlipBits,Y ; Get appropriate flip bits
-	STA <Player_FlipBits	  ; ... and set them!
+	STA <player_flipped_animation	  ; ... and set them!
 
 	PLA		 ; Restore (0 - 2)
 
@@ -3949,15 +3949,15 @@ PRG029_AF87:
 	TAY		 ; -> 'Y'
 
 	LDA Player_TwisterSpinFrames,Y	 ; Get appropriate spin frame
-	STA <Player_Frame		 ; Update Player frame!
+	STA <player_animation_frame		 ; Update Player frame!
 
 PRG029_AFA1:
 	LDA Player_VibeDisable
 	BEQ PRG029_AFAD	 ; If Player is not "vibrationally disabled", jump to PRG029_AFAD
 
-	LDY <Player_Suit
+	LDY <player_powerup
 	LDA Player_VibeDisableFrame,Y	 ; Get appropriate "vibrationally disabled" frame (typ. standing)
-	STA <Player_Frame	; Update Player frame!
+	STA <player_animation_frame	; Update Player frame!
 
 PRG029_AFAD:
 	LDA Player_DigSand
@@ -3972,7 +3972,7 @@ PRG029_AFAD:
 	
 	LDY #2	; Y = 2 if small
 	
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PSSFAD_Yset		; If small, jump to PSSFAD_Yset
 	
 	LDY #0	; Y = 0 if anything else but raccoon
@@ -3993,7 +3993,7 @@ PSSFAD_Yset:
 
 PSSFAD_YOK:
 	LDA Player_DigSandFrames,Y
-	STA <Player_Frame
+	STA <player_animation_frame
 
 PSSFAD_NotDigging:
 	JMP Player_Draw

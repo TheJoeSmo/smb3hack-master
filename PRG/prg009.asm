@@ -5289,7 +5289,7 @@ AScroll_MovePlayer:
 	LDA #ASCONFIG_ENABLE
 	STA Level_AScrlConfig
 
-	LDY <Player_InAir
+	LDY <player_is_in_air
 	BNE PRG009_BCC0	 ; If Player is mid air, jump to PRG009_BCC0
 
 	LDA Level_AScrlLimitSel
@@ -5298,11 +5298,11 @@ AScroll_MovePlayer:
 
 	; World 8 tanks only...
 
-	LDA <Player_YHi
+	LDA <player_hi_y
 	CMP #$01
 	BNE PRG009_BCBC	 ; If Player is not low, jump to PRG009_BCBC
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	CMP #112
 	BGE PRG009_BCBD	 ; If Player Y >= 112, jump to PRG009_BCBD
 
@@ -5313,7 +5313,7 @@ PRG009_BCBD:
 	STY World8Tank_OnTank	 ; Player is standing on the tank (as opposed to the ground)
 
 PRG009_BCC0:
-	LDA <Player_SpriteX
+	LDA <player_sprite_lo_x
 	CMP #16
 	BLT PRG009_BCCA	 ; If Player is pressed against the left, jump to PRG009_BCCA
 
@@ -5326,13 +5326,13 @@ PRG009_BCCA:
 
 	LDA Level_AScrlHVel	; Get the horizontal scroll velocity
 	CLC		
-	SBC <Player_XVel	; Difference against Player's X velocity
-	EOR <Player_SpriteX	; Check sign of difference against Player's Sprite X
+	SBC <player_lo_x_velocity	; Difference against Player's X velocity
+	EOR <player_sprite_lo_x	; Check sign of difference against Player's Sprite X
 	BMI PRG009_BCF1	 	; Basically determines if Player should be pushed by the scroll; if not, jump to PRG009_BCF1
 
 	; Set Player's X velocity same as auto scroll horizontal velocity
 	LDA Level_AScrlHVel
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 
 	; Player_XVelFrac = 0
 	LDA #$00
@@ -5350,13 +5350,13 @@ PRG009_BCE0:
 	; World8Tank_OnTank is set....
 
 	; Move Player along as scroll occurs; simulates that the tank is rolling at the Player
-	LDA <Player_X
+	LDA <player_lo_x
 	ADD Level_AScrlHVelCarry
-	STA <Player_X
+	STA <player_lo_x
 
 	BCC PRG009_BCF1	 ; If no carry, jump to PRG009_BCF1
 
-	INC <Player_XHi	 ; Apply carry
+	INC <player_hi_x	 ; Apply carry
 
 PRG009_BCF1:
 
@@ -5367,7 +5367,7 @@ PRG009_BCF1:
 	AND #$01	; Masks 0/1
 	STA Level_AScrlSclLastDir	; -> Level_AScrlSclLastDir
 
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	BEQ PRG009_BD1D	 ; If Player is not moving horizontally, jump to PRG009_BD1D (RTS)
 
 	EOR Level_AScrlHVel
@@ -5384,11 +5384,11 @@ PRG009_BCF1:
 PRG009_BD0E:
 
 	; Apply carry to Player's X
-	ADD <Player_X
-	STA <Player_X
+	ADD <player_lo_x
+	STA <player_lo_x
 	TYA	
-	ADC <Player_XHi
-	STA <Player_XHi
+	ADC <player_hi_x
+	STA <player_hi_x
 
 	; Player_XVelFrac = 0
 	LDA #$00
@@ -5615,27 +5615,27 @@ PRG009_BDD0:
 
 	LDA #6	 ; A = 6
 
-	LDY <Player_Suit
+	LDY <player_powerup
 	BNE PRG009_BDDB	 ; If Player is not small, jump to PRG009_BDDB
 
 	LDA #18	 ; A = 18
 
 PRG009_BDDB:
-	ADC <Player_Y	; Offset to Player's feet
+	ADC <player_lo_y	; Offset to Player's feet
 	AND #$f0	; Align to tile grid
 	STA <var9  ; -> var9
 
-	LDA <Player_YHi
+	LDA <player_hi_y
 	ADC #$00	; Apply carry
 	AND #$01	; 0/1 only valid values in non-vertical level
 	STA <var3	; -> var3
 
 	; var10 = Player X + 8
-	LDA <Player_X
+	LDA <player_lo_x
 	ADD #$08
 	STA <var10
 
-	LDA <Player_XHi
+	LDA <player_hi_x
 	ADC #$00	 ; Apply carry
 	ASL A		 ; Multiply by 2 for Tile_Mem_Addr index
 	TAY		 ; -> 'Y'
@@ -5752,22 +5752,22 @@ Setup32PixPartWater:
 	LDA Player_IsDucking
 	BNE PRG009_BE93	 ; If Player is ducking, jump to PRG009_BE93
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PRG009_BE93	 ; If Player is small, jump to PRG009_BE93
 
 	INY		 ; Y = 1
 
 PRG009_BE93:
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	CMP Float_WaterBottomLimitY,Y	; Sets carry if greater-equal
-	TAY			; Y = Player_SpriteY
+	TAY			; Y = player_sprite_lo_y
 	ROR A			; Will rotate carry bit into bit 7
-	CPY #128		; Carry set if Player_SpriteY >= 128
+	CPY #128		; Carry set if player_sprite_lo_y >= 128
 	ROR A			; Will rotate carry bit into bit 7
 
 	; FloatLevel_PlayerWaterStat:
-	;	Bit 6: Set if Player_SpriteY >= Float_WaterBottomLimitY[Y] (player is beneath bottom of water)
-	;	Bit 7: Set if Player_SpriteY >= 128 (i.e. Player is beneath top of water)
+	;	Bit 6: Set if player_sprite_lo_y >= Float_WaterBottomLimitY[Y] (player is beneath bottom of water)
+	;	Bit 7: Set if player_sprite_lo_y >= 128 (i.e. Player is beneath top of water)
 	STA FloatLevel_PlayerWaterStat
 
 PRG009_BEA0:

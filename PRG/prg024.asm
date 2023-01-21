@@ -50,7 +50,7 @@ Cinematic_ToadAndKing:
 	STA ToadTalk_CPos
 
 	LDA #168
-	STA <Objects_X
+	STA <entity_lo_x
 
 	LDA #$60	 ; A = $60
 
@@ -432,7 +432,7 @@ PRG024_A3A4:
 	DEY		 ; Y--
 	BPL PRG024_A3A4	 ; While Y >= 0, loop
 
-	LDY Objects_Frame	; Y = yelling Toad's frame
+	LDY entity_animation_frame	; Y = yelling Toad's frame
 	LDX KingToad_PatOffset,Y ; X = base offset into patterns for this frame
 
 	; Patch the patterns on the yelling Toad for the current frame
@@ -650,10 +650,10 @@ King_Animate:
 	BNE PRG024_A4B2	 ; 6:7 ticks, jump to PRG024_A4B2
 
 	; Loop the panicking Toad's frame 2 to 0
-	DEC Objects_Frame
+	DEC entity_animation_frame
 	BPL PRG024_A4B2
 	LDA #$02
-	STA Objects_Frame
+	STA entity_animation_frame
 
 PRG024_A4B2:
 	LDA World_Num
@@ -4130,11 +4130,11 @@ EndingWZ_PartII_jmp:
 Ending_LoopWZ:
 
 	LDA #$FF
-	STA <Player_X
-	STA <Player_XHi
+	STA <player_lo_x
+	STA <player_hi_x
 	
 	LDA #$20
-	STA <Player_Y
+	STA <player_lo_y
 	
 	LDA #4
 	STA PatTable_BankSel+3
@@ -4268,15 +4268,15 @@ EWZIL_SpawnBJr:
 	
 	LDA <Horz_Scroll
 	ADD #$FF
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 	LDA <Horz_Scroll_Hi
 	ADC #0
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 	
 	LDA #$40
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 	LDA #1
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 	RTS
 
 EWZIL_SpawnBowser:
@@ -4285,18 +4285,18 @@ EWZIL_SpawnBowser:
 	
 	LDA <Horz_Scroll
 	ADD #$70
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 	LDA <Horz_Scroll_Hi
 	ADC #0
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 	
 	LDA #$90
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 	LDA #0
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 	LDA #14
-	STA <Objects_Var5,X
+	STA <entity_var5,X
 
 	LDA #$5E
 	STA <Graphics_Queue
@@ -4309,18 +4309,18 @@ EWZIL_SpawnBowser:
 
 EWZIL_Spawn:
 	LDX #0
-	STA Level_ObjectID,X
+	STA entity_type,X
 
 	JSR_THUNKC 0, Level_PrepareNewObject
 	
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 	RTS
 
 
 EndingWZ_PartII:
 
-	LDA <Objects_Var5
+	LDA <entity_var5
 	CMP #15
 	BNE Bowser_NotLandedYet
 

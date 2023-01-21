@@ -531,16 +531,16 @@ Mouser_Draw:
 	JSR Object_DetermineHorzVis	 ; Determine horizontal visibility of Mouser's sprites
 	JSR Object_DetermineVertVis	 ; Determine vertical visibility of Mouser's sprites
 
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
 	BEQ Mouser_NoHFlip	; If Mouser is not horizontally flipped, jump to Mouser_NoHFlip
 
 	; To draw flipped, we need to move the "big" part of the Mouser sprite over by 8
 	; To make sure it's syncing up with the horizontal vis checks, we'll shift the X
 	; over AND rotate the bits over, preserving carry so we can get that back later.
-	LDA Objects_X,X
+	LDA entity_lo_x,X
 	ADD #8
-	STA Objects_X,X
+	STA entity_lo_x,X
 
 	; Roll and save carry (will use vis checks for sprite column 2 and 3 instead of 1 and 2)
 	ROL Objects_SprHVis,X
@@ -560,14 +560,14 @@ Mouser_NoHFlip:
 	STA Sprite_RAM+$00,Y	; Top Right 
 	STA Sprite_RAM+$04,Y	; Bottom Right
 
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
 	BEQ Mouser_NoHFlip2	; If Mouser is not horizontally flipped, jump to Mouser_NoHFlip
 
 	; Undo the +8 we did earlier, restore the carry which we can use to determine visibility
-	LDA Objects_X,X
+	LDA entity_lo_x,X
 	SUB #8
-	STA Objects_X,X
+	STA entity_lo_x,X
 
 	PLP	; Restore carry
 	BCC Mouser_SprRightOK	; If sprite is not invisible, jump to Mouser_SprRightOK
@@ -586,21 +586,21 @@ Mouser_SprRightOK:
 	BNE Mouser_SprCont	; If top sprite is invisible, both are invisible; jump to Mouser_SprCont
 
 	; Set Y (normal)
-	LDA Objects_SpriteY,X
+	LDA entity_sprite_lo_y,X
 	STA Sprite_RAM+$00,Y	; Top Right 
 
 	LDA Objects_SprVVis,X
 	AND #1
 	BNE Mouser_SprCont	; If bottom sprite is invisible, jump to Mouser_SprCont
 
-	LDA Objects_SpriteY,X
+	LDA entity_sprite_lo_y,X
 	ADD #16
 	STA Sprite_RAM+$04,Y	; Bottom Right
 
 Mouser_SprCont:
 	; Pattern
 	
-	LDA Objects_Frame,X
+	LDA entity_animation_frame,X
 	ASL A	; Two patterns per frame
 	TAX
 	
@@ -632,10 +632,10 @@ Mouser_SprCont:
 	; -$0F, -$0B, $01
 	; -$07, -$03, $05
 
-	LDX <SlotIndexBackup		 ; X = object slot index
+	LDX <entity_index		 ; X = object slot index
 
 	; If Mouser is vertically flipped, need to switch the additional sprites' patterns
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	BPL Mouser_NoVFlip
 
 	LDA Sprite_RAM+$01,Y
@@ -735,15 +735,15 @@ Wart_DrawInit:
 	PHA
 	
 	; Get sprite Y/Attr/X -> var2/3/4
-	LDX <SlotIndexBackup
-	LDA <Objects_SpriteY,X
+	LDX <entity_index
+	LDA <entity_sprite_lo_y,X
 	STA <var2
 
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	CMP #5
 	BNE Wart_DrawInit_NoCycle
 
-	LDA Objects_Var6,X
+	LDA entity_var6,X
 	BEQ Wart_DrawInit_NoCycle
 	
 	AND #3
@@ -753,10 +753,10 @@ Wart_DrawInit_NoCycle:
 	LDA Objects_SprAttr,X
 	
 Wart_DrawInit_Cycle:
-	ORA Objects_FlipBits,X
+	ORA entity_flipped_animation,X
 	STA <var3
 	
-	LDA <Objects_SpriteX,X
+	LDA <entity_sprite_lo_x,X
 	STA <var4
 	
 	; Restore 'X'
@@ -807,7 +807,7 @@ Wart_DrawBackside_Loop:
 	DEC <var1	; var1--
 	BNE Wart_DrawBackside_Loop	; While var1 > 0, loop!
 
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	RTS
 
 ObjInit_Wart:
@@ -839,9 +839,9 @@ Wart_Draw:
 	JSR Object_StealAdjSprite
 
 	; Draw Wart's eyes
-	LDX <SlotIndexBackup
+	LDX <entity_index
 
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	ASL A
 	ASL A
 	ADD #(WartPats_Eyes - ObjPE2)
@@ -850,34 +850,34 @@ Wart_Draw:
 
 
 	; Left foot
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	
 	; Feet appear at +32
-	LDA <Objects_SpriteY,X
+	LDA <entity_sprite_lo_y,X
 	ADD #32
-	STA <Objects_SpriteY,X
+	STA <entity_sprite_lo_y,X
 	
-	LDA Objects_Var3,X
+	LDA entity_var3,X
 	ASL A
 	ADD #(WartPats_LeftFoot - ObjPE2)
 	TAX
 	JSR Wart_Draw16x16
 
-	LDX <SlotIndexBackup
+	LDX <entity_index
 
 	; Mouth appears at -16
-	LDA <Objects_SpriteY,X
+	LDA <entity_sprite_lo_y,X
 	SUB #16
-	STA <Objects_SpriteY,X
+	STA <entity_sprite_lo_y,X
 
 	; Object +2 sprites
 	LDA #1
 	JSR Object_StealAdjSprite
 		
 	; Draw Wart's mouth
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	
-	LDA Objects_Var2,X
+	LDA entity_var2,X
 	ASL A
 	ASL A
 	ADD #(WartPats_Mouth - ObjPE2)
@@ -885,41 +885,41 @@ Wart_Draw:
 	JSR Wart_Draw32x16
 
 	; Right feet
-	LDX <SlotIndexBackup
+	LDX <entity_index
 
 	; Feet appear at +16Y / +16X
-	LDA <Objects_SpriteY,X
+	LDA <entity_sprite_lo_y,X
 	ADD #16
-	STA <Objects_SpriteY,X
-	LDA <Objects_SpriteX,X
+	STA <entity_sprite_lo_y,X
+	LDA <entity_sprite_lo_x,X
 	ADD #16
-	STA <Objects_SpriteX,X
+	STA <entity_sprite_lo_x,X
 
 	; Right foot
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	ASL A
 	ADD #(WartPats_RightFoot - ObjPE2)
 	TAX
 	JSR Wart_Draw16x16
 
 
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	CMP #5
 	BGE Wart_Untouchable
 	
 	; Need to call this again to normalize detection
 	JSR Object_ShakeAndCalcSprite
-	LDX <SlotIndexBackup
+	LDX <entity_index
 		
 	RTS
 
 Wart_Untouchable:
 	; Deliberately prevent Wart from being touched right now
 	LDA #255
-	STA Objects_SpriteX,X
-	STA Objects_SpriteY,X
+	STA entity_sprite_lo_x,X
+	STA entity_sprite_lo_y,X
 	RTS
 
 
@@ -927,31 +927,31 @@ ObjInit_Boomer:
 	JSR PrepareNewObjectOrAbort
 	
 	LDA #OBJ_BOSS_BOWSERJR
-	STA Level_ObjectID,X
+	STA entity_type,X
 	
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 
 	LDA #SPR_PAL2
 	STA Objects_SprAttr,X
 
 	LDA #2
-	STA Objects_Var6,X
+	STA entity_var6,X
 
 	; Push Boomer's index to Bowser Jr
-	LDA <SlotIndexBackup
-	STA Objects_Var3,X
+	LDA <entity_index
+	STA entity_var3,X
 
 	TXA		; Jr's index -> 'A'
 		
-	LDX <SlotIndexBackup	; Restore Boomer's index
+	LDX <entity_index	; Restore Boomer's index
 
-	STA Objects_Var10,X	; Jr's index -> Var8
+	STA entity_var10,X	; Jr's index -> Var8
 
 	JSR Boomer_LockBowserJr
 
 	LDA #140
-	STA Objects_Timer,X
+	STA entity_timer,X
 	STA Player_HaltTick
 
 	LDA #142	; Boomer graphics!
@@ -973,14 +973,14 @@ ObjInit_BigBooBoomer_Cont:
 
 	; No handle on a Para-Drybones yet
 	LDA #$FF
-	STA Objects_Var3,X
+	STA entity_var3,X
 
 	; Backup starting X/Y
-	LDA <Objects_X,X
-	STA Objects_Var6,X
+	LDA <entity_lo_x,X
+	STA entity_var6,X
 	
-	LDA <Objects_Y,X
-	STA Objects_Var7,X
+	LDA <entity_lo_y,X
+	STA entity_var7,X
 
 	LDA #3
 	STA Objects_HitCount,X
@@ -996,32 +996,32 @@ BigBoo_PatTables:	.byte 68, 64
 
 ObjNorm_BigBoo:
 
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	BEQ BigBoo_Normal
 	JMP BigBoo_GotHit
 
 BigBoo_Normal:
-	LDA Objects_State,X
+	LDA entity_state,X
 	CMP #OBJSTATE_KILLED
 	BNE BigBoo_NotDying	; If not dying, jump to Birdo_NotDying
 
 	; Kill off frozen PDB
-	LDY Objects_Var3,X
+	LDY entity_var3,X
 	LDA #OBJSTATE_KILLED
-	STA Objects_State,Y
+	STA entity_state,Y
 
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 	
 	; Hit state
-	INC <Objects_Var4,X
+	INC <entity_var4,X
 
 	; Check if dead yet...
 	DEC Objects_HitCount,X
 	BNE BigBoo_NotDeadYet
 
 	; Dead!
-	INC <Objects_Var4,X
+	INC <entity_var4,X
 
 	JSR_THUNKA 42, Boss_DestroyOtherObjects
 
@@ -1029,9 +1029,9 @@ BigBoo_Normal:
 	STA Level_TimerEn
 
 	LDA #-$20
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 	LDA #0
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
 BigBoo_NotDeadYet:
 	JMP BigBoo_GotHit
@@ -1042,10 +1042,10 @@ BigBoo_NotDying:
 	BNE BigBoo_NoChange
 
 	; Var1 is vertical float direction
-	LDY Objects_Var1,X
+	LDY entity_var1,X
 	LDA BigBoo_YVelAccel,Y
-	ADD <Objects_YVel,X
-	STA <Objects_YVel,X
+	ADD <entity_lo_y_velocity,X
+	STA <entity_lo_y_velocity,X
 	
 	CMP BigBoo_YVelLimit,Y
 	BNE BigBoo_NotYVelLimit		; If Big Boo hasn't hit his Y velocity limit yet, jump to BigBoo_NotYVelLimit
@@ -1053,18 +1053,18 @@ BigBoo_NotDying:
 	; Reverse direction!
 	TYA
 	EOR #1
-	STA Objects_Var1,X
+	STA entity_var1,X
 	
 BigBoo_NotYVelLimit:
 
 	; Var2 is horizontal float direction
-	LDY Objects_Var2,X
-	LDA <Objects_XVel,X
+	LDY entity_var2,X
+	LDA <entity_lo_x_velocity,X
 	CMP BigBoo_XVelLimit,Y
 	BEQ BigBoo_XVelLimitHit		; If Big Boo hit his Y velocity limit yet, jump to BigBoo_XVelLimitHit
 
 	ADD BigBoo_XVelAccel,Y
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	
 BigBoo_XVelLimitHit:
 
@@ -1072,20 +1072,20 @@ BigBoo_XVelLimitHit:
 	BNE BigBoo_RightwardCheck
 	
 	; Big Boo leftward check...
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	CMP #$10
 	BLT BigBoo_ReverseDirection		; If Big Boo has gone too far left, jump to BigBoo_ReverseDirection
 	BGE BigBoo_NoChange				; Otherwise, jump to BigBoo_NoChange
 	
 BigBoo_RightwardCheck:
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	CMP #$B8
 	BLT BigBoo_NoChange		; If Big Boo hasn't gone too far right, jump to BigBoo_NoChange
 
 BigBoo_ReverseDirection:
 	TYA
 	EOR #1
-	STA Objects_Var2,X
+	STA entity_var2,X
 	
 
 BigBoo_NoChange:
@@ -1094,7 +1094,7 @@ BigBoo_NoChange:
 	LDA BigBoo_PatTables,Y
 	STA PatTable_BankSel	; Big Boo graphics!
 
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	BNE BigBoo_DontHurt
 
 	LDA <Counter_1
@@ -1106,10 +1106,10 @@ BigBoo_NoChange:
 BigBoo_NoPengCheck:
 
 	; Check the health of our Para-Drybones
-	LDY Objects_Var3,X
+	LDY entity_var3,X
 	BMI BigBoo_PDB_Spawn	; If we don't have a handle on a Para-Drybones, create one!
 	
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	CMP #OBJSTATE_NORMAL
 	BEQ BigBoo_ParaDrybonesFlinger	; If our Para-Drybones is alive and well, jump to BigBoo_ParaDrybonesFlinger
 
@@ -1124,29 +1124,29 @@ BigBoo_PDB_Spawn:
 	JSR BigBoo_SpawnParaDrybones	; ... so create a new one!
 
 BigBoo_ParaDrybonesFlinger:
-	LDA Objects_Var3,X		; Act on behalf of the PDB
+	LDA entity_var3,X		; Act on behalf of the PDB
 	TAX
 	
 	LDA Objects_FrozenTimer,X
 	BNE BigBoo_PDB_Frozen	; Don't move if frozen!
 
-	LDY <SlotIndexBackup
-	LDA Level_ObjectID,Y
+	LDY <entity_index
+	LDA entity_type,Y
 	CMP #OBJ_BOSS_BIGBOO3
 	BNE BigBoo_PDB_Frozen	; Only Big Boo 3, with paradrybones, needs to manually move him
 
-	LDA Level_ObjectID,X
+	LDA entity_type,X
 	CMP #OBJ_PARADRYBONES
 	BNE BigBoo_PDB_Frozen	; Only need to boost Para-Drybones, nothing else!
 	
 	LDA #$10
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	
 	JSR Object_ApplyXVel	; Normally PDB doesn't use X velocity
 	
 BigBoo_PDB_Frozen:
 	JSR Object_DeleteOffScreen
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	
 
 BigBoo_NoParaDBCheck:
@@ -1163,29 +1163,29 @@ BigBoo_Common:
 
 	; Big Boo Y Tracking
 	LDA #$90
-	SUB <Objects_Y,X
+	SUB <entity_lo_y,X
 	STA Vert_Scroll_Off
 	
 	; Big Boo X Tracking
 	LDA #$C0
-	SUB <Objects_X,X
+	SUB <entity_lo_x,X
 	STA Horz_Scroll_Off32PP
 
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	PHA
 	ADD #32
-	STA <Objects_X,X
-	LDA <Objects_XHi,X
+	STA <entity_lo_x,X
+	LDA <entity_hi_x,X
 	PHA
 	ADC #0
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 
 	JSR Level_ObjCalcXDiffs
 	
 	PLA
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 	PLA
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 	RTS
 	
 	
@@ -1195,73 +1195,73 @@ BigBoo_SpawnParaDrybones:
 	
 	JSR PrepareNewObjectOrAbort
 		
-	LDA Level_ObjectID,Y
+	LDA entity_type,Y
 	CMP #OBJ_BOSS_BIGBOO3
 	BEQ BigBoo_SpawnPDB
 		
 	; Big Boo 1 or 2
 	LDA #$84
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 	
 	LDA #OBJ_DRYBONES
-	STA Level_ObjectID,X
+	STA entity_type,X
 	BNE BigBoo_SpawnCont	; Jump (technically always) to BigBoo_SpawnCont
 	
 BigBoo_SpawnPDB:
 	; Big Boo 3 only
 	LDA #$70
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 
 	LDA #OBJ_PARADRYBONES
-	STA Level_ObjectID,X
+	STA entity_type,X
 
 	; This Para-Drybones comes flying by
 	LDA #$10
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	
 BigBoo_SpawnCont:
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 	
 	LDA #0
-	STA <Objects_X,X
-	STA <Objects_XHi,X
+	STA <entity_lo_x,X
+	STA <entity_hi_x,X
 	
 	LDA #1
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 	LDA #SPR_PAL2
 	STA Objects_SprAttr,X
 	
 	; Regular Dry Bones needs facing info
 	LDA #SPR_HFLIP
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 	
 	TXA		; X -> A ... we'll be storing a handle
 	
-	LDX <SlotIndexBackup	
+	LDX <entity_index	
 	
 	; Store a handle to this Para-Drybones
-	STA Objects_Var3,X
+	STA entity_var3,X
 		
 	RTS
 
 
 BigBoo_Dying:
 
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	BEQ BigBoo_StillDying
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	CMP #$A0
 	BGE BigBoo_Dead
 
 BigBoo_StillDying:
-	INC <Objects_YVel,X
+	INC <entity_lo_y_velocity,X
 
 	RTS
 
 BigBoo_Dead:
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	CMP #3
 	BEQ BigBoo_DeadCont
 	CMP #4
@@ -1279,10 +1279,10 @@ BigBoo_Dead:
 BigBoo_NoFanfare:
 	; Halt vertical drop
 	LDA #0
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 	
 	; Only do this setup once
-	INC <Objects_Var4,X
+	INC <entity_var4,X
 	BNE BigBoo_StillTimering
 	
 BigBoo_DeadCont:
@@ -1292,15 +1292,15 @@ BigBoo_DeadCont:
 
 	; Set timer to $40
 	LDA #$40
-	STA Objects_Var1,X
+	STA entity_var1,X
 	
-	INC <Objects_Var4,X
+	INC <entity_var4,X
 
 BigBoo_StillTimering:
 	RTS
 	
 BigBoo_DeadFinish:
-	LDA Level_ObjectID,X
+	LDA entity_type,X
 	CMP #OBJ_BOSS_BIGBOO3
 	BEQ BigBoo_EndWorld
 
@@ -1315,65 +1315,65 @@ BigBoo_GotHit:
 
 	; Prevent further hits
 	LDA #$FF
-	STA <Objects_SpriteX,X
-	STA <Objects_SpriteY,X
+	STA <entity_sprite_lo_x,X
+	STA <entity_sprite_lo_y,X
 
 	LDA PatTable_BankSel
 	ORA #2
 	STA PatTable_BankSel
 
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	CMP #2
 	BGE BigBoo_Dying
 
 	LDA #0
-	STA <Objects_XVel,X		; Halt X velocity
-	STA <Objects_YVel,X		; Halt Y velocity
-	STA Objects_Var1,X		; Reset direction
-	STA Objects_Var2,X		; Reset direction
+	STA <entity_lo_x_velocity,X		; Halt X velocity
+	STA <entity_lo_y_velocity,X		; Halt Y velocity
+	STA entity_var1,X		; Reset direction
+	STA entity_var2,X		; Reset direction
 
-	LDA <Objects_X,X
-	CMP Objects_Var6,X
+	LDA <entity_lo_x,X
+	CMP entity_var6,X
 	BLT BigBoo_ReturnR
 	BEQ BigBoo_NoReturnLR
 		
 	; Return leftward
-	DEC <Objects_X,X
+	DEC <entity_lo_x,X
 	JMP BigBoo_NoReturnLR
 	
 BigBoo_ReturnR:
-	INC <Objects_X,X
+	INC <entity_lo_x,X
 	
 BigBoo_NoReturnLR:
 
-	LDA <Objects_Y,X
-	CMP Objects_Var7,X
+	LDA <entity_lo_y,X
+	CMP entity_var7,X
 	BLT BigBoo_VReturnR
 	BEQ BigBoo_NoVReturnLR
 		
 	; Return leftward
-	DEC <Objects_Y,X
+	DEC <entity_lo_y,X
 	JMP BigBoo_NoVReturnLR
 	
 BigBoo_VReturnR:
-	INC <Objects_Y,X
+	INC <entity_lo_y,X
 	
 BigBoo_NoVReturnLR:
 
-	LDA <Objects_X,X
-	CMP Objects_Var6,X
+	LDA <entity_lo_x,X
+	CMP entity_var6,X
 	BNE BigBoo_NotHome	; Big Boo isn't back in position, jump to BigBoo_NotHome
 
-	LDA <Objects_Y,X
-	CMP Objects_Var7,X
+	LDA <entity_lo_y,X
+	CMP entity_var7,X
 	BNE BigBoo_NotHome	; Big Boo isn't back in position, jump to BigBoo_NotHome
 	
 	; Big Boo is back in home position... 
-	LDY Objects_Timer,X
+	LDY entity_timer,X
 	BNE BigBoo_TimerRunning
 		
 	LDA #$80
-	STA Objects_Timer,X
+	STA entity_timer,X
 	TAY
 	
 BigBoo_TimerRunning:
@@ -1394,19 +1394,19 @@ BigBoo_NotWavingYet:
 	BNE BigBoo_NotHome
 		
 	; Timer expired!  Back to flying around!
-	DEC <Objects_Var4,X
+	DEC <entity_var4,X
 
 	; Clear old PDB handle
 	LDA #$FF
-	STA Objects_Var3,X
+	STA entity_var3,X
 	
-	LDA Level_ObjectID,X
+	LDA entity_type,X
 	CMP #OBJ_BOSS_BIGBOO1
 	BEQ BigBoo_NotHome		; Big Boo 1 does not spawn a buddy
 	
 	; Spawn a buddy!
 	JSR BigBoo_SpawnBuddy
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	
 BigBoo_NotHome:
 	RTS
@@ -1421,17 +1421,17 @@ BigBoo_SpawnBuddy:
 	LDA RandomN
 	AND #$7F
 	ADD #32
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 	LDA #0
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 	
 	LDA #$20
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 	LDA #1
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 	
 	LDA #OBJ_BOO
-	STA Level_ObjectID,X
+	STA entity_type,X
 
 	LDA #SPR_PAL1
 	STA Objects_SprAttr,X
@@ -1440,13 +1440,13 @@ BigBoo_SpawnBuddy:
 	JSR Object_DetermineVertVis
 	JSR SpecialObj_FindEmptyAbort	 
 
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	STA SpecialObj_YLo,Y
 
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	STA SpecialObj_YHi,Y
 
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	STA SpecialObj_XLo,Y
 
 	; A "poof"
@@ -1460,17 +1460,17 @@ BigBoo_SpawnBuddy:
 	RTS
 	
 BigBoo_SpawnPenguinSuit:
-	LDA <Player_Suit
-	CMP #PLAYERSUIT_PENGUIN
+	LDA <player_powerup
+	CMP #powerup_penguin
 	BEQ BigBoo_SPS_DoNothing
 
 	LDY #4
 BigBoo_PS_Loop:
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	CMP #OBJSTATE_NORMAL
 	BNE BigBoo_PS_Loop_NotPS
 	
-	LDA Level_ObjectID,Y
+	LDA entity_type,Y
 	CMP #OBJ_POWERUP_STARMAN
 	BNE BigBoo_PS_Loop_NotPS
 	
@@ -1485,29 +1485,29 @@ BigBoo_PS_Loop_NotPS:
 	; Need a penguin suit!
 	JSR PrepareNewObjectOrAbort
 
-	INC Objects_Frame,X
-	INC Objects_Frame,X
+	INC entity_animation_frame,X
+	INC entity_animation_frame,X
 
 	LDA #$78
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 	LDA #0
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 	
 	LDA #$90
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 	LDA #1
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 	
 	LDA #-$40
-	STA <Objects_YVel,X	
+	STA <entity_lo_y_velocity,X	
 	
 	LDA #OBJ_POWERUP_STARMAN
-	STA Level_ObjectID,X
+	STA entity_type,X
 
 	LDA #(SPR_PAL2 | SPR_BEHINDBG)
 	STA Objects_SprAttr,X
 	
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	
 	RTS
 
@@ -1515,42 +1515,42 @@ BigBoo_PS_Loop_NotPS:
 Boomer_PatTables:	.byte 142, 140
 
 Boomer_LockBowserJr:
-	LDY Objects_Var10,X
+	LDY entity_var10,X
 	
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	ADD #20
-	STA Objects_X,Y
-	LDA <Objects_XHi,X
+	STA entity_lo_x,Y
+	LDA <entity_hi_x,X
 	ADC #0
-	STA Objects_XHi,Y
+	STA entity_hi_x,Y
 	
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	SUB #24
-	STA Objects_Y,Y
-	LDA <Objects_YHi,X
+	STA entity_lo_y,Y
+	LDA <entity_hi_y,X
 	SBC #0
-	STA Objects_YHi,Y
+	STA entity_hi_y,Y
 
 	RTS
 
 ObjNorm_Boomer:
-	LDA Objects_State,X
+	LDA entity_state,X
 	CMP #OBJSTATE_NORMAL
 	BEQ Boomer_DoNormal
 
 	; Boomer died...
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	CMP #2
 	BGE Boomer_DoNormal	; If Boomer is in a dying state, jump to Boomer_Normal
 	
 	; Start death state
 	LDA #2
-	STA <Objects_Var4,X
+	STA <entity_var4,X
 	
 Boomer_DoNormal:
 	JSR Boomer_LockBowserJr
 
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	JSR DynJump
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
@@ -1560,20 +1560,20 @@ Boomer_DoNormal:
 
 Boomer_Intro:
 	LDA #-$08
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 
 	JSR BigBoo_Common
 	
 	LDA Boomer_PatTables+1
 	STA PatTable_BankSel
 	
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Boomer_StillRising
 	
 	LDA #0
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 	
-	INC <Objects_Var4,X
+	INC <entity_var4,X
 	
 Boomer_StillRising:
 
@@ -1598,7 +1598,7 @@ Boomer_Normal:
 	;BNE Boomer_NotHit
 
 	; A little manual implementation of hit testing... don't want to hurt Player, just be stompable
-	;LDA <Player_YVel
+	;LDA <player_lo_y_velocity
 	;BMI Boomer_NotHit	; If Player moving upward, jump to Boomer_NotHit
 
 	;JSR Object_HitTest
@@ -1615,7 +1615,7 @@ Boomer_Normal:
 	
 	; Boomer's dead...
 	;LDA #OBJSTATE_KILLED
-	;STA Objects_State,X
+	;STA entity_state,X
 	
 ;Boomer_NotDead:
 	; Play squish sound
@@ -1625,7 +1625,7 @@ Boomer_Normal:
 
 	; Player Y Vel = -$30 (bounce off)
 	;LDA #-$30
-	;STA <Player_YVel
+	;STA <player_lo_y_velocity
 
 	;LDA #$40
 	;STA Objects_ColorCycle,X
@@ -1644,13 +1644,13 @@ Boomer_Normal:
 	LDA Boomer_BJr_FlipDir,Y
 	STA <var3
 	
-	LDY Objects_Var10,X		; Get BJr's handle
+	LDY entity_var10,X		; Get BJr's handle
 
-	LDA Objects_Var5,Y
+	LDA entity_var5,Y
 	BEQ BoomerBowserJr_NotSpinOut	; If Bowser Jr is not spinning out, don't force flip, jump to BoomerBowserJr_NotSpinOut
 
 	; Spinning out ... last hit?
-	LDA Objects_Var6,Y
+	LDA entity_var6,Y
 	BNE BoomerJr_NotDefeated	; If not, jump to BoomerJr_NotDefeated
 	
 	LDA RandomN
@@ -1658,14 +1658,14 @@ Boomer_Normal:
 	SUB #4
 	ASL A
 	ASL A
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	
 	LDA RandomN+1
 	AND #7
 	SUB #4
 	ASL A
 	ASL A
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 	
 	PLA
 	RTS
@@ -1673,7 +1673,7 @@ Boomer_Normal:
 BoomerBowserJr_NotSpinOut:
 	; Set flip
 	LDA <var3
-	STA Objects_FlipBits,Y
+	STA entity_flipped_animation,Y
 	
 BoomerJr_NotDefeated:
 	PLA
@@ -1681,20 +1681,20 @@ BoomerJr_NotDefeated:
 	TAY
 	STY <var3	; var3 = 2 if facing left, 0 if facing right
 
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Boomer_FireWait
 
-	LDY Objects_Var1,X
+	LDY entity_var1,X
 	
 	; Fire from other side next time
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	EOR #1
-	STA Objects_Var1,X
+	STA entity_var1,X
 	
 	LDA Boomer_FireOffsetY,Y
 	STA <var2
 	LDA Boomer_FireDelay,Y
-	STA Objects_Timer,X
+	STA entity_timer,X
 
 	TYA
 	ADD <var3
@@ -1703,42 +1703,42 @@ BoomerJr_NotDefeated:
 	STA <var1
 		
 	JSR Boomer_FireBullet
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	
 Boomer_FireWait:
 	LDA <Counter_1
 	AND #1
 	BNE Boomer_SkipVel
 	
-	LDY Objects_Var2,X	; Direction
-	LDA <Objects_YVel,X
+	LDY entity_var2,X	; Direction
+	LDA <entity_lo_y_velocity,X
 	CMP Boomer_YVelLimit,Y
 	BNE Boomer_YAccel
 
 	; Boomer needs to flip direction...
 	TYA
 	EOR #1
-	STA Objects_Var2,X
+	STA entity_var2,X
 
 Boomer_YAccel:
-	LDA <Objects_YVel,X
+	LDA <entity_lo_y_velocity,X
 	ADD Boomer_YVelDelta,Y
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 
-	LDY Objects_Var5,X	; Direction
-	LDA <Objects_XVel,X
+	LDY entity_var5,X	; Direction
+	LDA <entity_lo_x_velocity,X
 	CMP Boomer_XVelLimit,Y
 	BNE Boomer_XAccel
 
 	; Boomer needs to flip direction...
 	TYA
 	EOR #1
-	STA Objects_Var5,X
+	STA entity_var5,X
 
 Boomer_XAccel:
-	LDA <Objects_XVel,X
+	LDA <entity_lo_x_velocity,X
 	ADD Boomer_XVelDelta,Y
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
 Boomer_SkipVel:
 	RTS
@@ -1766,31 +1766,31 @@ Boomer_FireBullet:
 	STA Sound_QLevel1
 	
 	LDA #OBJ_BULLETBILL
-	STA Level_ObjectID,X
+	STA entity_type,X
 	
 	LDA <var3
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	
-	LDA Objects_X,Y
+	LDA entity_lo_x,Y
 	ADD <var1
-	STA <Objects_X,X
-	LDA Objects_XHi,Y
+	STA <entity_lo_x,X
+	LDA entity_hi_x,Y
 	ADC #0
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 	
-	LDA Objects_Y,Y
+	LDA entity_lo_y,Y
 	ADD <var2
 	AND #$F0		; Tile-align
-	STA <Objects_Y,X
-	LDA Objects_YHi,Y
+	STA <entity_lo_y,X
+	LDA entity_hi_y,Y
 	ADC #0
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 	LDA <var4
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 	
 	; Flags for alternate patterns, Bowser Jr Compatible
-	INC Objects_Var6,X
+	INC entity_var6,X
 
 	; Don't needlessly fail to spawn poof
 	; NOTE: Would be more technically correct to run vis checks, but this is a fixed use case...
@@ -1800,13 +1800,13 @@ Boomer_FireBullet:
 
 	JSR SpecialObj_FindEmptyAbort	 
 
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	STA SpecialObj_YLo,Y
 
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	STA SpecialObj_YHi,Y
 
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	STA SpecialObj_XLo,Y
 
 	; A "poof"
@@ -1822,22 +1822,22 @@ Boomer_FireBullet:
 
 Boomer_Dying:
 	LDA #0
-	STA <Objects_XVel,X
-	STA <Objects_YVel,X
+	STA <entity_lo_x_velocity,X
+	STA <entity_lo_y_velocity,X
 	
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	ADD #24
-	STA <Objects_X,X
-	LDA <Objects_XHi,X
+	STA <entity_lo_x,X
+	LDA <entity_hi_x,X
 	ADC #0
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	ADD #24
-	STA <Objects_Y,X
-	LDA <Objects_YHi,X
+	STA <entity_lo_y,X
+	LDA <entity_hi_y,X
 	ADC #0
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 	; Recycle Boom Boom's cool effect
 	LDA Sound_QLevel1
@@ -1879,13 +1879,13 @@ ObjInit_Yoshi:
 	; Otherwise if another Yoshi exists, delete this one!
 	LDY #4
 Yoshi_InitSeekLoop:
-	CPY <SlotIndexBackup
+	CPY <entity_index
 	BEQ Yoshi_SeekNotYoshi	; Don't delete yourself, Yoshi
 
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	BEQ Yoshi_SeekNotYoshi	; If this object is dead/empty, jump to Yoshi_SeekNotYoshi
 	
-	LDA Level_ObjectID,Y
+	LDA entity_type,Y
 	CMP #OBJ_YOSHI
 	BNE Yoshi_SeekNotYoshi	; If this object isn't Yoshi, jump to Yoshi_SeekNotYoshi
 
@@ -1899,7 +1899,7 @@ Yoshi_SeekNotYoshi:
 	
 Yoshi_Delete:
 	LDA #OBJSTATE_DEADEMPTY
-	STA Objects_State,X
+	STA entity_state,X
 
 Yoshi_OKToExist:
 	RTS
@@ -1907,7 +1907,7 @@ Yoshi_OKToExist:
 ObjNorm_Yoshi:
 	; Yoshi is USUALLY palette 2...
 	LDA #SPR_PAL2
-	STA Objects_Var10,X
+	STA entity_var10,X
 
 	LDA Level_Tileset
 	CMP #10
@@ -1922,13 +1922,13 @@ ObjNorm_Yoshi:
 
 	; Use palette 3 here instead!
 	LDA #SPR_PAL3
-	STA Objects_Var10,X
+	STA entity_var10,X
 
 Yoshi_NotAirship:
 	LDA <Player_HaltGame
 	BNE Yoshi_Halted
 
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	JSR DynJump
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
@@ -1945,7 +1945,7 @@ YoshiPanic_XVel:	.byte -$18, $18
 
 Yoshi_PanicInit:
 	; Kick off Yoshi
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI LoseYoshi_Bump
 	
 	LDA #-$10
@@ -1955,36 +1955,36 @@ LoseYoshi_Bump:
 	SUB #-$10
 	
 LoseYoshi_Force:
-	STA <Player_YVel
+	STA <player_lo_y_velocity
 
 	; Set Yoshi to panic state
 	LDA #1
-	STA <Objects_Var4,X
+	STA <entity_var4,X
 
 	; Timer to make sure Player doesn't just re-catch Yoshi instantly
 	LDA #30
-	STA Objects_Timer,X
+	STA entity_timer,X
 	
 
 Yoshi_Panic:
 	JSR Yoshi_WaitForPlayer	; Mostly the same stuff
 	
 	; Just run around at a constant rate
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
 	ASL A
 	ASL A
 	ROL A
 	TAY
 	LDA YoshiPanic_XVel,Y
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	
 	LDA <Counter_1
 	LSR A
 	AND #$03
 	TAY
 	LDA Yoshi_WalkFrames,Y
-	STA Objects_Var1,X
+	STA entity_var1,X
 	
 	RTS
 
@@ -1992,52 +1992,52 @@ Yoshi_WaitForPlayer:
 	JSR Object_DeleteOffScreen_N4
 
 	; Stay green!
-	LDA Objects_Var10,X
+	LDA entity_var10,X
 	STA Objects_SprAttr,X
 	
-	LDA Objects_Var11,X
+	LDA entity_var11,X
 	BNE Yoshi_KeepSomethingInMouth	; If Yoshi has something in his mouth, don't lose it, jump to Yoshi_KeepSomethingInMouth
 	
 	; Nothing on tounge
 	LDA #$FF
-	STA Objects_Var6,X
+	STA entity_var6,X
 
 Yoshi_KeepSomethingInMouth:
 	JSR Yoshi_Draw
 
 	JSR Object_Move
 	
-	LDA Objects_DetStat,X
+	LDA entity_collision_flags,X
 	AND #4
 	BEQ Yoshi_NotHitFloor
 
 	; Hit floor
 	JSR Object_HitGround
 	
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	BNE Yoshi_NotHitFloor
 	
 	; State 0 only -- jump!
 	LDA #-$10
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 
 Yoshi_NotHitFloor:
 
-	LDA Objects_DetStat,X
+	LDA entity_collision_flags,X
 	AND #3
 	BEQ Yoshi_NotHitWall
 
 	; Reverse direction!
-	LDA <Objects_XVel,X
+	LDA <entity_lo_x_velocity,X
 	NEG
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	EOR #SPR_HFLIP
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 
 Yoshi_NotHitWall:
-	LDA Objects_Var11,X
+	LDA entity_var11,X
 	BEQ Yoshi_NothingInMouth	; If Yoshi has nothing in his mouth, jump to Yoshi_NothingInMouth
 
 	; Yoshi has something in his mouth, make sure it's shown
@@ -2054,15 +2054,15 @@ Yoshi_NothingInMouth:
 	ROL A
 	
 Yoshi_SetHeadFrame:
-	STA Objects_Var2,X
+	STA entity_var2,X
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI Yoshi_NoPlayerTouch		; If Player is moving upward, jump to Yoshi_NoPlayerTouch
 	BEQ Yoshi_NoPlayerTouch		; If Player is not vertically moving, jump to Yoshi_NoPlayerTouch
 
 	; Player is moving downward...
 
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Yoshi_NoPlayerTouch		; If timer is active, don't catch Yoshi...
 
 	LDA Player_EndLevel
@@ -2082,12 +2082,12 @@ Yoshi_SetHeadFrame:
 	
 	; Go to ride state
 	LDA #2
-	STA <Objects_Var4,X
+	STA <entity_var4,X
 	
 Yoshi_NoPlayerTouch:
 
 	; Slow down, Yoshi
-	LDA <Objects_XVel,X
+	LDA <entity_lo_x_velocity,X
 	BEQ Yoshi_Stopped
 	BMI Yoshi_SlowNeg
 
@@ -2105,7 +2105,7 @@ Yoshi_Stop:
 	LDA #0
 	
 Yoshi_SpeedSet:
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
 Yoshi_Stopped:
 	RTS
@@ -2113,7 +2113,7 @@ Yoshi_Stopped:
 Yoshi_PlayerRide:
 
 	; Normal colors...
-	LDA Objects_Var10,X
+	LDA entity_var10,X
 	STA Objects_SprAttr,X
 	
 	LDA Player_StarInv
@@ -2136,21 +2136,21 @@ Yoshi_NotInv:
 	BPL Yoshi_NoGetOff
 	
 	LDA #-$30
-	STA <Player_YVel
+	STA <player_lo_y_velocity
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	SUB #16
-	STA <Player_Y
-	LDA <Player_YHi
+	STA <player_lo_y
+	LDA <player_hi_y
 	SBC #0
-	STA <Player_YHi
+	STA <player_hi_y
 
 	LDA #0
-	STA <Objects_Var4,X
+	STA <entity_var4,X
 	STA Player_Kuribo
-	STA Objects_Var1,X
-	STA Objects_Var2,X
-	STA <Objects_Var5,X
+	STA entity_var1,X
+	STA entity_var2,X
+	STA <entity_var5,X
 	BNE Yoshi_NoGetOff
 	JMP Yoshi_WaitForPlayer
 
@@ -2159,33 +2159,33 @@ Yoshi_NoGetOff:
 	INC Player_DisTailAtk
 
 	; Lock Yoshi onto Player's X/Y
-	LDA <Player_X
-	STA <Objects_X,X
-	LDA <Player_XHi
-	STA <Objects_XHi,X
-	LDA <Player_Y
+	LDA <player_lo_x
+	STA <entity_lo_x,X
+	LDA <player_hi_x
+	STA <entity_hi_x,X
+	LDA <player_lo_y
 	ADD #16
-	STA <Objects_Y,X
-	LDA <Player_YHi
+	STA <entity_lo_y,X
+	LDA <player_hi_y
 	ADC #0
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
-	LDA <Player_XVel
-	STA <Objects_XVel,X
-	LDA <Player_YVel
-	STA <Objects_YVel,X
+	LDA <player_lo_x_velocity
+	STA <entity_lo_x_velocity,X
+	LDA <player_lo_y_velocity
+	STA <entity_lo_y_velocity,X
 
 	; Follow flip direction of Player
-	LDA <Player_FlipBits
-	STA Objects_FlipBits,X
+	LDA <player_flipped_animation
+	STA entity_flipped_animation,X
 
 	; Add to leg animation based on Player movement, if any
-	LDA <Objects_XVel,X
+	LDA <entity_lo_x_velocity,X
 	BNE Yoshi_HMove
 	
 	; Yoshi not horizontally moving; zero out the legs
 	LDA #0
-	STA Objects_Var3,X
+	STA entity_var3,X
 	BEQ Yoshi_NoHMove	; Jump (technically always) to Yoshi_NoHMove
 	
 Yoshi_HMove:
@@ -2199,12 +2199,12 @@ Yoshi_HMove_NotNeg:
 	LSR A
 	LSR A
 	LSR A
-	ADD Objects_Var3,X
-	STA Objects_Var3,X
+	ADD entity_var3,X
+	STA entity_var3,X
 
 Yoshi_NoHMove:
 
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	BEQ Yoshi_NoTounge
 	
 	JSR Yoshi_ToungeOut
@@ -2214,10 +2214,10 @@ Yoshi_NoTounge:
 
 	; Normal head
 	LDA #0
-	STA Objects_Var2,X
+	STA entity_var2,X
 
 	; Legs based on Var3
-	LDA Objects_Var3,X
+	LDA entity_var3,X
 	LSR A
 	LSR A
 	LSR A
@@ -2225,42 +2225,42 @@ Yoshi_NoTounge:
 	AND #$03
 	TAY
 	LDA Yoshi_WalkFrames,Y
-	STA Objects_Var1,X
+	STA entity_var1,X
 
-	LDA <Objects_YVel,X
+	LDA <entity_lo_y_velocity,X
 	BEQ Yoshi_NoVertMove
 	
 	; And spread legs
 	LDA #2
-	STA Objects_Var1,X
+	STA entity_var1,X
 	
-	LDA <Objects_YVel,X
+	LDA <entity_lo_y_velocity,X
 	BPL Yoshi_NotMovingUp
 
 	; Moving upward; use nose up
-	INC Objects_Var1,X
-	INC Objects_Var2,X
+	INC entity_var1,X
+	INC entity_var2,X
 	
 Yoshi_NotMovingUp:
 
 Yoshi_NoVertMove:
 
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Yoshi_MouthOpen	; If timer active, jump to Yoshi_MouthOpen
 
 	; If tounge out, don't ... redo it
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	BNE Yoshi_DisTounge
 
 	; Something different if holding in mouth!
-	LDA Objects_Var11,X
+	LDA entity_var11,X
 	BNE Yoshi_HoldInMouth		; If Yoshi's got something in his mouth, spit it out!~
 
 	BIT <buttons_clicked
 	BVC Yoshi_DisTounge	; If Player is not pressing 'B', jump to Yoshi_DisTounge
 	
 	LDA #$20
-	STA <Objects_Var5,X
+	STA <entity_var5,X
 
 	LDA #SND_PLAYERSWIM
 	STA Sound_QPlayer
@@ -2274,33 +2274,33 @@ Yoshi_MouthOpen:
 
 	; Mouth about to close; release old object (allow damage from it once again)
 	LDA #$FF
-	STA Objects_Var6,X
+	STA entity_var6,X
 
 Yoshi_MouthNotClosing:
 
 	; Keep mouth agape
 	LDA #3
-	STA Objects_Var2,X
+	STA entity_var2,X
 
 	RTS
 	
 Yoshi_HoldInMouth:
-	LDY Objects_Var6,X
+	LDY entity_var6,X
 	
 	; Lock onto Yoshi...
-	LDA <Objects_X,X
-	STA Objects_X,Y
-	LDA <Objects_XHi,X
-	STA Objects_XHi,Y
+	LDA <entity_lo_x,X
+	STA entity_lo_x,Y
+	LDA <entity_hi_x,X
+	STA entity_hi_x,Y
 	
 	; Keep object way up high off-screen...
 	LDA #0
-	STA Objects_Y,Y
+	STA entity_lo_y,Y
 	LDA #$FF
-	STA Objects_YHi,Y
+	STA entity_hi_y,Y
 	
 	LDA #2
-	STA Objects_Var2,X
+	STA entity_var2,X
 	
 	BIT <buttons_clicked
 	BVC Yoshi_DisTounge	; If Player is not pressing 'B', jump to Yoshi_DisTounge
@@ -2309,33 +2309,33 @@ Yoshi_HoldInMouth:
 	
 	; Clear the "in mouth" holding flag
 	LDA #0
-	STA Objects_Var11,X
+	STA entity_var11,X
 
 	; Set object to approximately Yoshi's mouth level
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	SUB #12
-	STA Objects_Y,Y
-	LDA <Objects_YHi,X
+	STA entity_lo_y,Y
+	LDA <entity_hi_y,X
 	SBC  #0
-	STA Objects_YHi,Y
+	STA entity_hi_y,Y
 		
 	; "Kicked" state
 	LDA #OBJSTATE_KICKED
-	STA Objects_State,Y
+	STA entity_state,Y
 	
 	; Set object spit velocity
 	LDA #$30
-	BIT Player_FlipBits
+	BIT player_flipped_animation
 	BVS Yoshi_SpitRight
 	
 	LDA #-$30
 	
 Yoshi_SpitRight:
-	STA Objects_XVel,Y
+	STA entity_lo_x_velocity,Y
 	
 	; Object will fly out
 	LDA #-$10
-	STA Objects_YVel,Y
+	STA entity_lo_y_velocity,Y
 	
 	; Spit sound
 	LDA #SND_PLAYERBUMP
@@ -2343,7 +2343,7 @@ Yoshi_SpitRight:
 	
 	; Hold mouth agape for a bit...
 	LDA #$10
-	STA Objects_Timer,X
+	STA entity_timer,X
 	
 	RTS
 
@@ -2355,7 +2355,7 @@ Yoshi_Draw:
 	; Set head X/Y offsets
 	LDY #0
 	
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	CMP #4
 	BNE Yoshi_NotToungeFrame
 
@@ -2372,7 +2372,7 @@ Yoshi_NotToungeFrame:
 	ASL A
 	TAY
 
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
 	BEQ YoshiDraw_NotHFlipped
 	
@@ -2386,9 +2386,9 @@ YoshiDraw_NotHFlipped:
 
 
 	; Draw head of Yoshi's head
-	LDA Objects_Var2,X
+	LDA entity_var2,X
 	ADD #(Yoshi_Heads - ObjPE6) / 2
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 	LDA #8
 	STA Temp_VarNP0
@@ -2396,36 +2396,36 @@ YoshiDraw_NotHFlipped:
 	JSR Yoshi_DrawOffsetSprite
 
 	; Draw trunk of Yoshi's body
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	ADD #(Yoshi_Trunks - ObjPE6) / 2
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 	JSR Object_DetermineHorzVis
 	JSR Object_DetermineVertVis
 	JSR Object_ShakeAndDraw
 
-	LDX <SlotIndexBackup
+	LDX <entity_index
 
 	RTS
 
 Yoshi_DrawOffsetSprite:
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	PHA
 	ADD <var9
-	STA <Objects_X,X
-	LDA <Objects_XHi,X
+	STA <entity_lo_x,X
+	LDA <entity_hi_x,X
 	PHA
 	ADC <var10
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	PHA
 	ADD <var11
-	STA <Objects_Y,X
-	LDA <Objects_YHi,X
+	STA <entity_lo_y,X
+	LDA <entity_hi_y,X
 	PHA
 	ADC <var12
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 	JSR Object_DetermineHorzVis
 	JSR Object_DetermineVertVis
@@ -2437,7 +2437,7 @@ Yoshi_DrawOffsetSprite:
 
 	JSR Object_Draw16x16Sprite
 
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	
 	; Little hackish, but if Temp_VarNP0 = 16, we're drawing the tounge, 
 	; so we need to check for object-to-object collision as appropriate
@@ -2451,25 +2451,25 @@ Yoshi_DrawOffsetSprite:
 	
 Yoshi_NotDrawingTounge:
 	PLA
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 	PLA
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 	PLA
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 	PLA
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 	
 	RTS
 
 Yoshi_ToungeOut:
 
-	DEC <Objects_Var5,X
+	DEC <entity_var5,X
 	BNE Yoshi_StillTounging
 
-	LDY Objects_Var6,X
+	LDY entity_var6,X
 	BMI Yoshi_ToungeNothing		; If didn't catch anything on tounge, jump to Yoshi_ToungeNothing
 
-	LDA Level_ObjectID,Y
+	LDA entity_type,Y
 	
 	; Check if this object should be held in mouth rather than just swallowed
 	LDY #(Yoshi_HoldObjectIDs_End - Yoshi_HoldObjectIDs - 1)
@@ -2478,7 +2478,7 @@ Yoshi_OnToungeCheck:
 	BNE Yoshi_NotHoldObject
 
 	; Got a shelled object, we handle this case a little differently!
-	INC Objects_Var11,X		; Flag that we're holding
+	INC entity_var11,X		; Flag that we're holding
 	RTS						; That's it for now...
 
 Yoshi_NotHoldObject:
@@ -2486,11 +2486,11 @@ Yoshi_NotHoldObject:
 	BPL Yoshi_OnToungeCheck	; While Y >= 0, loop
 
 Yoshi_NoEatShell:
-	LDY Objects_Var6,X
+	LDY entity_var6,X
 
 	; Got something...!!
 	LDA #OBJSTATE_DEADEMPTY
-	STA Objects_State,Y
+	STA entity_state,Y
 
 	LDA #SND_LEVELCOIN
 	STA Sound_QLevel1
@@ -2500,7 +2500,7 @@ Yoshi_NoEatShell:
 
 	; Nothing on tounge anymore
 	LDA #$FF
-	STA Objects_Var6,X
+	STA entity_var6,X
 
 Yoshi_ToungeNothing:
 	RTS
@@ -2508,17 +2508,17 @@ Yoshi_ToungeNothing:
 Yoshi_StillTounging:
 	; Body/head frame set
 	LDA #4
-	STA Objects_Var1,X
+	STA entity_var1,X
 	LDA #3
-	STA Objects_Var2,X
+	STA entity_var2,X
 
 	; Calculate tounge X off
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	CMP #$10
 	BLT YoshiToungeXOff_NoNegate
 	
 	LDA #$20
-	SUB <Objects_Var5,X
+	SUB <entity_var5,X
 	
 YoshiToungeXOff_NoNegate:
 	STA <var1
@@ -2526,7 +2526,7 @@ YoshiToungeXOff_NoNegate:
 	ADD <var1
 	STA <var9
 	
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
 	BNE YoshiToungeXOff_NoFlip
 	
@@ -2551,7 +2551,7 @@ YoshiToungeXOff_OK:
 
 	; Draw tounge
 	LDA #(Yoshi_Tounge - ObjPE6) / 2
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 	LDA Objects_SprAttr,X
 	PHA
@@ -2569,7 +2569,7 @@ YoshiToungeXOff_OK:
 
 
 Yoshi_ToungeHandle:
-	LDA Objects_Var6,X
+	LDA entity_var6,X
 	BPL Yoshi_UpdateTounge	; If we've already got something on the tounge, jump to Yoshi_UpdateTounge
 	
 	; Do object-to-object collision test!
@@ -2587,12 +2587,12 @@ Yoshi_ToungeHandle:
 
 	; FIXME this doesn't work for some reason?
 	; Immediately pull back tounge (don't push enemy outward) if tounge was still emerging
-	;LDA <Objects_Var5,X
+	;LDA <entity_var5,X
 	;CMP #$10
 	;BGE Yoshi_NoToungeReverse
 	
 	;SUB #$10
-	;STA <Objects_Var5,X
+	;STA <entity_var5,X
 
 ;Yoshi_NoToungeReverse:
 
@@ -2600,7 +2600,7 @@ Yoshi_ToungeHandle:
 Yoshi_IgnoreObject_Loop:
 	; Is the object on Yoshi's tounge on our ignore list?
 	LDA Yoshi_IgnoreObjectIDs,X
-	CMP Level_ObjectID,Y
+	CMP entity_type,Y
 	BNE Yoshi_IgnoreObject_NoIgnore	; If not an ignored object ID, jump to Yoshi_IgnoreObject_NoIgnore
 	
 	; Ignored object ID found!
@@ -2615,8 +2615,8 @@ Yoshi_IgnoreObject_NoIgnore:
 	TYA
 	
 Yoshi_ToungeNoHit:
-	LDX <SlotIndexBackup
-	STA Objects_Var6,X
+	LDX <entity_index
+	STA entity_var6,X
 
 	RTS
 
@@ -2624,14 +2624,14 @@ Yoshi_UpdateTounge:
 
 	TAY		; Caught object -> 'Y'
 	
-	LDA <Objects_X,X
-	STA Objects_X,Y
-	LDA <Objects_XHi,X
-	STA Objects_XHi,Y
-	LDA <Objects_Y,X
-	STA Objects_Y,Y
-	LDA <Objects_YHi,X
-	STA Objects_YHi,Y
+	LDA <entity_lo_x,X
+	STA entity_lo_x,Y
+	LDA <entity_hi_x,X
+	STA entity_hi_x,Y
+	LDA <entity_lo_y,X
+	STA entity_lo_y,Y
+	LDA <entity_hi_y,X
+	STA entity_hi_y,Y
 
 	RTS
 
@@ -2689,18 +2689,18 @@ PRG041_AA85:
 ObjInit_Urchin:
 
 	; Centering
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	ADD #4
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 
 	; Urchin is really only meant for being underwater, this will fix a stupid splash when killed
 	INC Objects_InWater,X
 
 	; Urchin runs a state of going back and forth, depending on type of Urchin
-	LDA Level_ObjectID,X
+	LDA entity_type,X
 	SUB #OBJ_URCHIN_V
 	ASL A
-	STA <Objects_Var4,X		; Will be 0 or 2, adequate index for Urchin_X/YVel
+	STA <entity_var4,X		; Will be 0 or 2, adequate index for Urchin_X/YVel
 
 	RTS
 
@@ -2715,11 +2715,11 @@ ObjNorm_Urchin:
 	LSR A
 	LSR A
 	AND #1
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 	JSR Urchin_Draw
 
-	LDA Objects_State,X
+	LDA entity_state,X
 	CMP #OBJSTATE_NORMAL
 	BNE Urchin_DoNothing	; If Urchin killed, jump to Urchin_DoNothing (RTS)
 
@@ -2728,32 +2728,32 @@ ObjNorm_Urchin:
 
 	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
 
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BEQ Urchin_Moving		; If Timer = 0, jump to Urchin_Moving
 	CMP #1
 	BNE Urchin_Cont	; If Timer <> 1, jump to Urchin_Cont
 	
 	; About to start moving again, switch direction
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	EOR #1
-	STA <Objects_Var4,X
+	STA <entity_var4,X
 		
 Urchin_Moving:
 	; Set velocities
-	LDY <Objects_Var4,X		; Y = speed setting index
+	LDY <entity_var4,X		; Y = speed setting index
 	LDA Urchin_XVel,Y
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	LDA Urchin_YVel,Y
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 
 	JSR Object_Move
 
-	LDA <Objects_DetStat,X
+	LDA <entity_collision_flags,X
 	BEQ Urchin_Cont	; If haven't hit anything, jump to Urchin_Cont
 
 	; Hit something... go into wait state
 	LDA #$40
-	STA Objects_Timer,X
+	STA entity_timer,X
 
 Urchin_Cont:
 	JSR Player_HitEnemy
@@ -2784,7 +2784,7 @@ Urchin_Draw:
 	TAY	
 
 	; Y
-	LDA Objects_SpriteY,X
+	LDA entity_sprite_lo_y,X
 	STA Sprite_RAM+$00,Y
 
 	; X
@@ -2799,7 +2799,7 @@ Urchin_Draw:
 	BCS UrchinDraw_Invis	; If bottom is invisible, jump to UrchinDraw_Invis (RTS)
 	
 	; Y
-	LDA Objects_SpriteY,X
+	LDA entity_sprite_lo_y,X
 	ADD #16
 	STA Sprite_RAM+$04,Y
 
@@ -2820,7 +2820,7 @@ Urchin_Draw:
 	LDA ObjectGroup_PatternSets+2,X	; Get second sprite pattern index
 	STA Sprite_RAM+$05,Y	; -> Sprite RAM
 
-	LDX <SlotIndexBackup
+	LDX <entity_index
 UrchinDraw_Invis:
 	RTS
 
@@ -2828,11 +2828,11 @@ UrchinDraw_Invis:
 Gao_TickValues:	.byte $20, $40	; Pause before firing, pause after firing
 
 ObjInit_Gao:
-	LDA <Objects_YHi,X
-	STA <Objects_Var4,X
+	LDA <entity_hi_y,X
+	STA <entity_var4,X
 
 	LDA Gao_TickValues
-	STA Objects_Timer,X
+	STA entity_timer,X
 	RTS
 
 ObjNorm_Gao:
@@ -2843,19 +2843,19 @@ ObjNorm_Gao:
 
 	; Face Player
 	LDA Misc_FlipTowardsPlayer,Y
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 
 	; If the YHi is 0, then do not spit at all
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	BEQ Gao_Timeout
 
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Gao_Timeout
 
 	; Going by frame (kinda hackish)
 	; If at frame 0 with expired timer, go to frame 1 and spit
 	; If at frame 1 with expired timer, just go back to frame 0
-	LDY Objects_Frame,X
+	LDY entity_animation_frame,X
 	BNE Gao_NoSpit
 
 	JSR Object_AnySprOffscreen
@@ -2890,12 +2890,12 @@ Gao_PlayerNotMiddle:
 		
 Gao_NoSpit:
 	LDA Gao_TickValues,Y
-	STA Objects_Timer,X
+	STA entity_timer,X
 	
 	; Flip frame
 	TYA
 	EOR #1
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 Gao_Timeout:
 	JMP Object_DeleteOffScreen
@@ -2922,7 +2922,7 @@ ObjInit_Pokey:
 
 	; Enemy charges at Player the same
 	LDA EnemyEnterXVel41,Y
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
 	LDA #0
 	STA Objects_SprHVis,X
@@ -2936,7 +2936,7 @@ ObjInit_Pokey:
 	LDA #$FF
 	STA <var8
 
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	AND #$02
 	BNE _Pokey_SpawnBodySegs_Loop
 	LDA #$02
@@ -2948,9 +2948,9 @@ _Pokey_SpawnBodySegs_Loop:
 __Pokey_SpawnBodySegs_Loop:
 	STA <var1
 	; Reset the y hi if needed, must happen before spawning segments
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	AND #$01
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 Pokey_SpawnBodySegs_Loop:
 
@@ -2971,16 +2971,16 @@ Pokey_SpawnBodySeg:
 
 	; Set X/Y
 	; Generate offset Y
-	LDA <Objects_Y,X
-	SUB Objects_Var1,X
+	LDA <entity_lo_y,X
+	SUB entity_var1,X
 	STA SpecialObj_YLo,Y
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	SBC #0
 	STA SpecialObj_YHi,Y
 
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	STA SpecialObj_XLo,Y
-	LDA <Objects_XHi,X
+	LDA <entity_hi_x,X
 	STA SpecialObj_Var3,X	; Var 3 represents an "X Hi"
 
 
@@ -2989,7 +2989,7 @@ Pokey_SpawnBodySeg:
 	STA SpecialObj_Var1,Y
 	
 	; Record body segment's Y offset
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	STA SpecialObj_Var2,Y
 	
 	
@@ -3009,7 +3009,7 @@ Pokey_SpawnBodySeg:
 	STA SpecialObj_Data,X
 	
 	; Resume...
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	
 PokeyBodySeg_NoPrev:
 	LDA <var8	; Get previous index
@@ -3024,9 +3024,9 @@ PokeyBodySeg_NoPrev:
 	STA SpecialObj_Data,Y	; Store the linkage
 	
 	; Move Pokey head up by 16 (affects sprite draw only, real Pokey base is always at ground level)
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	ADD #16
-	STA Objects_Var1,X
+	STA entity_var1,X
 
 	; Update var8 for next time...
 	STY <var8
@@ -3036,7 +3036,7 @@ PokeyBodySeg_NoPrev:
 ObjNorm_Pokey:
 	JSR Pokey_Draw
 
-	LDA Objects_State,X
+	LDA entity_state,X
 	CMP #OBJSTATE_NORMAL
 	BNE Pokey_Dying
 
@@ -3050,11 +3050,11 @@ ObjNorm_Pokey:
 	ASL A
 	ASL A
 	ASL A
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 
 	JSR Object_Move
 	
-	LDA Objects_DetStat,X
+	LDA entity_collision_flags,X
 	AND #$04
 	BEQ Pokey_NoFloorHit
 	
@@ -3062,14 +3062,14 @@ ObjNorm_Pokey:
 	
 Pokey_NoFloorHit:
 
-	LDA Objects_DetStat,X
+	LDA entity_collision_flags,X
 	AND #$03
 	BEQ Pokey_NoWallHit
 
 	; Hit wall, turn around
-	LDA <Objects_XVel,X
+	LDA <entity_lo_x_velocity,X
 	NEG
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
 Pokey_NoWallHit:
 	JMP Object_DeleteOffScreen
@@ -3078,19 +3078,19 @@ Pokey_Dying:
 
 	; If Pokey is dying, make sure to offset the head to 
 	; the segment offset and clear it out...
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	BEQ Pokey_DyingOffsetClear
 
 	; Apply as permanent Y offset
-	LDA <Objects_Y,X
-	SUB Objects_Var1,X
-	STA <Objects_Y,X
-	LDA <Objects_YHi,X
+	LDA <entity_lo_y,X
+	SUB entity_var1,X
+	STA <entity_lo_y,X
+	LDA <entity_hi_y,X
 	SUB #0
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 	LDA #0
-	STA Objects_Var1,X
+	STA entity_var1,X
 
 	LDA Objects_QSandCtr,X
 	BEQ Pokey_DyingOffsetClear	; If Pokey did not die of quicksand, jump to Pokey_DyingOffsetClear
@@ -3098,7 +3098,7 @@ Pokey_Dying:
 	; Final hack: Since Pokey died in Quicksand, we need to actually 
 	; reset his death so the head can land appropriately
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 	LDA #0
 	STA Objects_QSandCtr,X
 
@@ -3107,21 +3107,21 @@ Pokey_DyingOffsetClear:
 
 Pokey_Draw:
 	; Var1 gives a fake offset to Pokey's head to compensate for body segments
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	PHA
-	SUB Objects_Var1,X
-	STA <Objects_Y,X
-	LDA <Objects_YHi,X
+	SUB entity_var1,X
+	STA <entity_lo_y,X
+	LDA <entity_hi_y,X
 	PHA
 	SBC #0
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 	JSR Gao_Draw
 
 	PLA
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 	PLA
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 	RTS
 
 ObjInit_SandFill:
@@ -3130,7 +3130,7 @@ ObjInit_SandFill:
 
 	; Plugged! Use alternate wait state...
 	LDA #5
-	STA <Objects_Var4,X
+	STA <entity_var4,X
 
 SandFill_NotPlugged:
 	RTS
@@ -3152,7 +3152,7 @@ ObjNorm_SandFill:
 	AND #1
 	BNE SandFill_DoNothing	; Every other frame, jump to SandFill_DoNothing
 	
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	JSR DynJump
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
@@ -3176,7 +3176,7 @@ SandFill_InitialFall:
 	LDA #CHNGTILE_QUICKSAND_TOP9
 	JSR SandFill_ChangeTile
 	
-	INC <Objects_Var4,X
+	INC <entity_var4,X
 	
 	JMP SandFill_Advance
 
@@ -3191,7 +3191,7 @@ SandFill_SeekFloor:
 	STA Level_ChgTileEvent
 
 	; Hit floor, change state
-	INC <Objects_Var4,X
+	INC <entity_var4,X
 
 	LDA Level_Tile
 	CMP #TILE9_QUICKSAND_TOP
@@ -3199,12 +3199,12 @@ SandFill_SeekFloor:
 	
 	; If we hit a quicksand top tile, we owe a mid tile change (special case)
 	LDA #4
-	STA <Objects_Var4,X
+	STA <entity_var4,X
 	
 SandFill_NotHitQSandTop:
 	; Clear left/right stop bits
 	LDA #$00
-	STA Objects_Var1,X
+	STA entity_var1,X
 	
 	RTS
 		
@@ -3213,7 +3213,7 @@ SandFill_NoHitFloor:
 	STA Sound_QLevel2
 
 	; Count number of rows we have descended so we can know later when to stop!
-	INC Objects_Var2,X
+	INC entity_var2,X
 	
 	LDA #0
 	STA <var1
@@ -3225,12 +3225,12 @@ SandFill_NoHitFloor:
 	JSR SandFill_ChangeTile
 	
 SandFill_Advance:
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	ADD #16
-	STA <Objects_Y,X
-	LDA <Objects_YHi,X
+	STA <entity_lo_y,X
+	LDA <entity_hi_y,X
 	ADC #0
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 	
 	RTS
 
@@ -3272,19 +3272,19 @@ SandFill_CTSQuickSandOverride:
 SandFill_ChangeTile:
 	PHA		; Save input value
 
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	ADD <var1
 	AND #$F0
 	STA Level_BlockChgXLo
-	LDA <Objects_XHi,X
+	LDA <entity_hi_x,X
 	ADC <var2
 	STA Level_BlockChgXHi
 	
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	ADD <var3
 	AND #$F0
 	STA Level_BlockChgYLo
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	ADC <var4
 	STA Level_BlockChgYHi
 
@@ -3304,7 +3304,7 @@ SandFill_Terminate:
 
 SandFill_Fill:
 
-	LDA Objects_Var2,X
+	LDA entity_var2,X
 	BMI SandFill_Terminate
 
 	LDA #SND_LEVELSANDFILL
@@ -3320,7 +3320,7 @@ SandFill_Fill:
 	; Var7 - Current block right
 
 	; Offset row
-	LDA Objects_Var3,X
+	LDA entity_var3,X
 	AND #$7F	; Bit 7 specifies side
 	JSR SandFill_Mul16
 	
@@ -3332,16 +3332,16 @@ SandFill_Fill:
 	SUB <var9
 	STA <var4
 
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	ADD <var3
 	STA ObjTile_DetYLo
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	ADC <var4
 	STA ObjTile_DetYHi
 
 
 	; Offset column
-	LDA Objects_Var3,X
+	LDA entity_var3,X
 	ROL A
 	ROL A	; 0 if going left, 1 if going right
 	AND #1
@@ -3349,27 +3349,27 @@ SandFill_Fill:
 	BNE SandFill_DoRight
 
 	; Left side...
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	BMI SandFill_SkipTile	; If bit 7 set, not going left anymore, jump to SandFill_SkipTile
 	
-	LDA Objects_Var6,X
+	LDA entity_var6,X
 	NEG
 	SUB #1		; Offset one block from center
 		
-	INC Objects_Var6,X
+	INC entity_var6,X
 
 	JMP SandFill_SetTile
 
 SandFill_DoRight:
 
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	AND #%01000000
 	BNE SandFill_SkipTile	; If bit 6 set, not going right anymore, jump to SandFill_SkipTile
 
-	LDA Objects_Var7,X
+	LDA entity_var7,X
 	ADD #1		; Offset one block from center
 		
-	INC Objects_Var7,X
+	INC entity_var7,X
 
 SandFill_SetTile:
 
@@ -3392,10 +3392,10 @@ SandFill_SetFill:
 	JSR SandFill_ChangeTile
 
 	; Calculate tile detection X offsets
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	ADD <var8
 	STA ObjTile_DetXLo
-	LDA <Objects_XHi,X
+	LDA <entity_hi_x,X
 	ADC <var9
 	STA ObjTile_DetXHi
 
@@ -3407,9 +3407,9 @@ SandFill_SetFill:
 	LDY <var5
 
 	; Stop this direction
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	ORA SandFill_StopBits,Y
-	STA Objects_Var1,X
+	STA entity_var1,X
 
 	; Cancel tile change
 	LDY #0
@@ -3421,15 +3421,15 @@ SandFill_SetFill:
 
 	; This row has ended, need to reset and move up one
 	LDA #0
-	STA Objects_Var1,X
-	STA Objects_Var6,X
-	STA Objects_Var7,X
+	STA entity_var1,X
+	STA entity_var6,X
+	STA entity_var7,X
 
 	; Next row!
-	INC Objects_Var3,X
+	INC entity_var3,X
 
 	; One less row to the op...
-	DEC Objects_Var2,X
+	DEC entity_var2,X
 
 SandFill_SkipTile:	
 
@@ -3454,9 +3454,9 @@ SandFill_SkipTile:
 
 SandFill_NotUsingBigChange:
 	; Toggle side
-	LDA Objects_Var3,X
+	LDA entity_var3,X
 	EOR #$80
-	STA Objects_Var3,X
+	STA entity_var3,X
 		
 	RTS
 
@@ -3491,7 +3491,7 @@ SandFill_OweMidChange:
 	
 	; Resume normal operations
 	LDA #2
-	STA <Objects_Var4,X
+	STA <entity_var4,X
 	
 	RTS
 	
@@ -3502,19 +3502,19 @@ SandFill_WaitPlug:
 
 	; Start dumping!
 	LDA #2
-	STA <Objects_Var4,X
+	STA <entity_var4,X
 
 SandFill_WaitActivation:
 	JMP Object_DeleteOffScreen_N4
 
 SandFill_CheckPlugSolid:
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	STA ObjTile_DetXLo
-	LDA <Objects_XHi,X
+	LDA <entity_hi_x,X
 	STA ObjTile_DetXHi
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	STA ObjTile_DetYLo
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	STA ObjTile_DetYHi
 
 	JSR Object_DetectTileManual
@@ -3529,10 +3529,10 @@ ObjInit_Totomesu:
 	STA Objects_HitCount,X
 
 	LDA #$80
-	STA Objects_Timer,X
+	STA entity_timer,X
 
 	INC Objects_IsGiant,X
-	INC Objects_Frame,X
+	INC entity_animation_frame,X
 
 	RTS
 
@@ -3542,22 +3542,22 @@ ObjNorm_Totomesu:
 	LDA <Player_HaltGame
 	BNE Totomesu_StillFlashing	; If gameplay halted, jump to Totomesu_StillFlashing
 
-	LDA Objects_State,X
+	LDA entity_state,X
 	CMP #OBJSTATE_NORMAL
 	BEQ Totomesu_NotDying
 
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 
 	LDA #$FF
-	STA Objects_SpriteX,X
-	STA Objects_SpriteY,X
+	STA entity_sprite_lo_x,X
+	STA entity_sprite_lo_y,X
 	
 	LDA #0
-	STA <Objects_XVel,X
-	STA <Objects_YVel,X
+	STA <entity_lo_x_velocity,X
+	STA <entity_lo_y_velocity,X
 
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	CMP #4
 	BGE Totomesu_NotDying
 
@@ -3567,7 +3567,7 @@ Totomesu_NotDying:
 
 	JSR Totomesu_Move
 
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	JSR DynJump
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
@@ -3589,33 +3589,33 @@ Totomesu_DeadTimeout:
 Totomesu_Die:
 
 	LDA #1
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 	LDA #0
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 	LDA #0
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
 	LDA Objects_ColorCycle,X
 	BNE Totomesu_StillFlashing
 
 	; Okay!
 	LDA #-$20
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 	
 	LDA #SND_PLAYERKICK
 	STA Sound_QPlayer
 
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 
 Totomesu_StillFlashing:
 	RTS
 
 Totomesu_FallWait:
 	
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	BEQ Totomesu_StillFlashing
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	CMP #$B0
 	BLT Totomesu_StillFlashing
 
@@ -3629,99 +3629,99 @@ Totomesu_FallWait:
 	STA Sound_QMusic1
 
 Totomesu_NoFanfare:
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 	
 	RTS
 
 
 Totomesu_Normal:
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Totomesu_NoSpit	; If timer not expired, jump to Totomesu_NoSpit
 
 	LDA #$10
-	STA Objects_Timer,X
+	STA entity_timer,X
 
 	LDA RandomN
 	AND #$3F
 	ADD $20
 	NEG
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 
 	JSR Totomesu_SpitFire
 	
 	LDA #1
-	STA Objects_Frame,X
-	INC <Objects_Var5,X
+	STA entity_animation_frame,X
+	INC <entity_var5,X
 
 Totomesu_NoSpit:
 	RTS
 
 Totomesu_MouthOpen:
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Totomesu_NoSpit
 	
 	LDA #$80
-	STA Objects_Timer,X
+	STA entity_timer,X
 	
 	LDA #0
-	STA Objects_Frame,X
-	DEC <Objects_Var5,X
+	STA entity_animation_frame,X
+	DEC <entity_var5,X
 
 	RTS
 
 Totomesu_FireSpitXVel:	.byte $20, -$20
 
 Totomesu_SpitFire:
-	LDY <SlotIndexBackup
+	LDY <entity_index
 	JSR PrepareNewObjectOrAbort
 		
 	LDA #SND_LEVELFLAME
 	STA Sound_QLevel2
 	
 	LDA #OBJ_BOSSATTACK
-	STA Level_ObjectID,X
+	STA entity_type,X
 
 	; Set object state to normal
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 
-	LDA Objects_X,Y
+	LDA entity_lo_x,Y
 	ROL A
 	ROL A
 	AND #1
 	TAY
 	LDA Totomesu_FireSpitXVel,Y
-	STA <Objects_XVel,X
-	LDY <SlotIndexBackup
+	STA <entity_lo_x_velocity,X
+	LDY <entity_index
 
-	LDA Objects_X,Y
+	LDA entity_lo_x,Y
 	ADD #8
-	STA <Objects_X,X
-	LDA Objects_XHi,Y
+	STA <entity_lo_x,X
+	LDA entity_hi_x,Y
 	ADC #0
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 	
-	LDA Objects_Y,Y
+	LDA entity_lo_y,Y
 	ADD #12
-	STA <Objects_Y,X
-	LDA Objects_YHi,Y
+	STA <entity_lo_y,X
+	LDA entity_hi_y,Y
 	ADC #0
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 	LDA #$02
-	STA <Objects_Var5,X
-	STA <Objects_Var4,X
+	STA <entity_var5,X
+	STA <entity_var4,X
 
 	LDA #SPR_PAL1
 	STA Objects_SprAttr,X
 
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	RTS		 ; Return
 
 Totomesu_Move:
 	JSR Object_Move
 	
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	CMP #3
 	BLT Totomesu_StillAlive
 	
@@ -3729,17 +3729,17 @@ Totomesu_Move:
 	RTS
 	
 Totomesu_StillAlive:
-	LDA Objects_DetStat,X
+	LDA entity_collision_flags,X
 	AND #$04
 	BEQ Totomesu_NotHitFloor
 
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	BNE Totomesu_AlreadyOnFloor
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE Totomesu_NotGroundFX	 ; If Player is in the air, jump to PRG004_AA2F
 
-	INC <Player_InAir ; Flag Player as in the air ...
+	INC <player_is_in_air ; Flag Player as in the air ...
 
 	; "Vibrationally disable" Player
 	LDA #$20
@@ -3747,15 +3747,15 @@ Totomesu_StillAlive:
 
 	; Bounce Player a little
 	LDA #-$10
-	STA <Player_YVel
+	STA <player_lo_y_velocity
 
-	DEC <Player_Y	 ; Player_Y--
+	DEC <player_lo_y	 ; player_lo_y--
 
-	LDY <Player_Y	; Y = Player_Y
+	LDY <player_lo_y	; Y = player_lo_y
 	INY		; Reset the Y back to where it was
 	BNE Totomesu_NotGroundFX	; If the Player's Y low was not zero, we have nothing to worry about; jump to PRG004_AA2F
 
-	DEC <Player_YHi	 ; Otherwise, we essentially have a carry (but DEC doesn't set carry)
+	DEC <player_hi_y	 ; Otherwise, we essentially have a carry (but DEC doesn't set carry)
 
 Totomesu_NotGroundFX:
 
@@ -3769,9 +3769,9 @@ Totomesu_NotGroundFX:
 	STA Sound_QLevel1
 
 	LDA #0
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
-	INC Objects_Var1,X
+	INC entity_var1,X
 
 Totomesu_AlreadyOnFloor:
 	JSR Object_HitGround
@@ -3781,7 +3781,7 @@ Totomesu_NotHitFloor:
 
 	; Flag as not on floor
 	LDA #0
-	STA Objects_Var1,X
+	STA entity_var1,X
 
 Totomesu_Cont:
 	LDA Objects_ColorCycle,X
@@ -3792,7 +3792,7 @@ Totomesu_Cont:
 	LDA Objects_PlayerHitStat,X
 	BEQ Totomesu_PlayerNoHit	 ; If Player is not hitting Totomesu at all, jump to Totomesu_PlayerNoHit (RTS)
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI Totomesu_PlayerNoHit	 ; If Player is moving upward, jump to Totomesu_PlayerNoHit (RTS)
 
 	; Play squish sound
@@ -3800,16 +3800,16 @@ Totomesu_Cont:
 	STA Sound_QPlayer
 
 	; Get 1000, 2000, or 4000 points
-	INC Objects_Var2,X
-	LDA Objects_Var2,X	; 1, 2, 3
+	INC entity_var2,X
+	LDA entity_var2,X	; 1, 2, 3
 	ADD #$08
 	JSR Score_PopUp
 
 	; Player Y Vel = -$30 (bounce off)
 	LDA #-$30
-	STA <Player_YVel
+	STA <player_lo_y_velocity
 	
-	LDA Objects_Var2,X	; 1, 2, 3
+	LDA entity_var2,X	; 1, 2, 3
 	CMP #3
 	BLT Totomesu_NotDead
 
@@ -3818,7 +3818,7 @@ Totomesu_Cont:
 
 Totomesu_Kill:	
 	LDA #4
-	STA <Objects_Var5,X
+	STA <entity_var5,X
 
 	JSR_THUNKA 42, Boss_DestroyOtherObjects
 
@@ -3836,10 +3836,10 @@ Totomesu_NotDead:
 	
 	; Jump to state 2
 	LDA #2
-	STA <Objects_Var5,X
+	STA <entity_var5,X
 	
 	LDA #$40
-	STA Objects_Timer,X
+	STA entity_timer,X
 
 Totomesu_PlayerNoHit:
 	RTS
@@ -3847,89 +3847,89 @@ Totomesu_PlayerNoHit:
 Totomesu_LeapXVel:	.byte $40, -$40
 
 Totomesu_Leap:
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Totomesu_NoLeapYet
 
 	; Leap at timer expiration based on side of screen
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	ROL A
 	ROL A
 	AND #1
 	TAY
 	LDA Totomesu_LeapXVel,Y
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	
 	LDA #-$50
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 	LDA #1
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 Totomesu_NoLeapYet:
 	RTS
 
 Totomesu_WaitLeapLand:
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	CMP #8
 	BGE Totomesu_NotOutboundLeft
 
 	; Out of bounds left...
 	LDA #8
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 	LDA #0
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
 Totomesu_NotOutboundLeft:
 	CMP #224
 	BLT Totomesu_NotOutboundRight
 	
 	LDA #224
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 	LDA #0
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	
 Totomesu_NotOutboundRight:
 
-	LDA Objects_DetStat,X
+	LDA entity_collision_flags,X
 	AND #$04
 	BEQ Totomesu_NotLanded
 
 	LDA #0
-	STA <Objects_Var5,X
-	STA <Objects_XVel,X
-	STA <Objects_YVel,X
+	STA <entity_var5,X
+	STA <entity_lo_x_velocity,X
+	STA <entity_lo_y_velocity,X
 
 Totomesu_NotLanded:
 	RTS
 
 Totomesu_Draw:
 
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	AND #$80
 	EOR #$80
 	LSR A
-	STA Objects_FlipBits,X	
+	STA entity_flipped_animation,X	
 
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	PHA
 	ADD #16
-	STA <Objects_X,X
-	LDA <Objects_XHi,X
+	STA <entity_lo_x,X
+	LDA <entity_hi_x,X
 	PHA
 	ADC #0
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	PHA
 	ADD #16
-	STA <Objects_Y,X
-	LDA <Objects_YHi,X
+	STA <entity_lo_y,X
+	LDA <entity_hi_y,X
 	PHA
 	ADC #0
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
-	LDA Objects_Frame,X
+	LDA entity_animation_frame,X
 	ASL A
 	ADD #(Totomesu_Rump - ObjectGrExt_PatternSets)
 	PHA
@@ -3945,23 +3945,23 @@ Totomesu_Draw:
 	ADD #16
 	TAY
 	JSR Object_Draw16x16Sprite
-	LDX <SlotIndexBackup
+	LDX <entity_index
 
 	PLA
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 	PLA
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 	PLA
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 	PLA
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 
 	LDY #2
 	JSR Object_DetermineHorzVisY	 ; Determine horizontal visibility of Totomesu's sprites
 	JSR Object_DetermineVertVis	 ; Determine vertical visibility of Totomesu's sprites
 	JSR Object_Draw16x32Sprite
 
-	LDA Objects_FlipBits,X	
+	LDA entity_flipped_animation,X	
 	AND #SPR_HFLIP
 	BEQ Totomesu_NotHFlipped
 	
@@ -4006,7 +4006,7 @@ ObjNorm_Clyde:
 
 	; Face Player
 	LDA Misc_FlipTowardsPlayer,Y
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 
 	JSR Cylde_Draw
 
@@ -4015,22 +4015,22 @@ ObjNorm_Clyde:
 
 	JSR Clyde_Common
 
-	LDA Objects_State,X
+	LDA entity_state,X
 	CMP #OBJSTATE_NORMAL
 	BEQ Clyde_NotDying
 
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 
 	LDA #$FF
-	STA Objects_SpriteX,X
-	STA Objects_SpriteY,X
+	STA entity_sprite_lo_x,X
+	STA entity_sprite_lo_y,X
 	
 	LDA #0
-	STA <Objects_XVel,X
-	STA <Objects_YVel,X
+	STA <entity_lo_x_velocity,X
+	STA <entity_lo_y_velocity,X
 
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	CMP #4
 	BGE Clyde_NotDying
 
@@ -4038,7 +4038,7 @@ ObjNorm_Clyde:
 
 Clyde_NotDying:
 
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	JSR DynJump
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
@@ -4050,12 +4050,12 @@ Clyde_NotDying:
 	.word Clyde_FallWait		; 5: Dig down shamefully
 	
 Clyde_Normal:
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Clyde_TimerAct
 
 	; Timer reset
 	LDA #$80
-	STA Objects_Timer,X
+	STA entity_timer,X
 
 Clyde_TimerAct:
 	CMP #$40
@@ -4065,10 +4065,10 @@ Clyde_TimerAct:
 	LSR A
 	LSR A
 	LSR A
-	STA Objects_Frame,X	; Open/close mouth
+	STA entity_animation_frame,X	; Open/close mouth
 	BEQ Clyde_DoNothing
 
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	AND #7
 	BNE Clyde_DoNothing
 	
@@ -4086,14 +4086,14 @@ Clyde_Slither:
 	JMP Clyde_SeekPlayer
 	
 Clyde_Hit:
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BEQ Clyde_InSand
 	
 	CMP #$20
 	BGE Clyde_Gasp
 
 	LDA #0
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 	STA Objects_ColorCycle,X
 	
 Clyde_DigDown:
@@ -4103,7 +4103,7 @@ Clyde_DigDown:
 	STA Objects_SprAttr,X
 
 	; Dive in the sand!
-	INC <Objects_YVel,X
+	INC <entity_lo_y_velocity,X
 	JSR Object_ApplyYVel
 	
 	JMP Clyde_DoNothing
@@ -4121,7 +4121,7 @@ Clyde_DigPoofEffect:
 	JSR Clyde_DigPoof
 
 Clyde_NoDigSound:
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	STA SpecialObj_XLo
 	ADD #16
 	STA SpecialObj_XLo+1
@@ -4132,7 +4132,7 @@ Clyde_NoDigSound:
 ;Clyde_DigPoof_XOff:	.byte 4, 12
 
 Clyde_DigPoof:	
-	;LDA <Objects_X,X
+	;LDA <entity_lo_x,X
 	;ADD Clyde_DigPoof_XOff,Y
 	;STA SpecialObj_XLo,Y
 		
@@ -4152,17 +4152,17 @@ Clyde_DigPoof:
 
 Clyde_Gasp:
 	LDA #2
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 	RTS
 
 Clyde_InSand:
 	LDA #0
-	STA <Objects_YVel,X
-	INC <Objects_Var5,X
+	STA <entity_lo_y_velocity,X
+	INC <entity_var5,X
 	
 	LDA #$C0
-	STA Objects_Timer,X	
+	STA entity_timer,X	
 	
 	RTS
 
@@ -4170,7 +4170,7 @@ Clyde_SpitFireXOff:	.byte 3, 24
 
 Clyde_SpitFire:
 	; X offset
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
 	ROL A
 	ROL A
@@ -4181,7 +4181,7 @@ Clyde_SpitFire:
 
 	JSR SpecialObj_FindEmptyAbort	 ; Find an empty special object slot or don't come back!
 
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	ADD <var1
 	STA SpecialObj_XLo,Y
 
@@ -4204,7 +4204,7 @@ Clyde_SpitFire:
 Clyde_DigSeek_XVel:	.byte -$18, $18, -$04, $04
 
 Clyde_DigSeek:
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BEQ Clyde_Lunge
 
 	JSR Clyde_DigPoofEffect
@@ -4224,7 +4224,7 @@ Clyde_SeekPlayer:
 
 Clyde_DigSeek_Right:
 	LDA Clyde_DigSeek_XVel,Y
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	
 	JSR Object_ApplyXVel
 
@@ -4235,27 +4235,27 @@ Clyde_Lunge:
 	STA Sound_QLevel2
 
 	LDA #-$70
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 	LDA #0
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 
 	RTS
 
 Clyde_Emerge:
 	JSR Object_Move
-	LDA Objects_DetStat,X
+	LDA entity_collision_flags,X
 	AND #04
 	BEQ Clyde_EmergeNotOnFloor
 	
 	JSR Object_HitGround
 	
 	LDA #0
-	STA <Objects_Var5,X
+	STA <entity_var5,X
 
 	LDA #$40
-	STA Objects_Timer,X
+	STA entity_timer,X
 
 Clyde_EmergeNotOnFloor:
 	RTS
@@ -4362,7 +4362,7 @@ Cylde_NoHFlip:
 	STA Sprite_RAM+$03,Y
 	
 CyldeDraw_NoFreeSpr:
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	RTS
 
 ClydeFlipGut_XOff:	.byte -8, 0
@@ -4371,7 +4371,7 @@ Clyde_Common:
 	LDA Objects_ColorCycle,X
 	BNE Clyde_PlayerNoHit
 
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	CMP #4
 	BGE Clyde_PlayerNoHit	; If in death throes, jump to Clyde_PlayerNoHit
 
@@ -4380,10 +4380,10 @@ Clyde_Common:
 	LDA Objects_PlayerHitStat,X
 	BEQ Clyde_PlayerNoHit	 ; If Player is not hitting Clyde at all, jump to Clyde_PlayerNoHit (RTS)
 
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	BNE Clyde_HurtPlayer	; If not in "normal" state, hurt player!
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI Clyde_PlayerNoHit	 ; If Player is moving upward, jump to Clyde_PlayerNoHit (RTS)
 
 	; Play squish sound
@@ -4391,16 +4391,16 @@ Clyde_Common:
 	STA Sound_QPlayer
 
 	; Get 1000, 2000, or 4000 points
-	INC Objects_Var2,X
-	LDA Objects_Var2,X	; 1, 2, 3
+	INC entity_var2,X
+	LDA entity_var2,X	; 1, 2, 3
 	ADD #$08
 	JSR Score_PopUp
 
 	; Player Y Vel = -$30 (bounce off)
 	LDA #-$30
-	STA <Player_YVel
+	STA <player_lo_y_velocity
 	
-	LDA Objects_Var2,X	; 1, 2, 3
+	LDA entity_var2,X	; 1, 2, 3
 	CMP #3
 	BLT Clyde_NotDead
 
@@ -4409,7 +4409,7 @@ Clyde_Common:
 
 Clyde_Kill:	
 	LDA #4
-	STA <Objects_Var5,X
+	STA <entity_var5,X
 
 	JSR_THUNKA 42, Boss_DestroyOtherObjects
 
@@ -4427,10 +4427,10 @@ Clyde_NotDead:
 	
 	; Jump to state 1
 	LDA #1
-	STA <Objects_Var5,X
+	STA <entity_var5,X
 	
 	LDA #$40
-	STA Objects_Timer,X
+	STA entity_timer,X
 
 Clyde_PlayerNoHit:
 	RTS
@@ -4441,24 +4441,24 @@ Clyde_HurtPlayer:
 Clyde_Die:
 
 	LDA #2
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 	LDA #0
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 	LDA #0
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
 	LDA Objects_ColorCycle,X
 	BNE Clyde_StillFlashing
 
 	LDA #3
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 	; Okay!	
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 
 	LDA #$20
-	STA Objects_Timer,X
+	STA entity_timer,X
 
 Clyde_StillFlashing:
 	RTS
@@ -4466,7 +4466,7 @@ Clyde_StillFlashing:
 Clyde_FallWait:
 	JSR Clyde_DigDown
 
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Clyde_StillFlashing
 	
 	JMP Object_Delete
@@ -4483,26 +4483,26 @@ ObjHit_DelfinoSlots:
 DelfinoSlot_DrawSlot:
 	; var1 is the Y offset
 	
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	PHA
 	ADD <var1
-	STA <Objects_Y,X
-	LDA <Objects_YHi,X
+	STA <entity_lo_y,X
+	LDA <entity_hi_y,X
 	PHA
 	ADC #0
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 	JSR Object_DetermineHorzVis
 	JSR Object_DetermineVertVis
 	JSR Object_ShakeAndCalcSprite
 
-	LDX <SlotIndexBackup	; X = object slot index
+	LDX <entity_index	; X = object slot index
 
 	; Restore Y
 	PLA
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 	PLA
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 
 	LDA <var13
 	ASL A		 
@@ -4539,9 +4539,9 @@ DelfinoSlot_DrawSlot:
 	LDY <var12
 	JSR Object_Draw16x16Sprite	 ; Draw sprite
 
-	LDX <SlotIndexBackup		 ; X = object slot index
+	LDX <entity_index		 ; X = object slot index
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BPL DelfinoReel_PlayerNotUpward
 
 	JSR Object_HitTestRespond
@@ -4556,33 +4556,33 @@ ObjNorm_Pinata:
 	JSR Object_Draw16x32Sprite
 	JSR Object_HitTestRespond
 
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	BEQ Pinata_TossWait
 	
 	; Tossing...
 	
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Pinata_DoNothing
 	
-	LDA Objects_Frame,X
+	LDA entity_animation_frame,X
 	CMP #1
 	BNE Pinata_Toss		; If not on frame 1 (presumably 2), jump to Pinata_Toss
 	
 	; Reset timer
 	LDA #$20
-	STA Objects_Timer,X
+	STA entity_timer,X
 	
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
 	ROL A
 	ROL A
 	ROL A
 	TAY
 	LDA PinataToss_XVel,Y
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 	LDA #$-70
-	STA <Player_YVel
-	STA Player_InAir
+	STA <player_lo_y_velocity
+	STA player_is_in_air
 
 	LDA #SND_LEVELAIRSHIP
 	STA Sound_QLevel2
@@ -4601,17 +4601,17 @@ PinataToss_NotBottom:
 	STA Player_HaltTick
 		
 	; Go to frame 2
-	INC Objects_Frame,X
+	INC entity_animation_frame,X
 	BNE Pinata_DoNothing
 	
 Pinata_Toss:
 	LDA #0
-	STA Objects_Frame,X
-	STA <Objects_Var4,X
+	STA entity_animation_frame,X
+	STA <entity_var4,X
 
 	; Cool down
 	LDA #$40
-	STA Objects_Timer,X
+	STA entity_timer,X
 
 	BNE	Pinata_DoNothing
 
@@ -4619,7 +4619,7 @@ Pinata_TossWait:
 	; Face Player
 	JSR Level_ObjCalcXDiffs
 	LDA Misc_FlipTowardsPlayer,Y
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 
 Pinata_DoNothing:
 	RTS
@@ -4633,50 +4633,50 @@ ObjHit_Pinata:
 	;TAY
 
 	;LDA Misc_FlipTowardsPlayer-1,Y
-	;STA Objects_FlipBits,X
+	;STA entity_flipped_animation,X
 
 ;Pinata_NoUpdateFace:
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Pinata_AlreadyTossing
 
-	LDA <Objects_Var4,X
+	LDA <entity_var4,X
 	BNE Pinata_AlreadyTossing
 	
 	; Begin tossing
-	INC <Objects_Var4,X
-	INC Objects_Frame,X
+	INC <entity_var4,X
+	INC entity_animation_frame,X
 
 	LDA #$ff
 	STA Player_HaltTick
 	
 	LDY #PF_SLIDE_SMALL
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ Pinata_ThrowSmall
 	
 	LDY #PF_SLIDE_BIG
 	
 Pinata_ThrowSmall:
-	STY Player_Frame
+	STY player_animation_frame
 	
-	LDA Objects_FlipBits,X
-	STA Player_FlipBits
+	LDA entity_flipped_animation,X
+	STA player_flipped_animation
 	
-	;LDA <Objects_X,X
+	;LDA <entity_lo_x,X
 	;ADD #8
-	;STA <Player_X
-	;LDA <Objects_XHi,X
+	;STA <player_lo_x
+	;LDA <entity_hi_x,X
 	;ADC #0
-	;STA <Player_XHi
+	;STA <player_hi_x
 	
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	SUB #8
-	STA <Player_Y
-	LDA <Objects_YHi,X
+	STA <player_lo_y
+	LDA <entity_hi_y,X
 	SBC #0
-	STA <Player_YHi
+	STA <player_hi_y
 
 	LDA #$20
-	STA Objects_Timer,X
+	STA entity_timer,X
 	
 Pinata_AlreadyTossing:
 	RTS
@@ -4702,7 +4702,7 @@ ObjInit_Magiblot:
 
 	TXA
 	AND #1
-	STA Objects_Var2,X
+	STA entity_var2,X
 
 	RTS
 	
@@ -4711,7 +4711,7 @@ ObjInit_Magiblot:
 	; Var2 - Horizontal player seek 4 / -4
 	; Var3 - Vertical player seek
 ObjNorm_Magiblot:
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	CMP #2
 	BLT Magiblot_NoDrawState
 
@@ -4721,7 +4721,7 @@ Magiblot_NoDrawState:
 	LDA <Player_HaltGame
 	BNE Magiblot_Halted
 
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	JSR DynJump
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
@@ -4747,18 +4747,18 @@ Magiblot_VOffset:	.byte 0 * 16, 1 * 16, -1 * 16, 2 * 16, -2 * 16, 3 * 16, -3 * 1
 Magiblot_VOffsetHi:	.byte $00,    $00,    $FF,     $00,    $FF,     $00,    $FF,     $00,    $FF,     $00,    $FF,     $00,    $FF
 
 Magiblot_PrepSeek:
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE MPS_StillTimering
 
-	LDA Objects_Var2,X
+	LDA entity_var2,X
 	EOR #1
-	STA Objects_Var2,X
+	STA entity_var2,X
 	
 	LDA #-1		; Starting at -1 due to preincrement
-	STA Objects_Var3,X
+	STA entity_var3,X
 
 	; Next state
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 	
 MPS_StillTimering:
 	RTS
@@ -4771,30 +4771,30 @@ Magiblot_Seek:
 	
 	
 	; Offset from Player's X
-	LDY Objects_Var2,X
+	LDY entity_var2,X
 
-	LDA <Player_X
+	LDA <player_lo_x
 	ADD Magiblot_HOffset,Y
 	AND #$F0
 	STA ObjTile_DetXLo
-	LDA <Player_XHi
+	LDA <player_hi_x
 	ADC Magiblot_HOffsetHi,Y
 	STA ObjTile_DetXHi
 	
 	; Offset from Player's Y
-	LDA Objects_Var3,X
+	LDA entity_var3,X
 	ADD #1
 	CMP #(Magiblot_VOffsetHi - Magiblot_VOffset)
 	BGE Magiblot_Reset		; If out of range vertical checks, jump to Magiblot_Reset
 	
-	STA Objects_Var3,X
+	STA entity_var3,X
 	TAY
 	
-	LDA <Player_Y
+	LDA <player_lo_y
 	ADD Magiblot_VOffset,Y
 	AND #$F0
 	STA ObjTile_DetYLo
-	LDA <Player_YHi
+	LDA <player_hi_y
 	ADC Magiblot_VOffsetHi,Y
 	STA ObjTile_DetYHi
 	
@@ -4810,23 +4810,23 @@ Magiblot_Seek:
 	; Found a landing spot!
 	
 	LDA ObjTile_DetXLo
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 	LDA ObjTile_DetXHi
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 	LDA ObjTile_DetYLo
 	ADD #16
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 	LDA ObjTile_DetYHi
 	ADC #0
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 	
 	; Next state (appear)
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 	RTS
 	
 Magiblot_Reset:
 	; Previous state (reset)
-	DEC <Objects_Var5,X
+	DEC <entity_var5,X
 	
 Magiblot_NotAcceptable:
 	RTS
@@ -4857,13 +4857,13 @@ Magiblot_Draw:
 	
 	JSR Object_Draw16x32SpriteCS
 		
-	LDX <SlotIndexBackup
-	LDA Objects_Frame,X
+	LDX <entity_index
+	LDA entity_animation_frame,X
 	CMP #2
 	BNE Magiblot_NoHands	; Only frame 2 has the hands!
 	
 	; Var1 is hand position, multiply by 4
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	ASL A
 	ASL A
 	TAX
@@ -4872,7 +4872,7 @@ Magiblot_Draw:
 	JSR Magiblot_DrawHands
 	
 Magiblot_NoHands:
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	RTS
 
 Magiblot_DrawHands:
@@ -4935,9 +4935,9 @@ Magiblot_HandYOff:
 	.word  $06,  $06		; 5
 
 Magiblot_DrawHand:	
-	LDX <SlotIndexBackup
+	LDX <entity_index
 
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
 	BEQ Magiblot_NoHFlipHand
 
@@ -4950,18 +4950,18 @@ Magiblot_DrawHand:
 
 Magiblot_NoHFlipHand:
 	; Calc relative X for hand
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	ADD <var1
 	STA <var10		; X
-	LDA <Objects_XHi,X
+	LDA <entity_hi_x,X
 	ADC <var2
 	STA <var11		; XHi
 
 	; Calc relative Y for hand
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	ADD <var3
 	STA <var12		; Y
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	ADC <var4
 	STA <var13		; YHi
 
@@ -5021,28 +5021,28 @@ Magiblot_HandOffH:
 	SUB <Horz_Scroll
 	STA Sprite_RAM+$03,Y
 	
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	RTS
 
 
 Magiblot_PrepAppear:
 	LDA #0
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 	LDA #-$30
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 	
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 	RTS
 
 Magiblot_Appear:
-	LDA <Objects_YHi,X
+	LDA <entity_hi_y,X
 	CMP #2
 	BGE Magiblot_TooLow
 
 	JSR Object_Move
 
-	LDA Objects_DetStat,X
+	LDA entity_collision_flags,X
 	AND #$04
 	BEQ Magiblot_NotOnFloor
 
@@ -5050,30 +5050,30 @@ Magiblot_Appear:
 	
 Magiblot_TooLow:
 	LDA #$10
-	STA Objects_Timer,X
+	STA entity_timer,X
 	
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 
 Magiblot_NotOnFloor:
 	RTS
 
 
 Magiblot_PoofUp:
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	PHA
 	AND #$07
 	BNE Magiblot_NoChange
 	
-	INC Objects_Frame,X
+	INC entity_animation_frame,X
 	
 Magiblot_NoChange:
 	PLA
 	BNE Magiblot_StillTimering
 
 	LDA #$03
-	STA Objects_Timer,X
+	STA entity_timer,X
 	
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 	
 Magiblot_StillTimering:
 	RTS
@@ -5085,25 +5085,25 @@ Magiblot_Fire:
 
 	; Face Player
 	LDA Misc_FlipTowardsPlayer,Y
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Magiblot_FireWait
 
 	LDA #$03
-	STA Objects_Timer,X
+	STA entity_timer,X
 	
-	INC Objects_Var1,X
-	LDA Objects_Var1,X
+	INC entity_var1,X
+	LDA entity_var1,X
 	CMP #((Magiblot_HandYOff - Magiblot_HandXOff) / 4) - 1
 	BLT Magiblot_FireWait
 
 	JSR_THUNKA 3, Magiblot_ShootFire
 
 	LDA #$1F
-	STA Objects_Timer,X
+	STA entity_timer,X
 
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 Magiblot_FireWait:
 	RTS
 
@@ -5111,36 +5111,36 @@ Magiblot_FireWait:
 Magiblot_Wait:
 	JSR Object_HandleBumpUnderneath	 ; Handle object getting hit from underside 
 
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	BNE Magiblot_FireWait
 
 	LDA #0
-	STA Objects_Var1,X
+	STA entity_var1,X
 
 	LDA #$10
-	STA Objects_Timer,X
+	STA entity_timer,X
 	
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 
 	RTS
 
 
 Magiblot_PoofDown:
-	LDA Objects_Timer,X
+	LDA entity_timer,X
 	PHA
 	AND #$07
 	BNE Magiblot_NoChange2
 	
-	DEC Objects_Frame,X
+	DEC entity_animation_frame,X
 	
 Magiblot_NoChange2:
 	PLA
 	BNE Magiblot_StillTimering2
 
 	LDA #$03
-	STA Objects_Timer,X
+	STA entity_timer,X
 	
-	INC <Objects_Var5,X
+	INC <entity_var5,X
 	
 Magiblot_StillTimering2:
 	RTS
@@ -5148,7 +5148,7 @@ Magiblot_StillTimering2:
 
 Magiblot_WaitToVanish:
 	LDA #0
-	STA <Objects_Var5,X
+	STA <entity_var5,X
 	RTS
 	
 ObjInit_ArenaCtl:
@@ -5197,14 +5197,14 @@ ObjNorm_ArenaCtl:
 	
 	; If result of this is negative, player is on "upper pipes"
 	; Otherwise, lower pipes...
-	LDA <Player_Y
-	SUB <Objects_Y,X
+	LDA <player_lo_y
+	SUB <entity_lo_y,X
 	AND #$80
 	LSR A
 	LSR A
 	STA <var1
 	
-	LDA <Player_X
+	LDA <player_lo_x
 	AND #%11000000
 	LSR A
 	LSR A
@@ -5296,7 +5296,7 @@ ObjNorm_Bleck:
 	LDA #250
 	STA PatTable_BankSel+5
 
-	LDA <Objects_Var5,X
+	LDA <entity_var5,X
 	CMP #$FF
 	BEQ Bleck_Fake	; "Fake" Bleck object just keeps a slot occupied for sake of stealing sprites from it
 
@@ -5317,14 +5317,14 @@ Bleck_Draw:
 	STA <var9
 
 	; Offsets to help fit bounding box better
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	PHA
 	SUB #8
-	STA <Objects_X,X
-	LDA <Objects_XHi,X
+	STA <entity_lo_x,X
+	LDA <entity_hi_x,X
 	PHA
 	SBC #0
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 
 	JSR Object_DetermineHorzVis
 	JSR Object_DetermineVertVis
@@ -5332,8 +5332,8 @@ Bleck_Draw:
 
 	; var13 = 0 (no hflip) or 3 (hflip)
 	; var14 = 9 / 6
-	LDX <SlotIndexBackup
-	LDA Objects_FlipBits,X
+	LDX <entity_index
+	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
 	ASL A
 	ROL A
@@ -5345,8 +5345,8 @@ Bleck_Draw:
 	STA <var14
 	
 	; Calculate pattern offset by frame
-	LDX <SlotIndexBackup
-	LDA Objects_Frame,X
+	LDX <entity_index
+	LDA entity_animation_frame,X
 	TAX
 	LDA Bleck_FrameBase,X 
 	ADD <var13
@@ -5469,12 +5469,12 @@ BDVOff:
 	JMP Bleck_DrawLoop	; While var12 >= 0 (the other half), loop!
 
 Bleck_DrawDone:
-	LDX <SlotIndexBackup
+	LDX <entity_index
 
 	PLA
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 	PLA
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 
 	RTS		 ; Return
 	

@@ -37,7 +37,7 @@ EndWorldSeq_Init:
 	STA CineKing_Timer2
 
 	; Set Player to top of screen
-	STA <Player_Y
+	STA <player_lo_y
 
 	; Clear auto scroll variables
 	LDY #$14	 ; Y = $14
@@ -1722,11 +1722,11 @@ PRG027_A328:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 PlayerProjs_UpdateAndDraw27:
 	LDX #$01	; X = 1  
-	STX <SlotIndexBackup		 ; SlotIndexBackup = 1
+	STX <entity_index		 ; entity_index = 1
 
 	JSR PlayerProj_UpdateAndDraw	 ; Update and draw this Player Projectile
 
-	DEC <SlotIndexBackup		 ; SlotIndexBackup = 0
+	DEC <entity_index		 ; entity_index = 0
 	DEX		 ; X = 0
 
 PlayerProj_UpdateAndDraw:
@@ -1985,8 +1985,8 @@ PlayerProj_FireDet_NoRev:
 
 	; Hammer only...
 
-	LDA <Player_Suit
-	CMP #PLAYERSUIT_HAMMER
+	LDA <player_powerup
+	CMP #powerup_hammer
 	BNE PlayerProj_ChangeToPoof	 ; If Player is NOT wearing the Hammer Suit anymore (uh oh), jump to PlayerProj_ChangeToPoof
 
 	LDA Level_NoStopCnt
@@ -2048,7 +2048,7 @@ PRG027_A485:
 PRG027_A48C:
 	STA Sprite_RAM+$02,Y	 ; Set Player Projectile attributes
 
-	LDX <SlotIndexBackup	 ; X = Player Projectile slot index
+	LDX <entity_index	 ; X = Player Projectile slot index
 
 	LDA <Player_HaltGame
 	BNE PRG027_A4A2	 ; If gameplay is halted, jump to PRG027_A4A2
@@ -2381,7 +2381,7 @@ PRG027_A5DC:
 	LDA Level_SlopeSetByQuad+1,X
 	STA <var4
 
-	LDX <SlotIndexBackup	 ; X = Player Projectile index
+	LDX <entity_index	 ; X = Player Projectile index
 
 	LDA <var1
 	SUB Tile_AttrTable,Y
@@ -2494,13 +2494,13 @@ PRG027_A648:
 	ORA Objects_SprVVis,Y
 	BNE PRG027_A667	 ; If object has sprites horizontally or vertically off-screen, jump to PRG027_A667 (Forget it!)
 
-	LDX Objects_State,Y	; X = object's state
+	LDX entity_state,Y	; X = object's state
 	LDA Obj2Obj_EnByState,X
 	BNE PRG027_A667	 ; If this state does not support object-to-object (object-to-Projectile), jump to PRG027_A667 (Forget it!)
 
 	; SB: Sort of inline version of Object_CalcAttrFlagOff, done for 'X' instead of 'Y'
 	; because that's how this loop was coded... needed to support extended objects!
-	LDX Level_ObjectID,Y	; X = object's ID
+	LDX entity_type,Y	; X = object's ID
 	CPX #OBJ_EXTBANK_BEGIN
 	BLT Object_CalcAttrFlagOffX_Done	; If not an extended object, jump to Object_CalcAttrFlagOff_Done
 
@@ -2526,7 +2526,7 @@ PRG027_A667:
 	DEY		 ; Y--
 	BPL PRG027_A648	; While Y >= 0, loop
 
-	LDX <SlotIndexBackup	 ; X = Player Projectile slot index
+	LDX <entity_index	 ; X = Player Projectile slot index
 
 PRG027_A66C:
 	RTS		 ; Return
@@ -2594,16 +2594,16 @@ PlayerProj_HitObject:
 	STX <var2	 ; -> var2
 
 	LDA <var13	 	; Detect Y of projectile
-	SUB Objects_SpriteY,Y	; Difference against this object's Sprite Y
+	SUB entity_sprite_lo_y,Y	; Difference against this object's Sprite Y
 	CMP Projectile_BBoxY,X
-	LDX <SlotIndexBackup	; X = Player Projectile slot index
+	LDX <entity_index	; X = Player Projectile slot index
 	BGE PRG027_A66C	 	; If projectile is out of range vertically, jump to PRG027_A66C (RTS)
 
 	LDA <var14		; Detect X of projectile
-	SUB Objects_SpriteX,Y	; Difference against this object's Sprite X
+	SUB entity_sprite_lo_x,Y	; Difference against this object's Sprite X
 	LDX <var2		; X = bounding box index
 	CMP Projectile_BBoxX,X
-	LDX <SlotIndexBackup	; X = Player Projectile slot index
+	LDX <entity_index	; X = Player Projectile slot index
 	BGE PRG027_A6FD	 	; If projectile is out of range horizontally, jump to PRG027_A6FD (RTS)
 
 	LDA PlayerProj_ID,X
@@ -2625,12 +2625,12 @@ PRG027_A6C3:
 
 	; Fireball only...
 
-	LDA <Player_Suit
-	CMP #PLAYERSUIT_PENGUIN
+	LDA <player_powerup
+	CMP #powerup_penguin
 	BNE PW_FireballImmunity
 
 	; Penguin suit uses ice immunity check instead!
-	LDA Level_ObjectID,Y	; Get object ID
+	LDA entity_type,Y	; Get object ID
 	LDX #(Projectile_IceImmunity_End - Projectile_IceImmunity - 1)
 IceImmuneCheck_Loop:
 	CMP Projectile_IceImmunity,X
@@ -2641,7 +2641,7 @@ IceImmuneCheck_Loop:
 	
 IceImmune_Found:
 	PHP		; Save flags
-	LDX <SlotIndexBackup	; X = Player Projectile slot index
+	LDX <entity_index	; X = Player Projectile slot index
 	PLP		; Restore flags
 	
 	BEQ PRG027_A6FE		; If object is immune to ice, jump to PRG027_A6FE
@@ -2672,13 +2672,13 @@ PRG027_A6C9:
 
 
 PRG027_A6DD:
-	LDA <Player_Suit
-	CMP #PLAYERSUIT_PENGUIN
+	LDA <player_powerup
+	CMP #powerup_penguin
 	BEQ PPHit_Penguin	; If Player is wearing a Penguin suit, jump to PPHit_Penguin
 
 	; Enemy bounces upward a bit
 	LDA #-$34
-	STA Objects_YVel,Y
+	STA entity_lo_y_velocity,Y
 
 	; Set object's velocity based on Player's velocity (sort of works)
 	LDA PlayerProj_XVel,X
@@ -2687,7 +2687,7 @@ PRG027_A6DD:
 	BCC PRG027_A6EC	 ; If Player's X Velocity is negative, jump to PRG027_A6EC
 	LDA #-$0C
 PRG027_A6EC:
-	STA Objects_XVel,Y
+	STA entity_lo_x_velocity,Y
 
 	TYA
 	TAX	; object index -> 'X'
@@ -2696,11 +2696,11 @@ PRG027_A6EC:
 	LDA #$05
 	JSR Score_PopUp
 
-	LDX <SlotIndexBackup	 ; X = Player Projectile slot index
+	LDX <entity_index	 ; X = Player Projectile slot index
 
 	; But the enemy is killed...
 	LDA #OBJSTATE_KILLED
-	STA Objects_State,Y
+	STA entity_state,Y
 
 PRG027_A6FD:
 	RTS		 ; Return
@@ -2717,17 +2717,17 @@ PPHit_Penguin:
 
 	; If now-frozen object was in "kicked" state, revert to just "shelled"
 	; We'll reuse "kicked" later to make frozen enemies kickable!
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	CMP #OBJSTATE_KICKED
 	BNE PPHit_NotKicked
 
 	; Revert to "shelled"
 	LDA #OBJSTATE_SHELLED
-	STA Objects_State,Y
+	STA entity_state,Y
 	
 	; Halt horizontal velocity (in case you let him thaw out so he doesn't jerk)
 	LDA #0
-	STA Objects_XVel,Y
+	STA entity_lo_x_velocity,Y
 
 PPHit_NotKicked:
 	RTS
@@ -2807,7 +2807,7 @@ PRG027_A75F:
 	ORA #(SPR_HFLIP | SPR_VFLIP)
 	STA Sprite_RAM+$06,Y	 ; Set right sprite attributes
 
-	LDX <SlotIndexBackup	 ; X = Player Projectile slot index
+	LDX <entity_index	 ; X = Player Projectile slot index
 
 	RTS		 ; Return
 
@@ -2961,11 +2961,11 @@ PRG027_B979:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 PProj_CalcCoarseXDiff:
 	LDA PlayerProj_X,X	 
-	SUB <Player_X	
+	SUB <player_lo_x	
 	STA <var15		; var15 = difference between Object and Player X
 
 	LDA PlayerProj_XHi,X
-	SBC <Player_XHi		; Calc diff between X His
+	SBC <player_hi_x		; Calc diff between X His
 
 	LSR A			; Push low bit of "hi" difference -> carry
 	ROR <var15		; Cycle carry into var15 at high bit; will be discarding low bit
@@ -3001,11 +3001,11 @@ PProj_CalcCoarseXDiff:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 PProj_CalcCoarseYDiff
 	LDA PlayerProj_Y,X
-	SUB <Player_Y	
+	SUB <player_lo_y	
 	STA <var15		 ; var15 = difference between object's Y and Player's Y
 
 	LDA PlayerProj_YHi,X
-	SBC <Player_YHi	
+	SBC <player_hi_y	
 	STA <var16		 ; var16 = difference between object's Y Hi and Player's Y Hi
 
 	LSR A		 	; least significant bit of Y Hi -> carry

@@ -50,7 +50,7 @@ SpecialObjs_UpdateAndDraw:
 
 	LDX #$07	 ; X = 7
 PRG043_AF1B:
-	STX <SlotIndexBackup ; Store current checked index -> SlotIndexBackup
+	STX <entity_index ; Store current checked index -> entity_index
 
 	JSR SpecialObj_UpdateAndDraw	 ; Does the update and draw routines of Special OBjects
 
@@ -411,7 +411,7 @@ PRG043_B0C9:
 
 	TXA
 
-	LDX <SlotIndexBackup	; X = special object slot index
+	LDX <entity_index	; X = special object slot index
 
 	CMP #$08
 	LDA #$b5	 ; A = $B5
@@ -475,9 +475,9 @@ SObjFence_WaitForPlayer:
 	STA Player_HaltTick
 
 	LDA SpecialObj_XLo,X
-	SUB <Player_X
+	SUB <player_lo_x
 	ADD #16
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 
 	; No scrolling in vertical level...
 	LDA Level_7Vertical
@@ -539,13 +539,13 @@ FenceCtl_StillRotating:
 	; Update Player's displayed climbing frame
 	JSR_THUNKA 8, Player_DoClimbAnim
 	
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	EOR #SPR_HFLIP
-	STA <Player_FlipBits	
+	STA <player_flipped_animation	
 	
 SObjFenceRot_Nothing:
 
-	LDA <Player_X
+	LDA <player_lo_x
 	STA <var1
 
 	; Keep on truckin', Player
@@ -559,7 +559,7 @@ SObjFenceRot_Nothing:
 	STA <var2
 		
 	; Scroll if Player moved...
-	LDA <Player_X
+	LDA <player_lo_x
 	SUB <var1
 	BEQ SObjFenceRot_InRange	; If no scroll, just jump to SObjFenceRot_InRange (RTS)
 	STA <var1
@@ -717,7 +717,7 @@ PRG043_B17E:
 	LDA PUpCoin_Attributes,X
 	STA Sprite_RAM+$02,Y	
 
-	LDX <SlotIndexBackup	 ; X = special object slot index
+	LDX <entity_index	 ; X = special object slot index
 
 	RTS		 ; Return
 
@@ -761,7 +761,7 @@ PRG043_B1C3:
 	LSR A
 	LSR A
 	NOP
-	ADD <SlotIndexBackup
+	ADD <entity_index
 	AND #$03	 ; A = 0 to 3 (palette select)
 	STA Sprite_RAM+$02,Y
 
@@ -800,15 +800,15 @@ PRG043_B2A8:
 
 	LDY SpecialObj_Var1,X	 ; Y = Var1 (the parent Lava Lotus index)
 
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	CMP #OBJSTATE_NORMAL
 	BNE PRG043_B2D8	 ; If Lava Lotus is no longer in normal state, jump to PRG043_B2D8
 
-	LDA Level_ObjectID,Y
+	LDA entity_type,Y
 	CMP #OBJ_LAVALOTUS
 	BNE PRG043_B2D8	 ; If this is no longer a Lava Lotus, jump to PRG043_B2D8
 
-	LDA Objects_Var5,Y
+	LDA entity_var5,Y
 	CMP #$4f
 	BLT PRG043_B2D8	 ; If Lava Lotus' Var5 < $4F, jump to PRG043_B2D8
 
@@ -1034,7 +1034,7 @@ PRG043_B3C2:
 
 	LDY #$00	 ; Y = 0 (Player is small or ducking)
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PRG043_B3F3		; If Player is small, jump to PRG043_B3F3
 
 	LDA Player_IsDucking
@@ -1044,27 +1044,27 @@ PRG043_B3C2:
 
 PRG043_B3F3:
 	LDA SpecialObj_YLo,X	; Cannonball Y
-	SUB <Player_Y		; Player Y
+	SUB <player_lo_y		; Player Y
 	SUB Cannonball_YOffset,Y	; Offset
 	CMP Cannonball_YDiffLimit,Y
 	BGE PRG043_B445	 ; If Player is not close enough to top of cannonball, jump to PRG043_B445 (RTS)
 
 	LDA SpecialObj_XLo,X
 	ADD #$08	 ; Cannonball X + 8
-	SUB <Player_X	 ; Diff against Player X
+	SUB <player_lo_x	 ; Diff against Player X
 	CMP #20
 	BGE PRG043_B445	 ; If Player is not close enough horizontally to cannonball, jump to PRG043_B445 (RTS)
 
 	LDA Player_StarInv
 	BNE PRG043_B426	 ; If Player is invincible by Star Man, jump to PRG043_B426
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI PRG043_B442	 ; If Player is moving upward, jump to PRG043_B442
 
 	LDA SpecialObj_YLo,X
 	SUB Level_VertScroll
 	SUB #19
-	CMP <Player_SpriteY
+	CMP <player_sprite_lo_y
 	BLT PRG043_B442	 ; If Player is close enough to bottom of cannonball, jump to PRG043_B442
 
 PRG043_B426:
@@ -1080,7 +1080,7 @@ PRG043_B426:
 
 	; Player bounces off cannonball
 	LDA #-$30
-	STA <Player_YVel
+	STA <player_lo_y_velocity
 
 	; Cannonball kick sound
 	LDA Sound_QPlayer
@@ -1185,7 +1185,7 @@ PRG043_B4AF:
 
 	LDA Level_NoStopCnt
 	LSR A
-	ADD <SlotIndexBackup
+	ADD <entity_index
 	AND #$03
 	TAX		 ; X = 0 to 3
 
@@ -1198,7 +1198,7 @@ PRG043_B4AF:
 	EOR <var1	
 	STA Sprite_RAM+$02,Y
 
-	LDX <SlotIndexBackup	; X = special object slot index
+	LDX <entity_index	; X = special object slot index
 
 SObj_SetSpriteXYRelative:
 	LDA SpecialObj_YLo,X
@@ -1243,7 +1243,7 @@ PRG043_B517:
 	; Set the wand blast pattern
 	STA Sprite_RAM+$01,Y
 
-	LDX <SlotIndexBackup		 ; X = special object slot index
+	LDX <entity_index		 ; X = special object slot index
 
 	JSR SObj_SetSpriteXYRelative	 ; Special Object X/Y put to sprite, scroll-relative
 
@@ -1295,7 +1295,7 @@ SObj_KuriboShoe:
 	LDA #$AB
 	STA Sprite_RAM+$05,Y
 
-	LDX <SlotIndexBackup	; X = special object slot index
+	LDX <entity_index	; X = special object slot index
 
 SObj_Draw16x16:
 	JSR SObj_SetSpriteXYRelative
@@ -1510,7 +1510,7 @@ PRG043_B62B:
 	LDY Player_IsDucking
 	BNE PRG043_B635	 ; If Player is ducking, jump to PRG043_B635
 
-	LDY <Player_Suit
+	LDY <player_powerup
 	BNE PRG043_B639	 ; If Player is small, jump to PRG043_B639
 
 PRG043_B635:
@@ -1518,9 +1518,9 @@ PRG043_B635:
 	ADD #$08
 
 PRG043_B639:
-	ADC <Player_Y
+	ADC <player_lo_y
 	STA SpecialObj_YLo,X
-	LDA <Player_YHi
+	LDA <player_hi_y
 	ADC #$00
 	STA SpecialObj_YHi,X
 
@@ -1537,7 +1537,7 @@ PRG043_B639:
 
 PRG043_B654:
 	SUB #$03
-	ADD <Player_X
+	ADD <player_lo_x
 	STA SpecialObj_XLo,X
 
 	JMP Microgoomba_Draw	 ; Draw Microgoomba and don't come back
@@ -1615,7 +1615,7 @@ PRG043_B6BC:
 	TXA
 	STA Sprite_RAM+$02,Y
 
-	LDX <SlotIndexBackup	 ; X = special object slot
+	LDX <entity_index	 ; X = special object slot
 
 	LDA SpecialObj_Data,X
 	BEQ PRG043_B6CF	 ; If SpecialObj_Data = 0, jump to PRG043_B6CF (Player to Microgoomba collision)
@@ -1650,7 +1650,7 @@ Hammer_YOff:
 
 ;	LDA SpecialObj_YLo,X		; Special object Y
 ;	ADD #$08			; +8
-;	SUB <Player_Y			; Subtract Player Y
+;	SUB <player_lo_y			; Subtract Player Y
 ;	SUB SObjYOff_PlayerSize,Y	; Subtract Player height offset
 ;	CMP SObj_VLimit,Y
 
@@ -1703,7 +1703,7 @@ PRG043_B6F2:
 	TAY		 ; Y = the upper 4 bits (an object slot index)
 	STY <var2	 ; -> var2
 
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	CMP #OBJSTATE_NORMAL
 	BNE PRG043_B70D	 ; If this object is not in normal state, jump to PRG043_B70D
 
@@ -1717,7 +1717,7 @@ PRG043_B70D:
 	JMP SpecialObj_Remove
 
 PRG043_B710:
-	LDA Objects_FlipBits,Y
+	LDA entity_flipped_animation,Y
 	AND #SPR_HFLIP
 	STA <var3	 ; Catch the horizontal flip bit of the referenced object -> var3
 
@@ -1737,7 +1737,7 @@ PRG043_B710:
 	INC <var1
 
 PRG043_B729:
-	LDA Level_ObjectID,Y
+	LDA entity_type,Y
 	CMP #OBJ_HEAVYBRO
 	BNE PRG043_B737	 ; If this not a Heavy Bro, jump to PRG043_B737
 
@@ -1747,7 +1747,7 @@ PRG043_B729:
 	STA <var1
 
 PRG043_B737:
-	LDA Level_ObjectID,Y
+	LDA entity_type,Y
 	CMP #OBJ_BOSS_BOWSER2
 	BNE PRG043_BHXX	 ; If this not a hammer-throwing Bowser, jump to PRG043_BHXX
 
@@ -1758,7 +1758,7 @@ PRG043_B737:
 
 PRG043_BHXX:
 	; Set hammer starting X
-	LDA Objects_X,Y
+	LDA entity_lo_x,Y
 	LDY <var1	
 	ADD Hammer_XOff,Y
 	STA SpecialObj_XLo,X
@@ -1766,7 +1766,7 @@ PRG043_BHXX:
 	LDY <var2		 ; Y = referenced object slot index
 
 	; Set hammer starting Y
-	LDA Objects_Y,Y
+	LDA entity_lo_y,Y
 	CLC
 	LDY <var1
 	ADC Hammer_YOff,Y
@@ -1862,7 +1862,7 @@ PRG043_B7B5:
 	STA Sprite_RAM+$05,Y
 
 PRG043_B7C5:
-	LDX <SlotIndexBackup	 ; X = special object slot index
+	LDX <entity_index	 ; X = special object slot index
 
 	JSR SObj_Draw16x16	 ; Draw Boomerang
 
@@ -1890,7 +1890,7 @@ SObj_PlayerCollide:
 	ASL A
 	TAY			; Y = 0 or 2 (regular gravity, reverse gravity)
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PRG043_B7E4	 ; If Player is small, jump to PRG043_B7E4
 
 	LDA Player_IsDucking
@@ -1901,14 +1901,14 @@ SObj_PlayerCollide:
 PRG043_B7E4:
 	LDA SpecialObj_YLo,X		; Special object Y
 	ADD #$08			; +8
-	SUB <Player_Y			; Subtract Player Y
+	SUB <player_lo_y			; Subtract Player Y
 	SUB SObjYOff_PlayerSize,Y	; Subtract Player height offset
 	CMP SObj_VLimit,Y
 	BGE PRG043_B843	 	; If result >= SObj_VLimit, jump to PRG043_B843 (RTS)
 
 	LDA SpecialObj_XLo,X		; Special object X
 	ADD #$06			; +6
-	SUB <Player_X			; Subtract Player X
+	SUB <player_lo_x			; Subtract Player X
 	SBC #$00			; Carry?
 	CMP #16
 	BGE PRG043_B843	 	; If result >= 16, jump to PRG043_B843 (RTS)
@@ -2268,11 +2268,11 @@ PRG043_B92A:
 	LSR A
 	TAY		 ; Y = object slot index of boomerang thrower
 
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	CMP #OBJSTATE_NORMAL
 	BNE PRG043_B979	 ; If thrower's state <> Normal, jump to PRG043_B979 (RTS)
 
-	LDA Level_ObjectID,Y
+	LDA entity_type,Y
 	CMP #OBJ_BOOMERANGBRO
 	BNE PRG043_B979	; If thrower's slot is not a boomerang brother (Anymore), jump to PRG043_B979 (RTS)
 
@@ -2280,14 +2280,14 @@ PRG043_B92A:
 
 	LDA SpecialObj_YLo,X
 	ADD #8
-	SUB Objects_Y,Y
+	SUB entity_lo_y,Y
 	SUB #8
 	CMP #16
 	BGE PRG043_B979	 ; If boomerang Y diff >= 16, jump to PRG043_B979 (RTS)
 
 	LDA SpecialObj_XLo,X
 	ADD #8
-	SUB Objects_X,Y
+	SUB entity_lo_x,Y
 	SBC #0
 	CMP #16
 	BGE PRG043_B979 ; If boomerang X diff >= 16, jump to PRGO043_B979 (RTS)
@@ -2414,9 +2414,9 @@ PRG043_BA6E:
 	; Set fireball attributes
 	STA Sprite_RAM+$02,Y
 
-	LDX <SlotIndexBackup	 ; X = special object slot index
+	LDX <entity_index	 ; X = special object slot index
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	CMP #$06
 	BNE PRG043_BA8F	 ; If Player is not wearing the Hammer Suit, jump to PRG043_BA8F
 
@@ -2490,7 +2490,7 @@ PRG043_BAA6:
 	STA Sprite_RAM+$01,Y
 	STA Sprite_RAM+$05,Y
 
-	LDX <SlotIndexBackup	; X = special object slot index
+	LDX <entity_index	; X = special object slot index
 
 PRG043_BAD6:
 	RTS		 ; Return
@@ -2817,11 +2817,11 @@ PRG043_AF02:
 ; $DCA2 
 SObj_CalcCoarseXDiff:
 	LDA SpecialObj_XLo,X	 
-	SUB <Player_X	
+	SUB <player_lo_x	
 	STA <var15		; var15 = difference between Object and Player X
 
 	LDA SpecialObj_Var3,X	; Priority special objects ONLY!
-	SBC <Player_XHi		; Calc diff between X His
+	SBC <player_hi_x		; Calc diff between X His
 
 	LSR A			; Push low bit of "hi" difference -> carry
 	ROR <var15		; Cycle carry into var15 at high bit; will be discarding low bit
@@ -2858,11 +2858,11 @@ SObj_CalcCoarseXDiff:
 ; $DCB9
 SObj_CalcCoarseYDiff
 	LDA SpecialObj_YLo,X
-	SUB <Player_Y	
+	SUB <player_lo_y	
 	STA <var15		 ; var15 = difference between object's Y and Player's Y
 
 	LDA SpecialObj_YHi,X
-	SBC <Player_YHi	
+	SBC <player_hi_y	
 	STA <var16		 ; var16 = difference between object's Y Hi and Player's Y Hi
 
 	LSR A		 	; least significant bit of Y Hi -> carry
@@ -2970,11 +2970,11 @@ AltLvlMod_List:
 PrioSpecObj_CalcCoarseXDiff:
 	; Trigger when close enough X
 	LDA SpecialObj_XLo,X	 
-	SUB <Player_X	
+	SUB <player_lo_x	
 	STA <var15		; var15 = difference between Object and Player X
 
 	LDA SpecialObj_Var3,X	; ONLY FOR ALT LEVEL MOD, special X Hi storage!!
-	SBC <Player_XHi		; Calc diff between X His
+	SBC <player_hi_x		; Calc diff between X His
 
 	LSR A			; Push low bit of "hi" difference -> carry
 	ROR <var15		; Cycle carry into var15 at high bit; will be discarding low bit
@@ -3180,33 +3180,33 @@ SOTW_Normal:
 TouchWarp_ExitRight:
 	; "Exit Right" means when Player hits the right edge of the final screen
 
-	LDA <Player_XHi
+	LDA <player_hi_x
 	CMP <Level_Width
 	BNE TouchWarp_OutOfRange	; If Player is not on final screen, jump to TouchWarp_OutOfRange
 
-	LDA <Player_X
+	LDA <player_lo_x
 	CMP #$E8
 	BLT TouchWarp_OutOfRange	; If Player is not close to the right edge of final screen, jump to TouchWarp_OutOfRange
 
 	LDA #0
-	STA <Player_XVel
-	STA <Player_YVel
+	STA <player_lo_x_velocity
+	STA <player_lo_y_velocity
 
 	BEQ TouchWarp_Junction		; Close enough; junction!
 
 TouchWarp_ExitLeft:
 	; "Exit Left" means when Player hits the left edge of the first screen
 
-	LDA <Player_XHi
+	LDA <player_hi_x
 	BNE TouchWarp_OutOfRange	; If Player is not on first screen, jump to TouchWarp_OutOfRange
 
-	LDA <Player_X
+	LDA <player_lo_x
 	CMP #$11
 	BGE TouchWarp_OutOfRange	; If Player is not close to the left edge of first screen, jump to TouchWarp_OutOfRange
 
 	LDA #0
-	STA <Player_XVel
-	STA <Player_YVel
+	STA <player_lo_x_velocity
+	STA <player_lo_y_velocity
 
 	BEQ TouchWarp_Junction		; Close enough; junction!
 
@@ -3236,10 +3236,10 @@ TouchWarp_Global:
 	BNE TouchWarp_OutOfRange	; If Player_AboveTop <> 0 (Player is above the top of screen), jump to TouchWarp_OutOfRange
 
 	; Check if Player has fallen low
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	AND #$F0
 	CMP #$B0
-	BNE TouchWarp_OutOfRange	 ; If Player_SpriteY < $B0 && Player_SpriteY > $BF, jump to TouchWarp_OutOfRange
+	BNE TouchWarp_OutOfRange	 ; If player_sprite_lo_y < $B0 && player_sprite_lo_y > $BF, jump to TouchWarp_OutOfRange
 
 	; Player is low; junction to alternate!
 
@@ -3261,8 +3261,8 @@ TouchWarp_OutOfRange:
 TouchWarp_CheckOffTop:
 
 	; Check if Player is off top
-	LDA <Player_YHi
-	BPL TouchWarp_OutOfRange	; If Player_YHi > 0 (Player is NOT above the top of screen), jump to TouchWarp_OutOfRange
+	LDA <player_hi_y
+	BPL TouchWarp_OutOfRange	; If player_hi_y > 0 (Player is NOT above the top of screen), jump to TouchWarp_OutOfRange
 
 	; Player is high; junction to alternate!
 	BNE TouchWarp_Junction	; Jump to TouchWarp_Junction
@@ -3315,7 +3315,7 @@ SObj_PokeyBody:
 
 	; Get parent Pokey...
 	LDY SpecialObj_Var1,X
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	CMP #OBJSTATE_DEADEMPTY
 	BNE PokeyBody_NotDead
 
@@ -3338,9 +3338,9 @@ PokeyBody_NotDead:
 	BNE PokeyBody_NotKilled
 
 	; Match Pokey's head speed
-	LDA Objects_XVel,Y
+	LDA entity_lo_x_velocity,Y
 	STA SpecialObj_XVel,X
-	LDA Objects_YVel,Y
+	LDA entity_lo_y_velocity,Y
 	ASR A
 	STA SpecialObj_YVel,X
 	
@@ -3384,24 +3384,24 @@ PokeyBody_NoFlip:
 	; Body segments are always tied to parent's X and Y...
 	LDY SpecialObj_Var1,X
 	
-	LDA Objects_Y,Y
+	LDA entity_lo_y,Y
 	SUB SpecialObj_Var2,X
 	STA SpecialObj_YLo,X
-	LDA Objects_YHi,Y
+	LDA entity_hi_y,Y
 	SBC #0
 	STA SpecialObj_YHi,X
 
 	
-	LDA Objects_X,Y
+	LDA entity_lo_x,Y
 	STA <var1
-	LDA Objects_XHi,Y
+	LDA entity_hi_x,Y
 	STA <var2
 
 	; Sway
 	LDA <Counter_1
 	LSR A
 	LSR A
-	ADD <SlotIndexBackup
+	ADD <entity_index
 	AND #$03
 	TAY
 	
@@ -3442,8 +3442,8 @@ PokeyBody_PProjLoop:
 	
 PokeyBody_HammerHit:
 
-	LDA <Player_Suit
-	CMP #PLAYERSUIT_PENGUIN
+	LDA <player_powerup
+	CMP #powerup_penguin
 	BNE PokeyBody_NotIce
 
 	; Ice of course is a different behavior -- should commit freezing to head
@@ -3484,20 +3484,20 @@ PokeyBody_NoPProjHit:
 	
 	LDY #4
 PokeyBody_ShellHit:
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	CMP #OBJSTATE_HELD
 	BEQ PokeyBody_HeldHit		; If object is held by Player, jump to PokeyBody_HeldHit
 	CMP #OBJSTATE_KICKED
 	BNE PokeyBody_ObjNotKicked	; If object is not a kicked shell, jump to PokeyBody_ObjNotKicked
 	
-	LDA Objects_Timer2,Y
+	LDA entity_no_collision_timer,Y
 	BNE PokeyBody_ObjNotKicked	; If object is still on dampener mode, jump to PokeyBody_ObjNotKicked
 	
 PokeyBody_HeldHit:
 	; Check for impact!
-	LDA Objects_Y,Y
+	LDA entity_lo_y,Y
 	STA <var1
-	LDA Objects_X,Y
+	LDA entity_lo_x,Y
 	STA <var2
 
 	JSR SObj_Wx16CustomCollide
@@ -3508,13 +3508,13 @@ PokeyBody_HeldHit:
 
 	; Object will not collide again for 16 ticks (dampener I guess)
 	LDA #16
-	STA Objects_Timer2,Y
+	STA entity_no_collision_timer,Y
 
 	LDA Objects_KillTally,Y
 	ADD #5
 	JSR SObj_ScorePopUp
 
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	CMP #OBJSTATE_HELD
 	BNE PokeyBody_HitKickedObject
 
@@ -3522,7 +3522,7 @@ PokeyBody_HeldHit:
 	TYA
 	TAX
 	JSR ObjectKill_SetShellKillVars
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	RTS
 
 PokeyBody_HitKickedObject:
@@ -3556,9 +3556,9 @@ PokeyBody_Kill:
 		
 	; Inform parent of one less segment
 	LDY SpecialObj_Var1,X
-	LDA Objects_Var1,Y
+	LDA entity_var1,Y
 	SUB #16
-	STA Objects_Var1,Y
+	STA entity_var1,Y
 
 
 	; Doubly-linked list with indexes in 6502... whee...
@@ -3637,7 +3637,7 @@ PokeyBody_KillPushNextLoop:
 	JMP PokeyBody_KillPushNextLoop
 
 PokeyBody_KillPushNextDone:
-	LDX <SlotIndexBackup
+	LDX <entity_index
 	
 	; Hit by player projectile!
 	LDA #$EE
@@ -3697,7 +3697,7 @@ Albabomb_CarryCont:
 	; Let go, Albatoss!
 	LDY SpecialObj_Data,X
 	LDA #$FF
-	STA Objects_Var7,Y
+	STA entity_var7,Y
 	
 Albabomb_NotInRange:
 	RTS

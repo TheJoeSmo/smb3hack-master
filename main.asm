@@ -783,7 +783,7 @@ button_right_mask	= $01
 				.ds 1	; $EA unused
 				.ds 1	; $EB unused
 
-	Player_WalkFrame:	.ds 1	; relative, not the same as Player_Frame
+	Player_WalkFrame:	.ds 1	; relative, not the same as player_animation_frame
 
 				.ds 7	; $ED-$F3 unused
 
@@ -833,8 +833,8 @@ button_right_mask	= $01
 
 ; There's a consistent difference of $12 between X and Y; this consistent distancing is meant to be maintained, so leave it alone!
 
-	Player_XHi:		.ds 1	; Player X Hi 
-	Objects_XHi:		.ds 8	; $76-$7D Other object's X Hi positions
+	player_hi_x:		.ds 1	; Player X Hi 
+	entity_hi_x:		.ds 8	; $76-$7D Other object's X Hi positions
 
 	NMI_VertTemp:		.ds 1	; SB: Temporary used when calculating vertical offsets in NMI
 
@@ -842,7 +842,7 @@ button_right_mask	= $01
 CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text versus the dialog box itself
 
 ; NOTE!! This object var is OBJECT SLOT 0 - 4 ONLY!
-	Objects_Var4:		.ds 5	; $7F-$83 Generic variable 4 for objects SLOT 0 - 4 ONLY
+	entity_var4:		.ds 5	; $7F-$83 Generic variable 4 for objects SLOT 0 - 4 ONLY
 
 	; Pipe_PlayerX/Y variables in use when traveling through pipes
 	Pipe_PlayerX:		.ds 1	; Stores Player's X when they went into pipe (non-transit)
@@ -855,49 +855,52 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 
 				.ds 1	; $86 unused
 
-	Player_YHi:		.ds 1	; Player Y Hi
-	Objects_YHi:		.ds 8	; $88-$8F Other object's Y Hi positions
-	Player_X:		.ds 1	; Player X
-	Objects_X:		.ds 8	; $91-$98 Other object's X positions
+	player_hi_y:		.ds 1	; Player Y Hi
+	entity_hi_y:		.ds 8	; $88-$8F Other object's Y Hi positions
+	player_lo_x:		.ds 1	; Player X
+	entity_lo_x:		.ds 8	; $91-$98 Other object's X positions
 
 				.ds 1	; $99 unused
 	; Reuse of $9A
 	CineKing_Var:		; General variable
 
-	Objects_Var5:		.ds 8	; $9A-$A1 Generic variable 5 for objects
-	Player_Y:		.ds 1	; Player Y
-	Objects_Y:		.ds 8	; $A3-$A9 Other object's Y positions
+	entity_var5:		.ds 8	; $9A-$A1 Generic variable 5 for objects
+	player_lo_y:		.ds 1	; Player Y
+	entity_lo_y:		.ds 8	; $A3-$A9 Other object's Y positions
 
-	Player_SpriteX:		.ds 1	; Player's sprite X
-	Objects_SpriteX:	.ds 8	; $AC-$B3 Other object's sprite X positions
-	Player_SpriteY:		.ds 1	; Player's sprite Y
-	Objects_SpriteY:	.ds 8	; $B5-$BC Other object's sprite Y positions
+	player_sprite_lo_x:	.ds 1	; Player's sprite X
+	entity_sprite_lo_x:	.ds 8	; $AC-$B3 Other object's sprite X positions
+	player_sprite_lo_y:	.ds 1	; Player's sprite Y
+	entity_sprite_lo_y:	.ds 8	; $B5-$BC Other object's sprite Y positions
 
-	; WARNING: The distance between Player/Objects_XVel and Player/Objects_YVel must be same as Player/Objects_X/YVelFrac!
-	Player_XVel:		.ds 1	; Player's X Velocity (negative values to the left) (max value is $38)
-	Objects_XVel:		.ds 8	; $BE-$C5 Other object's X velocities
+	; WARNING: The distance between Player/entity_lo_x_velocity and Player/entity_lo_y_velocity must be same as Player/entity_lo_x/YVelFrac!
+	player_lo_x_velocity:		.ds 1	; Player's X Velocity (negative values to the left) (max value is $38)
+	entity_lo_x_velocity:		.ds 8	; $BE-$C5 Other object's X velocities
 
 	Objects_VarBSS:		.ds 7	; $C6-$CC OBJECT SLOTS 0 - 5 ONLY ... uncleared var??
-	SlotIndexBackup:	.ds 1	; Used as a backup for the slot index (e.g. current object, current score, etc.)
+	entity_index:	.ds 1	; Used as a backup for the slot index (e.g. current object, current score, etc.)
 	Player_HaltGame:	.ds 1	; Player is halting game (e.g. dying, shrinking/growing, etc.)
 
-	; WARNING: The distance between Player/Objects_XVel and Player/Objects_YVel must be same as Player/Objects_X/YVelFrac!
-	Player_YVel:		.ds 1	; Player's Y Velocity (negative values upward)
-	Objects_YVel:		.ds 8	; $D0-$D7 Other object's Y velocities
+	; WARNING: The distance between Player/entity_lo_x_velocity and Player/entity_lo_y_velocity must be same as Player/entity_lo_x/YVelFrac!
+	player_lo_y_velocity:		.ds 1	; Player's Y Velocity (negative values upward)
+	entity_lo_y_velocity:		.ds 8	; $D0-$D7 Other object's Y velocities
 
-	Player_InAir:		.ds 1	; When set, Player is in the air
+	player_is_in_air:		.ds 1	; When set, Player is in the air
 
 	; Reuse of $D9
 	CineKing_Frame2:		; Used only by the World 6 King (Seal juggling a crown, the crown's frame)
 
-	; Objects_DetStat:
-	; Object's detection bits:
-	;	$01-hit wall right
-	;	$02-hit wall left
-	;	$04-hit ground
-	;	$08-hit ceiling
-	;	$80-object touching "32 pixel partition" floor (if active)
-	Objects_DetStat:	.ds 8	; $D9-$E0  on screen
+; entity_collision_flags:
+; Object's detection bits:
+collide_special		= $80	; 32 pixel partition floor
+collide_unknown0	= $40
+collide_unknown1	= $20
+collide_unknown2	= $10
+collide_ceiling		= $08
+collide_ground		= $04
+collide_left_wall	= $02
+collide_right_wall	= $01
+	entity_collision_flags:	.ds 8	; $D9-$E0  on screen
 
 	Player_SprWorkL:	.ds 1	; Sprite work address low
 	Player_SprWorkH:	.ds 1	; Sprite work address high
@@ -916,20 +919,20 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 
 				.ds 1	; $EC unused
 
-; Player_Suit -- Player's active powerup (see also: Player_QueueSuit)
-PLAYERSUIT_SMALL	= 0
-PLAYERSUIT_BIG		= 1
-PLAYERSUIT_FIRE		= 2
-PLAYERSUIT_RACCOON	= 3
-PLAYERSUIT_PENGUIN		= 4
-PLAYERSUIT_RABBIT	= 5
-PLAYERSUIT_HAMMER	= 6
-PLAYERSUIT_SUPERSUITBEGIN = PLAYERSUIT_PENGUIN	; Marker for when "Super Suits" begin
-PLAYERSUIT_LAST		= PLAYERSUIT_HAMMER	; Marker for "last" suit (Debug cycler needs it)
-	Player_Suit:		.ds 1
+; player_powerup -- Player's active powerup (see also: Player_QueueSuit)
+powerup_none		= 0
+powerup_super		= 1
+powerup_fire		= 2
+powerup_raccoon		= 3
+powerup_penguin		= 4
+powerup_rabbit		= 5
+powerup_hammer		= 6
+powerup_super_start 	= powerup_penguin	; Marker for when "Super Suits" begin
+powerup_super_finish	= powerup_hammer	; Marker for "last" suit (Debug cycler needs it)
+	player_powerup:		.ds 1
 
-	Player_Frame:		.ds 1	; Player display frame
-	Player_FlipBits:	.ds 1	; Set to $00 for Player to face left, Set to $40 for Player to face right
+	player_animation_frame:		.ds 1	; Player display frame
+	player_flipped_animation:	.ds 1	; Set to $00 for Player to face left, Set to $40 for Player to face right
 
 	Player_WagCount:	.ds 1	; after wagging raccoon tail, until this hits zero, holding 'A' keeps your fall rate low
 	Player_IsDying:		.ds 1	; 0 = Not dying, 1 = Dying, 2 = Dropped off screen, 3 = Death due to TIME UP
@@ -1344,8 +1347,8 @@ BONUS_UNUSED_2RETURN	= 7	; MAY have been Koopa Troopa's "Prize" Game...
 	Player_AllowAirJump:	.ds 1	; Counts down to zero, but while set, you can jump in the air
 	Player_XVelAdj:		.ds 1	; Applies additional value to the X Velocity
 
-	CineKing_Frame:			; King's animation frame (NOTE: Shared with Objects_Var7 first byte)
-	Objects_Var7:		.ds 8	; $0421-$0428 General object variable 7
+	CineKing_Frame:			; King's animation frame (NOTE: Shared with entity_var7 first byte)
+	entity_var7:		.ds 8	; $0421-$0428 General object variable 7
 
 	Splash_Counter:		.ds 3	; Water splash counter
 	Splash_Y:		.ds 3	; Water splash X
@@ -1394,7 +1397,7 @@ SOBJ_POKEYBODY	= $18	; A segment of Pokey's body
 SOBJ_ALBABOMB	= $19	; Albatoss's bomb!
 	SpecialObj_ID:		.ds 8	; Special object spawn event IDs
 
-	Objects_Var3:		.ds 5	; Generic variable 3 for objects SLOT 0 - 4 ONLY
+	entity_var3:		.ds 5	; Generic variable 3 for objects SLOT 0 - 4 ONLY
 
 	SpecialObj_YHi:		.ds 8	; Special object Y high coordinate
 
@@ -1761,7 +1764,7 @@ MAPOBJ_TOTAL		= $09	; Total POSSIBLE map objects
 	Event_Countdown:	.ds 1
 
 	Player_TailCount:	.ds 1	; Determines display frame of tail wag
-	Player_InAir_OLD:	.ds 1	; Stores backup of Player_InAir
+	Player_InAir_OLD:	.ds 1	; Stores backup of player_is_in_air
 	Player_FireCount:		; Player shoots fireball/hammer, sets sprite frame (shared with Player_PenguinHopCnt)
 	Player_PenguinHopCnt:	.ds 1	; Counter used for frog hopping along the ground (shared with Player_FireCount)
 
@@ -1771,13 +1774,13 @@ MAPOBJ_TOTAL		= $09	; Total POSSIBLE map objects
 	B10Coin_Timer:		.ds 1	; Decrements until zero, which is how much time you have to get the max coins from a 10 coin block
 	Player_TailAttack:	.ds 1	; Initiailized to $12; counts down to zero, performs tail attack!
 
-	CineKing_Timer:			; Timer; decrements to zero (shares Objects_Timer first byte)
-	Objects_Timer:		.ds 8	; $0518-$051F "Timer" values; automatically decrements to zero
+	CineKing_Timer:			; Timer; decrements to zero (shares entity_timer first byte)
+	entity_timer:		.ds 8	; $0518-$051F "Timer" values; automatically decrements to zero
 
 	; NOTE: Until Timer2 expires, object will not hit other objects.
 	; Probably used as a dampener to keep an object from slaughtering
 	; another bunch of objects TOO quickly!
-	Objects_Timer2:		.ds 8	; $0520-$0525 "Timer" values; automatically decrements to zero 
+	entity_no_collision_timer:		.ds 8	; $0520-$0525 "Timer" values; automatically decrements to zero 
 
 	Objects_FrozenTimer:.ds 8	; SB: Ticks remaining for frozen state (except $FF = kicked and no decrement)
 
@@ -1802,7 +1805,7 @@ MAPOBJ_TOTAL		= $09	; Total POSSIBLE map objects
 	Player_AboveTop:	.ds 1	; If Player is above top of level, this is $FF (-1), otherwise it is zero
 
 	Level_InitAction:		; AT LEVEL INITIALIZATION ONLY: Performs a specific initialization routine (NOTE: Shared with Player_Slide)
-	Player_Slide:		.ds 1	; Positive values sliding forward, negative values sliding backward; directly sets Player_XVel
+	Player_Slide:		.ds 1	; Positive values sliding forward, negative values sliding backward; directly sets player_lo_x_velocity
 
 	Player_UphillFlag:	.ds 1	; When set, Player is walking uphill, and uses speed index value at Player_UphillSpeedIdx
 
@@ -1909,7 +1912,7 @@ CHNGTILE_SANDTOPMID = $33	; Quick sand stop and middle tile
 	Level_JctCtl_Req:	.ds 1	; Used by Touch Warp to request junction when appropriate to execute (special object can't do it)
 
 	Player_IsClimbing:	.ds 1	; Set when Player is climing vine
-	Player_FlipBits_OLD:	.ds 1	; Holds backup of Player_FlipBits
+	Player_FlipBits_OLD:	.ds 1	; Holds backup of player_flipped_animation
 	Player_HitCeiling:	.ds 1	; Flag set when Player has just hit head off ceiling
 	Player_FlyTime:		.ds 1	; When > 0, Player can fly (for power ups that do so); decrements (unless $FF) to 0
 	Player_IsDucking:	.ds 1	; Set when Player is ducking down
@@ -1945,7 +1948,7 @@ CHNGTILE_SANDTOPMID = $33	; Quick sand stop and middle tile
 	Player_InWater:		.ds 1	; Set for when in water (1 = Regular water specifically, other non-zero values indicate waterfall)
 	Player_SwimCnt:		.ds 1	; Swim counter FIXME Describe better 0-3
 	Player_Kuribo:		.ds 1	; SB: When > 0, riding Yoshi; value specifies the object slot
-	Player_QueueSuit:	.ds 1	; Queues a suit change (values like Player_Suit, but add 1, EXCEPT: $0F = Statue enable, $40 = Splash, $80 = Kuribo's Shoe)
+	Player_QueueSuit:	.ds 1	; Queues a suit change (values like player_powerup, but add 1, EXCEPT: $0F = Statue enable, $40 = Splash, $80 = Kuribo's Shoe)
 	Player_mGoomba:		.ds 1	; Player is caught by a micro Goomba (jump short)
 	Player_Statue:		.ds 1	; Player is in Rabbit Statue mode; counts down to zero
 	Player_RunFlag:		.ds 1	; Set while Player is actually considered "running" (holding down B and at enough speed; doesn't persist)
@@ -2087,7 +2090,7 @@ ASCONFIG_HDISABLE	= $80	; Disables horizontal auto scroll coordinate adjustment 
 	Objects_SprHVis:	.ds 8	; $0651-$0658 Flags; Bits 7-2 set when each 8x16 sprite is horizontally off-screen (left-to-right from MSb)
 	Objects_SpawnIdx:	.ds 8	; $0659-$0660 Holds the index into level data that this object was spawned from
 
-; Objects_State
+; entity_state
 OBJSTATE_DEADEMPTY	= 0	; Dead/Empty
 OBJSTATE_INIT		= 1	; Init
 OBJSTATE_NORMAL		= 2	; Normal (typical operation)
@@ -2098,17 +2101,17 @@ OBJSTATE_KILLED		= 6	; Killed (flipped over and falling off screen)
 OBJSTATE_SQUASHED	= 7	; Squashed (generally Goomba only)
 OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 ObjState_LAVADEATH  = 9 ; Fall into lava a die slowly
-	Objects_State:		.ds 8
+	entity_state:		.ds 8
 
-	Objects_Frame:		.ds 8	; $0669-$0670 "Frame" of object (see ObjectGroup_PatternSets)
+	entity_animation_frame:		.ds 8	; $0669-$0670 "Frame" of object (see ObjectGroup_PatternSets)
 
-	Level_ObjectID:		.ds 8	; $0671-$0678 All active actor IDs
+	entity_type:		.ds 8	; $0671-$0678 All active actor IDs
 
-	Objects_FlipBits:	.ds 8	; $0679-$0680 Applied sprite attributes for this object (usually just horizontal/vertical flip)
+	entity_flipped_animation:	.ds 8	; $0679-$0680 Applied sprite attributes for this object (usually just horizontal/vertical flip)
 
 	Objects_SprVVis:	.ds 8	; $0681-$0688 Flags; Bits 3-0 set when each 8x16 sprite is vertically off-screen (top-to-bottom from MSb)
-	Objects_Var1:		.ds 8	; $0689-$0690 Generic variable 1 for objects
-	Objects_Var2:		.ds 8	; $0691-$0698 Generic variable 2 for objects
+	entity_var1:		.ds 8	; $0689-$0690 Generic variable 1 for objects
+	entity_var2:		.ds 8	; $0691-$0698 Generic variable 2 for objects
 
 	Unused699:		.ds 1	; Absolutely no idea, it is set once in one place and never used again... MAY be lost bonus game related?
 
@@ -2126,13 +2129,13 @@ ObjState_LAVADEATH  = 9 ; Fall into lava a die slowly
 
 ; NOTE!! These object vars are OBJECT SLOT 0 - 4 ONLY!
 
-; Objects_Timer3: Used as the "wake up" out of shell timer
+; entity_timer_secondary: Used as the "wake up" out of shell timer
 ; If timer is less than $60, it decrements normally, otherwise...
 ;	If object is in state 2, timer decrements normally
 ;	If object is in state 4 (being held), timer only decrements every 4 ticks
 ;	In all other states, timer decrements every 2 ticks
-	Objects_Timer3:		.ds 5	; $06A6-$06AA Used as the "wake up" out of shell timer
-	Objects_Timer4:		.ds 5	; $06AB-$06AF "Timer" values; automatically decrements to zero (used in "shakin' awake" effect)
+	entity_timer_secondary:		.ds 5	; $06A6-$06AA Used as the "wake up" out of shell timer
+	entity_timer_tertirary:		.ds 5	; $06AB-$06AF "Timer" values; automatically decrements to zero (used in "shakin' awake" effect)
 
 	Object_SlopeHeight:	.ds 1	; Object calculated slope height
 	Buffer_Occupied:	.ds 2	; $06B4-$06B5 Set if respective Object_BufferX/Y buffer is already taken by an object
@@ -2303,7 +2306,7 @@ ObjState_LAVADEATH  = 9 ; Fall into lava a die slowly
 
 	Map_Unused749:		.ds 2	; $0749-$074A (Mario/Luigi) ? Another value just set once and never read back!
 
-	; WARNING: The distance between Player/Objects_XVelFrac and Player/Objects_YVelFrac must be same as Player/Objects_X/YVel!
+	; WARNING: The distance between Player/Objects_XVelFrac and Player/Objects_YVelFrac must be same as Player/entity_lo_x/YVel!
 	Object_XVelCarry:	.ds 1	; '1' when last Object X Velocity fraction accumulation rolled over (SB: It's specific now)
 	Player_XVelFrac:	.ds 1	; X velocity fractional accumulator
 	Objects_XVelFrac:	.ds 8	; $074E-$0755 Other object's X velocity fractional accumulator
@@ -2316,18 +2319,18 @@ ObjState_LAVADEATH  = 9 ; Fall into lava a die slowly
 				; So use it if you want, but maintain the distance!!
 				.ds 6	; $0758-$075E unused
 
-	; WARNING: The distance between Player/Objects_XVelFrac and Player/Objects_YVelFrac must be same as Player/Objects_X/YVel!
+	; WARNING: The distance between Player/Objects_XVelFrac and Player/Objects_YVelFrac must be same as Player/entity_lo_x/YVel!
 	Object_YVelCarry:	.ds 1	; '1' when last Object Y Velocity fraction accumulation rolled over (SB: It's specific now)
 	Player_YVelFrac:	.ds 1	; Y velocity fractional accumulator
 	Objects_YVelFrac:	.ds 8	; $0760-$0767 Other object's Y velocity fractional accumulator
 
 	Objects_ColorCycle:	.ds 8	; $0768-$076F Cycles colors of object and decrements to zero (e.g. "Melting" ice block, starman, etc.)
 
-	; Objects_Var6: Special hardcoded behavior for the following objects ONLY:
+	; entity_var6: Special hardcoded behavior for the following objects ONLY:
 	; OBJ_FIRECHOMP, OBJ_CHAINCHOMPFREE, OBJ_BLOOPERCHILDSHOOT, 
 	; OBJ_BLOOPERWITHKIDS, or OBJ_FIRESNAKE
 	; ... as the X/Y buffer slot they occupy (see Object_Delete)
-	Objects_Var6:		.ds 5	; $0770-$0774 General purpose variable 6 (except as noted above)
+	entity_var6:		.ds 5	; $0770-$0774 General purpose variable 6 (except as noted above)
 	Objects_TargetingXVal:	.ds 5	; $0775-$0779 X velocity result of Object_CalcHomingVels for this object OR some other X pixel target
 
 	King_Y:				; Y position (NOTE: shared with Objects_TargetingYVal)
@@ -2897,11 +2900,11 @@ CFIRE_GRAVITY_REVERSE	= $17	; SB: Gravity reversed
 	ChainChomp_ChainY4:	.ds 5	; $7CC3-$7CC8 Chain Link 4 Y
 
 ; NOTE!! These object vars are OBJECT SLOT 0 - 4 ONLY!
-	Objects_Var10:		.ds 5	; $7CC8-$7CCC Generic object variable 10
-	Objects_Var11:		.ds 5	; $7CCD-$7CD1 Generic object variable 11
-	Objects_Var12:		.ds 5	; $7CD2-$7CD6 Generic object variable 12
-	Objects_Var13:		.ds 5	; $7CD7-$7CDB Generic object variable 13
-	Objects_Var14:		.ds 5	; $7CDC-$7CE0 Generic object variable 14
+	entity_var10:		.ds 5	; $7CC8-$7CCC Generic object variable 10
+	entity_var11:		.ds 5	; $7CCD-$7CD1 Generic object variable 11
+	entity_var12:		.ds 5	; $7CD2-$7CD6 Generic object variable 12
+	entity_var13:		.ds 5	; $7CD7-$7CDB Generic object variable 13
+	entity_var14:		.ds 5	; $7CDC-$7CE0 Generic object variable 14
 
 ; Player's hammer/fireball
 	PlayerProj_ID:		.ds 2	; $7CE1-$7CE2 Player projectile ID (0 = not in use, 1 = fireball, 2 = hammer, 3+ = Fireball impact "Poof")

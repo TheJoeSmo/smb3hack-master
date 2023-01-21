@@ -1620,7 +1620,7 @@ LevelJct_BigQuestionBlock:
 	LDA LevelJctBQ_Objects+1,Y
 	STA <Level_ObjPtr_AddrH
 
-	LDX <Player_XHi	 	; X = Player_XHi
+	LDX <player_hi_x	 	; X = player_hi_x
 	LDA Level_JctXLHStart,X	; Get value from Level_JctXLHStart based on Player's X Hi
 
 	; A = X start position in the format of high byte in lower 4 bits 
@@ -1630,14 +1630,14 @@ LevelJct_BigQuestionBlock:
 
 	; Cap XHi 0-15 and match the scroll position
 	AND #$0f
-	STA <Player_XHi
+	STA <player_hi_x
 	STA <Horz_Scroll_Hi
 
 	PLA		 ; Restore UserData2 value
 
 	AND #$f0	 ; Get the X low start component
 	ORA #$08	 ; Center it up (better for coming out of pipe)
-	STA <Player_X	 ; Store it into Player_X
+	STA <player_lo_x	 ; Store it into player_lo_x
 
 	LDA Level_JctYLHStart,X
 
@@ -1667,9 +1667,9 @@ LevelJct_BigQuestionBlock:
 	BLT PRG026_AA30	 ; If Level_PipeExitDir < 3, jump to PRG026_AA30
 
 	; Otherwise, don't center Player (better for starting on block)
-	LDA <Player_X
+	LDA <player_lo_x
 	AND #$f0
-	STA <Player_X
+	STA <player_lo_x
 
 PRG026_AA30:
 	PLA		 ; Restore Level_JctYLHStart
@@ -1695,11 +1695,11 @@ PRG026_AA30:
 	PHA		 ; Push 'A'
 
 	AND #$0f	
-	STA <Player_YHi	 ; Lower 4 bits are the "High" byte
+	STA <player_hi_y	 ; Lower 4 bits are the "High" byte
 
 	PLA		 ; Restore 'A'
 	AND #$f0	
-	STA <Player_Y	 ; Upper 4 bits are the "low" byte
+	STA <player_lo_y	 ; Upper 4 bits are the "low" byte
 
 	LDA LevelJct_VertStarts,Y	 ; Get appropriate vertical start position
 	STA <Vert_Scroll		 ; Store into Vert_Scroll
@@ -1750,15 +1750,15 @@ LevelJct_General:
 PRG026_AA8A:
 	; Actual switch code:
 
-	LDX <Player_XHi		 ; X = Player_XHi
+	LDX <player_hi_x		 ; X = player_hi_x
 
 	LDA Level_7Vertical
 	BEQ PRG026_AA9A	 	; If level is not vertical, jump to PRG026_AA9A
 
-	LDY <Player_YHi	; Y = Player_YHi
-	BMI LevelJct_General_NegCap	; If Player_YHi < 0, jump to LevelJct_General_NegCap (SB: Fixes negative Player_YHi underflow)
+	LDY <player_hi_y	; Y = player_hi_y
+	BMI LevelJct_General_NegCap	; If player_hi_y < 0, jump to LevelJct_General_NegCap (SB: Fixes negative player_hi_y underflow)
 
-	LDA <Player_Y	; A = Player_Y
+	LDA <player_lo_y	; A = player_lo_y
 
 LevelJct_General_Cont:
 	JSR LevelJct_GetVScreenH	 ; Possibly advances 'Y'
@@ -1769,7 +1769,7 @@ PRG026_AA9A:
 
 	; SB: This fixes doors junctioning on the edge of the screen
 	LDA #$80
-	STA <Player_SpriteX
+	STA <player_sprite_lo_x
 
 
 	; Get Level_JctXLHStart, based on Player's X Hi or a possibly modded
@@ -1782,12 +1782,12 @@ PRG026_AA9A:
  
 	PHA		 ; Save read byte
 	AND #$0f	 ; Get the "X Hi" part of it
-	STA <Player_XHi	 ; Store it!
+	STA <player_hi_x	 ; Store it!
 
 	PLA		 ; Restore read byte
 	AND #$f0	 ; Get the X low part
 	ORA #$08	 ; Center it
-	STA <Player_X	 ; Store it!
+	STA <player_lo_x	 ; Store it!
 
 	LDA Level_JctYLHStart,X	
 
@@ -1813,9 +1813,9 @@ PRG026_AA9A:
 	BLT PRG026_AABD	 ; If Level_PipeExitDir < 3, jump to PRG026_AABD
 
 	; Otherwise, don't center Player (better for starting on block)
-	LDA <Player_X
+	LDA <player_lo_x
 	AND #$f0
-	STA <Player_X
+	STA <player_lo_x
 
 PRG026_AABD:
 	PLA		 ; Restore Level_JctYLHStart
@@ -1841,11 +1841,11 @@ PRG026_AABD:
 	PHA		 ; Push 'A'
 
 	AND #$0f	
-	STA <Player_YHi	 ; Lower 4 bits are the "High" byte
+	STA <player_hi_y	 ; Lower 4 bits are the "High" byte
 
 	PLA		 ; Restore 'A'
 	AND #$f0	
-	STA <Player_Y	 ; Upper 4 bits are the "low" byte
+	STA <player_lo_y	 ; Upper 4 bits are the "low" byte
 
 	LDA LevelJct_VertStarts,Y	 ; Get appropriate vertical start position
 	STA <Vert_Scroll		 ; Store into Vert_Scroll
@@ -1863,23 +1863,23 @@ PRG026_AABD:
 
 	; As long as the Player's X is >= $80, we can subtract $80 from
 	; it to properly center the horizontal scroll on the Player!
-	; Obviously if Player_XHi > 0, then we can do that REGARDLESS
+	; Obviously if player_hi_x > 0, then we can do that REGARDLESS
 	; of the Player X low position because we have space to the left
 
-	LDA <Player_XHi
+	LDA <player_hi_x
 	STA <Horz_Scroll_Hi	 ; Horz_Scroll_Hi = Horz_Scroll_Hi
-	BNE PRG026_AAF9	 	; Jump if Player_XHi <> 0 to PRG026_AAF9
+	BNE PRG026_AAF9	 	; Jump if player_hi_x <> 0 to PRG026_AAF9
 
 	; If Player X Hi is zero, we may not have enough room to center
 	; left of the Player, so let's check...
-	LDA <Player_X
+	LDA <player_lo_x
 	CMP #$80	
-	BLT PRG026_AB06	 ; If Player_X < $80, jump to PRG026_AB06
+	BLT PRG026_AB06	 ; If player_lo_x < $80, jump to PRG026_AB06
 
 PRG026_AAF9:
 
 	; Enough room to center horizontally left of the Player!
-	LDA <Player_X
+	LDA <player_lo_x
 	SUB #$80
 	STA <Horz_Scroll
 
@@ -1889,8 +1889,8 @@ PRG026_AAF9:
 	STA <Horz_Scroll_Hi
 
 PRG026_AB06:
-	LDA <Player_YHi
-	BEQ PRG026_AB0E	; If Player_YHi = 0, jump to PRG026_AB0E
+	LDA <player_hi_y
+	BEQ PRG026_AB0E	; If player_hi_y = 0, jump to PRG026_AB0E
 
 	; Otherwise, Player needs screen scrolled as low as it can go
 	LDA #$ef	 
@@ -1952,7 +1952,7 @@ LevelJct_GenericExit:
 
 	; Generic exit uses a predictable start position
 	LDA #$00
-	STA <Player_XHi
+	STA <player_hi_x
 	STA <Horz_Scroll
 	STA <Vert_Scroll_Hi
 	STA <Horz_Scroll_Hi
@@ -1968,15 +1968,15 @@ LevelJct_GenericExit:
 	STA <Vert_Scroll ; Level_7Vertical = $EF
 
 	LDA #$28
-	STA <Player_X	 ; Player_X = $28
+	STA <player_lo_x	 ; player_lo_x = $28
 
 	LDA #$01
-	STA <Player_YHi	 ; Player_YHi = 1
+	STA <player_hi_y	 ; player_hi_y = 1
 
 	STA Level_PipeExitDir	 ; Level_PipeExitDir = 1
 
 	LDA #$80
-	STA <Player_Y	 ; Player_Y = $80
+	STA <player_lo_y	 ; player_lo_y = $80
 
 	JMP PRG026_AB0E	 ; Jump to PRG026_AB0E
 
@@ -1992,20 +1992,20 @@ LevelJct_SpecialToadHouse:
 	STA <Horz_Scroll
 	STA <Horz_Scroll_Hi
 	STA <Vert_Scroll_Hi
-	STA <Player_XHi
+	STA <player_hi_x
 
 	; ... and is never vertical
 	STA Level_7Vertical	; Level_7Vertical = 0
 
 	; And several other constants:
 	LDA #32
-	STA <Player_X	 ; Player_X = 32
+	STA <player_lo_x	 ; player_lo_x = 32
 
 	LDA #$01
-	STA <Player_YHi	 ; Player_YHi = 1
+	STA <player_hi_y	 ; player_hi_y = 1
 
 	LDA #64
-	STA <Player_Y	 ; Player_Y = 64
+	STA <player_lo_y	 ; player_lo_y = 64
 
 	LDA #$07
 	STA Level_Tileset	 ; Level_Tileset = 7 (Toad House)

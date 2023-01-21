@@ -257,12 +257,12 @@ PRG008_A1E6:
 	LDY Level_MusicQueueRestore	 ; Y = regular BGM
 
 PRG008_A1FE:
-	LDA Objects_State+5
+	LDA entity_state+5
 	CMP #OBJSTATE_DEADEMPTY
 	BEQ PSw_RestoreMusOK	; If slot 5 doesn't have anything (let alone a Coin Snake), jump to PSw_RestoreMusOK
 
 	; Something in slot 5...
-	LDA Level_ObjectID+5
+	LDA entity_type+5
 	CMP #OBJ_COINSNAKE
 	BEQ PRG008_A203		; If Coin Snake is still active, can't restore music yet, jump to PRG008_A203
 
@@ -369,13 +369,13 @@ PRG008_A38E:
 	ORA #SND_PLAYERPIPE
 	STA Sound_QPlayer
 
-	LDA <Player_X	
-	STA <Pipe_PlayerX	 ; Pipe_PlayerX = Player_X
+	LDA <player_lo_x	
+	STA <Pipe_PlayerX	 ; Pipe_PlayerX = player_lo_x
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	AND #$F0
 	STA <Pipe_PlayerY
-	DEC <Pipe_PlayerY 	; Pipe_PlayerY = Player_Y aligned to nearest 16, minus 1
+	DEC <Pipe_PlayerY 	; Pipe_PlayerY = player_lo_y aligned to nearest 16, minus 1
 
 	LDA Level_7Vertical
 	BNE PRG008_A3B6	 	; If level is vertical, jump to PRG008_A3B6
@@ -408,12 +408,12 @@ PRG008_A3C0:
 	LDA #1
 	STA Event_Countdown
 	
-	LDA Player_Y
+	LDA player_lo_y
 	ADD Yoshi_PipeSkip_Y-1,Y
-	STA Player_Y
-	LDA Player_YHi
+	STA player_lo_y
+	LDA player_hi_y
 	ADC Yoshi_PipeSkip_YHi-1,Y
-	STA Player_YHi
+	STA player_hi_y
 
 PRG008_A3C9:
 	RTS		 ; Return
@@ -475,7 +475,7 @@ PRG008_A3EC:
 	AND #$0f
 	TAY	
 	DEY		 ; Y = Player_QueueSuit - 1
-	STY <Player_Suit ; Store into Player_Suit
+	STY <player_powerup ; Store into player_powerup
 
 PRG008_A3F2:
 	LDA #$00
@@ -502,10 +502,10 @@ PRG008_A3FA:
 	BNE PRG008_A427_fix	 ; If Player_AboveTop <> 0 (Player is above the top of screen), jump to PRG008_A427
 
 	; "Fall in a pit and die"!
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	AND #$F0
 	CMP #$c0
-	BNE PRG008_A427_fix	 ; If Player_SpriteY < $C0 && Player_SpriteY > $CF, jump to PRG008_A427
+	BNE PRG008_A427_fix	 ; If player_sprite_lo_y < $C0 && player_sprite_lo_y > $CF, jump to PRG008_A427
 
 Player_FellAndDied:
 	JSR_THUNKC 60, Player_FellAndDied60
@@ -522,10 +522,10 @@ Player_FallAndDie_Rev:
 	LDA Player_AboveTop
 	BEQ PRG008_A427
 
-	LDA <Player_SpriteY
+	LDA <player_sprite_lo_y
 	AND #$F0
 	CMP #$E0
-	BNE PRG008_A427	 ; If Player_SpriteY < $E0 && Player_SpriteY > $EF, jump to PRG008_A427
+	BNE PRG008_A427	 ; If player_sprite_lo_y < $E0 && player_sprite_lo_y > $EF, jump to PRG008_A427
 	BEQ Player_FellAndDied
 
 PRG008_A427:
@@ -562,11 +562,11 @@ PRG008_A44D:
 PRG008_A45A:
 	; Still have time left OR in debug mode...
 
-	LDA <Player_SpriteX
+	LDA <player_sprite_lo_x
 	CMP #$f8
-	BLT PRG008_A472	 ; Intended meaning: If Player_SpriteX > -8, jump to PRG008_A472
+	BLT PRG008_A472	 ; Intended meaning: If player_sprite_lo_x > -8, jump to PRG008_A472
 
-	; Player_SpriteX has been pushed too far left! Assumed crushed!
+	; player_sprite_lo_x has been pushed too far left! Assumed crushed!
 	; (Except in Vertical levels or if the level was completed)
 
 	LDA Level_7Vertical
@@ -681,7 +681,7 @@ Player_XAccelPseudoFrac_UW:
 	; (i.e. what tick value to reach to go to next anim frame)
 Player_WalkAnimTickMax:
 	; 0-15 POSSIBLE, but only 0-7 defined (due to game's max X vel of $38)
-	; Index is Player_XVel >> 3
+	; Index is player_lo_x_velocity >> 3
 	.byte $07, $06, $05, $04, $03, $02, $01, $01, $01	; Lower number = faster animation
 
 
@@ -807,10 +807,10 @@ PRG008_A6A9:
 ; throwing of fireballs / hammers for some reason!)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_Control:
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	STA Player_FlipBits_OLD
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	STA Player_InAir_OLD
 
 	LDA Player_EndLevel
@@ -825,7 +825,7 @@ PRG008_A6D2:
 
 	; Remove horizontal velocity and cancel controller inputs
 	LDA #$00	
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 	STA <buttons_held
 	STA <buttons_clicked	
 
@@ -847,10 +847,10 @@ PRG008_A6E5:
 	;STA <buttons_held	; Otherwise, disable all directional inputs
 
 ;PRG008_A6F2:
-	LDY <Player_Suit
+	LDY <player_powerup
 	BEQ PRG008_A70E	 	; If Player is small, jump to PRG008_A70E
 
-	;CPY #PLAYERSUIT_PENGUIN
+	;CPY #powerup_penguin
 	;BEQ PRG008_A70E	 	; If Player is Penguin, jump to PRG008_A70E
 
 	LDA Player_IsHolding
@@ -858,7 +858,7 @@ PRG008_A6E5:
 	ORA Player_Kuribo
 	BNE PRG008_A70E	 	; If Player is holding something, sliding down a slope, or in a Kuribo's shoe, jump to PRG008_A70E 
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_A71C	 	; If Player is NOT mid air, jump to PRG008_A71C
 
 	LDA Player_InWater
@@ -898,7 +898,7 @@ PRG008_A733:
 PRG008_A736:
 	LDY #20		 	; Y = 20 (ducking or small)
 
-	LDA <Player_Suit 	
+	LDA <player_powerup 	
 	BEQ PRG008_A743	 	; If Player is small, jump to PRG008_A743
 
 	LDA Player_IsDucking
@@ -967,7 +967,7 @@ PRG008_A77E:
 	CMP Tile_AttrTable+4,Y	; Wall/ceiling-solid tile quadrant limits begin at Tile_AttrTable+4
 	BLT PRG008_A7AD	 ; If tile index is less than value in Tile_AttrTable (not solid for wall/ceiling), jump to PRG008_A7AD
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	ORA Player_InWater
 	ORA Level_PipeMove
 	BNE PRG008_A7AD	 	; If Player is mid air, in water, or moving in a pipe, jump to PRG008_A7AD
@@ -977,7 +977,7 @@ PRG008_A77E:
 	; A is logically zero here...
 
 	; Stop Player horizontally, disable controls
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 	STA <buttons_clicked
 
 	;AND #~button_a_mask
@@ -996,16 +996,16 @@ PRG008_A77E:
 
 	; For support of SMW-esque shifting levels, CRUSH Player, don't just slide!
 	;LDA #0
-	;STA <Player_Suit
+	;STA <player_powerup
 	;JSR Player_GetHurt
 	;JMP PRG008_A7AD
 
 ;Player_NormalLowClearance:
 	; This makes the Player "slide" when he's in a space too narrow
-	ADD <Player_X
-	STA <Player_X	 ; Player_X += 1
+	ADD <player_lo_x
+	STA <player_lo_x	 ; player_lo_x += 1
 	BCC PRG008_A7AD	 ; If not carry, jump to PRG008_A7AD
-	INC <Player_XHi	 ; Otherwise, apply carry
+	INC <player_hi_x	 ; Otherwise, apply carry
 
 PRG008_A7AD:
 
@@ -1035,7 +1035,7 @@ PRG008_A7BE:
 	LDA Player_InWater
 	BEQ PRG008_A827	 ; If Player was not previously in water, jump to PRG008_A827
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_A7CB	 ; If Player is mid air, jump to PRG008_A7CB
 
 	; Player is NOT flagged as mid air...
@@ -1049,7 +1049,7 @@ PRG008_A7CB:
 
 	BCS PRG008_A7D1	 ; If tile was in floor solid region, jump to PRG008_A7D1
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI PRG008_A7E2	 ; If Player's Y velocity < 0 (moving upward), jump to PRG008_A7E2
 
 PRG008_A7D1:
@@ -1077,11 +1077,11 @@ PRG008_A7DE:
 PRG008_A7E2:
 
 
-	LDY <Player_YVel
+	LDY <player_lo_y_velocity
 	CPY #-$0C
-	BGS PRG008_A7EA	 ; If Player_YVel >= -$0C, jump to PRG008_A7EA
+	BGS PRG008_A7EA	 ; If player_lo_y_velocity >= -$0C, jump to PRG008_A7EA
 
-	; Prevent Player_YVel from being less than -$0C
+	; Prevent player_lo_y_velocity from being less than -$0C
 	LDY #-$0C
 
 PRG008_A7EA:
@@ -1092,7 +1092,7 @@ PRG008_A7EA:
 	INY		 ; 1:8 chance velocity will be dampened just a bit
 
 PRG008_A7F1:
-	STY <Player_YVel ; Update Player_YVel
+	STY <player_lo_y_velocity ; Update player_lo_y_velocity
 
 	LDA <buttons_clicked
 	AND #~button_a_mask
@@ -1111,7 +1111,7 @@ PRG008_A7F1:
 
 	; Player wants to exit water!
 	LDA #-$34
-	STA <Player_YVel ; Player_YVel = -$34 (exit velocity from water)
+	STA <player_lo_y_velocity ; player_lo_y_velocity = -$34 (exit velocity from water)
 
 PRG008_A80B:
 
@@ -1147,9 +1147,9 @@ PRG008_A827:
 	; Player not flagged as "under water"
 	; Player not flagged as "mid air" and last checked tile was in solid region
 
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	AND #%01111111	 
-	STA <Player_FlipBits	 ; Clear vertical flip on sprite
+	STA <player_flipped_animation	 ; Clear vertical flip on sprite
 
 	LDY Level_TilesetIdx	 ; Y = Level_TilesetIdx
 
@@ -1185,7 +1185,7 @@ PRG008_A83F:
 	AND #button_up_mask
 	BEQ PRG008_A86C	 ; If Player is not pressing up in front of a door, jump to PRG008_A86C
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_A86C	 ; If Player is mid air, jump to PRG008_A86C
 
 	; If Level_PipeNotExit is set, we use Level_JctCtl = 3 (the general junction)
@@ -1204,9 +1204,9 @@ PRG008_A852:
 	LDY #0
 	STY Map_ReturnStatus	 ; Map_ReturnStatus = 0
 
-	STY <Player_XVel	 ; Player_XVel = 0
+	STY <player_lo_x_velocity	 ; player_lo_x_velocity = 0
 
-	LDA <Player_X
+	LDA <player_lo_x
 	AND #$08
 	BEQ PRG008_A864	 ; If Player is NOT halfway across door, jump to PRG008_A864
 
@@ -1214,9 +1214,9 @@ PRG008_A852:
 
 PRG008_A864:
 	TYA	
-	ADD <Player_X	 ; Add offset to Player_X if needed
+	ADD <player_lo_x	 ; Add offset to player_lo_x if needed
 	AND #$F0	 ; Lock to nearest column (place directly in doorway)
-	STA <Player_X	 ; Update Player_X
+	STA <player_lo_x	 ; Update player_lo_x
 
 PRG008_A86C:
 
@@ -1238,7 +1238,7 @@ PRG008_A86C:
 	AND #(button_up_mask | button_down_mask)
 	BEQ PRG008_A890	 ; If Player is not pressing up or down, jump to PRG008_A890
 
-	LDY <Player_InAir
+	LDY <player_is_in_air
 	BNE PRG008_A898	 ; If Player is in the air, jump to PRG008_A898
 
 	AND #button_up_mask
@@ -1256,7 +1256,7 @@ PRG008_A898:
 	BEQ Player_CJUF_NotSet	; If Player_ClimbJumpUpFlag is not set, jump to Player_CJUF_NotSet
 	
 	; Player_ClimbJumpUpFlag is set... but is Player falling now?
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI PRG008_A8F9		; Flag is set, player is not falling, jump to PRG008_A8F9 (not able to climb yet)
 	
 	; Player is falling; clear Player_ClimbJumpUpFlag and allow climbing!
@@ -1269,8 +1269,8 @@ Player_CJUF_NotSet:
 
 	; Kill Player velocities
 	LDA #$00
-	STA <Player_XVel
-	STA <Player_YVel
+	STA <player_lo_x_velocity
+	STA <player_lo_y_velocity
 
 	LDY #$10 	; Y = $10 (will be Y velocity down if Player is pressing down)
 
@@ -1287,7 +1287,7 @@ Player_CJUF_NotSet:
 
 	LDY #16		; Y = 16
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PRG008_A8B7	 ; If Player is small, jump to PRG008_A8B7
 
 	LDY #0	 	; Otherwise, Y = 0
@@ -1304,10 +1304,10 @@ PRG008_A8B7:
 	BNE PRG008_A8CA	 ; If tile is NOT another climbable tile, jump to PRG008_A8CA
 
 	LDY #-$10
-	STY <Player_InAir ; Flag Player as "in air"
+	STY <player_is_in_air ; Flag Player as "in air"
 
 PRG008_A8C8:
-	STY <Player_YVel  ; Set Player's Y Velocity
+	STY <player_lo_y_velocity  ; Set Player's Y Velocity
 
 PRG008_A8CA:
 	LDY #$10	 ; Y = $10 (rightward X velocity)
@@ -1322,7 +1322,7 @@ PRG008_A8CA:
 	LDY #-$10	 ; Y = -$10 (leftward X velocity)
 
 PRG008_A8D8:
-	STY <Player_XVel ; Set Player's X Velocity
+	STY <player_lo_x_velocity ; Set Player's X Velocity
 
 PRG008_A8DA:
 	LDA Player_IsClimbing
@@ -1343,7 +1343,7 @@ PRG008_A8DA:
 	JMP PRG008_AC41
 
 PlayerClimb_NotJumping:
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_A8EC	 ; If Player is in air, jump to PRG008_A8EC
 
 	LDA <buttons_held
@@ -1369,9 +1369,9 @@ PRG008_A8F9:
 	BEQ PRG008_A906	 ; If Player sliding rate is zero, jump to PRG008_A906
 
 	; Otherwise, apply it
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	ADD Player_SlideRate
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 
 PRG008_A906:
 	JSR Player_ApplyXVelocity	 ; Apply Player's X Velocity
@@ -1380,9 +1380,9 @@ PRG008_A906:
 	BEQ PRG008_A916	 ; If Player is not sliding, jump to PRG008_A916
 
 	; Otherwise, apply it AGAIN
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	SUB Player_SlideRate
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 
 PRG008_A916:
 
@@ -1391,7 +1391,7 @@ PRG008_A916:
 
 	LDY #$02	 ; Y = 2 (moving right)
 
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	BPL PRG008_A925	 ; If Player's X Velocity is rightward, jump to PRG008_A925
 
 	JSR Negate	 ; Negate X Velocity (get absolute value)
@@ -1409,18 +1409,18 @@ PRG008_A928:
 
 	STY Player_MoveLR	; Set Player_MoveLR appropriately
  
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_A940	 ; If Player is not mid air, jump to PRG008_A940
 
-	LDA <Player_YHi
+	LDA <player_hi_y
 	BPL PRG008_A93D	 ; If Player is on the upper half of the screen, jump to PRG008_A93D
 
 	; Player is mid air, lower half of screen...
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	BMI PRG008_A93D	 ; If Player is beneath the half point of the lower screen, jump to PRG008_A93D
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI PRG008_A940	 ; If Player is moving upward, jump to PRG008_A940
 
 PRG008_A93D:
@@ -1429,15 +1429,15 @@ PRG008_A93D:
 	LDA Player_ReverseGrav
 	BEQ Player_YVelOK		; If Player's gravity is not reversed, jump to Player_YVelOK
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BPL Player_YVelOK
 	
 	; Limit check to keep player from going too low which causes funkiness in scrolling
-	LDA <Player_YHi
+	LDA <player_hi_y
 	CMP #1
 	BLT Player_YVelOK	; If YHi <> 1, Player can't be too low, jump to Player_YVelOK
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	AND #$F0
 	CMP #$E0
 	BGE PRG008_A940
@@ -1458,7 +1458,7 @@ PRG008_A940:
 	BNE PRG008_A956	 ; Jump (technically always) to PRG008_A956
 
 PRG008_A94C:
-	LDA <Player_Suit
+	LDA <player_powerup
 
 	LDY Player_InWater
 	BEQ PRG008_A956	 ; If Player is not under water, jump to PRG008_A956
@@ -1534,7 +1534,7 @@ GndMov_Small:
 	LDA Player_AllowAirJump
 	BNE PRG008_A9A3	 ; If Player_AllowAirJump, jump to PRG008_A9A3 (RTS)
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_A9A3	 ; If Player is not mid air, jump to PRG008_A9A3 (RTS)
 
 	; Player is mid-air...
@@ -1547,7 +1547,7 @@ GndMov_Small:
 	LDA #PF_FASTJUMPFALLSMALL	 ; High speed jump frame
 
 PRG008_A9A1:
-	STA <Player_Frame ; Set appropriate frame
+	STA <player_animation_frame ; Set appropriate frame
 
 PRG008_A9A3:
 	RTS		 ; Return
@@ -1667,7 +1667,7 @@ Player_EndLevel_SwimForce:
 	BEQ PRG008_AA61	 ; If Player is NOT pressing up/down, jump to PRG008_AA61
 
 	; 
-	STA <Player_InAir
+	STA <player_is_in_air
 
 	LSR A
 	LSR A
@@ -1692,29 +1692,29 @@ PRG008_AA52:
 	CMP #(PLAYER_PENGUIN_MAXYVEL+1)
 	BLT PRG008_AA5C	 
 
-	LDY <Player_InAir
+	LDY <player_is_in_air
 	BNE PRG008_AA5C	 ; If Player is swimming above ground, jump to PRG008_AA5C
 
 	LDA #PLAYER_PENGUIN_MAXYVEL	 ; Cap swim speed
 
 PRG008_AA5C:
-	STA <Player_YVel ; Set Y Velocity
+	STA <player_lo_y_velocity ; Set Y Velocity
 	JMP PRG008_AA6E	 ; Jump to PRG008_AA6E
 
 PRG008_AA61:
-	LDY <Player_YVel
+	LDY <player_lo_y_velocity
 	BEQ PRG008_AA6E	 ; If Y Velocity = 0, jump to PRG008_AA6E
 
 	INY		 ; Y++
 
-	LDA <Player_YVel
-	BMI PRG008_AA6C	 ; If Player_YVel < 0, jump to PRG008_AA6C
+	LDA <player_lo_y_velocity
+	BMI PRG008_AA6C	 ; If player_lo_y_velocity < 0, jump to PRG008_AA6C
 
 	DEY
 	DEY		 ; Y -= 2
 
 PRG008_AA6C:
-	STY <Player_YVel ; Update Y Velocity
+	STY <player_lo_y_velocity ; Update Y Velocity
 
 PRG008_AA6E:
 	LDA <buttons_held
@@ -1733,29 +1733,29 @@ PRG008_AA6E:
 	ASL A		 ; Double horizontal velocity
 
 PRG008_AA7E:
-	STA <Player_XVel ; Update X Velocity
+	STA <player_lo_x_velocity ; Update X Velocity
 
 	LDX #$02	 ; X = 2
 	BNE PRG008_AA9C	 ; Jump (technically always) to PRG008_AA9C
 
 PRG008_AA84:
-	LDY <Player_XVel
+	LDY <player_lo_x_velocity
 	BEQ PRG008_AA94	 ; If Player is not moving horizontally, jump to PRG008_AA94
 
 	INY		 ; Y++
 
-	LDA <Player_XVel
-	BMI PRG008_AA8F	 ; If Player_XVel < 0, jump to PRG008_AA8F
+	LDA <player_lo_x_velocity
+	BMI PRG008_AA8F	 ; If player_lo_x_velocity < 0, jump to PRG008_AA8F
 
 	DEY
 	DEY		 ; Y -= 2
 
 PRG008_AA8F:
-	STY <Player_XVel ; Update X Velocity
+	STY <player_lo_x_velocity ; Update X Velocity
 	JMP PRG008_AA9C	 ; Jump to PRG008_AA9C
 
 PRG008_AA94:
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_AA9C	 ; If Player is swimming above ground, jump to PRG008_AA9C
 
 	LDA #$15	 ; A = $15
@@ -1809,7 +1809,7 @@ PRG008_AAD1:
 	TYA
 
 PRG008_AAD2:
-	STA <Player_Frame ; Update Player_Frame
+	STA <player_animation_frame ; Update player_animation_frame
 	RTS		 ; Return
 
 GndMov_Rabbit:
@@ -1872,7 +1872,7 @@ PRG008_AB62:
 
 	; Player is holding B...
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	ORA Player_Slide
 	BNE PRG008_AB78	 ; If Player is mid air or sliding, jump to PRG008_AB78
 
@@ -1912,11 +1912,11 @@ PRG008_AB83:
 	BNE PRG008_AB9E	 ; And as long as that's not zero, jump to PRG008_AB9E
 
 PRG008_AB98:
-	LDA <Player_Suit
+	LDA <player_powerup
 	ASL A
 	ASL A
 	ASL A
-	TAY		 ; Y = Player_Suit << 3
+	TAY		 ; Y = player_powerup << 3
 
 PRG008_AB9E:
 	BIT <buttons_held
@@ -1935,10 +1935,10 @@ PRG008_ABA6:
 
 	; Player not pressing LEFT/RIGHT...
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_AC01	 ; If Player is mid air, jump to PRG008_AC01 (RTS)
 
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	BEQ PRG008_AC01	 ; If Player is not moving horizontally, jump to PRG008_AC01 (RTS)
 	BMI PRG008_ABD3	 ; If Player is moving leftward, jump to PRG008_ABD3
 	BPL PRG008_ABEB	 ; If Player is moving rightward, jump to PRG008_ABEB
@@ -1960,7 +1960,7 @@ PRG008_ABB8:
 	BEQ PRG008_AC01	 ; If Player's current X velocity magnitude is the same as the selected top speed, jump to PRG008_AC01 (RTS)
 	BMI PRG008_ABCD	 ; If it's less, then jump to PRG008_AC01
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_AC01	 ; If Player is mid air, jump to PRG008_AC01
 
 	DEY		 ; Y-- (back one offset, the "friction" stopping rate)
@@ -2010,9 +2010,9 @@ PRG008_ABF5:
 	LDA <var1
 	ADD Counter_Wiggly	; actual value not used, looking for a semi-random carry
 
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	ADC <var2
-	STA <Player_XVel	; Player_XVel += var2 (and sometimes carry)
+	STA <player_lo_x_velocity	; player_lo_x_velocity += var2 (and sometimes carry)
 
 PRG008_AC01:
 	RTS		 ; Return
@@ -2029,7 +2029,7 @@ Player_UnderwaterHControl:
 	LDA #%00001000
 	STA <var14	 ; var14 = pretend like Player is definitely hitting UP
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_AC14	 ; If Player is not in the air, jump to PRG008_AC14
 
 	LDA #buttons_clicked
@@ -2041,11 +2041,11 @@ Player_UnderwaterHControl:
 	INY		 ; Y += 4 (offset into Player_XAccel* tables)
  
 PRG008_AC14:
-	LDA <Player_InAir
-	PHA		 ; Save Player_InAir
+	LDA <player_is_in_air
+	PHA		 ; Save player_is_in_air
 
 	LDA #$00
-	STA <Player_InAir ; Player_InAir= 0
+	STA <player_is_in_air ; player_is_in_air= 0
 
 	JSR PRG008_ABA6	 ; Reuses part of normal movement code
 
@@ -2053,7 +2053,7 @@ PRG008_AC14:
 	LDA Level_WaterMuck
 	BEQ Water_NotMuck
 
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	CMP #(PLAYER_TOPWALKSPEED / 4)
 	BLS WaterMuck_Not2FastR
 
@@ -2067,11 +2067,11 @@ WaterMuck_Not2FastR:
 	LDA #-(PLAYER_TOPWALKSPEED / 4)
 
 WaterMuck_StoreXVel:
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 
 Water_NotMuck:
 	PLA		 
-	STA <Player_InAir ; Restore Player_InAir
+	STA <player_is_in_air ; Restore player_is_in_air
 
 	RTS		 ; Return
 
@@ -2100,7 +2100,7 @@ PRG008_AC30:
 	LDA Player_AllowAirJump
 	BNE PRG008_AC41	 ; If Player_AllowAirJump <> 0, jump to PRG008_AC41
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_AC9E	 ; If Player is mid air, jump to PRG008_AC9E
 
 PRG008_AC41:
@@ -2108,7 +2108,7 @@ PRG008_AC41:
 	; Play jump sound
 	LDA #SND_PLAYERJUMP	 
 
-	LDX <Player_Suit
+	LDX <player_powerup
 	BNE PlayerJump_NormalSound
 	
 	LDA #SND_PLAYERJUMPSM
@@ -2126,14 +2126,14 @@ PlayerJump_NormalSound:
 	LDA Player_IsHolding
 	BNE PRG008_AC6C	 ; If Player is holding something, jump to PRG008_AC6C
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PRG008_AC6C	 ; If Player is small, jump to PRG008_AC6C
-	CMP #PLAYERSUIT_PENGUIN
+	CMP #powerup_penguin
 	BEQ PRG008_AC6C	 ; If Player is wearing penguin suit, jump to PRG008_AC6C
 
 	; Otherwise, mark as mid air AND backflipping
 	;STA Player_Flip	; SB: Does anyone like this really?
-	STA <Player_InAir
+	STA <player_is_in_air
 
 	LDA #$00
 	STA Player_AllowAirJump	 ; Cut off Player_AllowAirJump
@@ -2141,7 +2141,7 @@ PlayerJump_NormalSound:
 PRG008_AC6C:
 
 	; Get absolute value of Player's X velocity
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	BPL PRG008_AC73
 	NEG
 PRG008_AC73:
@@ -2154,10 +2154,10 @@ PRG008_AC73:
 
 	LDA #PLAYER_JUMP	 	; Get initial jump velocity
 	SUB Player_SpeedJumpInc,X	; Subtract a tiny bit of boost at certain X Velocity speed levels
-	STA <Player_YVel		; -> Y velocity
+	STA <player_lo_y_velocity		; -> Y velocity
 
 	LDA #$01
-	STA <Player_InAir ; Flag Player as mid air
+	STA <player_is_in_air ; Flag Player as mid air
 
 	LDA #$00	
 	STA Player_WagCount	 ; Player_WagCount = 0
@@ -2167,8 +2167,8 @@ PRG008_AC73:
 	CMP #$7f
 	BNE PRG008_AC9E		; If Player is not at max power, jump to PRG008_AC9E
 
-	LDY <Player_Suit
-	CPY #PLAYERSUIT_RABBIT
+	LDY <player_powerup
+	CPY #powerup_rabbit
 	BEQ PRG008_AC9E		; If Player is Rabbit Mario, jump to PRG008_AC9E (don't "fly"!)
 
 	LDA Player_FlyTime
@@ -2178,10 +2178,10 @@ PRG008_AC73:
 	STA Player_FlyTime	; Otherwise, Player_FlyTime = $80
 
 PRG008_AC9E:
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_ACB3		; If Player is mid air, jump to PRG008_ACB3
 
-	LDY <Player_Suit
+	LDY <player_powerup
 	LDA PowerUp_Ability,Y	; Get "ability" flags for this power up
 	AND #$01
 	BNE PRG008_AD1A	 	; If power up has flight ability, jump to PRG008_AD1A
@@ -2203,7 +2203,7 @@ PRG008_ACB3:
 	LDA Gravity_Delta,Y
 	TAY
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BPL Player_GravityReset
 	
 Player_GravityModComplete
@@ -2225,8 +2225,8 @@ PRG008_ACC8:
 
 PRG008_ACCD:
 	TYA	
-	ADD <Player_YVel
-	STA <Player_YVel ; Player_YVel += Y
+	ADD <player_lo_y_velocity
+	STA <player_lo_y_velocity ; player_lo_y_velocity += Y
 
 	LDA <Player_WagCount
 	BEQ PRG008_ACD9	 ; If Player_WagCount = 0, jump to PRG008_ACD9
@@ -2237,7 +2237,7 @@ PRG008_ACD9:
 	;LDA Player_Kuribo
 	;BNE PRG008_ACEF	 ; If Player is wearing Kuribo's shoe, jump to PRG008_ACEF
 
-	LDX <Player_Suit
+	LDX <player_powerup
 
 	LDA PowerUp_Ability,X	; Get "ability" flags for this power up
 	AND #$01	 
@@ -2261,7 +2261,7 @@ PRG008_ACEF:
 
 	; RACCOON / RABBIT TAIL WAG LOGIC
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	CMP #PLAYER_FLY_YVEL
 	BLS PRG008_AD1A	 ; If Player's Y velocity is < PLAYER_FLY_YVEL, jump to PRG008_AD1A
 
@@ -2286,7 +2286,7 @@ PRG008_AD0E:
 	JSR WagYVel_GetProper
 	STA <var1
 	
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI PRG008_AD1A	 ; If Player's Y velocity < 0 (moving upward), jump to PRG008_AD1A
 
 	CMP <var1
@@ -2295,7 +2295,7 @@ PRG008_AD0E:
 	LDY <var1 ; Y = PLAYER_TAILWAG_YVEL
 
 PRG008_AD18:
-	STY <Player_YVel ; Set appropriate Y velocity
+	STY <player_lo_y_velocity ; Set appropriate Y velocity
 
 PRG008_AD1A:
 	LDA Player_UphillSpeedIdx
@@ -2304,14 +2304,14 @@ PRG008_AD1A:
 	LSR A
 	TAY		 ; Y = Player_UphillSpeedIdx >> 1
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BPL PRG008_AD2E	 ; If Player's Y vel >= 0, jump to PRG008_AD2E (RTS)
 
 	CMP PRG008_AC22,Y
 	BLS PRG008_AD2E	; If Player's uphill speed < Y velocity, jump to PRG008_AD2E
 
 	LDA #$20
-	STA <Player_YVel ; Player_YVel = $20
+	STA <player_lo_y_velocity ; player_lo_y_velocity = $20
 
 PRG008_AD2E:
 	RTS		 ; Return
@@ -2326,8 +2326,8 @@ Player_GravityReset:
 WagYVel_GetProper:
 	LDA #PLAYER_TAILWAG_YVEL
 
-	LDY <Player_Suit
-	CPY #PLAYERSUIT_RABBIT
+	LDY <player_powerup
+	CPY #powerup_rabbit
 	BNE WagYVel_NotRabbit
 
 	LDA #(PLAYER_TAILWAG_YVEL / 2)
@@ -2361,7 +2361,7 @@ Player_SwimV:
 
 	LDY #1
 	
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE SwimV_Muck
 
 	LDY #3
@@ -2376,28 +2376,28 @@ SwimV_NotMuck:
 	TAY		; 0 if not pressing up or down, 1 if pressing down, 2 if pressing up
 
 SwimV_Muck:
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_AD45	 ; If Player is swimming above ground, jump to PRG008_AD4A
 
 	LDA SwimSpeedStart,Y
-	STA <Player_InAir ; "mid air" underwater
+	STA <player_is_in_air ; "mid air" underwater
 	BNE PRG008_AD4A	 ; Jump (technically always) to PRG008_AD4A
 
 PRG008_AD45:
 
 	; Swimming speed the rest of the time
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	SUB SwimSpeedDelta,Y
 
 PRG008_AD4A:
-	STA <Player_YVel ; Set Player_YVel appropriately
+	STA <player_lo_y_velocity ; Set player_lo_y_velocity appropriately
 
 PRG008_AD4C:
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_AD7E	 ; If Player is on the ground, jump to PRG008_AD7E
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI PRG008_AD5A	 ; If Player's Y velocity is < 0 (moving upward), jump to PRG008_AD5A
 
 	LDA <Counter_1
@@ -2408,23 +2408,23 @@ PRG008_AD5A:
 
 	; Player's sink rate...
 
-	INC <Player_YVel ; Player_YVel++
+	INC <player_lo_y_velocity ; player_lo_y_velocity++
 
 PRG008_AD5C:
 	LDY #PLAYER_SWIM_YVEL	 ; Y = PLAYER_SWIM_YVEL
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BPL PRG008_AD75	 ; If Player's Y velocity is < 0 (moving upward), jump to PRG008_AD75
 
 	LDY Player_AboveTop
 	BPL PRG008_AD73	 ; If Player is not above top of screen, jump to PRG008_AD73
 
-	LDY Player_SpriteY
+	LDY player_sprite_lo_y
 	CPY #-8	 
 	BGE PRG008_AD73	 ; If Player sprite is a bit high up, jump to PRG008_AD73
 
 	ADD #$10
-	STA <Player_YVel ; Player_YVel += $10
+	STA <player_lo_y_velocity ; player_lo_y_velocity += $10
 
 PRG008_AD73:
 	LDY #PLAYER_SWIMSTART_YVEL	 ; Y = PLAYER_SWIMSTART_YVEL
@@ -2434,7 +2434,7 @@ PRG008_AD75:
 	CMP #PLAYER_MAXSPEED
 	BLT PRG008_AD7E	 ; If result is less than Player's max speed, jump to PRG008_AD7E
 
-	STY <Player_YVel ; Otherwise, update it
+	STY <player_lo_y_velocity ; Otherwise, update it
 
 PRG008_AD7E:
 	RTS		 ; Return
@@ -2446,7 +2446,7 @@ PRG008_AD7E:
 ; Animates Player for swimming
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_SwimAnim:
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_ADBC	 ; If Player is NOT swimming above ground, jump to PRG008_ADBC (RTS)
 
 	LDA <buttons_clicked
@@ -2468,7 +2468,7 @@ PRG008_AD9A:
 	LDA Player_SwimCnt
 	BNE PRG008_ADBD	 ; If Player_SwimCnt <> 0, jump to PRG008_ADBD
 
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	BNE PRG008_ADAD	 ; If Player is moving left or right, jump to PRG008_ADAD
 
 	; Player NOT moving left/right
@@ -2484,7 +2484,7 @@ PRG008_AD9A:
 PRG008_ADAD:
 	LDY <Player_WalkFrame
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BNE PRG008_ADB7	 ; If Player is not small, jump to PRG008_ADB7
 
 	INY
@@ -2494,7 +2494,7 @@ PRG008_ADAD:
 
 PRG008_ADB7:
 	LDA Player_SwimIdleFrames,Y	 ; Get appropriate swim frame
-	STA <Player_Frame	 ; Set it!
+	STA <player_animation_frame	 ; Set it!
 
 PRG008_ADBC:
 	RTS		 ; Return
@@ -2511,7 +2511,7 @@ PRG008_ADBD:
 	LDA #$05	 ; A = 5
 
 PRG008_ADCB:
-	LDY <Player_Suit ; Y = Player_Suit
+	LDY <player_powerup ; Y = player_powerup
 	BNE PRG008_ADD2	 ; If Player is not small, jump to PRG008_ADD2
 
 	ADD #$06	 ; For small, A = 11
@@ -2521,7 +2521,7 @@ PRG008_ADD2:
 
 	; Set Player swimming frame
 	LDA Player_SwimActiveFrames,Y
-	STA <Player_Frame
+	STA <player_animation_frame
 
 	RTS		 ; Return
 
@@ -2551,8 +2551,8 @@ PYM_NoYoshi:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_CommonGroundAnims:
 
-	; Get absolute value of Player_XVel
-	LDA <Player_XVel
+	; Get absolute value of player_lo_x_velocity
+	LDA <player_lo_x_velocity
 	BPL PRG008_ADE0
 	JSR Negate
 PRG008_ADE0:
@@ -2589,8 +2589,8 @@ PRG008_AE03:
 
 	; Player NOT pressing left/right
 
-	LDA <Player_XVel
-	BNE PRG008_AE11	 ; If Player_XVel <> 0, jump to PRG008_AE11
+	LDA <player_lo_x_velocity
+	BNE PRG008_AE11	 ; If player_lo_x_velocity <> 0, jump to PRG008_AE11
 
 	LDA #$02
 	STA <Player_WalkFrame	 ; Otherwise, force Player_WalkFrame to 2 (standing still)
@@ -2613,39 +2613,39 @@ PRG008_AE11:
 	LDY #SPR_HFLIP	; Horizontal flip
 
 PRG008_AE24:
-	STY <Player_FlipBits	; Set appropriate flip
+	STY <player_flipped_animation	; Set appropriate flip
 
 PRG008_AE26:
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	ASL A
 	ASL A
 	ORA <Player_WalkFrame	 ; Take the walk frame and push the current power-up to bit 2
 	TAY		 ; -> Y
 	LDA Player_WalkFramesByPUp,Y	 ; Get appropriate sprite frame
-	STA <Player_Frame		 ; -> Player_Frame
+	STA <player_animation_frame		 ; -> player_animation_frame
 
 	LDA Player_InWater
 	BNE PRG008_AE90	 ; If Player is in water, jump to PRG008_AE90
 
 	; Player not in water...
 
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	ADD #$01
 	CMP #$03
-	BLT PRG008_AE90	 ; If (Player_XVel + 1) < 3, jump to PRG008_AE90
+	BLT PRG008_AE90	 ; If (player_lo_x_velocity + 1) < 3, jump to PRG008_AE90
 
 	LDA Player_MoveLR
 	AND <buttons_held
 	BEQ PRG008_AE90	 ; If Player is pressing the opposite direction from his movement, jump to PRG008_AE90
 
-	LDY <Player_Suit
+	LDY <player_powerup
 	BEQ PRG008_AE7F	 ; If Player is small, jump to PRG008_AE7F
 
 	LDY #$01	 ; Otherwise, Y = 1
 
 PRG008_AE7F:
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_AE90	 ; If Player is mid air, jump to PRG008_AE90
 
 	; Play "skid" sound
@@ -2654,18 +2654,18 @@ PRG008_AE7F:
 	STA Sound_QLevel2
 
 	LDA Player_SkidFrame,Y
-	STA <Player_Frame ; Set skid frame
+	STA <player_animation_frame ; Set skid frame
 
 PRG008_AE90:
 	LDA Player_IsDucking
 	BEQ PRG008_AEA2	 ; If Player is not ducking
 
-	LDY <Player_Suit
+	LDY <player_powerup
 	LDA PowerUp_Ability,Y	; Get "ability" bits for suit
 	AND #$01	 	; Bit 0 specifies that the power up can do raccoon style flying and fluttering
 	TAY		 
 	LDA Player_DuckFrame,Y	; Get appropriate duck frame
-	STA <Player_Frame	; Set frame!
+	STA <player_animation_frame	; Set frame!
 
 PRG008_AEA2:
 	LDA Player_Slide
@@ -2673,7 +2673,7 @@ PRG008_AEA2:
 
 	; Player is sliding...
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_AEB1	 ; If Player is mid air, jump to PRG008_AEB1
 
 	LDA <buttons_held
@@ -2690,13 +2690,13 @@ PRG008_AEB1:
 
 PRG008_AEB6:
 	LDA #PF_SLIDE_BIG	 ; Frame for anything besides small
-	LDY <Player_Suit
+	LDY <player_powerup
 	BNE PRG008_AEBE	 ; If Player is not small, jump to PRG008_AEBE
 
 	LDA #PF_SLIDE_SMALL	 ; Frame for small
 
 PRG008_AEBE:
-	STA <Player_Frame ; Set appropriate Player frame
+	STA <player_animation_frame ; Set appropriate Player frame
 
 PRG008_AEC0:
 	RTS		 ; Return
@@ -2728,7 +2728,7 @@ Player_AnimTailWag:
 	LDA Player_AllowAirJump
 	BNE PRG008_B09F	 ; If Player_AllowAirJump, jump to PRG008_B09F (RTS)
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_B09F	 ; If Player is NOT mid air, jump to PRG008_B09F (RTS)
 
 	LDA Player_IsDucking
@@ -2747,7 +2747,7 @@ Player_AnimTailWag:
 	LDA Player_FlyTime
 	BNE PATW_PlayWag	; If Player is flying, definitely play wag
 	
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI PRG008_B05D		; Otherwise, must be falling (wagging) to play wag sound
 
 PATW_PlayWag:
@@ -2778,14 +2778,14 @@ PRG008_B062:
 	LDA #$06	 ; A = 6 (fluttering/falling)
 
 PRG008_B072:
-	LDY <Player_YVel
+	LDY <player_lo_y_velocity
 	BMI PRG008_B079	 ; If Player Y velocity < 0, jump to PRG008_B079
 
 	ADD #$03	 ; Otherwise, add 3 (apex, when just running out of power, flying steady)
 
 PRG008_B079:
-	LDY <Player_Suit
-	CPY #PLAYERSUIT_RABBIT
+	LDY <player_powerup
+	CPY #powerup_rabbit
 	BNE PATW_NotBunnyEars
 
 	; +6 for Bunny Ears
@@ -2797,7 +2797,7 @@ PATW_NotBunnyEars:
 	LDA Player_TailWagFlyFrames,Y	 ; Get correct frame
 
 PATW_BunnyEars:
-	STA <Player_Frame ; And set it!
+	STA <player_animation_frame ; And set it!
 
 PRG008_B082:
 	LDA Player_FlyTime
@@ -2805,17 +2805,17 @@ PRG008_B082:
 	BEQ PRG008_B09F	 ; If flying or fluttering, jump to PRG008_B09F (RTS)
 
 	LDY #-1		 ; Y = -1
-	LDA <Player_XVel
-	BPL PRG008_B095	 ; If Player_XVel >= 0, jump to PRG008_B095
+	LDA <player_lo_x_velocity
+	BPL PRG008_B095	 ; If player_lo_x_velocity >= 0, jump to PRG008_B095
 
 	LDY #1		 ; Y = 1
-	JSR Negate	 ; Negate Player_XVel (get absolute value)
+	JSR Negate	 ; Negate player_lo_x_velocity (get absolute value)
 
 PRG008_B095:
 
-	; Y = -1 and Player_XVel >= 0
+	; Y = -1 and player_lo_x_velocity >= 0
 	;    OR
-	; Y = 1 and Player_XVel < 0
+	; Y = 1 and player_lo_x_velocity < 0
 	;    (but magnitude is in 'A' either way)
 
 	CMP #PLAYER_TOPWALKSPEED	
@@ -2823,8 +2823,8 @@ PRG008_B095:
 
 	; Otherwise add 'Y', which gives a slow acceleration up to that speed when in air as raccoon
 	TYA
-	ADD <Player_XVel
-	STA <Player_XVel
+	ADD <player_lo_x_velocity
+	STA <player_lo_x_velocity
 
 PRG008_B09F:
 	RTS		 ; Return
@@ -2844,7 +2844,7 @@ Player_SoarJumpFallFrame:
 	LDA Player_AllowAirJump
 	BNE PRG008_B0C5	 ; If Player_AllowAirJump, jump to PRG008_B0C5 (RTS)
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_B0C5	 ; If Player is mid air, jump to PRG008_B0C5 (RTS)
 
 	LDA Player_IsDucking
@@ -2857,13 +2857,13 @@ Player_SoarJumpFallFrame:
 
 	LDA #PF_JUMPBIG	 ; Normal "fist pump" jump frame
 
-	LDY <Player_YVel
+	LDY <player_lo_y_velocity
 	BMI PRG008_B0C3	 ; If Player is moving upward, jump to PRG008_B0C3
 
 	LDA #PF_FALLBIG	 ; Standard "fall" frame
 
 PRG008_B0C3:
-	STA <Player_Frame ; Set appropriate frame
+	STA <player_animation_frame ; Set appropriate frame
 
 PRG008_B0C5:
 	RTS		 ; Return
@@ -2904,7 +2904,7 @@ PRG008_B0E2:
 	LSR A
 	TAY		 ; Y = Player_TailAttack >> 2
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_B0F3	 ; If Player is NOT in mid air, jump to PRG008_B0F3
 
 	INY
@@ -2915,7 +2915,7 @@ PRG008_B0E2:
 
 PRG008_B0F3:
 	LDA Player_TailAttackFrames,Y	 ; Get appropriate tail attack frame
-	STA <Player_Frame		 ; Store it
+	STA <player_animation_frame		 ; Store it
 
 
 	; Flips player at particular times
@@ -2928,9 +2928,9 @@ PRG008_B0F3:
 	BNE PRG008_B109
 
 PRG008_B103:
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	EOR #SPR_HFLIP
-	STA <Player_FlipBits
+	STA <player_flipped_animation
 
 PRG008_B109:
 	RTS		 ; Return
@@ -2955,7 +2955,7 @@ Player_ShootAnim:
 	LSR A
 	LSR A		; A = Player_FireCount >> 2
 
-	LDY <Player_InAir
+	LDY <player_is_in_air
 	BEQ PRG008_B118	 ; If Player is mid air, jump to PRG008_B118
 
 	ADD #(Player_FireInAir - Player_FireOnGround)	 ; Otherwise, offset to "on ground" frames
@@ -2963,7 +2963,7 @@ Player_ShootAnim:
 PRG008_B118:
 	TAY		 ; A -> Y
 	LDA Player_FireOnGround,Y ; Get appropriate frame
-	STA <Player_Frame	 ; Set it!
+	STA <player_animation_frame	 ; Set it!
 
 PRG008_B11E:
 	RTS		 ; Return
@@ -2986,8 +2986,8 @@ Player_DoScrolling:
 	; player X and Y sprite variables are both zero (i.e. the
 	; player's relative screen position has not yet been computed)
 	; in which case it does not update scrolling.
-	LDA Player_SpriteX
-	ORA Player_SpriteY
+	LDA player_sprite_lo_x
+	ORA player_sprite_lo_y
 	BEQ PRG008_B11E
 
 	LDA Level_7Vertical
@@ -3029,9 +3029,9 @@ PRG008_B150:
 
 	; No raster effects or horizontal auto scroll not desired
 
-	LDA <Player_X
+	LDA <player_lo_x
 	SUB <Horz_Scroll
-	BPL PRG008_B195	 ; If Player_X >= Horz_Scroll, jump to PRG008_B195
+	BPL PRG008_B195	 ; If player_lo_x >= Horz_Scroll, jump to PRG008_B195
 
 	LDA <Horz_Scroll_Hi
 	STA <var1		; var1 = Horz_Scroll_Hi
@@ -3044,14 +3044,14 @@ PRG008_B150:
 	INC <var1	 ; Apply carry
 
 PRG008_B166:
-	LDA <Player_XHi
+	LDA <player_hi_x
 	CMP <var1
-	BLS PRG008_B1CE	 ; If Player_XHi < var1 (Horizontal scroll as appropriate when adding $80), jump to PRG008_B1CE
+	BLS PRG008_B1CE	 ; If player_hi_x < var1 (Horizontal scroll as appropriate when adding $80), jump to PRG008_B1CE
 
-	LDA <Player_X
+	LDA <player_lo_x
 	SUB <var2
-	BEQ PRG008_B1CE	 ; If Player_X = var2 ($80 + Horz_SCroll), jump to PRG008_B1CE
-	BMI PRG008_B1CE	 ; If Player_X < var2 ($80 + Horz_SCroll), jump to PRG008_B1CE
+	BEQ PRG008_B1CE	 ; If player_lo_x = var2 ($80 + Horz_SCroll), jump to PRG008_B1CE
+	BMI PRG008_B1CE	 ; If player_lo_x < var2 ($80 + Horz_SCroll), jump to PRG008_B1CE
 
 	STA Level_ScrollDiffH	 ; Result stored into Level_ScrollDiffH
 
@@ -3086,12 +3086,12 @@ PRG008_B195:
 
 PRG008_B1A4:
 	LDA <var1
-	CMP <Player_XHi
-	BLS PRG008_B1CE	 	; If var1 < Player_XHi, jump to PRG008_B1CE
+	CMP <player_hi_x
+	BLS PRG008_B1CE	 	; If var1 < player_hi_x, jump to PRG008_B1CE
 
-	LDA <Player_X
+	LDA <player_lo_x
 	SUB <var2
-	BPL PRG008_B1CE	 	; If Player_X >= var2, jump to PRG008_B1CE
+	BPL PRG008_B1CE	 	; If player_lo_x >= var2, jump to PRG008_B1CE
 
 	STA Level_ScrollDiffH	; Store difference into Level_ScrollDiffH
 
@@ -3114,59 +3114,59 @@ PRG008_B1BD:
 	STA Level_ScrollDiffH
 
 PRG008_B1CE:
-	LDA <Player_SpriteX
+	LDA <player_sprite_lo_x
 
-	LDY <Player_XVel
+	LDY <player_lo_x_velocity
 	BMI PRG008_B1DD	 ; If Player X velocity < 0 (moving leftward), jump to PRG008_B1DD
 
 	; Player moving rightward...
 
 	CMP #232
-	BLT PRG008_B208	 ; If Player_SpriteX < 232, jump to PRG008_B1DD
+	BLT PRG008_B208	 ; If player_sprite_lo_x < 232, jump to PRG008_B1DD
 
 	LDA #232	; Cap max at 232
 	JMP PRG008_B1E3	 ; Jump to PRG008_B1E3
 
 PRG008_B1DD:
 	CMP #17
-	BGE PRG008_B208	 ; If Player_SpriteX >= 17, jump to PRG008_B208
+	BGE PRG008_B208	 ; If player_sprite_lo_x >= 17, jump to PRG008_B208
 	LDA #16	 	; Cap min at 16
 
 PRG008_B1E3:
-	STA <Player_SpriteX ; Update Player_SpriteX
+	STA <player_sprite_lo_x ; Update player_sprite_lo_x
 
-	LDY #$00	 ; Y = 0 (offset of Player_XHi)
+	LDY #$00	 ; Y = 0 (offset of player_hi_x)
 
-	SUB <Player_X
-	BPL PRG008_B1EE	 ; If Player_SpriteX >= Player_X, jump to PRG008_B1EE
+	SUB <player_lo_x
+	BPL PRG008_B1EE	 ; If player_sprite_lo_x >= player_lo_x, jump to PRG008_B1EE
 
-	LDY #$ff	 ; Y = $FF (offset of Player_XHi, sign extended high part of negative)
+	LDY #$ff	 ; Y = $FF (offset of player_hi_x, sign extended high part of negative)
 
 PRG008_B1EE:
-	ADD <Player_X	 
-	STA <Player_X	 ; Player_X += difference between this and Player_SpriteX
+	ADD <player_lo_x	 
+	STA <player_lo_x	 ; player_lo_x += difference between this and player_sprite_lo_x
 	BCC PRG008_B1F6	 ; If no carry, jump to PRG008_B1F6
 
 	INY		 ; Otherwise, apply carry
 
 PRG008_B1F6:
 	TYA		 ; A = Y ("high" part offset)
-	ADD <Player_XHi	 ; Apply high adjustment
-	STA <Player_XHi	 ; And store it!
+	ADD <player_hi_x	 ; Apply high adjustment
+	STA <player_hi_x	 ; And store it!
 
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	PHP		 ; Save processor status
 
 	AND #%00001111	 ; Just take lower 4 bits (the "fractional" part)
 
 	PLP		 ; Restore processor status
 
-	BPL PRG008_B206	 ; If Player_XVel >= 0, jump to PRG008_B206
+	BPL PRG008_B206	 ; If player_lo_x_velocity >= 0, jump to PRG008_B206
 
 	ORA #$F0	 ; Otherwise, provide negative sign extention for fractional part
 
 PRG008_B206:
-	STA <Player_XVel ; Revise Player_XVel with only signed fractional part!
+	STA <player_lo_x_velocity ; Revise player_lo_x_velocity with only signed fractional part!
 
 PRG008_B208:
 
@@ -3199,7 +3199,7 @@ AutoScroll_CalcPlayerY:
 	STA <Vert_Scroll 	; Becomes the new Vert_Scroll
 	STA Level_VertScroll	; Becomes the new Level_VertScroll
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_B245	 ; If Player is not mid-air, jump to PRG008_B245 (RTS)
 
 	LDA Player_IsClimbing
@@ -3209,15 +3209,15 @@ AutoScroll_CalcPlayerY:
 	LDA Level_ScrollDiffV
 	BPL PRG008_B23C	 ; If Level_ScrollDiffV >= 0, jump to PRG008_B23C
 
-	DEC <Player_YHi	; Player_YHi--
+	DEC <player_hi_y	; player_hi_y--
 
 PRG008_B23C:
-	ADD <Player_Y
-	STA <Player_Y	 ; Player_Y = Level_ScrollDiffV + Player_Y
+	ADD <player_lo_y
+	STA <player_lo_y	 ; player_lo_y = Level_ScrollDiffV + player_lo_y
 
 	BCC PRG008_B245	 ; If no carry, jump to PRG008_B245
 
-	INC <Player_YHi	 ; Otherwise, carry into Player_YHi
+	INC <player_hi_y	 ; Otherwise, carry into player_hi_y
 
 PRG008_B245:
 	RTS		 ; Return
@@ -3254,13 +3254,13 @@ PRG008_B258:
 
 	; Free vertical scrolling allowed
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	SUB Level_VertScroll
-	STA <var1		; var1 = Player_Y - Level_VertScroll (difference between Player_Y and vertical scroll)
+	STA <var1		; var1 = player_lo_y - Level_VertScroll (difference between player_lo_y and vertical scroll)
 
-	LDA <Player_YHi
+	LDA <player_hi_y
 	SBC Level_VertScrollH
-	BMI PRG008_B272	 ; If (Player_YHi - Level_VertScrollH) < 0, jump to PRG008_B272
+	BMI PRG008_B272	 ; If (player_hi_y - Level_VertScrollH) < 0, jump to PRG008_B272
 
 	LDA <var1
 	SUB #$30
@@ -3325,7 +3325,7 @@ PRG008_B2AB:
 	; Vertical style for Player_DoScrolling
 
 	LDA #$00	 
-	STA <Player_XHi	 ; Player_XHi = 0 (never used in vertical mode)
+	STA <player_hi_x	 ; player_hi_x = 0 (never used in vertical mode)
 
 	LDY <Level_Width ; Y = Level_Width ("height" actually, in this context)
 
@@ -3335,15 +3335,15 @@ PRG008_B2AB:
 	LDA VertLevel_ScreenL,Y	
 	STA <var2
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	SUB Level_VertScroll
-	TAY		 ; Y = Player_Y - Level_VertScroll
+	TAY		 ; Y = player_lo_y - Level_VertScroll
 
-	LDA <Player_YHi
+	LDA <player_hi_y
 	SBC Level_VertScrollH
-	BNE PRG008_B345	 ; If Player_YHi <> Level_VertScrollH, jump to PRG008_B345 (RTS)
+	BNE PRG008_B345	 ; If player_hi_y <> Level_VertScrollH, jump to PRG008_B345 (RTS)
 
-	TYA		 ; A = Player_Y - Level_VertScroll
+	TYA		 ; A = player_lo_y - Level_VertScroll
 	SUB #$30
 	BCS PRG008_B2F9	 ; If no borrow occurred, jump to PRG008_B2F9
 
@@ -3376,7 +3376,7 @@ PRG008_B2F3:
 	JMP PRG008_B338	 ; Jump to PRG008_B338
 
 PRG008_B2F9:
-	TYA		 ; A = Player_Y - Level_VertScroll
+	TYA		 ; A = player_lo_y - Level_VertScroll
 	SBC #$58
 	BCC PRG008_B345	 ; If borrow occurred, jump to PRG008_B345 (RTS)
 
@@ -3631,7 +3631,7 @@ TileAttrAndQuad_OffsSlopeEdgR:
 	.byte $00, $04	; Right half
 	.byte $00, $0B	; Left half
 
-PlayerY_HeightOff:	.byte $12, $05	; Left value is Player_Y offset for small/ducking, right for otherwise
+PlayerY_HeightOff:	.byte $12, $05	; Left value is player_lo_y offset for small/ducking, right for otherwise
 PRG008_B3AC:	
 	.byte $02, $0E	; Left/Right half, not small
 	.byte $03, $0D	; Left/Right half, small
@@ -3674,7 +3674,7 @@ Player_GetTAndS_NotVert:
 	BEQ PRG008_B3F7	 ; If Player_PartDetEn is not set, jump to PRG008_B3F7
 	BPL Player_GetTAndS_NoFixedC
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	ADD <var10		; var10 is the Y offset 
 	SUB Level_VertScroll	; Make relative to Vertical Scroll
 	
@@ -3695,7 +3695,7 @@ Player_GetTAndS_NoFixedC:
 	LDA Player_AboveTop
 	BNE PRG008_B3F7	 ; If Player is above top of screen, jump to PRG008_B3F7
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	ADD <var10		; var10 is the Y offset 
 	SUB Level_VertScroll	; Make relative to Vertical Scroll
 
@@ -3714,12 +3714,12 @@ Player_GetTAndS_NoFixedC:
 	BNE PRG008_B406	 ; Jump (technically always) to PRG008_B406
 
 PRG008_B3F7:
-	LDA <Player_YHi
-	STA <var13	 ; var13 = Player_YHi
+	LDA <player_hi_y
+	STA <var13	 ; var13 = player_hi_y
 
 	LDA <var10	 ; var10 is the Y offset 
-	ADD <Player_Y	 
-	STA <var14	 ; var14 = var10 + Player_Y
+	ADD <player_lo_y	 
+	STA <var14	 ; var14 = var10 + player_lo_y
 
 	BCC PRG008_B406	 ; If no carry, jump to PRG008_B406
 
@@ -3746,8 +3746,8 @@ PRG008_B414:
 
 
 PRG008_B419:
-	LDA <Player_XHi
-	STA <var15	 ; var15 = Player_XHi
+	LDA <player_hi_x
+	STA <var15	 ; var15 = player_hi_x
 
 	LDA <var11
 	BPL PRG008_B423	 ; If var11 >= 0, jump to PRG008_B423
@@ -3755,9 +3755,9 @@ PRG008_B419:
 	DEC <var15	 ; var15--
 
 PRG008_B423:
-	LDA <Player_X
+	LDA <player_lo_x
 	ADD <var11
-	STA <var16	 ; var16 = Player_X + var11
+	STA <var16	 ; var16 = player_lo_x + var11
 	BCC PRG008_B42E	 ; If no carry, jump to PRG008_B42E
 
 	INC <var15	 ; var15++ (apply carry to var15)
@@ -3770,9 +3770,9 @@ PRG008_B42E:
 
 	; X/Y were not modified, so as inputs:
 	; X = 0 (going down) or 1 (going up)
-	; Y = Player_YVel
+	; Y = player_lo_y_velocity
 
-	STY <var10	 ; var10 = Player_YVel
+	STY <var10	 ; var10 = player_lo_y_velocity
 	STX <var11	 ; var11 = 0 or 1
 
 	JSR Player_GetTileAndSlope_Normal	 ; Set Level_Tile and Player_Slopes
@@ -3801,16 +3801,16 @@ PRG008_B43F:
 Player_32PP_NoBump:
 	
 
-	LDY <var10	 ; Y = Player_YVel	
+	LDY <var10	 ; Y = player_lo_y_velocity	
 	RTS		 ; Return
 
 PRG008_B442:
-	LDA <Player_YHi
-	STA <var13	 ; var13 = Player_YHi
+	LDA <player_hi_y
+	STA <var13	 ; var13 = player_hi_y
 
 	LDA <var10
-	ADD <Player_Y
-	STA <var14	 ; var14 = var10 + Player_Y
+	ADD <player_lo_y
+	STA <var14	 ; var14 = var10 + player_lo_y
 	BCC PRG008_B451	 ; If there's no carry, jump to PRG008_B451
 
 	INC <var13	 ; Otherwise, apply the carry
@@ -3824,9 +3824,9 @@ PRG008_B451:
 	RTS		 ; Return
 
 PRG008_B458:
-	LDA <Player_X
+	LDA <player_lo_x
 	ADD <var11
-	STA <var16	 ; var16 = Player_X + var11
+	STA <var16	 ; var16 = player_lo_x + var11
 
 	STY <var10	 ; var10 = Y
 
@@ -3898,7 +3898,7 @@ PRG008_B4A5:
 
 	LDY #(TileAttrAndQuad_OffsFlat_Sm - TileAttrAndQuad_OffsFlat) + 6	; 6 = 3 * 2 (the offset we start on below) and work backwards from
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PRG008_B4B2	 ; If Player is small, jump to PRG008_B4B2
 
 	LDA Player_IsDucking
@@ -3919,8 +3919,8 @@ PRG008_B4B2:
 Player_TileOffs_NoRev:
 	LDX #$03	 ; X = 3 (the reason for +6 above)
 
-	LDA <Player_YVel 
-	BPL PRG008_B4BD	 ; If Player_YVel >= 0 (moving downward), jump to PRG008_B4BD
+	LDA <player_lo_y_velocity 
+	BPL PRG008_B4BD	 ; If player_lo_y_velocity >= 0 (moving downward), jump to PRG008_B4BD
 
 	; Otherwise, add 16 to index
 	TYA
@@ -3928,7 +3928,7 @@ Player_TileOffs_NoRev:
 	TAY
 
 PRG008_B4BD:
-	LDA <Player_X
+	LDA <player_lo_x
 	AND #$0f
 	CMP #$08
 	BLS PRG008_B4CA	 ; If Player is on the left half of the tile, jump to PRG008_B4CA
@@ -3988,7 +3988,7 @@ PRG008_B4F3:
 	LDY #$01	 ; Y = 1
 	LDX #$00	 ; X = 0
 
-	LDA <Player_X
+	LDA <player_lo_x
 	AND #$0f	
 	CMP #$08	
 	BGS PRG008_B511	 ; If Player is on the right side of the tile, jump to PRG008_B511
@@ -3998,7 +3998,7 @@ PRG008_B4F3:
 	INX		 ; X = 1
 
 PRG008_B511:
-	LDA <Player_Suit
+	LDA <player_powerup
 	BNE PRG008_B517	 ; If Player is NOT small, jump to PRG008_B517
 
 	INX		 
@@ -4006,7 +4006,7 @@ PRG008_B511:
 
 PRG008_B517:
 	LDA PRG008_B3AC,X
-	ADD <Player_X	 ; Add appropriate offset to Player_X
+	ADD <player_lo_x	 ; Add appropriate offset to player_lo_x
 
 	AND #$0f
 	BEQ PRG008_B53B	 ; If Player is on new tile, jump to PRG008_B53B
@@ -4014,22 +4014,22 @@ PRG008_B517:
 	TYA		 ; A = 1 or -1
 	BPL PRG008_B526	 ; If the positive version, jump to PRG008_B526
 
-	DEC <Player_XHi	 ; When negative, decrement the "Hi" component
+	DEC <player_hi_x	 ; When negative, decrement the "Hi" component
 
 PRG008_B526:
-	ADD <Player_X	 ; Add +1/-1 to Player_X
-	STA <Player_X	 ; Update Player_X
+	ADD <player_lo_x	 ; Add +1/-1 to player_lo_x
+	STA <player_lo_x	 ; Update player_lo_x
 
 	BCC PRG008_B52F	 ; If no carry, jump to PRG008_B52F
-	INC <Player_XHi	 ; Otherwise, apply carry
+	INC <player_hi_x	 ; Otherwise, apply carry
 
 PRG008_B52F:
 	INY		 ; Y++
 
-	LDA <Player_XVel
-	BPL PRG008_B536	 ; If Player_XVel >= 0, jump to Player_XVel
+	LDA <player_lo_x_velocity
+	BPL PRG008_B536	 ; If player_lo_x_velocity >= 0, jump to player_lo_x_velocity
 
-	; This basically amounts to a single decrement of 'Y' if Player_XVel < 0
+	; This basically amounts to a single decrement of 'Y' if player_lo_x_velocity < 0
 	DEY
 	DEY
 
@@ -4037,7 +4037,7 @@ PRG008_B536:
 	TYA		
 	BNE PRG008_B53B	 ; If Y <> 0, jump to PRG008_B53B
 
-	STA <Player_XVel ; Otherwise, halt Player horizontally
+	STA <player_lo_x_velocity ; Otherwise, halt Player horizontally
 
 PRG008_B53B:
 	; If tileset = 5 (Ghost House), jump to FloorChk_GhostHouseStair
@@ -4050,10 +4050,10 @@ FloorChk_NotGhostHouseStair:
 	LDA #0
 	STA Player_OnStairs
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BPL PRG008_B55B	 ; If Player Y velocity >= 0 (moving downward), jump to PRG008_B55B
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_B55B	 ; If Player is NOT mid air, jump to PRG008_B55B
 
 	LDY #$00	 ; Y = 0
@@ -4072,14 +4072,14 @@ FloorChk_NotGhostHouseStair:
 	LDA #$01	
 
 PRG008_B558:
-	STA <Player_YVel ; Update Player_YVel
+	STA <player_lo_y_velocity ; Update player_lo_y_velocity
 
 PRG008_B55A:
 	RTS		 ; Return
 
 FloorChk_GhostHouseStair:
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI FloorChk_NotGhostHouseStair	; If Player is moving upward, don't detect stairs
 
 	; Do stair logic
@@ -4105,15 +4105,15 @@ PRG008_B55B:
 	BGE PRG008_B57E	 	 ; If the tile is >= the attr value, jump to PRG008_B57E
 
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_B5BB	 ; If Player is mid air, jump to PRG008_B5BB
 
 	; Otherwise...
 
-	STA <Player_YVel ; Halt Player vertically
+	STA <player_lo_y_velocity ; Halt Player vertically
 
 	LDA #$01
-	STA <Player_InAir ; Mark Player as mid air
+	STA <player_is_in_air ; Mark Player as mid air
 
 	JMP PRG008_B5BB	 ; Jump to PRG008_B5BB
 
@@ -4121,16 +4121,16 @@ PRG008_B57E:
 	LDA Temp_VarNP0
 	BEQ PRG008_B59C		; If did not use "high" Y last call to Player_GetTileAndAttr, jump to PRG008_B59C
 
-	LDA <Player_Y		; Get Player Y
+	LDA <player_lo_y		; Get Player Y
 	SUB Level_VertScroll	; Make scroll relative
 	AND #$F0	 	; Nearest 16
 	ADD #$01	 	; +1
 	ADD Level_VertScroll	; Make un-relative
-	STA <Player_Y		; Set Player_Y!
+	STA <player_lo_y		; Set player_lo_y!
 
 	LDA #$00
 	ADC #$00
-	STA <Player_YHi		; Apply carry if needed
+	STA <player_hi_y		; Apply carry if needed
 	BPL PRG008_B5B2	 	; If carry >= 0, jump to PRG008_B5B2
 
 PRG008_B59C:
@@ -4139,29 +4139,29 @@ PRG008_B59C:
 	LDA Player_ReverseGrav
 	BNE Player_HitFloor_Reverse
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	AND #$0f	; Relative to tile vertical position
 	CMP #$06
 	BGE PRG008_B5BB	 ; If Player's vertical tile position >= 6, jump to PRG008_B5BB
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	AND #$0f	 ; Relative to tile vertical position
 	BEQ PRG008_B5B2	 ; If zero, jump to PRG008_B5B2
 
 	CMP #$01	 
 	BEQ PRG008_B5B0	 ; If 1, jump to PRG008_B5B0
 
-	DEC <Player_Y	 ; Player_Y--
+	DEC <player_lo_y	 ; player_lo_y--
 
 PRG008_B5B0:
-	DEC <Player_Y	 ; Player_Y--
+	DEC <player_lo_y	 ; player_lo_y--
 
 
 PRG008_B5B2:
 
 	LDA #$00	 
-	STA <Player_InAir ; Player NOT mid air
-	STA <Player_YVel  ; Halt Player vertically
+	STA <player_is_in_air ; Player NOT mid air
+	STA <player_lo_y_velocity  ; Halt Player vertically
 
 	; SB: SMW style tallying when invincible
 	LDA Player_StarInv
@@ -4176,12 +4176,12 @@ PRG008_B5BB:
 
 
 Player_HitFloor_Reverse:
-	LDA <Player_Y
+	LDA <player_lo_y
 	AND #$0f	; Relative to tile vertical position
 	CMP #$0A
 	BLT PRG008_B5BB	 ; If Player's vertical tile position < A, jump to PRG008_B5BB
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	AND #$0f	 ; Relative to tile vertical position
 	CMP #$0f
 	BEQ PRG008_B5B2	 ; If 15, jump to PRG008_B5B2
@@ -4189,10 +4189,10 @@ Player_HitFloor_Reverse:
 	CMP #$0E	 
 	BEQ PRG008_B5B0	 ; If 14, jump to PRG008_B5B02
 
-	INC <Player_Y	 ; Player_Y++
+	INC <player_lo_y	 ; player_lo_y++
 
 PRG008_B5B02:
-	INC <Player_Y	 ; Player_Y++
+	INC <player_lo_y	 ; player_lo_y++
 	JMP PRG008_B5B2
 
 
@@ -4235,13 +4235,13 @@ Level_DoCommonSpecialTiles:
  
 	; SB: This code just makes digging in sand annoying, so fuck it
  
-	;LDA <Player_X
+	;LDA <player_lo_x
 	;ADD #5
 	;AND #$0F
 	;CMP #9
 	;BGE PRG008_B604	 ; If Player is not centered enough, jump to PRG008_B604
  
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	BNE PRG008_B604	; If player is moving horizontally, jump to PRG008_B604
  
 	; Player is touching an ice block...
@@ -4607,7 +4607,7 @@ Level_DoBumpBlocks:
 	LDA #$00
 	STA Temp_VarNP0
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BPL PRG008_B6EF	 ; If Player is moving downward, jump to PRG008_B6EF
 
 PRG008_B6E4:
@@ -4684,7 +4684,7 @@ MakeRegularBlockFromBump:
 
 	LDY #$02	 ; Y = 2 (bounce left)
 
-	LDA <Player_X
+	LDA <player_lo_x
 	AND #$0f	 ; Tile relative X
 	CMP #$08
 	BLS PRG008_B747	 ; If Player was on the left half of the block, jump to PRG008_B747
@@ -4704,7 +4704,7 @@ PRG008_B74A:
 	BNE PRG008_B75A	 ; Otherwise, jump to PRG008_B75A (sets Y = 1)
 
 PRG008_B756:
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BPL PRG008_B75B	 ; If Player not moving upward, jump to PRG008_B75B (keeps Y = 0)
 
 PRG008_B75A:
@@ -4716,7 +4716,7 @@ PRG008_B75B:
 
 	LDY #$06	; Y = 6
 
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	BEQ PRG008_B766	 ; If this object is dead/empty, jump to PRG008_B766
 	INY		 ; Y++
 
@@ -4726,16 +4726,16 @@ PRG008_B766:
 	LDA <var14
 	AND #$F0
 	STA <var14
-	STA Objects_Y,Y	 ; Store into object slot
+	STA entity_lo_y,Y	 ; Store into object slot
 
 	LDA <var13
-	STA Objects_YHi,Y ; Store Y Hi into object slot
+	STA entity_hi_y,Y ; Store Y Hi into object slot
 
 	LDA <var15	
-	STA Objects_XHi,Y ; Store X Hi into object slot
+	STA entity_hi_x,Y ; Store X Hi into object slot
 
 	LDA <var16
-	STA Objects_X,Y	 ; Store X Lo into object slot
+	STA entity_lo_x,Y	 ; Store X Lo into object slot
 
 	JSR BlockBump_Init	; Init the block bump effect!
 
@@ -4822,23 +4822,23 @@ LATP_NotExSwLike:
 	BNE PRG008_B7B7	 ; If Player is already in a bounce, jump to PRG008_B7B7
 
 	LDY #$06	 ; Y = 6 (object slot index)
-	LDA Objects_State,Y	; Check this object's state
+	LDA entity_state,Y	; Check this object's state
 	ORA Level_BlkBump	; And block bump 1...
 	BEQ PRG008_B7A7	 	; If item is "dead/empty" and block bump 1 isn't in use, jump to PRG008_B7A7
 
-	LDA Objects_State+1,Y ; Check next object's state
+	LDA entity_state+1,Y ; Check next object's state
 	ORA Level_BlkBump+1  ; And block bump 2...
 	BNE PRG008_B7B7	 	; If item is NOT "dead/empty" or block bump 2 is in use, jump to PRG008_B7B7
 
 PRG008_B7A7:
 	LDY #$05	 ; Y = 5 (object slot index)
 
-	LDA Objects_Timer,Y
+	LDA entity_timer,Y
 	BEQ PRG008_B7BA	 ; If timer expired, jump to PRG008_B7BA
 
 	LDA <var16	 ; Player detect X low
 	AND #$F0	 ; Aligned to tile grid
-	CMP Objects_X,Y	 
+	CMP entity_lo_x,Y	 
 	BNE PRG008_B7BA	 ; If this object's X does not match the aligned detect X, jump to PRG008_B7BA
 
 PRG008_B7B7:
@@ -4895,7 +4895,7 @@ LATP_Flower:
 
 	LDY #$05	 ; Y = 5 (spawn a mushroom) (index into PRG001 Bouncer_PUp)
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PRG008_B7F9	 ; If Player is small, jump to PRG008_B7F9
 
 	LDY #$02	 ; Y = 2 (spawn a fire flower) (index into PRG001 Bouncer_PUp)
@@ -4910,7 +4910,7 @@ LATP_Leaf:
 
 	LDY #$05	 ; Y = 5 (spawn a mushroom) (index into PRG001 Bouncer_PUp)
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ PRG008_B807	 ; If Player is small, jump to PRG008_B807
 
 	LDY #$03	 ; Y = 3 (spawn a leaf) (index into PRG001 Bouncer_PUp)
@@ -4930,7 +4930,7 @@ LATP_ExtPowerUp:
 	LDA #$00
 	STA PUp_StarManFlash	 ; PUp_StarManFlash = 0 (don't activate star man flash)
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BEQ LATP_ExtPowerUp_Sm	 ; If Player is small, jump to LATP_ExtPowerUp_Sm
 
 
@@ -5001,7 +5001,7 @@ BustTheBrick:
 	CPX #$04
 	BEQ PRG008_B84E	 ; If on tile check index 4 (tail attack's tile), jump to PRG008_B84E (bust brick!)
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BNE PRG008_B84E	 ; If Player is not small, jump to PRG008_B84E (bust brick!)
 
 DoNotBustTheBrick:
@@ -5235,7 +5235,7 @@ Player_TailAttack_HitBlocks:
 
 	LDY #$00         ; Y = 0 (Player not flipped)
 
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	BNE PRG008_B95F	 ; If Player is horizontally flipped, jump to PRG008_B95F
 
 	LDY #$02	 ; Y = 2 (Player flipped)
@@ -5286,7 +5286,7 @@ Object_BumpOffBlocks:
 	STA Level_Tile_GndL,X	 ; Essentially store into Level_Tile_Whack
  
  	; Determine if we can bust bricks
-	LDA Objects_State, X 
+	LDA entity_state, X 
 	STA Temp_VarNP0
 
 	LDA Player_Bounce 
@@ -5309,36 +5309,36 @@ PRG008_B994:
  
 	LDX #$04	 ; X = 4 
 
-	LDA Objects_Timer,X 
+	LDA entity_timer,X 
 	BNE PRG008_B9D3	 ; If this object's timer is NOT expired, jump to PRG008_B9D3
 
 	; Object's YHi = var13 (aligns to initiator's tile detect Y Hi) 
 	LDA <var13	 
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 	; Object's Y = var14 - 16 (aligns to one tile above the initator's tile detect Y)
 	LDA <var14 
 	SUB #16 
 	BCS PRG008_B9AF 
-	DEC <Objects_YHi,X	; Apply carry if needed
+	DEC <entity_hi_y,X	; Apply carry if needed
 PRG008_B9AF: 
 	AND #$e0	 ; Keep value sane 
 	ORA #$10	 
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
  
 	; Object's XHi = var15 (aligns to initiator's tile detect X Hi) 
 	LDA <var15	 
-	STA <Objects_XHi,X
+	STA <entity_hi_x,X
 
 	; Object's X = var16 (aligns to initator's tile detect X)
 	LDA <var16 
 	AND #$e0	 ; Keep value sane 
-	STA <Objects_X,X 
+	STA <entity_lo_x,X 
 
 	SUB <Horz_Scroll 
 	TAY		 ; Y = screen scroll relative X
  
-	LDA <Objects_XHi,X 
+	LDA <entity_hi_x,X 
 	SBC <Horz_Scroll_Hi 
 	BNE PRG008_B9D3	 ; If Object is not on same screen, jump to PRG008_B9D3 (RTS)
  
@@ -5347,7 +5347,7 @@ PRG008_B9AF:
 
 	; Set object's Var2 to object detected by Player's tail attack
 	LDA Level_Tile_Whack 
-	STA Objects_Var2,X 
+	STA entity_var2,X 
 
 PRG008_B9D3:
 	RTS		 ; Return
@@ -5356,7 +5356,7 @@ PRG008_BA58_fix:
 	JMP PRG008_BA58
 
 	; "Slope correction" values; as Player transitions from one slope tile to the next,
-	; slight Player_Y correction is needed to keep him on track.  The left value pairs
+	; slight player_lo_y correction is needed to keep him on track.  The left value pairs
 	; are for when moving up a slope, the right pair is for when moving down a slope.
 	; Thus -1 to bump up to then next tile going up, or +16 to bump down when going down
 Slope_CorrectH:	.byte $FF, $00
@@ -5369,7 +5369,7 @@ PRG000_B9D8:	; <-- go back up from here
         LDA Player_IsDucking 
         BNE PRG008_B9E5  ; If Player is ducking, jump to PRG008_B9E5
 
-        LDA <Player_Suit
+        LDA <player_powerup
         BEQ PRG008_B9E5  ; If Player is small, jump to PRG008_B9E5
  
 	LDY #$06	 ; Y = $06 (Player not small, not ducking; 6 because of 3 * 2 = 6, based on X = 3 down below)
@@ -5386,7 +5386,7 @@ PRG008_B9E5:
 
 Player_TileSlope_NoRev:
 
-	LDA <Player_X
+	LDA <player_lo_x
 	AND #$0f	 ; offset within tile column
 	CMP #$08	 
 	BPL PRG008_B9F2	 ; If Player is >= halfway across current tile, jump to PRG008_B9F2
@@ -5444,7 +5444,7 @@ Player_CeilChk_NoRev:
 	BEQ PRG008_BA58_fix  ; If slope "shape" = 8 (unsloped ceiling), jump to PRG008_BA58
 
 Player_CeilChk_Done:
-	LDY <Player_InAir
+	LDY <player_is_in_air
 	BNE PRG008_BA1B	 ; If Player is mid air, jump to PRG008_BA1B
 
 	LDY Player_NoSlopeStick
@@ -5498,7 +5498,7 @@ PRG008_BA2C:
 	; X/   <-- Where 'X' is e.g. a type 4 slope, Player is pushed to its
 	; /        bottom, keep him at the ceiling and not creeping into it
 
-	LDX <Player_Suit
+	LDX <player_powerup
 	BEQ PRG008_BA38	 ; If Player is small, jump to PRG008_BA38
 
 	LDX #$01	 ; X = 1
@@ -5514,32 +5514,32 @@ PRG008_BA38:
 	BEQ Player_CeilRub_NoRev
 
 	; Subtract on reverse
-	LDA <Player_Y
+	LDA <player_lo_y
 	SUB PlayerY_HeightOff,X ; Subtract appropriate offset based on ducking or not
 	ADD #1
 	AND #$0f	 ; Tile-relative vertical position
 	STA <var1
 
-	LDA <Player_Y	 ; Add this with Player_Y
+	LDA <player_lo_y	 ; Add this with player_lo_y
 	SUB <var1
 	BCS PRG008_BA4A	 ; If no carry, jump to PRG008_BA4A
 
-	DEC <Player_YHi	 ; Otherwise, apply carry
+	DEC <player_hi_y	 ; Otherwise, apply carry
 
 	JMP PRG008_BA4A
 
 Player_CeilRub_NoRev:
-	LDA <Player_Y
+	LDA <player_lo_y
 	ADD PlayerY_HeightOff,X ; Add appropriate offset to where the top of the Player's "head" should be
 	JSR Negate	 ; Negate this value
 	AND #$0f	 ; But keep only lower 4 bits (essentially, we calculated 15 - offset)
-	ADD <Player_Y	 ; Add this with Player_Y
+	ADD <player_lo_y	 ; Add this with player_lo_y
 	BCC PRG008_BA4A	 ; If no carry, jump to PRG008_BA4A
 
-	INC <Player_YHi	 ; Otherwise, apply carry
+	INC <player_hi_y	 ; Otherwise, apply carry
 
 PRG008_BA4A:
-	STA <Player_Y	 ; Update Player_Y
+	STA <player_lo_y	 ; Update player_lo_y
 
 	JMP PRG008_BA69	 ; Jump to PRG008_BA69
 
@@ -5554,14 +5554,14 @@ PRG008_BA4F:
 	BEQ SlopeOffChk_NoRev
 
 	; Reverse slope check
-	LDA <Player_Y
+	LDA <player_lo_y
 	AND #$0f	 ; Tile row offset of Player Y
 	CMP #6
 	BGE PRG008_BA77	 ; If Player's row offset is greater-equal to 6, jump to PRG008_BA77
 	BLS SlopeOffChk_Done	; Otherwise, jump to SlopeOffChk_Done
 
 SlopeOffChk_NoRev:
-	LDA <Player_Y
+	LDA <player_lo_y
 	AND #$0f	 ; Tile row offset of Player Y
 	CMP #10
 	BLS PRG008_BA77	 ; If Player's row offset is less than 10, jump to PRG008_BA77
@@ -5577,37 +5577,37 @@ PRG008_BA58:
 	BEQ SlopeCorrect_NoRev
 
 	; Reverse gravity correction
-	LDA <Player_Y
+	LDA <player_lo_y
 	AND #$F0	 	; Tile grid aligned Y
 	ADD #15			; Base at bottom of tile
 	SUB Slope_CorrectL,Y	; Subtract appropriate offset based on Player's relative vertical position within tile
-	STA <Player_Y		; Update Player Y
+	STA <player_lo_y		; Update Player Y
 
 	; Apply carry as needed
-	LDA <Player_YHi
+	LDA <player_hi_y
 	SBC Slope_CorrectH,Y
-	STA <Player_YHi	
+	STA <player_hi_y	
 
 	JMP PRG008_BA69		; Jump to PRG008_BA69
 
 SlopeCorrect_NoRev:
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	AND #$F0	 	; Tile grid aligned Y
 	ADD Slope_CorrectL,Y	; Add appropriate offset based on Player's relative vertical position within tile
-	STA <Player_Y		; Update Player Y
+	STA <player_lo_y		; Update Player Y
 
 	; Apply carry as needed
-	LDA <Player_YHi
+	LDA <player_hi_y
 	ADC Slope_CorrectH,Y
-	STA <Player_YHi	
+	STA <player_hi_y	
 
 PRG008_BA69:
 
 	; Get proper base offset into TileAttrAndQuad_OffsSloped for checking at Player's feet or head
 	LDA Slope_ChkFeetOrHead,X	 ; X = 0 for floor, 1 for ceiling
 
-	LDY <Player_Suit
+	LDY <player_powerup
 	BEQ PRG008_BA73	 ; If Player is small, jump to PRG008_BA73
 
 	ADD #(TileAttrAndQuad_OffsSloped_Sm - TileAttrAndQuad_OffsSloped)	; Otherwise, add 16 to height at this point on slope (NOTE: Ducking included!)
@@ -5638,7 +5638,7 @@ PRG008_BA77:
 
 	LDX #$00	 ; X = 0
 	LDY #$01	 ; Y = 0
-	LDA <Player_X	
+	LDA <player_lo_x	
 	AND #$0f	 
 	CMP #$08
 	BGS PRG008_BA92	 ; If Player is more than halfway across the tile, jump to PRG008_BA92
@@ -5649,27 +5649,27 @@ PRG008_BA77:
 
 PRG008_BA92:
 	LDA PRG008_B3B0,X ; Get appropriate offset
-	ADD <Player_X	 ; Add Player_X
+	ADD <player_lo_x	 ; Add player_lo_x
 	AND #$0f	 ; Make tile relative
 	BEQ PRG008_BABC	 ; If result = 0, jump to PRG008_BABC
 
 	TYA
 	BPL PRG008_BAA1	 ; If Y is not -1, jump to PRG008_BAA1
 
-	DEC <Player_XHi	 ; Otherwise, Player_XHi--
+	DEC <player_hi_x	 ; Otherwise, player_hi_x--
 
 PRG008_BAA1:
-	ADD <Player_X	 ; Add Player_X to offset
-	STA <Player_X	 ; Update Player_X
+	ADD <player_lo_x	 ; Add player_lo_x to offset
+	STA <player_lo_x	 ; Update player_lo_x
 
 	BCC PRG008_BAAA	 ; If no carry, jump to PRG008_BAAA
 
-	INC <Player_XHi	 ; Otherwise, apply carry
+	INC <player_hi_x	 ; Otherwise, apply carry
 
 PRG008_BAAA:
 	INY		 ; Y++ (0 or 1, depending)
 
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	BPL PRG008_BAB1	 ; If Player is moving rightward, jump to PRG008_BAB1
 
 	DEY		 
@@ -5680,7 +5680,7 @@ PRG008_BAB1:
 	BNE PRG008_BABC	 ; If Y <> 0, jump to PRG008_BAB1
 
 	; Player hit wall; stop!
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 	STA Player_Slide
 	INC Player_WalkAnimTicks
 
@@ -5697,10 +5697,10 @@ PRG008_BABC:
 
 PRG008_BAC7:
 
-	LDA <Player_X		 
+	LDA <player_lo_x		 
 	ADD TileAttrAndQuad_OffsSloped+1	; SB: Reverse gravity not needed here, though this is an evil hardcode
 	AND #$0f	 
-	STA <var1		 ; var1 = (Player_X + [TileAttrAndQuad_OffsSloped+1]) & $0F (offset locked across tile)
+	STA <var1		 ; var1 = (player_lo_x + [TileAttrAndQuad_OffsSloped+1]) & $0F (offset locked across tile)
 
 	LDA Level_Tile_Slope,X	; will be slope at feet or head, depending on 'X'
 	TAY		; Y = slope "shape" index
@@ -5742,7 +5742,7 @@ PRG008_BAF4:
 
 	; Slope tile at head is a BG tile...
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_BB1A	 ; If Player is mid air, jump to PRG008_BB1A (RTS)
 
 	; This has to do with Player walking off an edge (e.g. cliff-like) on a sloped level
@@ -5761,7 +5761,7 @@ PRG008_BAF4:
 
 Player_SlopeEdge_NoRev:
 
-	LDA <Player_X	
+	LDA <player_lo_x	
 	AND #$0f	
 	CMP #$08	
 	BGS PRG008_BB0D	 ; If Player is on right half of current tile, jump to PRG008_BB0D
@@ -5776,9 +5776,9 @@ PRG008_BB0D:
 	BEQ PRG008_BB1A	 ; If slope = 3, jump to PRG008_BB1A (RTS)
 
 	LDA #$00
-	STA <Player_YVel	 ; Player_YVel = 0 (stop vertical movement)
+	STA <player_lo_y_velocity	 ; player_lo_y_velocity = 0 (stop vertical movement)
 
-	INC <Player_InAir	 ; Set Player in mid air!
+	INC <player_is_in_air	 ; Set Player in mid air!
 
 PRG008_BB1A:
 	RTS		 ; Return
@@ -5787,7 +5787,7 @@ PRG008_BB1B:
 
 	; Player head ceiling tile check, not BG tile
 
-	LDX <Player_Suit
+	LDX <player_powerup
 	BEQ PRG008_BB27	 ; If Player is small, jump to PRG008_BB27
 
 	LDX #$01	 ; X = 1
@@ -5810,7 +5810,7 @@ PRG008_BB27:
 	AND #$0F			; Use "floor" part
 	STA <var2		; -> var2 
 
-	LDA <Player_Y		 ; Get Player Y
+	LDA <player_lo_y		 ; Get Player Y
 	SUB PlayerY_HeightOff,X	 ; Subtract appropriate offset based on ducking or not
 	AND #$0f	 	; Make Y relative to current tile
 	STA <var1		 ; -> var1
@@ -5821,7 +5821,7 @@ PRG008_BB27:
 	BPL Player_CeilSlope_Done	; Otherwise, jump to Player_CeilSlope_Done
 
 Player_CeilSlope_NoRev:
-	LDA <Player_Y		 ; Get Player Y
+	LDA <player_lo_y		 ; Get Player Y
 	ADD PlayerY_HeightOff,X	 ; Add appropriate offset based on ducking or not
 	AND #$0f	 	; Make Y relative to current tile
 	STA <var1		 ; -> var1
@@ -5842,8 +5842,8 @@ Player_CeilSlope_Done:
 
 	PHA		 ; Save difference
 
-	LDA <Player_YVel
-	BPL PRG008_BB52	 ; If Player_YVel >= 0 (Player moving downward), jump to PRG008_BB52
+	LDA <player_lo_y_velocity
+	BPL PRG008_BB52	 ; If player_lo_y_velocity >= 0 (Player moving downward), jump to PRG008_BB52
 
 	LDA Level_AScrlVVel	 ; Get autoscroll vertical velocity
 	JSR Negate	 ; Negate it
@@ -5852,7 +5852,7 @@ Player_CeilSlope_Done:
 	LDA #$00	 ; Otherwise, just set to zero
 
 PRG008_BB50:
-	STA <Player_YVel ; Store as Player's Y velocity
+	STA <player_lo_y_velocity ; Store as Player's Y velocity
 
 PRG008_BB52:
 
@@ -5871,12 +5871,12 @@ PRG008_BB5F:
 	
 	PLA		 ; Restore difference
 
-	ADD <Player_Y	 
-	STA <Player_Y	 ; Add to Player_Y
+	ADD <player_lo_y	 
+	STA <player_lo_y	 ; Add to player_lo_y
 
 	BCC PRG008_BB68	 ; If no carry, jump to PRG008_BB68 (RTS)
 	
-	INC <Player_YHi	 ; Otherwise, apply carry!
+	INC <player_hi_y	 ; Otherwise, apply carry!
 
 PRG008_BB68:
 
@@ -5890,13 +5890,13 @@ Player_CeilSlopeOffset_Rev:
 	PLA		 ; Restore difference
 	STA <var1	; -> var1
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	SUB <var1
-	STA <Player_Y	 ; Add to Player_Y
+	STA <player_lo_y	 ; Add to player_lo_y
 
 	BCS Player_CeilSlopeOffset_NC	 ; If no carry, jump to Player_CeilSlopeOffset_NC (RTS)
 
-	DEC <Player_YHi	 ; Otherwise, apply carry!
+	DEC <player_hi_y	 ; Otherwise, apply carry!
 
 Player_CeilSlopeOffset_NC:
 
@@ -5909,15 +5909,15 @@ PRG008_BB69:
 
 	LDX <var16	 ; X = var16 (effect on velocity by this slope)
 
-	LDA <Player_Y
+	LDA <player_lo_y
 	STA <var14
-	LDA <Player_YHi
+	LDA <player_hi_y
 	STA <var13
 
 	LDA Level_32PPSlopeFlag
 	BEQ L32PP_NoFlag
 
-	; Use adjusted Player_Y
+	; Use adjusted player_lo_y
 	LDA <var14
 	SUB <Vert_Scroll	; Make relative to Vertical Scroll
 	STA <var14
@@ -5927,12 +5927,12 @@ PRG008_BB69:
 
 L32PP_NoFlag:
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BEQ PRG008_BB7E	 ; If Player is NOT mid air, jump to PRG008_BB7E
 
 	; Player is mid air...
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	CMP #-$1c
 	BLS Player_FloorSlopeHChk_RTS	 ; If Player Y velocity < -$1C, jump to Player_FloorSlopeHChk_RTS (RTS)
 
@@ -5965,8 +5965,8 @@ Player_FloorSlopeHChk_NoRev:
 
 PRG008_BB7E:
 	LDA #$00
-	STA <Player_InAir ; Player is no longer mid air!
-	STA <Player_YVel  ; Player hit solid!
+	STA <player_is_in_air ; Player is no longer mid air!
+	STA <player_lo_y_velocity  ; Player hit solid!
 	STA Kill_Tally	  ; Reset Kill_Tally
 
 	; Ground slope impact
@@ -6009,7 +6009,7 @@ PRG008_BB9A:
 	BEQ PRG008_BBA1	 ; If none, jump to PRG008_BBA1
 
 	; Otherwise...
-	EOR <Player_XVel 
+	EOR <player_lo_x_velocity 
 	AND #$80	 ; Sort of aboslute
 
 PRG008_BBA1:
@@ -6046,7 +6046,7 @@ PRG008_BBBF:
 	TXA		 ; Effect on velocity -> 'A'
 	BEQ PRG008_BC0D	 ; If no effect (flat ground), jump to PRG008_BC0D
 
-	LDY <Player_Suit
+	LDY <player_powerup
 	LDA PowerUp_Ability,Y
 	AND #$02	 
 	BNE PRG008_BC0D	 ; If the Player's suit CANNOT slide on slopes, jump to PRG008_BC0D
@@ -6093,20 +6093,20 @@ PRG008_BBFD:
 
 PRG008_BC08:
 	LDA Player_Slide
-	STA <Player_XVel ; Player_XVel = Player_Slide
+	STA <player_lo_x_velocity ; player_lo_x_velocity = Player_Slide
 
 PRG008_BC0D:
-	LDA <Player_XVel
-	BEQ PRG008_BC14	 ; If Player_XVel = 0 (came to a stop), jump to PRG008_BC14 (RTS)
+	LDA <player_lo_x_velocity
+	BEQ PRG008_BC14	 ; If player_lo_x_velocity = 0 (came to a stop), jump to PRG008_BC14 (RTS)
 
 	STX Player_SlideRate	 ; Otherwise, update Player_SlideRate with velocity effect value
 
 PRG008_BC14:
 
 	LDA <var14
-	STA <Player_Y
+	STA <player_lo_y
 	LDA <var13
-	STA <Player_YHi
+	STA <player_hi_y
 
 	LDA Level_32PPSlopeFlag
 	BEQ L32PP_NoSlope
@@ -6115,10 +6115,10 @@ PRG008_BC14:
 	INC <var14		; Hack way to keep Player from bumping around when maze is moving upward
 	LDA <var14
 	ADD <Vert_Scroll
-	STA <Player_Y
+	STA <player_lo_y
 	LDA <var13
 	ADC #0
-	STA <Player_YHi
+	STA <player_hi_y
 
 	LDA #0
 	STA Level_32PPSlopeFlag
@@ -6184,7 +6184,7 @@ PipeTile_EnableByTileset:
 	.byte %10000000	; 13 Underground
 
 PRG008_BC43:
-	.byte $08, $04, $04	; Offset applied to Player_X when: in air or level is sloped, Player is NOT small, Player is small
+	.byte $08, $04, $04	; Offset applied to player_lo_x when: in air or level is sloped, Player is NOT small, Player is small
 
 Pipe_PadDirForEnter:	
 	.byte button_right_mask, button_left_mask	; What to press to enter a horizontal pipe; pad right and left, respectively
@@ -6209,7 +6209,7 @@ Player_DoSpecialTiles:
 	LDA PipeTile_EnableByTileset,Y
 	STA <var16
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_BCAA	 	; If Player is mid air, jump to PRG008_BCAA
 
 	LDA Level_Tile_InFL	 ; Get tile near head...
@@ -6240,7 +6240,7 @@ PRG008_BC79:
 PRG008_BC87:
 	LDX #$00	 ; X = 0 
 
-	LDA <Player_X
+	LDA <player_lo_x
 	AND #$0f	
 	CMP #$08	
 	BLS PRG008_BC92	 ; If Player is on left half of tile, jump to PRG008_BC92
@@ -6278,7 +6278,7 @@ PRG008_BCAA:
 	LDX #$02	 ; X = 2
 	LDA Level_Tile_GndL	 
 
-	LDY <Player_InAir
+	LDY <player_is_in_air
 	BEQ PRG008_BCC4	 ; If Player is NOT mid air, jump to PRG008_BCC4
 
 	LDY Player_HitCeiling
@@ -6361,23 +6361,23 @@ PRG008_BCFA:
 
 	LDY #$00	 ; Y = 0 (Player is mid-air or level is sloped)
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	ORA Level_SlopeEn
 	BNE PRG008_BD1F	 ; If Player is mid air or this is a sloping level, jump to PRG008_BD1F
 
 	INY		 ; Y = 1 (Player is NOT small)
-	LDA <Player_Suit
+	LDA <player_powerup
 	BNE PRG008_BD1F	 ; If Player is NOT small, jump to PRG008_BD1F
 
 	INY		 ; Y = 2 (Player is small)
 
 PRG008_BD1F:
-	LDA <Player_X	
+	LDA <player_lo_x	
 	AND #$0f	
 	PHA		 ; Save Player's relative X across tile
 
 	ADD PRG008_BC43,Y ; Add appropriate offset
-	AND #$10	 ; Check if on "odd" tile (only true on Player_X 16, 48, 80, etc.) AKA right tile
+	AND #$10	 ; Check if on "odd" tile (only true on player_lo_x 16, 48, 80, etc.) AKA right tile
 	BNE PRG008_BD30	 ; If so, jump to PRG008_BD30
 
 	PLA		 ; Restore Player's relative X across tile
@@ -6389,7 +6389,7 @@ PRG008_BD30:
 	ADD <var2	 ; 0 or 16, left or right tile
 	SUB #3	 
 	CMP #10
-	BGE PRG008_BD4B	 ; If Player_X >= 10 after subtracting 3 (??), jump to PRG008_BD4B
+	BGE PRG008_BD4B	 ; If player_lo_x >= 10 after subtracting 3 (??), jump to PRG008_BD4B
 
 	LDA <var1	 ; Get pipe type
 	LSR A		 
@@ -6407,7 +6407,7 @@ PRG008_BD30:
 PRG008_BD4B:
 	LDY Level_TilesetIdx
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_BD73	 ; If Player is mid air, jump to PRG008_BD73
 
 	LDA Level_PSwitchCnt
@@ -6524,8 +6524,8 @@ PRG008_BDB4:
 	STA Player_Slippery	 ; Player_Slippery = 0 (default ground not slippery)
 
 	; If Player is in penguin suit, never slippery!
-	LDA <Player_Suit
-	CMP #PLAYERSUIT_PENGUIN
+	LDA <player_powerup
+	CMP #powerup_penguin
 	BEQ PRG008_BE31
 
 	LDA Level_SlopeEn
@@ -6549,7 +6549,7 @@ Icy_NotSlopes:
 	CMP #11
 	BNE PRG008_BE31	 ; If not in an ice level, jump to PRG008_BE31
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_BE31	 ; If Player is in air, jump to PRG008_BE31
 
 	LDX #$01	 ; X = 1
@@ -6639,13 +6639,13 @@ PRG008_BE31:
 	; To make Player fall, do everything in our power to make sure
 	; the Player doesn't get a chance to jump or anything else :)
 	;LDA #$00
-	;STA <Player_YVel	 ; Halt Player vertically 
+	;STA <player_lo_y_velocity	 ; Halt Player vertically 
 
-	;LDA <Player_Y
+	;LDA <player_lo_y
 	;ADD #$06
-	;STA <Player_Y		; Force Player down by 6 pixels (fall)
+	;STA <player_lo_y		; Force Player down by 6 pixels (fall)
 
-	;INC <Player_InAir	 ; Set Player as in air
+	;INC <player_is_in_air	 ; Set Player as in air
 
 	; Don't register 'A' button
 	;LDA <buttons_clicked
@@ -6660,7 +6660,7 @@ PRG008_BE31:
 	LDA QuicksandEnable,Y
 	BEQ PRG008_BEE5	 ; If value is zero, jump to PRG008_BEE5
 
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI PRG008_BEE5	 ; If Player is moving upward, jump to PRG008_BEE5
 
 	LDX #$03	 ; X = 3 
@@ -6690,14 +6690,14 @@ PRG008_BE9D:
 	LDA Player_SandSink
 	BNE PRG008_BEAC	 	; If Player was already sinking in quicksand, jump to PRG008_BEAC
 
-	LDA <Player_Y		 ; Get Player_Y at initial quicksand hit only...
+	LDA <player_lo_y		 ; Get player_lo_y at initial quicksand hit only...
 
 PRG008_BEAC:
 	AND #%11110000	 	; Keep only upper 4 bits
 	STA Player_SandSink	 ; Set as Player_SandSink value
 
-	LDA <Player_Y	
-	SUB Player_SandSink	 ; Get difference between Player_Y and top of quicksand
+	LDA <player_lo_y	
+	SUB Player_SandSink	 ; Get difference between player_lo_y and top of quicksand
 
 	LDY #-$20	 ; Y = -$20 (escape jump vel)
 	TAX		 ; difference -> 'X'
@@ -6725,7 +6725,7 @@ PRG008_BED2:
 	; Player is trying to escape!  Play jump sound!
 	LDA #SND_PLAYERJUMP	
 	
-	LDX <Player_Suit
+	LDX <player_powerup
 	BNE PlayerQSJump_Big
 
 	; Small Mario jump
@@ -6736,16 +6736,16 @@ PlayerQSJump_Big:
 
 PRG008_BEDA:
 
-	STY <Player_YVel ; Set Player's Y velocity
+	STY <player_lo_y_velocity ; Set Player's Y velocity
 
 	; Limit Player's horizontal movement
-	;LDA <Player_XVel
+	;LDA <player_lo_x_velocity
 	;ASL A		
-	;ROR <Player_XVel
+	;ROR <player_lo_x_velocity
 	;BPL PRG008_BEE5
-	;INC <Player_XVel
+	;INC <player_lo_x_velocity
 	
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	BPL SandSpeedChk_NotNeg
 
 	; Absolute value...
@@ -6756,9 +6756,9 @@ SandSpeedChk_NotNeg:
 	BLT PRG008_BEE5		; If Player isn't moving too fast in sand, jump to PRG008_BEE5
 	
 	; Else, halve it
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	ASR
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 
 PRG008_BEE5:
 
@@ -6768,7 +6768,7 @@ PRG008_BEE5:
 
 
 PipeMove_SetPlayerFrame:
-	LDY <Player_Suit
+	LDY <player_powerup
 	BEQ PRG008_BF0A	 ; If small, jump to PRG008_BF0A
 
 	LDY #$02	 ; Otherwise, Y = 2
@@ -6781,7 +6781,7 @@ PRG008_BF0A:
 
 PRG008_BF10:
 	LDA PipeMove_Frame,Y ; Get appropriate pipe traversal frame
-	STA <Player_Frame	  ; Store as Player frame
+	STA <player_animation_frame	  ; Store as Player frame
 
 	; ******************** FIXME ***********************
 	; Need face-forward Yoshi frame drawn as overlay!!
@@ -6818,19 +6818,19 @@ Player_ApplyXVelocity:
 	LDX #$00	; X = 0
 	LDY #PLAYER_MAXSPEED	; Y = PLAYER_MAXSPEED
 
-	LDA <Player_XVel
-	BPL PRG008_BFAC	 ; If Player_XVel >= 0, jump to Player_ApplyXVelocity 
+	LDA <player_lo_x_velocity
+	BPL PRG008_BFAC	 ; If player_lo_x_velocity >= 0, jump to Player_ApplyXVelocity 
 
 	LDY #-PLAYER_MAXSPEED	 ; Y = -PLAYER_MAXSPEED
 
-	; Negate Player_XVel (get absolute value)
+	; Negate player_lo_x_velocity (get absolute value)
 	NEG
 
 PRG008_BFAC:
-	STA <var16		; Store absolute value Player_XVel -> Temp_Var166
+	STA <var16		; Store absolute value player_lo_x_velocity -> Temp_Var166
 	CMP #PLAYER_MAXSPEED
 	BLS Player_ApplyVelocity ; If we haven't hit the PLAYER_MAXSPEED yet, apply it!
-	STY <Player_XVel	 ; Otherwise, cap at max speed!
+	STY <player_lo_x_velocity	 ; Otherwise, cap at max speed!
 	JMP Player_ApplyVelocity
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -6840,7 +6840,7 @@ PRG008_BFAC:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; SB: Applying reverse velocity for reverse gravity
 Player_ApplyRevVelocity:
-	LDA <Player_XVel,X
+	LDA <player_lo_x_velocity,X
 	NEG
 	BNE Player_ApplyVelocity_Cont
 
@@ -6848,7 +6848,7 @@ Player_ApplyRevVelocity:
 Player_ApplyVelocity:
 	; X may specify offset to YVel, or else be zero
 
-	LDA <Player_XVel,X	; Get velocity
+	LDA <player_lo_x_velocity,X	; Get velocity
 
 Player_ApplyVelocity_Cont:
 	CPX #$00	 
@@ -6896,14 +6896,14 @@ PRG008_BFD3:
 	STA Player_XVelFrac,X
 
 	; Apply velocity to X if there's carry
-	LDA <Player_X,X
+	LDA <player_lo_x,X
 	ADC <var11
-	STA <Player_X,X
+	STA <player_lo_x,X
 
 	; Apply velocity to XHi if there's carry
-	LDA <Player_XHi,X
+	LDA <player_hi_x,X
 	ADC <var13	
-	STA <Player_XHi,X
+	STA <player_hi_x,X
 
 	RTS		 ; Return
 
@@ -6915,33 +6915,33 @@ PRG008_BFD3:
 ; faster than the cap value (FALLRATE_MAX)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_ApplyYVelocity:
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	BMI PRG008_BFF9	 ; If PRG008_BFF9 < 0, jump to PRG008_BFF9
 
 	LDA <buttons_held
   	AND #button_a_mask
   	BNE SlowMaxYVel
 
-  	LDA <Player_YVel
+  	LDA <player_lo_y_velocity
 	CMP #FALLRATE_MAX
 	BLS PRG008_BFF9	 ; If PRG008_BFF9 < FALLRATE_MAX, jump to PRG008_BFF9
 
 	; Cap Y velocity at FALLRATE_MAX
 	LDA #FALLRATE_MAX
-	STA <Player_YVel ; Player_YVel = FALLRATE_MAX
+	STA <player_lo_y_velocity ; player_lo_y_velocity = FALLRATE_MAX
 	BNE PRG008_BFF9 	; Jump always
 
 SlowMaxYVel:
-	LDA <Player_YVel
+	LDA <player_lo_y_velocity
 	CMP #FALLRATE_SLOW
 	BLS PRG008_BFF9	 ; If PRG008_BFF9 < FALLRATE_MAX, jump to PRG008_BFF9
 
 	; Cap Y velocity at FALLRATE_MAX
 	LDA #FALLRATE_SLOW
-	STA <Player_YVel ; Player_YVel = FALLRATE_MAX
+	STA <player_lo_y_velocity ; player_lo_y_velocity = FALLRATE_MAX
 
 PRG008_BFF9:
-	LDX #(Player_YVel - Player_XVel) ; Do the Y velocity
+	LDX #(player_lo_y_velocity - player_lo_x_velocity) ; Do the Y velocity
 
 	LDA Level_PipeMove
 	BNE Player_ApplyVelocity	; If moving through pipe, always apply "normal" gravity (otherwise screws up pipe motion)

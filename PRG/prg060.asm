@@ -1,7 +1,7 @@
 Player_FellAndDied60:
 	; Fell in a pit and died
-	LDA #PLAYERSUIT_SMALL
-	STA <Player_Suit ; Player_Suit = PLAYERSUIT_SMALL
+	LDA #powerup_none
+	STA <player_powerup ; player_powerup = powerup_none
 
 	JSR_THUNKA 61, Player_Die61  ; Kill the player
 
@@ -46,13 +46,13 @@ Level_QueueChangeBlock60:
 
 Player_DoClimbAnim60:
 	; SB: Supporting "behind the scenes" alternate climb frame; now it's 2 different climb frames
-	LDA <Player_Suit
+	LDA <player_powerup
 	ASL A				; x 2
 	ADD Player_Behind	; Assuming this will only ever be 0/1
 	TAY		; -> 'Y'
 	
 	LDA Player_ClimbFrame,Y	 ; Get appropriate climbing frame
-	STA <Player_Frame	 ; Store into Player_Frame
+	STA <player_animation_frame	 ; Store into player_animation_frame
 
 	LDA <buttons_held
 	AND #(button_up_mask | button_down_mask | button_left_mask | button_right_mask)
@@ -64,7 +64,7 @@ Player_DoClimbAnim60:
 	ASL A	
 	ASL A	
 	ASL A	
-	STA <Player_FlipBits
+	STA <player_flipped_animation
 PRG060_B035:
 	RTS		 ; Return
 
@@ -72,7 +72,7 @@ PRG060_B035:
 SpawnKuriboAtPlayer:
 	LDX #$04	 
 PRG060_B0B7:
-	LDA Objects_State,X
+	LDA entity_state,X
 	BEQ PRG060_B0C1	 ; If this object slot is dead/empty, jump to PRG002_B0C1
 	DEX		 ; X--
 	BPL PRG060_B0B7	 ; While X >= 0, loop!
@@ -84,59 +84,59 @@ PRG060_B0C1:
 
 	; Start Shoe off in normal state
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 
 	; It's a Goomba
 	LDA #OBJ_KURIBO
-	STA Level_ObjectID,X
+	STA entity_type,X
 
 	; Palette select 3
 	LDA #SPR_PAL2
 	STA Objects_SprAttr,X
 
 	; Set equal to players's X
-	LDA Player_X
-	STA <Objects_X,X
+	LDA player_lo_x
+	STA <entity_lo_x,X
 
 	; Set equal to players's X Hi
-	LDA Player_XHi
-	STA <Objects_XHi,X
+	LDA player_hi_x
+	STA <entity_hi_x,X
 
 	; Set 16 pixels below the players's Y
-	LDA Player_Y
+	LDA player_lo_y
 	ADD #16
-	STA <Objects_Y,X
-	LDA Player_YHi
+	STA <entity_lo_y,X
+	LDA player_hi_y
 	ADC #$00
-	STA <Objects_YHi,X
+	STA <entity_hi_y,X
 
 	; If negative X velocity, flip Kuribo
-	LDA Player_XVel
+	LDA player_lo_x_velocity
 	LSR A	
 	AND #SPR_HFLIP
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 
 	; Remove the Goomba from the Kuribo
-	INC <Objects_Var4,X
+	INC <entity_var4,X
 
 	; Set player above the boot.
-	LDA <Player_Y
+	LDA <player_lo_y
 	SUB #08
-	STA <Player_Y
-	LDA <Player_YHi
+	STA <player_lo_y
+	LDA <player_hi_y
 	SBC #0
-	STA <Player_YHi
+	STA <player_hi_y
 
 	LDA #$01
-	STA <Player_InAir
+	STA <player_is_in_air
 
 	; Boost the player off of the kuribo.
 	LDA #-$30
-	STA <Player_YVel
+	STA <player_lo_y_velocity
 
 	; Kuribo's bump Y velocity
 	LDA #$20
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 
 PRG060_B0FB:
 	RTS		 ; Return
@@ -158,7 +158,7 @@ Move_Kuribo60:
 	STA Player_Kuribo
 
 	LDA #-$30
-	STA <Player_YVel
+	STA <player_lo_y_velocity
 
 	JSR SpawnKuriboAtPlayer
 	RTS
@@ -169,7 +169,7 @@ DoNotExistKuribo:
 	JSR Player_GroundHControl ; Do Player left/right input control
 	JSR Player_JumpFlyFlutter ; Do Player jump, fly, flutter wag
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_AAFF	 ; If Player is mid air, jump to PRG008_AAFF
 
 	STA Player_KuriboDir	 ; Clear Player_KuriboDir
@@ -178,17 +178,17 @@ PRG008_AAFF:
 	LDA Player_KuriboDir
 	BNE PRG008_AB17	 ; If Kuribo's shoe is moving, jump to PRG008_AB17
 
-	LDA <Player_InAir
+	LDA <player_is_in_air
 	BNE PRG008_AB25	 ; If Player is mid air, jump to PRG008_AB25
 
 	LDA <buttons_held
 	AND #(button_left_mask | button_right_mask)
 	STA Player_KuriboDir	 ; Store left/right pad input -> Player_KuriboDir
 	BEQ PRG008_AB25	 	; If Player is not pressing left or right, jump to PRG008_AB25
-	INC <Player_InAir	 ; Flag as in air (Kuribo's shoe bounces along)
+	INC <player_is_in_air	 ; Flag as in air (Kuribo's shoe bounces along)
 
 	LDY #-$20
-	STY <Player_YVel	 ; Player_YVel = -$20
+	STY <player_lo_y_velocity	 ; player_lo_y_velocity = -$20
 
 PRG008_AB17:
 	LDA <buttons_clicked
@@ -198,10 +198,10 @@ PRG008_AB17:
 	STA Player_KuriboDir	 ; Player_KuriboDir = 0
 
 	LDY Player_RootJumpVel	 ; Get initial jump velocity
-	STY <Player_YVel	 ; Store into Y velocity
+	STY <player_lo_y_velocity	 ; Store into Y velocity
 
 PRG008_AB25:
-	LDY <Player_Suit
+	LDY <player_powerup
 	BEQ PRG008_AB2B	 ; If Player is small, jump to PRG008_AB2B
 
 	LDY #$01	 ; Otherwise, Y = 1
@@ -211,13 +211,13 @@ PRG008_AB2B:
 	; Y = 0 if small, 1 otherwise
 
 	LDA Player_KuriboFrame,Y	; Get appropriate Kuribo's shoe frame
-	STA <Player_Frame		; Store as active Player frame
+	STA <player_animation_frame		; Store as active Player frame
 
 	LDA <Counter_1
 	AND #$08	
 	BEQ PRG008_AB38	 	; Every 8 ticks, jump to PRG008_AB38
 
-	INC <Player_Frame	; Player_Frame++
+	INC <player_animation_frame	; player_animation_frame++
 
 PRG008_AB38:
 	RTS		 ; Return

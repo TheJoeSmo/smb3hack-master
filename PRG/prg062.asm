@@ -1512,12 +1512,12 @@ PRG062_8968:
 	DEY		 ; Y--
 	BPL PRG062_8968	 ; While Y >= 0, loop!
 
-	; Clears $80 bytes starting at Player_XHi ($75, gameplay context)
+	; Clears $80 bytes starting at player_hi_x ($75, gameplay context)
 	LDY #$80	 ; Y = $80
 	LDA #$00	 ; A = 0
 	STA LevelJctBQ_Flag	 ; LevelJctBQ_Flag = 0 
 PRG062_8975: 
-	STA Player_XHi,Y
+	STA player_hi_x,Y
 	DEY		 ; Y--
 	BNE PRG062_8975	 ; While Y >= 0, loop!
 
@@ -2635,7 +2635,7 @@ PRG062_8F31:
 	LDX Player_Current	 ; X = Player_Current
 
 	; Transfer Player's current power up to the World Map counterpart
-	LDA <Player_Suit
+	LDA <player_powerup
 	STA World_Map_Power,X
 
 	; Level_GetWandState = 0
@@ -4439,13 +4439,13 @@ LevelLoad:	; $97B7
 
 	; Set up the vertical starting position!
 	LDA GamePlay_YHiStart,X
-	STA <Player_YHi		; Player_YHi = GamePlay_YHiStart[X]
+	STA <player_hi_y		; player_hi_y = GamePlay_YHiStart[X]
 
 	LDA GamePlay_YStart,X
-	STA <Player_Y		; Player_Y = GamePlay_YStart[X]
+	STA <player_lo_y		; player_lo_y = GamePlay_YStart[X]
 
 	LDA #$00	 
-	STA <Player_XHi		; Player_XHi = 0
+	STA <player_hi_x		; player_hi_x = 0
 
 	; Set the starting vertical position
 	LDA GamePlay_VStart,X
@@ -4481,7 +4481,7 @@ PRG062_980D:
 	ORA #%00001000		; forces minimum value of 8
 	STA PalSel_Obj_Colors
 
-	; Next 2 bits sets Level_SelXStart (sets Player_X after level starts)
+	; Next 2 bits sets Level_SelXStart (sets player_lo_x after level starts)
 	LDA [Level_LayPtr_AddrL],Y
 	AND #%01100000
 	LSR A		
@@ -4555,7 +4555,7 @@ PRG062_9864:
 	; Start at bottom of vertical level
 	LDA Level_SizeOrig
 	STA <Vert_Scroll_Hi
-	STA <Player_YHi		; Player's Y High is the same!
+	STA <player_hi_y		; Player's Y High is the same!
 	JMP PRG062_9893	
 
 
@@ -4563,12 +4563,12 @@ PRG062_987C:
 	LDA #$00	
 	STA Level_SizeOrig	; ?? Why?
 
-	LDA <Player_YHi	
+	LDA <player_hi_y	
 	BEQ PRG062_988E	 	; If the Player Y high is zero, jump to PRG062_988E
 
 	LDA <Level_Width
 	STA <Vert_Scroll_Hi
-	STA <Player_YHi	
+	STA <player_hi_y	
 	STA Level_SizeOrig
 
 PRG062_988E:
@@ -5958,13 +5958,13 @@ PRG062_9E6C:
 	; Translates the Player position into appropriate "high" value
 	; as Vertical describes it ($0(00), $0(F0), $1(E0), ...)
 LevelJct_GetVScreenH:
-	; Y = Player_YHi
-	; A = Player_Y
+	; Y = player_hi_y
+	; A = player_lo_y
 
 	CPY #$00
 	BLS PRG062_9E8E	 ; If Y < 0 (i.e. if the Player Y High is less than zero, which shouldn't happen!), jump to PRG062_9E8E (RTS)
 
-	ADD PRG062_9E6C,Y	; Player_Y += Player_YHi[Y]
+	ADD PRG062_9E6C,Y	; player_lo_y += player_hi_y[Y]
 	BCS PRG062_9E8A	 	; If carry set (overflow occurred), jump to PRG062_9E8A
 
 	CMP #$f0	
@@ -5982,8 +5982,8 @@ PRG062_9E8E:
 	; Something similar to LevelJct_GetVScreenH, but I'm 
 	; not quite following the purpose
 LevelJct_GetVScreenH2:
-	; A = Player_Y
-	; Y = Player_YHi
+	; A = player_lo_y
+	; Y = player_hi_y
 	CPY #$00
 	BLS PRG062_9E9A	 ; If YHi < 0 (shouldn't happen?), jump to PRG062_9E9A
 
@@ -6144,15 +6144,15 @@ Level_SetupCPStart:
 
 	; Set X pixel start for Player
 	LDA LevCP_X,X
-	STA <Player_X
+	STA <player_lo_x
 	LDA LevCP_XHi,X
-	STA <Player_XHi
+	STA <player_hi_x
 		
 	; Set Y pixel start for Player
 	LDA LevCP_Y,X
-	STA <Player_Y
+	STA <player_lo_y
 	LDA LevCP_YHi,X
-	STA <Player_YHi
+	STA <player_hi_y
 
 	; Scroll position settings (FIXME VERTICAL)
 
@@ -6160,10 +6160,10 @@ Level_SetupCPStart:
 	BEQ LevCP_OneScreenNoX	; On single screen level, don't set horizontal
 
 	; Set horizontal scroll as Player X - $80
-	LDA <Player_X
+	LDA <player_lo_x
 	SUB #$80
 	STA <Horz_Scroll
-	LDA <Player_XHi
+	LDA <player_hi_x
 	SBC #0
 	STA <Horz_Scroll_Hi
 
@@ -6171,10 +6171,10 @@ LevCP_OneScreenNoX:
 	; Vertical scroll is tightly bound and therefore tricky...
 
 	; Set vertical scroll as Player Y - 34
-	LDA <Player_Y
+	LDA <player_lo_y
 	SUB #34
 	STA <Vert_Scroll
-	LDA <Player_YHi
+	LDA <player_hi_y
 	SBC #0
 	BEQ CPVScr_Done		; If we didn't overflow, jump to CPVScr_Done
 	BPL CPVScr_OFNotNeg	; If this component is high, we overflowed, jump to CPVScr_OFNotNeg

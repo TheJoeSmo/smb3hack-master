@@ -2,24 +2,24 @@
 Level_PrepareNewObjectAlt:
 ; Clear various object variables
 	LDA #$00
-	STA Objects_Var1,X
-	STA Objects_Var2,X
-	STA <Objects_SpriteX,X
-	STA Objects_Timer,X
-	STA Objects_Timer2,X
-	STA <Objects_XVel,X
-	STA <Objects_YVel,X
-	STA Objects_FlipBits,X
-	STA Objects_Frame,X	
+	STA entity_var1,X
+	STA entity_var2,X
+	STA <entity_sprite_lo_x,X
+	STA entity_timer,X
+	STA entity_no_collision_timer,X
+	STA <entity_lo_x_velocity,X
+	STA <entity_lo_y_velocity,X
+	STA entity_flipped_animation,X
+	STA entity_animation_frame,X	
 	STA Objects_ColorCycle,X
 	STA Objects_ReverseGrav,X	; SB
 	STA Objects_FrozenTimer,X	; SB
 	STA Objects_IsBehind,X		; SB
 	STA Objects_StompDisable,X	; SB
-	STA <Objects_DetStat,X	
+	STA <entity_collision_flags,X	
 	STA Objects_PlayerHitStat,X
-	STA Objects_Var7,X
-	STA <Objects_Var5,X
+	STA entity_var7,X
+	STA <entity_var5,X
 
 	CPX #$06
 	BGE PRG000_D4C8	 ; If using slot index >= 6, jump to PRG000_D4C8 (skip variables available only to slots 0 to 5)
@@ -35,22 +35,22 @@ PRG000_D4C8:
 	BGE PRG000_D506	 ; If using slot index >= 5, jump to PRG000_D506 (skip variables available only to slots 0 to 4)
 
 	; Clear even more variables (object slots 0 to 4 [major objects] ONLY!!)
-	STA <Objects_Var4,X
-	STA Objects_Timer4,X
-	STA Objects_Timer3,X
+	STA <entity_var4,X
+	STA entity_timer_tertirary,X
+	STA entity_timer_secondary,X
 	STA Objects_Slope,X
-	STA Objects_Var3,X	
-	STA Objects_Var6,X	 
+	STA entity_var3,X	
+	STA entity_var6,X	 
 	STA Objects_TargetingXVal,X
 	STA Objects_TargetingYVal,X
 	STA Objects_IsGiant,X
 	STA Objects_HitCount,X
 	STA Objects_DisPatChng,X
-	STA Objects_Var10,X
-	STA Objects_Var11,X
-	STA Objects_Var12,X
-	STA Objects_Var13,X
-	STA Objects_Var14,X
+	STA entity_var10,X
+	STA entity_var11,X
+	STA entity_var12,X
+	STA entity_var13,X
+	STA entity_var14,X
 
 PRG000_D506:
 	RTS		 ; Return
@@ -73,9 +73,9 @@ Player_KickObjectRegular:
 
 	; Set object timer 2 to $10
 	LDA #$10
-	STA Objects_Timer2,X
+	STA entity_no_collision_timer,X
 
-	LDA Level_ObjectID,X
+	LDA entity_type,X
 
 	; Determine if we need to do extra bob-omb code
 	CMP #OBJ_BOBOMBEXPLODE
@@ -86,26 +86,26 @@ Player_KickObjectRegular:
 PLayer_KickBobomb:
 	; State remains "normal"
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 
 	; Set Y vel to -$20 (bounce up)
 	LDA #-$20
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 
 	; Set X Velocity appropriately based on kick direction
 	JSR Level_ObjCalcXDiffs
 	LDA BobombKickXVel,Y
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
-	EOR <Player_XVel
+	EOR <player_lo_x_velocity
 	BMI PRG000_CE76	 ; If the Bob-omb's X velocity is the opposite sign of the Player's, jump to PRG000_CE76
 
-	LDA <Player_XVel
+	LDA <player_lo_x_velocity
 	STA <var1		; -> var1 (yyyy xxxx)
 	ASL <var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	ADD ObjectKickXVelMoving,Y	 ; Add base "moving" X velocity of Bob-omb
-	STA <Objects_XVel,X	 ; Set this as Bob-omb's X Velocity
+	STA <entity_lo_x_velocity,X	 ; Set this as Bob-omb's X Velocity
 
 PRG000_CE76:
 	JMP Object_ShakeAndDraw	 ; Draw Bob-omb and don't come back!
@@ -118,28 +118,28 @@ Player_KickRegular:
 	LDA #$00	
 	STA Objects_KillTally,X
 
-	LDA Objects_State,X
+	LDA entity_state,X
 	CMP #OBJSTATE_HELD
 	BNE PRG000_CEBE	 ; If object's state is not Held, jump to PRG000_CEBE
 
 	; This object is being held by Player...
 
-	LDA Level_ObjectID,X
+	LDA entity_type,X
 	CMP #OBJ_ICEBLOCK
 	BEQ HeldKickRegular	 ; If this is an ice block, jump to PRG000_CEB4
 
 	LDY #1	 ; Y = 1
 
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	BNE PRG000_CE94	 ; If Player is not turned around, jump to PRG000_CE94
 
 	LDY #-1	 ; Y = -1
 
 PRG000_CE94:
-	STY <Objects_XVel,X	 ; Set minimum X velocity on object (to enable wall hit detection)
+	STY <entity_lo_x_velocity,X	 ; Set minimum X velocity on object (to enable wall hit detection)
 
 	; Springs cannot die, so do not do the check
-	LDA Level_ObjectID,X
+	LDA entity_type,X
 	CMP #OBJ_SPRING
 	BEQ HeldKickRegular
 
@@ -148,7 +148,7 @@ PRG000_CE94:
 
 	JSR Object_WorldDetectN1 ; Detect against world
 
-	LDA <Objects_DetStat,X
+	LDA <entity_collision_flags,X
 	AND #$03	
 	BEQ HeldKickRegular	 ; If object has not hit a wall, jump to PRG000_CEB4
 
@@ -160,15 +160,15 @@ PRG000_CE94:
 
 	; Object state is Killed
 	LDA #OBJSTATE_KILLED
-	STA Objects_State,X
+	STA entity_state,X
 
 	; Set object Y velocity to -$40 (fly up a bit)
 	LDA #-$40
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 
 	; Remove that minimum X velocity
 	LDA #$00
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
 	JMP PRG000_CF98	 ; Jump to PRG000_CF98
 
@@ -193,7 +193,7 @@ HeldKickSmall:
 
 NormalHeldKick:
 
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	BEQ PRG000_CEBB	; If Player has not turned around, jump to PRG000_CEBB
 
 	INY		; Y = 1
@@ -208,32 +208,32 @@ PRG000_CEBE:
 	; Make sure Player is facing object he's kicking
 	JSR Level_ObjCalcXDiffs
 	LDA PlayerKickFlipBits,Y
-	STA <Player_FlipBits
+	STA <player_flipped_animation
 
 PRG000_CEC6:
 	; Get the base kicking speeds
 	LDA ObjectKickXVelMoving,Y
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 	LDA ObjectKickYVelMoving, Y
-	STA <Objects_YVel, X
+	STA <entity_lo_y_velocity, X
 
-	EOR <Player_XVel
+	EOR <player_lo_x_velocity
 	BMI PRG000_CEDC	 ; If the object's X velocity is the opposite sign of the Player's, jump to PRG000_CEDC
 
-	LDA <Player_XVel 	; Get the Player's X velocity
+	LDA <player_lo_x_velocity 	; Get the Player's X velocity
 	STA <var1		; -> var1 (yyyy xxxx)
 	ASL <var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	ADD ObjectKickXVelMoving,Y	 ; Add base "moving" X velocity of object
-	STA <Objects_XVel,X	 ; Set as object's X velocity
+	STA <entity_lo_x_velocity,X	 ; Set as object's X velocity
 
 PRG000_CEDC:
 	; If object's state is not Killed, jump to PRG000_CEE8
-	LDA Objects_State,X
+	LDA entity_state,X
 	CMP #OBJSTATE_KILLED
 	BEQ PRG000_CEE8
 
-	LDA Level_ObjectID,X
+	LDA entity_type,X
 	CMP #OBJ_SPRING
 	BEQ SetEnemyAsNormal
 
@@ -245,15 +245,15 @@ PRG000_CEDC:
 	BEQ SetEnemyAsKicked
 
 	; Add extra velocity to vertically kicked shells
-	LDA <Player_XVel 	; Get the Player's X velocity
+	LDA <player_lo_x_velocity 	; Get the Player's X velocity
 	;STA <var1		; -> var1 (yyyy xxxx)
 	;ASL <var1		; Shift 1 bit left (bit 7 into carry) (y yyyx xxx0)
 	;ROR A			; A is now arithmatically shifted to the right (yyyyy xxx) (signed division by 2)
 	;ADD ObjectKickXVelMoving,Y	 ; Add base "moving" X velocity of object
-	STA <Objects_XVel,X	 ; Set as object's X velocity
+	STA <entity_lo_x_velocity,X	 ; Set as object's X velocity
 
 	; If spring, go back to being normal
-	LDA Level_ObjectID,X
+	LDA entity_type,X
 	CMP #OBJ_SPRING
 	BEQ SetEnemyAsNormal
 
@@ -263,20 +263,20 @@ PRG000_CEDC:
 
 SetEnemyAsNormal:
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 	BNE PRG000_CEE8
 
 SetEnemyAsShelled:
 	; Set shell to be shelled, so it doesn't hit things too much
 	LDA #OBJSTATE_SHELLED
-	STA Objects_State,X
+	STA entity_state,X
 	BNE PRG000_CEE8
 
 SetEnemyAsKicked:
 	; Set object state to 5 (Kicked)
 
 	LDA #OBJSTATE_KICKED
-	STA Objects_State,X
+	STA entity_state,X
 
 PRG000_CEE8:
 	JMP PRG000_CF98	 ; Jump to PRG000_CF98
@@ -298,7 +298,7 @@ Player_InvalidKick:
 PRG000_CEFD:
 	LDY #$00	 ; Y = 0
 
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	BNE PRG000_CF04	 ; If Player is turned around, jump to PRG000_CF04
 
 	INY		 ; Y = 1
@@ -336,13 +336,13 @@ PRG000_CF1A:
 PRG000_CF1F:
 
 	; Set held object's proper X position
-	LDA <Player_X	
+	LDA <player_lo_x	
 	ADD ObjectHoldXOff,Y
-	STA <Objects_X,X	
+	STA <entity_lo_x,X	
 
-	LDA <Player_XHi	
+	LDA <player_hi_x	
 	ADC ObjectHoldXHiOff,Y
-	STA <Objects_XHi,X	
+	STA <entity_hi_x,X	
 
 	LDY #0		; Y = 0
 
@@ -351,7 +351,7 @@ PRG000_CF1F:
 
 	INY		; Y = 1
 
-	LDA <Player_Suit
+	LDA <player_powerup
 	BNE PRG000_CF3D	 ; If Player is not small, jump to PRG000_CF3D
 
 	INY		; Y = 2
@@ -370,8 +370,8 @@ PlayerHold_YOffNoRev:
 	PHA		 ; Save 'A'
 
 	; Set Y offset to object being held
-	ADD <Player_Y
-	STA <Objects_Y,X
+	ADD <player_lo_y
+	STA <entity_lo_y,X
 
 	LDY #$00	 ; Y = 0
 
@@ -385,14 +385,14 @@ PRG000_CF49:
 	TYA		 ; A = 0 or -1
 
 	; Apply carry
-	ADC <Player_YHi
-	STA <Objects_YHi,X
+	ADC <player_hi_y
+	STA <entity_hi_y,X
 
 	; While held, object's velocities match Player's
-	LDA <Player_XVel
-	STA <Objects_XVel,X
-	LDA <Player_YVel
-	STA <Objects_YVel,X
+	LDA <player_lo_x_velocity
+	STA <entity_lo_x_velocity,X
+	LDA <player_lo_y_velocity
+	STA <entity_lo_y_velocity,X
 
 	; SB: Match Player's gravity setting too
 	LDA Player_ReverseGrav
@@ -403,16 +403,16 @@ PRG000_CF49:
 	STA Objects_ReverseGrav,X
 
 	; If gravities mismatch, vertically flip object!
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	EOR #SPR_VFLIP
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 
 ObjectHeld_GravMatch:
 	JSR Object_WorldDetectN1	; Detect against world
 	JSR Object_CalcSpriteXY_NoHi	; Calculate low parts of sprite X/Y (never off-screen when held by Player!)
 	
 	; Springs cannot kill objects while held
-	LDA Level_ObjectID, X 
+	LDA entity_type, X 
 	CMP #OBJ_SPRING
 	BEQ PRG000_CF98
 
@@ -422,7 +422,7 @@ ObjectHeld_GravMatch:
 	JSR ObjectToObject_HitTest	; Test if this object has collided with another object
 	BCC PRG000_CF98		 ; If this object did not collide with any other objects, jump to PRG000_CF98
 
-	LDA Objects_Timer2,X
+	LDA entity_no_collision_timer,X
 	ORA Level_PipeMove
 	BNE PRG000_CF98	 	; If timer 2 is not expired or Player is moving through pipes, jump to PRG000_CF98
 
@@ -433,19 +433,19 @@ ObjectHeld_GravMatch:
 
 	; Object which was held is dead!
 	LDA #OBJSTATE_KILLED
-	STA Objects_State,X
+	STA entity_state,X
 
 	; Y velocity = -$30 (fly up a bit)
 	LDA #-$30
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 
 	; Object that got hit is dead!
 	LDA #OBJSTATE_KILLED
-	STA Objects_State,Y
+	STA entity_state,Y
 
 	; Y velocity = -$30 (fly up a bit)
 	LDA #-$30
-	STA Objects_YVel,Y
+	STA entity_lo_y_velocity,Y
 
 	; Get 100 pts for the hit!
 	LDA #$00
@@ -453,7 +453,7 @@ ObjectHeld_GravMatch:
 
 	; Object will not collide again for 16 ticks (dampener I guess)
 	LDA #16
-	STA Objects_Timer2,X
+	STA entity_no_collision_timer,X
 
 	TYA
 	TAX
@@ -461,10 +461,10 @@ ObjectHeld_GravMatch:
 
 	; Set the OTHER object's X velocity appropriately
 	LDA ObjectToObject_HitXVel,Y
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
 PRG000_CF98:
-	LDX <SlotIndexBackup	 ; Restore 'X' to the object slot index
+	LDX <entity_index	 ; Restore 'X' to the object slot index
 
 	LDA <Player_IsDying
 	BNE PRG000_CFA5	 ; If Player is dying, jump to PRG000_CFA5
@@ -479,7 +479,7 @@ PRG000_CF98:
 PRG000_CFA5:
 
 	; SMB2 type objects don't draw shelled style!
-	LDA Level_ObjectID,X
+	LDA entity_type,X
 	JSR Object_IsSMB2Obj
 	BEQ PRG000_CFA8		; If object is an SMB2 object, don't draw shell style!
 
@@ -521,14 +521,14 @@ Birdo_NotEnding:
 
 Birdo_NotHalted:
 	; If Birdo's in state 6 (Dying), jump to Birdo_Die
-	LDA Objects_Var7,X
+	LDA entity_var7,X
 	AND #$0F
 	CMP #6
 	BEQ Birdo_Die
 
 	; If Birdo's not in dying state but the game engine is declaring him dying
 	; we must begin that state...
-	LDA Objects_State,X
+	LDA entity_state,X
 	CMP #OBJSTATE_KILLED
 	BNE Birdo_NotDying	; If not dying, jump to Birdo_NotDying
 
@@ -537,7 +537,7 @@ Birdo_NotHalted:
 
 	; But Birdo also goes into "Dying" state if hit by egg/etc., so
 	; we have to hack that a bit
-	LDA Objects_Var4,X
+	LDA entity_var4,X
 	AND #$F0		; Mask out the hit level
 	BEQ Birdo_IsKilled	; If Birdo is at zero hit level, jump to Birdo_IsKilled
 
@@ -559,23 +559,23 @@ Birdo_Deduct16:
 Birdo_Invincible:
 	; Return to normal state
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 
 	; Cancel the implied velocities
 	LDA #0
-	STA Objects_XVel,X
-	STA Objects_YVel,X
+	STA entity_lo_x_velocity,X
+	STA entity_lo_y_velocity,X
 
 	BEQ Birdo_NotDying	; Jump (technically always) to Birdo_NotDying
 
 Birdo_IsKilled:
 	; Reset Var5
 	LDA #0
-	STA Objects_Var5,X
+	STA entity_var5,X
 
 	; Pain face all the way down...
 	LDA #2
-	STA Objects_Var1,X
+	STA entity_var1,X
 
 	 ; Halt the level timer
 	LDA #$01
@@ -583,14 +583,14 @@ Birdo_IsKilled:
 
 	; Force state 6 (Dying)
 	LDA #6
-	STA Objects_Var7,X
+	STA entity_var7,X
 
 Birdo_Die:
 	JMP Birdo_Dying 	; If Birdo is dying, jump to Birdo_Dying
 
 Birdo_NotDying:
 	; If on last hit level, see if it's time for a Shy Guy drop
-	LDA Objects_Var4,X
+	LDA entity_var4,X
 	AND #$F0	; Upper 4 bits are hit level
 	BNE Birdo_NoDrop
 
@@ -600,7 +600,7 @@ Birdo_NotDying:
 	; Shy Guy is gone...
 
 	; If Var6 hasn't expired, no drop
-;	LDA Objects_Var6,X
+;	LDA entity_var6,X
 ;	BNE Birdo_DecVar6
 
 	; Var6 expired...
@@ -613,58 +613,58 @@ Birdo_NotDying:
 
 	; Green Shy Guy!
 	LDA #OBJ_SHYGUY_GREEN
-	STA Level_ObjectID,X
+	STA entity_type,X
 
 	; Fall to Player
 	LDA <Horz_Scroll
 	ADD #$FF
-	STA Objects_X,X
+	STA entity_lo_x,X
 	LDA <Horz_Scroll_Hi
 	ADC #0
-	STA Objects_XHi,X
+	STA entity_hi_x,X
 
 	LDA <Vert_Scroll
 	ADD #40
-	STA Objects_Y,X
+	STA entity_lo_y,X
 	LDA #0
 	ADC #0
-	STA Objects_YHi,X
+	STA entity_hi_y,X
 
 	LDA #-$20
-	STA Objects_YVel,X
+	STA entity_lo_y_velocity,X
 
 	; Boing!
 	LDA #SND_PLAYERJUMPSM
 	STA Sound_QPlayer
 
-	LDX <SlotIndexBackup		 ; X = object slot index
+	LDX <entity_index		 ; X = object slot index
 
 	; Reset Var6
 	;LDA #64
-	;STA Objects_Var6,X
+	;STA entity_var6,X
 
 ;Birdo_DecVar6:
-;	DEC Objects_Var6,X
+;	DEC entity_var6,X
 
 Birdo_NoDrop:
 	JSR Level_ObjCalcXDiffs
 
 	; Face Player
 	LDA FireChomp_FlipTowardsPlayer,Y
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 
 	JSR Object_Move	 ; Do standard movements
 
-	LDA <Objects_DetStat,X
+	LDA <entity_collision_flags,X
 	AND #$08
 	BEQ Birdo_NoCeilHit	 ; If Birdo did not hit ceiling, jump to Birdo_NoCeilHit
 
 	; Bounce off ceiling
 	LDA #$01
-	STA <Objects_YVel,X
+	STA <entity_lo_y_velocity,X
 
 Birdo_NoCeilHit:
-	LDA <Objects_DetStat,X
+	LDA <entity_collision_flags,X
 	AND #$04
 	BEQ Birdo_NoGndHit	 ; If Birdo did not hit ground, jump to Birdo_NoGndHit
 
@@ -673,7 +673,7 @@ Birdo_NoCeilHit:
 Birdo_NoGndHit:
 
 	; Check if Birdo has gone to a different hit level
-	LDA Objects_Var4,X
+	LDA entity_var4,X
 	AND #$F0	; Upper 4 bits are hit level
 	STA <var1	; -> var1
 
@@ -689,7 +689,7 @@ Birdo_NoGndHit:
 
 	; Change upper frame to 2
 	LDA #2
-	STA Objects_Var1,X
+	STA entity_var1,X
 
 Birdo_NoChangeHit:
 	JSR Birdo_Draw
@@ -700,7 +700,7 @@ Birdo_NoChangeHit:
 	JSR Birdo_NoDetect
 
 Birdo_NotInvincible:
-	LDA Objects_Var4,X
+	LDA entity_var4,X
 	AND #$0F	; Lower 4 bits are state
 	JSR DynJump
 
@@ -718,20 +718,20 @@ Birdo_Draw:
 	JSR Object_ShakeAndCalcSprite
 
 	; Store frame into var14 (top) and var15 (bottom)
-	LDX <SlotIndexBackup		 ; X = object slot index
+	LDX <entity_index		 ; X = object slot index
 
 	; Upper body sprite frame
-	LDA Objects_Var1,X
+	LDA entity_var1,X
 	ASL A
 	STA <var14
 
 	; Lower body sprite frame
-	LDA Objects_Var2,X
+	LDA entity_var2,X
 	ADD #3		; Base frame for lower body
 	ASL A
 	STA <var15
 
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	AND #SPR_VFLIP
 	BEQ Birdo_DrawNotVFlipped
 
@@ -764,7 +764,7 @@ Birdo_DrawNotVFlipped:
 	LDX <var15
 	JSR Object_Draw16x16Sprite
 
-	LDX <SlotIndexBackup		 ; X = object slot index
+	LDX <entity_index		 ; X = object slot index
 	RTS
 
 
@@ -773,16 +773,16 @@ Birdo_Wait4Player:
 	BCC Birdo_NoDetect		; If boss not positioned yet, jump to Birdo_NoDetect
 
 	; Initialize walking and go!  (Implicitly, state becomes zero here)
-	LDA Objects_Var4,X
+	LDA entity_var4,X
 	AND #$F0	; Mask out hit level
-	STA Objects_Var4,X
+	STA entity_var4,X
 
 Birdo_NoDetect:
 
 	; Deliberately breaks object detection
 	LDA #$FF
-	STA Objects_SpriteX,X
-	STA Objects_SpriteY,X
+	STA entity_sprite_lo_x,X
+	STA entity_sprite_lo_y,X
 
 	RTS
 
@@ -795,11 +795,11 @@ Birdo_InitWalk:
 	; Speed will be at $0C (0.75 pixels/frame)
 	; Frames needed to cover distance: 56 / 0.75 = ~75
 
-	LDA Objects_Var3,X
+	LDA entity_var3,X
 	AND #$80	; Only keep bit 7
 	EOR #$80	; Invert it (reverse walk direction)
 	ORA #75		; Set tick count
-	STA Objects_Var3,X
+	STA entity_var3,X
 
 Birdo_ResetWalk:
 	AND #$80	; Get bit 7
@@ -807,20 +807,20 @@ Birdo_ResetWalk:
 	ROL A		; Move to bit 0
 	TAY
 	LDA Birdo_WalkXVel,Y
-	STA Objects_XVel,X
+	STA entity_lo_x_velocity,X
 
 	; Change to walk state
-	LDA Objects_Var4,X
+	LDA entity_var4,X
 	AND #$F0	; Mask out hit level
 	ORA #1		; State = 1 (walk)
-	STA Objects_Var4,X
+	STA entity_var4,X
 
 	; Drop into walking...
 
 Birdo_Walking:
 
-	DEC Objects_Var3,X
-	LDA Objects_Var3,X
+	DEC entity_var3,X
+	LDA entity_var3,X
 
 	; Examine just the tick part of this value (bit 7 is direction)
 	AND #$7F
@@ -830,7 +830,7 @@ Birdo_Walking:
 	LSR A
 	LSR A
 	AND #$01
-	STA Objects_Var2,X
+	STA entity_var2,X
 
 	; Randomly decide to do something else or not
 	LDA RandomN
@@ -851,86 +851,86 @@ Birdo_DoSomethingElse:
 	STA <var1
 
 Birdo_ChangeState:
-	LDA Objects_Var4,X
+	LDA entity_var4,X
 	AND #$F0		; Mask out hit level
 	ORA <var1		; Store new state
-	STA Objects_Var4,X	; Go for it, Birdo
+	STA entity_var4,X	; Go for it, Birdo
 
 	; Clear state-specific var
 	LDA #0
-	STA Objects_Var5,X
+	STA entity_var5,X
 
 	; Birdo stops moving
 	LDA #0
-	STA Objects_XVel,X
+	STA entity_lo_x_velocity,X
 
 	RTS
 
 Birdo_Jump:
 
-	LDA Objects_Var5,X	; Var5 = 0 means not actually jumped yet
+	LDA entity_var5,X	; Var5 = 0 means not actually jumped yet
 	BNE Birdo_AlreadyHopped
 
 	; Mark as having jumped
-	INC Objects_Var5,X
+	INC entity_var5,X
 
 	; Jump!
 	LDA #-$28
-	STA Objects_YVel,X
+	STA entity_lo_y_velocity,X
 
 	RTS
 
 Birdo_AlreadyHopped:
 
-	LDA <Objects_DetStat,X
+	LDA <entity_collision_flags,X
 	AND #$04
 	BEQ Birdo_JumpNotLanded	; If Birdo hasn't landed yet, jump to Birdo_JumpNotLanded (RTS)
 
 Birdo_FinishedState:
 	; Return to state 1
 	LDA #1
-	STA Objects_Var5,X
+	STA entity_var5,X
 
 	; Need to reset walk speed
-	LDA Objects_Var3,X
+	LDA entity_var3,X
 	JMP Birdo_ResetWalk
 
 Birdo_JumpNotLanded:
 	RTS
 
 Birdo_Pause:
-	LDA Objects_Var5,X
+	LDA entity_var5,X
 	BNE Birdo_PauseCont	; If Birdo already initialized pause, jump to Birdo_PauseCont
 
 	; Initialize pause
 	LDA RandomN
 	AND #$1F	; Additional value
 	ADD #16		; Base value
-	STA Objects_Var5,X
+	STA entity_var5,X
 
 Birdo_PauseCont:
 
-	DEC Objects_Var5,X	; Decrement pause value
+	DEC entity_var5,X	; Decrement pause value
 	BEQ Birdo_FinishedState	; If zero, jump to Birdo_FinishedState
 	RTS
 
 Birdo_SpitEgg:
-	LDA Objects_Var5,X
+	LDA entity_var5,X
 	BNE Birdo_SpitCont	; If Birdo already initialized egg spit, jump to Birdo_SpitCont
 
 	; Set upper frame to spit-ready
 	LDA #1
-	STA Objects_Var1,X
+	STA entity_var1,X
 
 	; Set timer
 	LDA #$18
-	STA Objects_Var5,X
+	STA entity_var5,X
 
 Birdo_SpitCont:
 
-	DEC Objects_Var5,X	; Decrement ticker
+	DEC entity_var5,X	; Decrement ticker
 
-	LDA Objects_Var5,X
+	LDA entity_var5,X
 	BEQ Birdo_SpitStop	; If zero, jump to Birdo_SpitStop
 
 	CMP #$08
@@ -949,12 +949,12 @@ Birdo_SpitDone:
 Birdo_SpitStop:
 	; Set upper frame to closed mouth
 	LDA #0
-	STA Objects_Var1,X
+	STA entity_var1,X
 
 	BEQ Birdo_FinishedState 	; Jump (technically always) to Birdo_FinishedState
 
 Birdo_Hit:
-	LDA Objects_Var5,X
+	LDA entity_var5,X
 	BNE Birdo_SpitCont	; If Birdo hit ticker already initialized, jump to Birdo_HitCont
 
 	; Change Birdo's color as appropriate and resume walking
@@ -962,7 +962,7 @@ Birdo_Hit:
 	AND #$F0	; Get next hit level
 	TAY		; -> 'Y'
 	ORA #5		; Stay in state 5 for now
-	STA Objects_Var4,X
+	STA entity_var4,X
 
 	; 'Y' is scaled up by 4 bits, need to tone it down
 	TYA
@@ -978,26 +978,26 @@ Birdo_Hit:
 
 	; Hit effect ticker = 32
 	LDA #32
-	STA Objects_Var5,X
+	STA entity_var5,X
 	STA Objects_ColorCycle,X
 
 Birdo_HitCont:
-	DEC Objects_Var5,X	; Decrement hit ticker
+	DEC entity_var5,X	; Decrement hit ticker
 	BNE Birdo_HitNotDone	; If not done yet, jump to Birdo_HitNotDone
 
-	LDA Objects_Var4,X
+	LDA entity_var4,X
 	AND #$F0	; Retain hit level
 	ORA #1		; Back to walking state
-	STA Objects_Var4,X
+	STA entity_var4,X
 
 Birdo_HitNotDone:
 	RTS
 
 Birdo_Dying:
-	LDA Objects_Var5,X
+	LDA entity_var5,X
 	BNE Birdo_DeadTimeout	; If Var5 > 0, jump to Birdo_DeadTimeout
 
-	LDA Objects_State,X
+	LDA entity_state,X
 	CMP #OBJSTATE_NORMAL
 	BEQ Birdo_EndLevel	; If Birdo's state is "Normal" here, that means we're doing the victory / bonus countdown
 
@@ -1006,10 +1006,10 @@ Birdo_Dying:
 
 	; While Birdo is dying, we're going to stop him from just falling off
 	; because we want to play some victory music and convert time -> bonus
-	LDA Objects_YHi,X
+	LDA entity_hi_y,X
 	BEQ Birdo_StillDying	; If not Y Hi = 1 yet, jump to Birdo_StillDying (RTS)
 
-	LDA Objects_Y,X
+	LDA entity_lo_y,X
 	AND #$F0
 	CMP #$C0
 	BNE Birdo_StillDying	; If Birdo's not real low yet, jump to Birdo_StillDying (RTS)
@@ -1041,7 +1041,7 @@ Birdo_NotDDComet:
 Birdo_NoWZeroVictory:
 	; Go into normal state for bonus countdown
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,X
+	STA entity_state,X
 
 Birdo_StillDying:
 	RTS
@@ -1052,13 +1052,13 @@ Birdo_EndLevel:
 
 	; Set timer to $40
 	LDA #$40
-	STA Objects_Var5,X
+	STA entity_var5,X
 
 Birdo_StillTimering:
 	RTS
 
 Birdo_DeadTimeout:
-	DEC Objects_Var5,X
+	DEC entity_var5,X
 	BNE Birdo_StillTimering
 
 	LDA World_Num
@@ -1085,7 +1085,7 @@ BirdoEgg_Type:	.byte $01, $01	; 0: Always fireball
 Birdo_SpawnEgg:
 	LDY #$04	 ; Y = 4
 PRG003_B34A:
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	BEQ PRG003_B353	 ; If this object slot is dead/empty, jump to PRG003_B353
 
 	DEY		 ; Y--
@@ -1099,22 +1099,22 @@ PRG003_B353:
 
 	JSR Level_PrepareNewObject
 
-	LDX <SlotIndexBackup		 ; X = object slot index
+	LDX <entity_index		 ; X = object slot index
 
 	; Set to normal state
 	LDA #OBJSTATE_NORMAL
-	STA Objects_State,Y
+	STA entity_state,Y
 
 	LDA #SPR_PAL1
 	STA Objects_SprAttr,Y
 
 	; Birdo egg!
 	LDA #OBJ_BIRDOEGG
-	STA Level_ObjectID,Y
+	STA entity_type,Y
 
 	; May have chance for fireball at other hit levels
 	; 2 = Always egg, 1 = 50/50, 2 = Always fireball
-	LDA Objects_Var4,X
+	LDA entity_var4,X
 	AND #$F0	; 2, 1, 0
 	LSR A
 	LSR A
@@ -1126,20 +1126,20 @@ PRG003_B353:
 	ORA <var1
 	TAX
 	LDA BirdoEgg_Type,X
-	STA Objects_Frame,Y
+	STA entity_animation_frame,Y
 
-	LDX <SlotIndexBackup		 ; X = object slot index
-	LDA <Objects_Y,X
-	STA Objects_Y,Y
-	LDA <Objects_YHi,X
-	STA Objects_YHi,Y
+	LDX <entity_index		 ; X = object slot index
+	LDA <entity_lo_y,X
+	STA entity_lo_y,Y
+	LDA <entity_hi_y,X
+	STA entity_hi_y,Y
 
-	LDA <Objects_X,X
-	STA Objects_X,Y
-	LDA <Objects_XHi,X
-	STA Objects_XHi,Y
+	LDA <entity_lo_x,X
+	STA entity_lo_x,Y
+	LDA <entity_hi_x,X
+	STA entity_hi_x,Y
 
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 
 	; X = 0
 	LDX #$00
@@ -1152,20 +1152,20 @@ PRG003_B353:
 PRG003_B37D:
 
 	LDA BirdoEgg_XVel,X
-	STA Objects_XVel,Y
+	STA entity_lo_x_velocity,Y
 
-	LDX <SlotIndexBackup		 ; X = object slot index
+	LDX <entity_index		 ; X = object slot index
 	RTS		 ; Return
 
 
 Birdo_CheckForShyGuy:
 	LDY #$04	 ; Y = 4
 Birdo_CheckForShyGuy_Loop:
-	LDA Objects_State,Y
+	LDA entity_state,Y
 	BEQ Birdo_CheckEmpty	 ; If this object slot is dead/empty, jump to Birdo_CheckEmpty
 
 	; Not dead/empty...
-	LDA Level_ObjectID,Y
+	LDA entity_type,Y
 	CMP #OBJ_SHYGUY_GREEN
 	BNE Birdo_CheckEmpty	; If this object is not a green Shy Guy, jump to Birdo_CheckEmpty
 
@@ -1181,23 +1181,23 @@ Birdo_CheckEmpty:
 
 
 ObjState_Squashed61:
-	LDA Objects_Timer3,X 
+	LDA entity_timer_secondary,X 
 	BEQ PRG000_D090	 ; If timer 3 is expired, jump to PRG000_D090
 
 	JSR Object_Move	 ; Perform standard object movements
 
-	LDA <Objects_DetStat,X
+	LDA <entity_collision_flags,X
 	AND #$04
 	BEQ PRG000_D07E	 ; If object did NOT hit ground, jump to PRG000_D07E
 
 	JSR Object_HitGround	 ; Align to ground
-	STA <Objects_XVel,X	 ; Clear X velocity
+	STA <entity_lo_x_velocity,X	 ; Clear X velocity
 
 PRG000_D07E:
 
 	; Set object frame to 3
 	LDA #$03
-	STA Objects_Frame,X
+	STA entity_animation_frame,X
 
 	LDA Objects_IsGiant,X
 	BNE PRG000_D08D	 ; If object is giant, jump to PRG000_D08D (ObjectGroup_PatternSets, i.e. the "giant" enemy alternative)
@@ -1231,11 +1231,11 @@ PRG000_DE53:
 
 	STY Level_ScrollDiffH	; Level_ScrollDiffH = 0 or 1
 
-	ADD <Player_X
-	STA <Player_X	 ; Player_X += Level_ScrollDiffH
+	ADD <player_lo_x
+	STA <player_lo_x	 ; player_lo_x += Level_ScrollDiffH
 	BCC PRG000_DE65	 ; If no carry, jump to PRG000_DE65
 
-	INC <Player_XHi	 ; Otherwise, apply carry
+	INC <player_hi_x	 ; Otherwise, apply carry
 
 PRG000_DE65:
 	LDY #$00	 ; Y = 0
@@ -1253,7 +1253,7 @@ PRG000_DE71:
 
 	STY Level_ScrollDiffV	 ; Level_ScrollDiffV = 0 or -1
 
-	LDY <Player_InAir
+	LDY <player_is_in_air
 	BEQ PRG000_DE89	 ; If Player is not mid air, jump to PRG000_DE89
 
 	LDY #$00	 ; Y = 0
@@ -1264,11 +1264,11 @@ PRG000_DE71:
 	DEY		 ; Y = -1 
 
 PRG000_DE89:
-	ADD <Player_Y
-	STA <Player_Y
+	ADD <player_lo_y
+	STA <player_lo_y
 	TYA		
-	ADC <Player_YHi	
-	STA <Player_YHi	
+	ADC <player_hi_y	
+	STA <player_hi_y	
 
 	RTS		 ; Return
 
@@ -1276,18 +1276,18 @@ PRG000_DE89:
 AScrlURDiag_CheckWrapping61:
 	JSR AScrlURDiag_NoWrapAbort	 ; Will not return here if AScrlURDiag_WrapState_Copy is not set or gameplay halted!
 
-	LDA <Objects_X,X
+	LDA <entity_lo_x,X
 	ADD AScrlURDiag_OffsetX	
-	STA <Objects_X,X
+	STA <entity_lo_x,X
 	BCC PRG000_DEA3	 ; If no carry, jump to PRG000_DEA3
-	INC <Objects_XHi,X	 ; Otherwise, apply carry
+	INC <entity_hi_x,X	 ; Otherwise, apply carry
 PRG000_DEA3:
 
-	LDA <Objects_Y,X
+	LDA <entity_lo_y,X
 	ADD AScrlURDiag_OffsetY	
-	STA <Objects_Y,X
+	STA <entity_lo_y,X
 	BCC PRG000_DEAF	 ; If no carry, jump to PRG000_DEAF
-	INC <Objects_YHi,X	 ; Otherwise, apply carry 
+	INC <entity_hi_y,X	 ; Otherwise, apply carry 
 
 PRG000_DEAF:
 	RTS		 ; Return
@@ -1317,7 +1317,7 @@ Player_Die61:
 
 	; Clear a bunch of stuff at time of death
 	LDA #$00
-	STA <Player_XVel
+	STA <player_lo_x_velocity
 	STA Player_Flip	
 	STA Player_FlashInv
 	STA Player_Kuribo
@@ -1329,7 +1329,7 @@ Player_Die61:
 	STA Player_QueueSuit	 ; Queue change to "small"
 
 	LDA #-64
-	STA <Player_YVel ; Player_YVel = -64
+	STA <player_lo_y_velocity ; player_lo_y_velocity = -64
 
 	LDA #$30	 
 	STA Event_Countdown ; Event_Countdown = $30 (ticks until dropped back to map)
@@ -1365,12 +1365,12 @@ Die_NotGameover:
 	STA <Player_IsDying	 ; Player_IsDying = 1
 
 PRG000_DAAE:
-	; Ensure Player_FlipBits is correct?
+	; Ensure player_flipped_animation is correct?
 	; SB: May be a cosmetic bugfix for player coming out of a somersault
 	; (see jump to PRG000_DAAE) and getting hit, but I'm not really sure...
-	LDA <Player_FlipBits
+	LDA <player_flipped_animation
 	AND #$7f
-	STA <Player_FlipBits
+	STA <player_flipped_animation
 
 	RTS		 ; Return
 
@@ -1387,7 +1387,7 @@ Enemy_Kill61:
 
 	; Set timer 2 to 12
 	LDA #12
-	STA Objects_Timer2,X
+	STA entity_no_collision_timer,X
 
 	; "Kick" sound
 	LDA Sound_QPlayer
@@ -1429,17 +1429,17 @@ PRG000_DBB6:
 	; SPECIAL CASE: Collide Jump table lower byte specifies a new object ID
 
 	LDA ObjectGroup_CollideJumpTable,Y 	; Get the new ID
-	STA Level_ObjectID,X			; Set the new ID
+	STA entity_type,X			; Set the new ID
 
 PRG000_DBC8:
 	; Timer 3 set to $FF
 	LDA #$ff
-	STA Objects_Timer3,X
+	STA entity_timer_secondary,X
 
 	LDA #OBJSTATE_SHELLED	 ; A = Shelled
 
 PRG000_DBCF:
-	STA Objects_State,X	 ; Set new object state
+	STA entity_state,X	 ; Set new object state
 
 	LDA #-$30	 ; A = -$30
 
@@ -1451,18 +1451,18 @@ PRG000_DBCF:
 	LDA #-$50	 ; A = -$50
 
 PRG000_DBDC:
-	STA <Objects_YVel,X	 ; Set Y velocity appropriately
+	STA <entity_lo_y_velocity,X	 ; Set Y velocity appropriately
 
 	; Set appropriate X Velocity based on facing direction of 
 	; Player when he killed the enemy
 	JSR Level_ObjCalcXDiffs
 	LDA EnemyKill_XVels,Y
-	STA <Objects_XVel,X
+	STA <entity_lo_x_velocity,X
 
 	; Set vertical flip on the object
-	LDA Objects_FlipBits,X
+	LDA entity_flipped_animation,X
 	ORA #SPR_VFLIP
 
-	STA Objects_FlipBits,X
+	STA entity_flipped_animation,X
 
 	RTS		 ; Return
