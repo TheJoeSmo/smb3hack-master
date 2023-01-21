@@ -1668,7 +1668,7 @@ HotFoot_NotInWater:
 	INC <entity_lo_y_velocity,X
 	INC <entity_lo_y_velocity,X
 
-	JSR Object_WorldDetectN1
+	JSR entity_static_detection_inside
 	LDA <entity_collision_flags,X
 	AND #$03
 	BNE PRG002_A81B	 ; If Hotfoot hit a wall, jump to PRG002_A81B
@@ -5690,7 +5690,7 @@ exit_flag_slide_down_pole:
 	ADC #0
 	STA <entity_hi_x,X
 
-	JSR Object_WorldDetectN1
+	JSR entity_static_detection_inside
 
 	LDA <entity_lo_x,X
 	SUB #8

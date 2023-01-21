@@ -5532,10 +5532,10 @@ BleckDie_BaboomOK:
 	; HAX!
 	JSR Bleck_StarCoinAddHack
 		
-	; If Temp_VarNP0 is not 1, you didn't get enough
+	; If var17 is not 1, you didn't get enough
 	; star coins (indicates an overflow in the count,
 	; and there are more than 255 star coins!)
-	LDA Temp_VarNP0
+	LDA var17
 	CMP #1
 	BNE Bleck_NotEnoughSCs
 	
@@ -5595,9 +5595,9 @@ Bleck_StarCoinAddHack:
 	LDA Map_StarCoin_Got
 	ADD Bleck_SCoinBitToVal,Y
 	STA Map_StarCoin_Got
-	LDA Temp_VarNP0
+	LDA var17
 	ADC #0
-	STA Temp_VarNP0
+	STA var17
 	
 	RTS
 

@@ -2391,7 +2391,7 @@ YoshiDraw_NotHFlipped:
 	STA entity_animation_frame,X
 
 	LDA #8
-	STA Temp_VarNP0
+	STA var17
 
 	JSR Yoshi_DrawOffsetSprite
 
@@ -2432,18 +2432,18 @@ Yoshi_DrawOffsetSprite:
 	JSR Object_ShakeAndCalcSprite
 	
 	TYA
-	ADD Temp_VarNP0
+	ADD var17
 	TAY
 
 	JSR Object_Draw16x16Sprite
 
 	LDX <entity_index
 	
-	; Little hackish, but if Temp_VarNP0 = 16, we're drawing the tounge, 
+	; Little hackish, but if var17 = 16, we're drawing the tounge, 
 	; so we need to check for object-to-object collision as appropriate
 	; to see if the tounge caught anything...
 	; We need to do this here since the sprite X/Y is appropriate!
-	LDA Temp_VarNP0
+	LDA var17
 	CMP #16
 	BNE Yoshi_NotDrawingTounge
 
@@ -2559,7 +2559,7 @@ YoshiToungeXOff_OK:
 	STA Objects_SprAttr,X
 
 	LDA #16
-	STA Temp_VarNP0
+	STA var17
 	JSR Yoshi_DrawOffsetSprite
 
 	PLA
@@ -2579,7 +2579,7 @@ Yoshi_ToungeHandle:
 	JSR PRG000_DC0B		; Cheat entry a little; lets us scan for powerups too!
 	DEC Obj2Obj_FlagNoHitChk	; Clear the flag
 
-	; Store the object index into Temp_VarNP0 if collided, else $FF
+	; Store the object index into var17 if collided, else $FF
 	LDA #$FF
 	BCC Yoshi_ToungeNoHit
 	

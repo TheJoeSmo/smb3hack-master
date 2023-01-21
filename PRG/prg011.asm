@@ -1786,10 +1786,10 @@ Complete_PrimaryLevel:
 
 	JSR Map_MarkLevelComplete	 ; Mark this level as complete!
 
-	; Keep Complete/secret bits as appropriate -> Temp_VarNP0 for MapCompletion_FixAdjPaths
+	; Keep Complete/secret bits as appropriate -> var17 for MapCompletion_FixAdjPaths
 	LDA Level_IsComplete
 	AND #(MCOMP_COMPLETE | MCOMP_SECRET)
-	STA Temp_VarNP0
+	STA var17
 
 	LDY Player_Current	 ; Y = Player_Current
 	LDX <World_Map_X,Y	 ; X = Player Map X
@@ -1803,7 +1803,7 @@ Complete_PrimaryLevel:
 	TAY
 
 	; Fix surrounding path tiles that have now been opened
-	; (Temp_VarNP0 set above after Map_MarkLevelComplete)
+	; (var17 set above after Map_MarkLevelComplete)
 	JSR MapCompletion_FixAdjPaths
 
 	JMP PRG011_AB61	 ; Jump to PRG011_AB61
@@ -2137,7 +2137,7 @@ MO_CheckWZUnlock:
 	; Count all star coins and see if we're there yet...
 	JSR_THUNKA 12, Map_CountAllStarCoinsToW8
 	
-	LDA Temp_VarNP0
+	LDA var17
 	BEQ MCWZU_NoCometMode	; If you don't have the greater of 256 star coins yet, jump to MCWZU_NoCometMode
 	
 	LDA Map_StarCoin_Got

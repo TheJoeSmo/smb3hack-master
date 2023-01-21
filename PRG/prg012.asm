@@ -376,9 +376,9 @@ MapCompletions_SameScreen:
 	AND #(MCOMP_COMPLETE | MCOMP_SECRET)
 	BEQ MapCompletions_Loop	; If this level is not marked complete, loop back around...
 
-	; These bits plus bit 7 (NO video updates) -> Temp_VarNP0 for MapCompletion_FixAdjPaths
+	; These bits plus bit 7 (NO video updates) -> var17 for MapCompletion_FixAdjPaths
 	ORA #$80
-	STA Temp_VarNP0
+	STA var17
 
 	; Now we need to assemble a proper 'Y' offset for Map_Tile_Addr
 
@@ -439,7 +439,7 @@ PRG031_A581:
 PRG012_A597:
 
 	; Fix surrounding path tiles that have been opened
-	; (Temp_VarNP0 set above a little after MapCompletions_SameScreen)
+	; (var17 set above a little after MapCompletions_SameScreen)
 	JSR MapCompletion_FixAdjPaths
 
 	RTS		 ; Return

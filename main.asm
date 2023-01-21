@@ -2832,7 +2832,7 @@ CFIRE_GRAVITY_REVERSE	= $17	; SB: Gravity reversed
 	Objects_DisPatChng:	.ds 6	; $7A49-$7A4E If set, this object no longer enforces a pattern bank change
 
 ; NOTE!! These object vars are OBJECT SLOT 0 - 5 ONLY!
-	ObjSplash_DisTimer:	.ds 6	; $7A4F-$7A54 Object water/lava splashes are disabled until decrements to zero
+	entity_timer_splash_disable:	.ds 6	; $7A4F-$7A54 Object water/lava splashes are disabled until decrements to zero
 
 	PlayerProj_XVelFrac:	.ds 2	; $7A55-$7A56 Player Projectile X velocity fractional accumulator
 
@@ -2915,7 +2915,7 @@ CFIRE_GRAVITY_REVERSE	= $17	; SB: Gravity reversed
 	Fireball_HitChkPass:	.ds 2	; $7CEB-$7CEC Count of times Player's fireball has gone through hit check; when it hits 2, fireball poofs
 	PlayerProj_Cnt:		.ds 2	; $7CED-$7CEE Player projectile counter
 
-	Temp_VarNP0:		.ds 1	; A temporary not on page 0
+	var17:		.ds 1	; A temporary not on page 0
 
 	Lakitu_Active:		.ds 1	; Set while a Lakitu is active; keeps Lakitu "alive" even if off-screen etc.
 

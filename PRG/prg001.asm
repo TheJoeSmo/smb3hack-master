@@ -523,7 +523,7 @@ PRG001_A23F:
 	CMP entity_var11,X
 	BEQ PRG001_A25A	 	; If Spiny Cheep is at his origin + 96, jump to PRG001_A25A
 
-	JSR Object_WorldDetect4	 
+	JSR entity_static_detection_4_pixels	 
 
 	LDA <entity_collision_flags,X	
 	AND #$03	 
@@ -1416,9 +1416,9 @@ PowerUp_DoRaise:
 PRG001_A8D5:
 	BGE PRG001_A93D_fix	 ; If timer is >= $2D, jump to PRG001_A93D
 
-	; ObjSplash_DisTimer = 8
+	; entity_timer_splash_disable = 8
 	LDA #$08
-	STA ObjSplash_DisTimer,X
+	STA entity_timer_splash_disable,X
 
 	DEC entity_var1,X	 ; entity_var1--
 	BPL PRG001_A8F7	 ; If entity_var1 >= 0, jump to PRG001_A8F7
@@ -2137,7 +2137,7 @@ ObjNorm_Vine:
 	LDA <entity_hi_y,X
 	BMI PRG001_AC80	 ; If vine goes off absolute top, jump to PRG001_AC80
 
-	JSR Object_WorldDetectN1 ; Detect against world
+	JSR entity_static_detection_inside ; Detect against world
 
 	LDA Object_TileFeet
 	PHA		 ; Save tile detected by vine
@@ -2720,7 +2720,7 @@ BJOP_YVelMaxed:
 
 BJOP_NoHitGround:
 
-	JSR Object_WorldDetectN1
+	JSR entity_static_detection_inside
 	LDA Object_TileFeet
 	CMP #TILE15_LAVABOTTOM
 	BNE BJOP_BowserHasntFallen
@@ -3742,7 +3742,7 @@ PRG001_BBF8:
 
 PRG001_BBFC:
 	
-	JSR Object_WorldDetectN1 ; Detect against world
+	JSR entity_static_detection_inside ; Detect against world
 
 	LDA <entity_var4,X
 	CMP #$02
@@ -3762,7 +3762,7 @@ PRG001_BC0B:
 	; Detect the right tile under Bowser's feet
 	ADD #16
 	STA <entity_lo_x,X
-	JSR Object_WorldDetectN1
+	JSR entity_static_detection_inside
 
 	; Restore Bowser's X
 	PLA
@@ -4192,7 +4192,7 @@ PRG001_BEBD:
 	BNE Bowser_NotFinalFall
 
 	; Final Bowser 
-	JSR Object_WorldDetectN1
+	JSR entity_static_detection_inside
 	LDA Object_TileFeet
 	CMP #TILE15_LAVABOTTOM
 	BNE Bowser_NotFinalFall

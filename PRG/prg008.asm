@@ -3663,7 +3663,7 @@ Slope_IsNotFloorShape:
 Player_GetTileAndSlope:
 
 	LDA #$00
-	STA Temp_VarNP0 ; Temp_VarNP0 = 0
+	STA var17 ; var17 = 0
 
 	LDA Level_7Vertical
 	BEQ Player_GetTAndS_NotVert
@@ -3686,7 +3686,7 @@ Player_GetTAndS_NotVert:
 
 	LDA #$00
 	STA <var13	 ; var13 = 0 (implied high byte / carry)
-	STA Temp_VarNP0 ; Temp_VarNP0 = 0
+	STA var17 ; var17 = 0
 	BEQ PRG008_B406
 	
 Player_GetTAndS_NoFixedC:
@@ -3710,7 +3710,7 @@ Player_GetTAndS_NoFixedC:
 
 	LDA #$01
 	STA <var13	 ; var13 = 1 (implied high byte / carry)
-	STA Temp_VarNP0 ; Temp_VarNP0 = 1
+	STA var17 ; var17 = 1
 	BNE PRG008_B406	 ; Jump (technically always) to PRG008_B406
 
 PRG008_B3F7:
@@ -3786,7 +3786,7 @@ PRG008_B42E:
 PRG008_B43F:
 
 
-	LDY Temp_VarNP0
+	LDY var17
 	BEQ Player_32PP_NoBump	; If Player is not on 32-pixel-partition floor, jump to Player_32PP_Bump
 	
 	LDY Level_AScrlSelect
@@ -4118,7 +4118,7 @@ PRG008_B55B:
 	JMP PRG008_B5BB	 ; Jump to PRG008_B5BB
 
 PRG008_B57E:
-	LDA Temp_VarNP0
+	LDA var17
 	BEQ PRG008_B59C		; If did not use "high" Y last call to Player_GetTileAndAttr, jump to PRG008_B59C
 
 	LDA <player_lo_y		; Get Player Y
@@ -4605,7 +4605,7 @@ Level_DoBumpBlocks:
 
 	; Add backward compatibility to the player bumps
 	LDA #$00
-	STA Temp_VarNP0
+	STA var17
 
 	LDA <player_lo_y_velocity
 	BPL PRG008_B6EF	 ; If Player is moving downward, jump to PRG008_B6EF
@@ -4992,7 +4992,7 @@ LATP_Brick:
 	JSR LATP_GetCoinAboveBlock	; Get coin above block, if any
 
 ; If temp var is set, act like small mario and do not bust the brick
-	LDA Temp_VarNP0
+	LDA var17
 	BEQ BustTheBrick
 	CMP #OBJSTATE_KICKED
 	BNE DoNotBustTheBrick
@@ -5260,7 +5260,7 @@ Player_TailAtk_NoRev:
 
 	; Act as the player
 	LDA #$00
-	STA Temp_VarNP0
+	STA var17
 
 	LDX #$04	 
 	STA Level_Tile_GndL,X	 ; Store into tail's special slot
@@ -5287,7 +5287,7 @@ Object_BumpOffBlocks:
  
  	; Determine if we can bust bricks
 	LDA entity_state, X 
-	STA Temp_VarNP0
+	STA var17
 
 	LDA Player_Bounce 
 	BNE PRG008_B9D3	 ; If Player is bouncing, jump to PRG008_B9D3 
@@ -5297,7 +5297,7 @@ Object_BumpOffBlocks:
 	LDA Player_Bounce 
 	BEQ PRG008_B994	 ; If block is NOT a bouncing type, jump to PRG008_B994  
 
-	LDA Temp_VarNP0
+	LDA var17
 	STA Player_BounceObj 
 	LDA #$01
 	STA Player_BounceDir
@@ -6804,7 +6804,7 @@ PipeEntryPrepare:
 ; Register 'A' as input sets Level_ChgTileEvent
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Level_QueueChangeBlock: 
-	STA Temp_VarNP0		; Stash A for later
+	STA var17		; Stash A for later
 	JMP_THUNKC 60, Level_QueueChangeBlock60
 
 

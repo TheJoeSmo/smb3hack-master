@@ -1316,9 +1316,9 @@ SObj_Draw16x16WithViz:
 	JSR SObj_Draw16x16
 
 	LDA SpecialObj_VisFlags,X
-	STA Temp_VarNP0	
+	STA var17	
 
-	ASL Temp_VarNP0
+	ASL var17
 	BCC SObj16x16_LeftVisible
 
 	; Left side is invisible!
@@ -1327,7 +1327,7 @@ SObj_Draw16x16WithViz:
 
 SObj16x16_LeftVisible:
 
-	ASL Temp_VarNP0
+	ASL var17
 	BCC SObj16x16_RightVisible
 
 	; Right side is invisible!

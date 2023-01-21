@@ -6491,7 +6491,7 @@ Game_SaveData:
 	
 	LDA Map_StarCoin_Got
 	JSR Save_CopyByte
-	LDA Temp_VarNP0
+	LDA var17
 	JSR Save_CopyByte
 
 	PLA

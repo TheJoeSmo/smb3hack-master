@@ -381,7 +381,7 @@ Player_32PP_BumpCheck:
 	;DEC <player_lo_y
 	
 	; No longer on 32PP floor...
-	DEC Temp_VarNP0
+	DEC var17
 	
 Player_32PP_NoBumpChk:
 	RTS

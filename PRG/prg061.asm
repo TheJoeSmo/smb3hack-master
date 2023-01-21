@@ -26,7 +26,7 @@ Level_PrepareNewObjectAlt:
 
 	; Clear some more variables (object slots 0 to 5 ONLY)
 	STA Objects_DisPatChng,X
-	STA ObjSplash_DisTimer,X
+	STA entity_timer_splash_disable,X
 	STA Objects_QSandCtr,X
 	STA Objects_InWater,X
 
@@ -146,7 +146,7 @@ PRG000_CE94:
 	CMP #OBJ_CRATE
 	BEQ HeldKickRegular
 
-	JSR Object_WorldDetectN1 ; Detect against world
+	JSR entity_static_detection_inside ; Detect against world
 
 	LDA <entity_collision_flags,X
 	AND #$03	
@@ -408,7 +408,7 @@ PRG000_CF49:
 	STA entity_flipped_animation,X
 
 ObjectHeld_GravMatch:
-	JSR Object_WorldDetectN1	; Detect against world
+	JSR entity_static_detection_inside	; Detect against world
 	JSR Object_CalcSpriteXY_NoHi	; Calculate low parts of sprite X/Y (never off-screen when held by Player!)
 	
 	; Springs cannot kill objects while held

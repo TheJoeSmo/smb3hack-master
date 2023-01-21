@@ -716,16 +716,16 @@ WES_RescuePrincessCount:
 	
 	; Count all star coins collected versus game total
 	; Lower 8 bits of result are in Map_StarCoin_Got
-	; and Map_StarCoin_Total, plus Temp_VarNP0...
+	; and Map_StarCoin_Total, plus var17...
 	JSR_THUNKA 12, Map_CountAllStarCoins
 	
 	PLA
 	TAX
 	
-	; If Temp_VarNP0 is not 1, you didn't get enough
+	; If var17 is not 1, you didn't get enough
 	; star coins (indicates an overflow in the count,
 	; and there are more than 255 star coins!)
-	LDA Temp_VarNP0
+	LDA var17
 	CMP #1
 	BNE EWLGT_NotWorldZeroWin
 	
@@ -898,7 +898,7 @@ Letter_PrintSCTotals:
 	STA PPU_VRAM_DATA
 
 	; Retrieved star coins
-	LDA Temp_VarNP0
+	LDA var17
 	STA <var2
 	LDA Map_StarCoin_Got
 	STA <var1

@@ -552,7 +552,7 @@ PRG004_A2E6:
 	ADD Objects_TargetingYVal,X
 	STA <entity_lo_y,X
 
-	JSR Object_WorldDetectN1	; Detect against world
+	JSR entity_static_detection_inside	; Detect against world
 
 	PLA		 ; Restore Object Y
 	STA <entity_lo_y,X
@@ -1566,7 +1566,7 @@ PRG004_AA62:
 
 	JSR Object_ApplyXVel	 	; Apply X velocity
 	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
-	JSR Object_WorldDetectN1	 ; Detect against world
+	JSR entity_static_detection_inside	 ; Detect against world
 	JSR Object_HandleBumpUnderneath	 ; Handle getting bumped from underneath
 
 	LDA <entity_lo_y_velocity,X
@@ -1698,7 +1698,7 @@ HeavyBro_WaitState:
 	STA entity_var1,X
 
 PRG004_AB13:
-	JSR Object_WorldDetectN1	 ; Detect against world
+	JSR entity_static_detection_inside	 ; Detect against world
 	JMP Object_HandleBumpUnderneath	 ; Handle getting bumped from underneath and don't come back!
 
 HeavyBro_WalkRight:
@@ -1744,7 +1744,7 @@ HeavyBro_Draw:
 	PHA
 
 	LDA Objects_SprHVis,X
-	STA Temp_VarNP0	
+	STA var17	
 
 	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
@@ -1780,7 +1780,7 @@ PRG004_AB63:
 	INY		 ; Y = 1
 
 PRG004_AB79:
-	LDA Temp_VarNP0
+	LDA var17
 	AND Giant_HVisBit,Y
 	BNE PRG004_ABE3	 ; If this sprite isn't visible, jump to PRG004_ABE3 (RTS)
 
@@ -1908,7 +1908,7 @@ PRG004_AC99:
 PRG004_ACA3:
 	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 	JSR Object_ApplyXVel	 ; Apply X velocity
-	JSR Object_WorldDetect4	 ; Detect against world
+	JSR entity_static_detection_4_pixels	 ; Detect against world
 
 PRG004_ACAC:
 	JSR Object_HandleBumpUnderneath	 ; Handle getting bumped underneath
@@ -2771,7 +2771,7 @@ ObjNorm_JumpingCheepCheep:
 
 	JSR Object_ApplyXVel	 	; Apply X velocity
 	JSR entity_do_y_velocity_unbounded	; Apply Y velocity
-	JSR Object_WorldDetectN1	; Detect against world
+	JSR entity_static_detection_inside	; Detect against world
 
 	INC <entity_lo_y_velocity,X	 ; YVel++
 
@@ -2880,7 +2880,7 @@ PRG004_B121:
 	CMP entity_var11,X
 	BEQ PRG004_B141	 ; If Spike Cheep is at right limit, jump to PRG004_B141
 
-	JSR Object_WorldDetect4	 ; Detect against world
+	JSR entity_static_detection_4_pixels	 ; Detect against world
 
 	LDA <entity_collision_flags,X
 	AND #$03
@@ -4102,9 +4102,9 @@ PRG004_B5E7:
 	ADC #$00
 	STA <entity_hi_y,X	 ; Apply carry
 
-	; Temp_VarNP0 = sprite horizontal visibility bits
+	; var17 = sprite horizontal visibility bits
 	LDA Objects_SprHVis,X
-	STA Temp_VarNP0
+	STA var17
 
 	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
@@ -4144,7 +4144,7 @@ PRG004_B60D:
 	INY		 ; Y = 1
 
 PRG004_B629:
-	LDA Temp_VarNP0	
+	LDA var17	
 	AND Giant_HVisBit,Y
 	BNE PRG004_B68A	 ; If sprite is not visible, jump to PRG004_B68A
 
@@ -4536,9 +4536,9 @@ GiantPiranha_Draw:
 	LDA <entity_hi_x,X
 	PHA		 ; Save piranha X Hi
 
-	; Temp_VarNP0 = Sprite horizontal visibility flags
+	; var17 = Sprite horizontal visibility flags
 	LDA Objects_SprHVis,X
-	STA Temp_VarNP0
+	STA var17
 
 	LDA entity_flipped_animation,X
 	AND #SPR_HFLIP
@@ -4573,7 +4573,7 @@ PRG004_B833:
 	INY		 ; Y = 1 (H-flipped)
 
 PRG004_B849:
-	LDA Temp_VarNP0	 ; Get horizontal visibility bits
+	LDA var17	 ; Get horizontal visibility bits
 
 	AND Giant_HVisBit,Y
 	BNE PRG004_B8B0	 ; If sprite is off-screen, jump to PRG004_B8B0 (RTS)

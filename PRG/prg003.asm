@@ -1299,7 +1299,7 @@ PRG003_A43F:
 	STA <entity_lo_y_velocity,X	; Update Y velocity
 
 PRG003_A446:
-	JSR Object_WorldDetectN1	 ; Detect world
+	JSR entity_static_detection_inside	 ; Detect world
 
 	JSR Object_HandleBumpUnderneath	 ; Handle getting bumped underneath
 
@@ -1572,7 +1572,7 @@ PRG003_A5A3:
 	LDA #-$01
 	STA <entity_lo_y_velocity,X
 
-	JSR Object_WorldDetectN1 ; Detect against world
+	JSR entity_static_detection_inside ; Detect against world
 
 	LDA <entity_collision_flags,X
 	AND #$08
@@ -3148,9 +3148,9 @@ PRG003_ADB5:
 
 BoomBoom_Draw:
 
-	; Copy horizontal visibility -> Temp_VarNP0
+	; Copy horizontal visibility -> var17
 	LDA Objects_SprHVis,X
-	STA Temp_VarNP0
+	STA var17
 
 	LDA <entity_lo_y,X
 	PHA		 ; Save Boom Boom's Y
@@ -3206,7 +3206,7 @@ PRG003_ADC8:
 	LDA entity_animation_frame,X
 	TAX
 
-	LDA Temp_VarNP0
+	LDA var17
 	BMI PRG003_AE07	 ; If this sprite is off-screen, jump to PRG003_AE07
 
 	; Add offset to sprite Y
@@ -3215,7 +3215,7 @@ PRG003_ADC8:
 	STA Sprite_RAM+$10,Y
 
 PRG003_AE07:
-	LDA Temp_VarNP0
+	LDA var17
 	AND #$10
 	BNE PRG003_AE17	 ; If the other side sprite is off-screen, jump to PRG003_AE17
 
@@ -4147,7 +4147,7 @@ PRG003_B7D5
 PRG003_B7DD:
 	STA <entity_lo_x_velocity,X	 ; Update X Velocity
 
-	JSR Object_WorldDetectN1	 ; Detect against world
+	JSR entity_static_detection_inside	 ; Detect against world
 
 	LDA <entity_collision_flags,X
 	AND #$03
@@ -5126,7 +5126,7 @@ FireSnake_NotGravFlipped:
 	LDA FireSnake_FrameForTick,Y
 	STA entity_animation_frame,X
 
-	JSR Object_WorldDetect4	 ; Detect against the world
+	JSR entity_static_detection_4_pixels	 ; Detect against the world
 
 	JSR TailEnemy_DoStandard	 ; Do standard tailed enemy states
 
@@ -5659,7 +5659,7 @@ Thwomp_FallToGround:
 	STA <entity_lo_y_velocity,X
 
 PRG003_A6B4:
-	JSR Object_WorldDetectN1 ; Detect against world
+	JSR entity_static_detection_inside ; Detect against world
 
 	LDA <entity_collision_flags,X
 	AND #$04

@@ -4259,7 +4259,7 @@ MCFAPs_PMXOff:	.byte   0,  0, -16, 16	; Up, Down, Left, Right
 MCFAPs_PMYOff:	.byte -16, 16,   0,  0	; Up, Down, Left, Right
 
 	; If a tile is complete, check for adjacent paths that should be opened
-	; Uses Temp_VarNP0:
+	; Uses var17:
 	; Bit 0/1: Index of which adjacent tie we're on
 	; Bit 4: MCOMP_COMPLETE (if set)
 	; Bit 5: MCOMP_SECRET (if set)
@@ -4373,7 +4373,7 @@ AdjPath_LoopStarts:	.byte (AdjPath_CheckAlt - AdjPath_Check - 1), (AdjPath_Chang
 	; Change tile detected here to proper completed path tile
 MapCompletion_FixAdjPath:
 
-	LDA Temp_VarNP0
+	LDA var17
 	AND #MCOMP_SECRET	; This is bit 5, so to make 0/1, we must roll it around...
 	ASL A	; bit 6
 	ASL A	; bit 7
@@ -4400,9 +4400,9 @@ MComp_AdjPath_Loop:
 	STA [level_data_pointer],Y	; Change it!
 	STA <World_Map_Tile	; ... as well as the tile detected
 
-	; If Temp_VarNP0 has bit 7 set, we will not do video updates for this tile
+	; If var17 has bit 7 set, we will not do video updates for this tile
 	; change, jump to MComp_AdjPath_Done
-	LDA Temp_VarNP0
+	LDA var17
 	BMI MComp_AdjPath_Done
 
 	; Backup 'X' and 'Y'
@@ -4411,7 +4411,7 @@ MComp_AdjPath_Loop:
 	TYA
 	PHA
 
-	LDA Temp_VarNP0		; Get Temp_VarNP0 (input var)
+	LDA var17		; Get var17 (input var)
 	AND #%00000011		; Mask out the index value
 	TAX			; X = current tile offset
 
@@ -4444,8 +4444,8 @@ MComp_AdjPath_Loop:
 MComp_AdjPath_NoMatch:
 	DEX			; X--
 
-	; If the MCOMP_COMPLETE bit is set on Temp_VarNP0, we MUST include ALL tiles, so don't range check!
-	LDA Temp_VarNP0
+	; If the MCOMP_COMPLETE bit is set on var17, we MUST include ALL tiles, so don't range check!
+	LDA var17
 	AND #MCOMP_COMPLETE
 	BNE MComp_AdjPath_IncComplete
 
@@ -4463,7 +4463,7 @@ MComp_AdjPath_IncComplete:
 	; Didn't match anything...
 
 MComp_AdjPath_Done:
-	INC Temp_VarNP0		; Temp_VarNP0++ (next tile offset)
+	INC var17		; var17++ (next tile offset)
 	RTS
 
 	; Might as well make this a subroutine...
@@ -4657,7 +4657,7 @@ Map_CountAllStarCoinsAlt:
 	LDX #0
 	STX Map_StarCoin_Got
 	STX Map_StarCoin_Total
-	STX Temp_VarNP0
+	STX var17
 	STX Debug_ForceStarCoins
 Map_CSC_AllLoop:
 
@@ -4682,12 +4682,12 @@ Map_CSC_AllLoop:
 	; Now, there's 264 star coins, which means we can't
 	; fit the total into an 8-bit value. However, I'm
 	; going to be lazy, and instead of seeking to store
-	; a 16-bit value, I'll just increment Temp_VarNP0 if
+	; a 16-bit value, I'll just increment var17 if
 	; we get a carry flag. We KNOW that "Total" will
 	; carry, so we're only interested in "Got" carrying.
 	BCC Map_CSC_AllNoCarry
 	
-	INC Temp_VarNP0
+	INC var17
 
 Map_CSC_AllNoCarry:
 	INX

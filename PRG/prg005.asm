@@ -534,7 +534,7 @@ PRG005_A283:
 	LDA <entity_lo_y_velocity,X
 	BMI PRG005_A2C9	 ; If Podoboo is moving upward, jump to PRG005_A2C9
 
-	JSR Object_WorldDetectN1	 ; Detect against world
+	JSR entity_static_detection_inside	 ; Detect against world
 
 	LDA Object_TileFeet2
 	CMP #TILE15_LAVATOP
@@ -753,7 +753,7 @@ Spark_NotTracerEnd:
 
 	; For more complex geometry, see if Spark runs into a floor/wall/ceiling
 
-	JSR Object_WorldDetectN1
+	JSR entity_static_detection_inside
 	
 	LDA entity_var1,X
 	ASL A
@@ -965,9 +965,9 @@ BigCannonBall_Draw:
 	STA entity_animation_frame,X	; Set frame to zero
 	STA entity_flipped_animation,X	; No flip
 
-	; horizontal visibility bits -> Temp_VarNP0
+	; horizontal visibility bits -> var17
 	LDA Objects_SprHVis,X
-	STA Temp_VarNP0
+	STA var17
 
 	LDA <entity_lo_x,X
 	PHA		 ; Save big cannon ball's X
@@ -999,7 +999,7 @@ BigCannonBall_Draw:
 
 	LDY Object_SprRAM,X	 ; Y = Sprite RAM offset
 
-	LDA Temp_VarNP0
+	LDA var17
 	BMI PRG005_A3F3	 ; If this sprite is horizontally off-screen, jump to PRG005_A3F3
 
 	; Add 8 to Sprite Y for left edge sprite (vertically centered)
@@ -1008,7 +1008,7 @@ BigCannonBall_Draw:
 	STA Sprite_RAM+$10,Y
 
 PRG005_A3F3:
-	LDA Temp_VarNP0
+	LDA var17
 	AND #%00010000
 	BNE PRG005_A402	 ; If this sprite is horizontally off-screen, jump to PRG005_A402
 
@@ -2539,7 +2539,7 @@ PRG005_ABE0:
 PRG005_ABE2:
 	JSR Bolt_CheckOnThread	 ; Checks if bolt is on thread tile; if not, Var5 = 1
 
-	JSR Object_WorldDetectN1
+	JSR entity_static_detection_inside
 	LDA Object_TileWall2
 	CMP #TILE10_BOLT_H
 	BNE PRG005_ABF5	 	; If bolt has not hit thread end tile, jump to PRG005_ABF5
@@ -2668,7 +2668,7 @@ PRG005_AC6B:
 	ADC <entity_hi_x,X	 ; Apply sign
 	STA <entity_hi_x,X	 ; -> X Hi
 
-	JSR Object_WorldDetectN1
+	JSR entity_static_detection_inside
 
 	; Restore X/Hi
 	PLA
@@ -3074,7 +3074,7 @@ PRG005_AE67:
 	STA entity_flipped_animation,X	 ; Update attributes
  
 	LDA Objects_SprHVis,X
-	STA Temp_VarNP0	 ; Sprite horizontal visibility -> Temp_VarNP0
+	STA var17	 ; Sprite horizontal visibility -> var17
 
 	LDA <entity_lo_x,X
 	PHA		 ; Save Sun's X
@@ -3114,7 +3114,7 @@ PRG005_AE67:
 	LDA entity_animation_frame,X
 	TAX		 ; Frame -> 'X'
 
-	LDA Temp_VarNP0
+	LDA var17
 	BMI PRG005_AEAC	 ; If sprite is horizontally off-screen, jump to PRG005_AEAC
 
 	; Set Sprite Y
@@ -3123,7 +3123,7 @@ PRG005_AE67:
 	STA Sprite_RAM+$10,Y
 
 PRG005_AEAC:
-	LDA Temp_VarNP0	
+	LDA var17	
 	AND #%00010000
 	BNE PRG005_AEBC	 ; If this sprite is horizontally off-screen, jump to PRG005_AEBC
 
@@ -3668,9 +3668,9 @@ PRG005_B105:
 	JSR entity_do_y_velocity_unbounded	 ; Apply Y velocity
 	JSR Object_ApplyXVel	 	; Apply X velocity
 
-	; Temp_VarNP0 = Player hit status bits (previous frame's detection status)
+	; var17 = Player hit status bits (previous frame's detection status)
 	LDA Objects_PlayerHitStat,X
-	STA Temp_VarNP0	
+	STA var17	
 
 	; I'm not sure the reason for the modification of "Kill_Tally" here...
 	; Maybe at one time this was just another stompable enemy?
@@ -3686,7 +3686,7 @@ PRG005_B105:
 	LDA Objects_PlayerHitStat,X
 	BEQ PRG005_B1A8	 ; If no collision, jump to PRG005_B1A8
 
-	CMP Temp_VarNP0	
+	CMP var17	
 	BEQ PRG005_B14C	 ; If detection status hasn't changed from last frame, jump to PRG005_B14C
 
 	LDA #$0C

@@ -868,40 +868,39 @@ Object_HitGround_Rev:
 
 	; The only difference amongst the Object_WorldDetect[x] entries
 	; are the input value, which specifies the limit that an object
-	; should acknowledge a floor tile.  E.g., Object_WorldDetect4
+	; should acknowledge a floor tile.  E.g., entity_static_detection_4_pixels
 	; means the object will not detect a floor if it is more than
 	; 4 pixels vertically down in to it.  "N1" (Negative one) is
 	; thus basically to never use that limit because the object
 	; can't be at a depth of "-1 pixels into the tile"
 
-; $C542
-Object_WorldDetectN1:
-	LDA #$ff	; Use A = $FF
-	BNE PRG000_C54C	; Jump (technically always) to PRG000_C54C
+; Only detect blocks that are inside itself.
+entity_static_detection_inside:
+	LDA #$ff
+	BNE entity_static_collision_detection
 
-; $C546 
-Object_WorldDetect8:
-	LDA #$08	; Use A = 8
-	BNE PRG000_C54C	; Jump (technically always) to PRG000_C54C
+; Detect blocks that are up to eight pixels away.
+entity_static_detection_8_pixels:
+	LDA #$08
+	BNE entity_static_collision_detection
 
-; $C54A
-Object_WorldDetect4:
-	LDA #$04	; Use A = 4
+; Detect blocks that are up to four pixels away.
+entity_static_detection_4_pixels:
+	LDA #$04
 
-PRG000_C54C:
+entity_static_detection:
 	PHA		 ; Save input value (not used until PRG000_C649)
 
+	; If the 5th object and has a splash timer, decrement it.
 	CPX #$05
-	BNE PRG000_C559	 ; If object slot is NOT 5, jump to PRG000_C559
+	BNE entity_static_detection_skip_splash_check
+	LDA entity_timer_splash_disable,X
+	BEQ entity_static_detection_skip_splash_check
+		DEC entity_timer_splash_disable,X
 
-	LDA ObjSplash_DisTimer,X
-	BEQ PRG000_C559	 ; If ObjSplash_DisTimer = 0, jump to PRG000_C559
-
-	DEC ObjSplash_DisTimer,X	 ; ObjSplash_DisTimer --
-
-PRG000_C559:
+entity_static_detection_skip_splash_check:
 	LDA <entity_collision_flags,X
-	STA Temp_VarNP0	 ; Object's detection status -> Temp_VarNP0
+	STA var17	 ; Object's detection status -> var17
 
 	LDA #$00
 	STA <entity_collision_flags,X	; Clear Object's detection status
@@ -1231,7 +1230,7 @@ PRG000_C66C:
 	LDA #$00	 
 	STA Objects_Slope,X ; Clear slope value
 
-	JMP Object_WorldDetectN1	 ; Jump to Object_WorldDetectN1
+	JMP entity_static_detection_inside	 ; Jump to entity_static_detection_inside
 
 PRG000_C67E:
 	RTS		 ; Return
@@ -1275,7 +1274,7 @@ Object_SlopeFlat_Correct:
 	SBC #$00
 	STA <entity_hi_y,X	; Set the Y Hi
 
-	JMP Object_WorldDetectN1	; Jump to Object_WorldDetectN1
+	JMP entity_static_detection_inside	; Jump to entity_static_detection_inside
 
 PRG000_C69C:
 	RTS		 ; Return
@@ -1293,7 +1292,7 @@ Object_SlopeFlats_Rev:
 	ADC #$00
 	STA <entity_hi_y,X	; Set the Y Hi
 
-	JMP Object_WorldDetectN1	; Jump to Object_WorldDetectN1
+	JMP entity_static_detection_inside	; Jump to entity_static_detection_inside
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1312,7 +1311,7 @@ Object_GetAttrAndMoveTiles:
 	ROL A		 ; Upper 2 bits shift right 6, effectively
 	AND #%00000011	 ; Keep these bits, i.e. "tile quadrant"
 	STA <var1	 ; -> var1
-	STA Temp_VarNP0 	; Do not delete it
+	STA var17 	; Do not delete it
 	TAY		 ; -> 'Y'
 
 	LDA <Level_Tile
@@ -1403,7 +1402,7 @@ ObjectDo_Check_IfInLava:
 	LDA Level_TilesetIdx
 	ASL A	
 	ASL A		 ; Offset to beginning of lava-by-quad table
-	ADD Temp_VarNP0	 ; Add quadrant offset
+	ADD var17	 ; Add quadrant offset
 	TAY		 ; -> 'Y' 
 	LDA Level_MinTileLavaByQuad,Y	; Get the starting lava tile
 	CMP <Level_Tile	
@@ -1670,7 +1669,7 @@ PRG000_C76C:
 
 	PHA		 ; Save Object_TileDetectOffsets index
 
-	LDA Temp_VarNP0	 ; Retrieve object's in-air status
+	LDA var17	 ; Retrieve object's in-air status
 	AND #$04	 ; Bit 2 is set to indicate object is "on solid ground"
 	TAY		 ; -> 'Y' (0 or 4)
 
@@ -2069,7 +2068,7 @@ Object_WaterSplash:
 Podoboo_Splash:
 	STA <var1	 ; var1 = 2
 
-	LDA ObjSplash_DisTimer,X
+	LDA entity_timer_splash_disable,X
 	BNE PRG000_C914	 ; If splashes are disabled, jump to PRG000_C914 (RTS)
 
 	LDA entity_type,X
@@ -3676,7 +3675,7 @@ PRG000_D0A9:
 	BEQ Move_DetectBypass	; If an SMB2 object, jump to Move_DetectBypass
 
 Move_NotKicked:
-	JSR Object_WorldDetect4	 ; Detect against the world
+	JSR entity_static_detection_4_pixels	 ; Detect against the world
 
 Move_DetectBypass:
 	LDY Objects_InWater,X	; Y = whether in-water
@@ -3819,7 +3818,7 @@ PRG000_D120:
 
 	; Object is being held... 
 
-	JSR Object_WorldDetectN1 
+	JSR entity_static_detection_inside 
 	LDA <entity_collision_flags,X 
 	BEQ PRG000_D147	 ; If held object did not impact anything, jump to PRG000_D147 
 
