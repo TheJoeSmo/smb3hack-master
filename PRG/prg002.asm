@@ -5760,11 +5760,18 @@ exit_flag_player_run_off:
 		AND #$01
 		STA Objects_Var3, X
 
+		exit_flag_reset_timer:
 		; Set how long the player will walk
 		LDA #$E0
 		STA Objects_Timer,X
+		BNE exit_flag_skip_timer_checks
 
 exit_flag_player_skip_about_face:
+	; If the player is in the air, then reset the timer.
+	LDA <Player_InAir
+	BNE exit_flag_reset_timer
+
+exit_flag_skip_timer_checks:
 	LDY Objects_Var3, X
 	LDA EndPlayerSpeed, Y
 	STA <Player_XVel
