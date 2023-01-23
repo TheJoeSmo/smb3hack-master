@@ -3,7 +3,6 @@
 
 	.byte OBJ_ACTIONSWITCH, $00, $0B
 	.byte OBJ_ENDLEVELCARD, $09, $10
-	.byte OBJ_PINATA, $13, $0A
 	.byte OBJ_PINATA, $23, $08
 	.byte OBJ_GREENTROOPA, $25, $11
 	.byte OBJ_REDTROOPA, $45, $0E
