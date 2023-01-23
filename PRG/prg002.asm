@@ -5624,7 +5624,7 @@ OIELC_TBoxSpawnSlot:	.byte 1, 2, 3, 4, 0, 1, 2, 3
 EndPlayerSpeed:
 	.byte 16, -16
 EndPlayerFlipBits:
-	.byte $41, $01
+	.byte SPR_HFLIP, 00
 
 ObjNorm_EndLevelCard:
 	LDA <entity_collision_flags,X	 ; Mis-used as tracking for the current internal state
